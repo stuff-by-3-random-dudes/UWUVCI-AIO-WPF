@@ -69,15 +69,48 @@
                     </Button>
                 </Grid>
                 <ListView  Foreground="White"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseLeftButtonUp="ListView_Click">
-                    <!--Termin-->
-                    <!--<ListViewItem Height="60" x:Name="Termine">
+                    <!--NDS-->
+                    <ListViewItem Height="60" x:Name="NDS">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="CalendarClock" Margin="10" Width="25" Height="25" VerticalAlignment="Center"/>
-
-
-                            <TextBlock Text="Termine" VerticalAlignment="Center" Margin="20 10"/>
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/Colored/nds64v64.png"></Image>
+                            <TextBlock Text="NDS VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
-                    </ListViewItem>-->
+                    </ListViewItem>
+                    <!--NDS-->
+                    <ListViewItem Height="60" x:Name="GBA">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/Colored/gba64.png"></Image>
+                            <TextBlock Text="GBA VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--N64-->
+                    <ListViewItem Height="60" x:Name="N64">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/Colored/n64new.png"></Image>
+                            <TextBlock Text="N64 VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--NES-->
+                    <ListViewItem Height="60" x:Name="NES">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/Colored/nes64.png"></Image>
+                            <TextBlock Text="NES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--SNES-->
+                    <ListViewItem Height="60" x:Name="SNES">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/Colored/snes64.png"></Image>
+                            <TextBlock Text="SNES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--Settings-->
+                    <ListViewItem Height="60" x:Name="Settings">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Foreground="White" Kind="SettingsApplications" Height="45" Width="45"/>
+                            <TextBlock Text="Settings" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
                 </ListView>
 
             </StackPanel>
