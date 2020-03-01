@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml;
 using UWUVCI_AIO_WPF.Properties;
 
-namespace UWUVCI_AIO
+namespace UWUVCI_AIO_WPF
 {
     internal static class Injection
     {
