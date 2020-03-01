@@ -21,11 +21,27 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        public bool PathsSet { get; set; } = false;
+        public bool pathsSet { get; set; } = false;
+
+        public bool PathsSet
+        {
+            get { return pathsSet; }
+            set
+            {
+                pathsSet = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainViewModel()
         {
             GameConfiguration = new GameConfig();
+            UpdatePathSet(Properties.Settings.Default.PathsSet);
+        }
+
+        public void UpdatePathSet(bool newValue)
+        {
+            PathsSet = newValue;
         }
     }
 }

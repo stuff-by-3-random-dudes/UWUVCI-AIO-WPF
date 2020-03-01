@@ -23,6 +23,7 @@ namespace UWUVCI_AIO_WPF
         public MainWindow()
         {
             InitializeComponent();
+            load_frame.Content = new UI.Frames.MainFrame();
         }
         private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
         {
