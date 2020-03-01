@@ -1,14 +1,32 @@
 ﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.GBAFrame"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames"
       mc:Ignorable="d" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       d:DesignHeight="480" d:DesignWidth="1130"
       Title="GBAFrame">
 
     <Grid>
-        
+        <GroupBox Header="1. BaseRom" HorizontalAlignment="Left" Height="349" Margin="10,10,0,0" VerticalAlignment="Top" Width="421">
+            <Grid>
+
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="3. Packing" HorizontalAlignment="Left" Height="95" Margin="10,375,0,0" VerticalAlignment="Top" Width="421">
+            <Grid>
+
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="2. Configuration" HorizontalAlignment="Left" Height="460" Margin="448,10,0,0" VerticalAlignment="Top" Width="661">
+            <Grid>
+
+            </Grid>
+        </GroupBox>
+
     </Grid>
 </Page>
+
+
