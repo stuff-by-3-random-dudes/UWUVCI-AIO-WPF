@@ -9,7 +9,7 @@ namespace UWUVCI_AIO_WPF
     class MainViewModel : BaseModel
     {
         //public GameConfig GameConfiguration { get; set; }
-        private GameConfig gameConfiguration;
+        private GameConfig gameConfiguration = new GameConfig();
 
         public GameConfig GameConfiguration
         {
@@ -17,6 +17,15 @@ namespace UWUVCI_AIO_WPF
             set
             {
                 gameConfiguration = value;
+                OnPropertyChanged();
+            }
+        }
+        private string romPath;
+
+        public string RomPath
+        {
+            get { return romPath; }
+            set { romPath = value;
                 OnPropertyChanged();
             }
         }

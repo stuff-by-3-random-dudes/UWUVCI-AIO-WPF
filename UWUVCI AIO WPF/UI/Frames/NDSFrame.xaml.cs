@@ -28,5 +28,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
