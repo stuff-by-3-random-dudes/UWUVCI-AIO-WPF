@@ -310,7 +310,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                //DirectoryCopy(Path.Combine(Properties.Settings.Default.BaseRomPath, baserom), baseRomPath, true);
+                ///DirectoryCopy(Path.Combine(Properties.Settings.Default.BaseRomPath, baserom), baseRomPath, true);
             }
         }
 
