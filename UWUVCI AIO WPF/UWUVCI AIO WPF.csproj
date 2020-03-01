@@ -73,7 +73,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\ENUM\GameBases.cs" />
+    <Compile Include="Classes\ENUM\GameConsole.cs" />
     <Compile Include="Classes\Injection.cs" />
+    <Compile Include="Classes\N64Conf.cs" />
+    <Compile Include="Classes\PNGTGA.cs" />
+    <Compile Include="Classes\GameConfig.cs" />
     <Compile Include="UI\Windows\MenuWindow.xaml.cs">
       <DependentUpon>MenuWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
