@@ -65,31 +65,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="UI\Frames\GBAFrame.xaml">
+    <Page Include="UI\Frames\InjectFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Frames\MainFrame.xaml">
+    <Page Include="UI\Frames\InjectFrames\Bases\BaseContainerFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Frames\N64Frame.xaml">
+    <Page Include="UI\Frames\InjectFrames\Bases\CustomBaseFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Frames\NDSFrame.xaml">
+    <Page Include="UI\Frames\InjectFrames\Bases\NonCustomBaseFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Frames\NESFrame.xaml">
+    <Page Include="UI\Frames\InjectFrames\Configurations\N64Config.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Frames\SettingsFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\SNESFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -101,34 +101,34 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Classes\ENUM\GameBases.cs" />
     <Compile Include="Classes\ENUM\GameConsole.cs" />
+    <Compile Include="Classes\GameBases.cs" />
     <Compile Include="Classes\Injection.cs" />
     <Compile Include="Classes\N64Conf.cs" />
     <Compile Include="Classes\PNGTGA.cs" />
     <Compile Include="Classes\GameConfig.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\MainViewModel.cs" />
-    <Compile Include="UI\Frames\GBAFrame.xaml.cs">
-      <DependentUpon>GBAFrame.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrame.xaml.cs">
+      <DependentUpon>InjectFrame.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\MainFrame.xaml.cs">
-      <DependentUpon>MainFrame.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Bases\BaseContainerFrame.xaml.cs">
+      <DependentUpon>BaseContainerFrame.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\N64Frame.xaml.cs">
-      <DependentUpon>N64Frame.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Bases\CustomBaseFrame.xaml.cs">
+      <DependentUpon>CustomBaseFrame.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\NDSFrame.xaml.cs">
-      <DependentUpon>NDSFrame.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Bases\NonCustomBaseFrame.xaml.cs">
+      <DependentUpon>NonCustomBaseFrame.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\NESFrame.xaml.cs">
-      <DependentUpon>NESFrame.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\N64Config.xaml.cs">
+      <DependentUpon>N64Config.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs.xaml.cs">
+      <DependentUpon>OtherConfigs.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Frames\SettingsFrame.xaml.cs">
       <DependentUpon>SettingsFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\SNESFrame.xaml.cs">
-      <DependentUpon>SNESFrame.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\MenuWindow.xaml.cs">
       <DependentUpon>MenuWindow.xaml</DependentUpon>

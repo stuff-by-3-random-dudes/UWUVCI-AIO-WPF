@@ -13,20 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UWUVCI_AIO_WPF.UI.Frames
+namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
     /// <summary>
-    /// Interaktionslogik für MainFrame.xaml
+    /// Interaktionslogik für NonCustomBaseFrame.xaml
     /// </summary>
-    public partial class MainFrame : Page, IDisposable
+    public partial class NonCustomBaseFrame : Page
     {
-        public MainFrame()
+        public NonCustomBaseFrame()
         {
             InitializeComponent();
-        }
-        public void Dispose()
-        {
-
         }
     }
 }

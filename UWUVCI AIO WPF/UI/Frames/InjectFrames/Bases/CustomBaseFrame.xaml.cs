@@ -13,20 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UWUVCI_AIO_WPF.UI.Frames
+namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
     /// <summary>
-    /// Interaktionslogik für GBAFrame.xaml
+    /// Interaktionslogik für CustomBaseFrame.xaml
     /// </summary>
-    public partial class GBAFrame : Page, IDisposable
+    public partial class CustomBaseFrame : Page
     {
-        public GBAFrame()
+        public CustomBaseFrame()
         {
             InitializeComponent();
-        }
-        public void Dispose()
-        {
-
         }
     }
 }

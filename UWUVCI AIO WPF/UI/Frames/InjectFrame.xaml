@@ -1,4 +1,4 @@
-﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.NESFrame"
+﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.INJECTFRAME"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,22 +7,25 @@
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       d:DesignHeight="480" d:DesignWidth="1130"
-      Title="NESFrame">
+      Title="NDSFrame">
 
-    <Grid>
+    <Grid DataContext="{StaticResource mvm}">
         <GroupBox Header="1. BaseRom" HorizontalAlignment="Left" Height="349" Margin="10,10,0,0" VerticalAlignment="Top" Width="421">
-            <Grid>
-
-            </Grid>
+            <Frame Name="fBaseFrame"></Frame>
         </GroupBox>
         <GroupBox Header="3. Packing" HorizontalAlignment="Left" Height="95" Margin="10,375,0,0" VerticalAlignment="Top" Width="421">
             <Grid>
-
+                <Button Content="WUP Installable" HorizontalAlignment="Left" Margin="39,6,0,0" VerticalAlignment="Top" Width="137"/>
+                <Button Content="Loadiine" HorizontalAlignment="Left" Margin="258,6,0,0" VerticalAlignment="Top" Width="99"/>
             </Grid>
         </GroupBox>
+        
         <GroupBox Header="2. Configuration" HorizontalAlignment="Left" Height="460" Margin="448,10,0,0" VerticalAlignment="Top" Width="661">
+            
             <Grid>
-
+                <Frame Name="fLoadConfig"></Frame>
+                <Button Content="Import Config" HorizontalAlignment="Left" Margin="379,-42,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click" Background="{x:Null}" BorderBrush="{x:Null}"/>
+                <Button Content="Export Config" HorizontalAlignment="Left" Margin="514,-42,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}"/>
             </Grid>
         </GroupBox>
 

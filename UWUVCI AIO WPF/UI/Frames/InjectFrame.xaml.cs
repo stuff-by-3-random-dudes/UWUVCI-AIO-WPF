@@ -16,17 +16,24 @@ using System.Windows.Shapes;
 namespace UWUVCI_AIO_WPF.UI.Frames
 {
     /// <summary>
-    /// Interaktionslogik für N64Frame.xaml
+    /// Interaktionslogik für NDSFrame.xaml
     /// </summary>
-    public partial class N64Frame : Page, IDisposable
+    public partial class INJECTFRAME : Page, IDisposable
     {
-        public N64Frame()
+        public INJECTFRAME()
         {
             InitializeComponent();
+            fLoadConfig.Content = new InjectFrames.Configurations.N64Config();
+            fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame();
         }
         public void Dispose()
         {
 
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

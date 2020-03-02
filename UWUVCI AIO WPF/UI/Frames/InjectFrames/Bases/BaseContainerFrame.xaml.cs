@@ -13,20 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UWUVCI_AIO_WPF.UI.Frames
+namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
     /// <summary>
-    /// Interaktionslogik für NESFrame.xaml
+    /// Interaktionslogik für BaseContainerFrame.xaml
     /// </summary>
-    public partial class NESFrame : Page, IDisposable
+    public partial class BaseContainerFrame : Page
     {
-        public NESFrame()
+        public BaseContainerFrame()
         {
             InitializeComponent();
-        }
-        public void Dispose()
-        {
-
         }
     }
 }

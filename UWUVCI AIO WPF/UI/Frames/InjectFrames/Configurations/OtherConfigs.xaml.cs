@@ -12,26 +12,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Classes.ENUM;
 
-namespace UWUVCI_AIO_WPF.UI.Frames
+namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
     /// <summary>
-    /// Interaktionslogik für NDSFrame.xaml
+    /// Interaktionslogik für OtherConfigs.xaml
     /// </summary>
-    public partial class NDSFrame : Page, IDisposable
+    public partial class OtherConfigs : Page, IDisposable
     {
-        public NDSFrame()
+
+        public OtherConfigs()
         {
             InitializeComponent();
         }
         public void Dispose()
         {
 
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
         }
     }
 }

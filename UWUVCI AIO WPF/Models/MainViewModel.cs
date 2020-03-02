@@ -11,6 +11,7 @@ namespace UWUVCI_AIO_WPF
         //public GameConfig GameConfiguration { get; set; }
         private GameConfig gameConfiguration = new GameConfig();
 
+        public List<string> test { get; set; } = new List<string>();
         public GameConfig GameConfiguration
         {
             get { return gameConfiguration; }
@@ -44,6 +45,12 @@ namespace UWUVCI_AIO_WPF
 
         public MainViewModel()
         {
+            test.Add("1");
+            test.Add("2");
+            test.Add("3");
+            test.Add("4");
+            test.Add("5");
+
             GameConfiguration = new GameConfig();
             UpdatePathSet(Properties.Settings.Default.PathsSet);
         }

@@ -13,20 +13,23 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace UWUVCI_AIO_WPF.UI.Frames
+namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
     /// <summary>
-    /// Interaktionslogik für SNESFrame.xaml
+    /// Interaktionslogik für N64Config.xaml
     /// </summary>
-    public partial class SNESFrame : Page, IDisposable
+    public partial class N64Config : Page
     {
-        public SNESFrame()
+        MainViewModel mvm;
+        public N64Config()
         {
+            mvm = (MainViewModel)FindResource("mvm");
             InitializeComponent();
         }
-        public void Dispose()
-        {
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }
