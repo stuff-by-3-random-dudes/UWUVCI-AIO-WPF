@@ -10,24 +10,46 @@
       Title="NDSFrame">
 
     <Grid DataContext="{StaticResource mvm}">
-        <GroupBox Header="1. BaseRom" HorizontalAlignment="Left" Height="349" Margin="10,10,0,0" VerticalAlignment="Top" Width="421">
-            <Frame Name="fBaseFrame"></Frame>
-        </GroupBox>
-        <GroupBox Header="3. Packing" HorizontalAlignment="Left" Height="95" Margin="10,375,0,0" VerticalAlignment="Top" Width="421">
-            <Grid>
-                <Button Content="WUP Installable" HorizontalAlignment="Left" Margin="39,6,0,0" VerticalAlignment="Top" Width="137"/>
-                <Button Content="Loadiine" HorizontalAlignment="Left" Margin="258,6,0,0" VerticalAlignment="Top" Width="99"/>
-            </Grid>
-        </GroupBox>
-        
-        <GroupBox Header="2. Configuration" HorizontalAlignment="Left" Height="460" Margin="448,10,0,0" VerticalAlignment="Top" Width="661">
-            
-            <Grid>
-                <Frame Name="fLoadConfig"></Frame>
-                <Button Content="Import Config" HorizontalAlignment="Left" Margin="379,-42,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click" Background="{x:Null}" BorderBrush="{x:Null}"/>
-                <Button Content="Export Config" HorizontalAlignment="Left" Margin="514,-42,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}"/>
-            </Grid>
-        </GroupBox>
 
+        <Grid>
+            <Frame Name="fBaseFrame" Width="403" Height="297" Margin="19,52,708,131"></Frame>
+        </Grid>
+        <Button Content="WUP Installable" HorizontalAlignment="Left" Margin="49,421,0,0" VerticalAlignment="Top" Width="137" IsEnabled="False"/>
+        <Button Content="Loadiine" HorizontalAlignment="Left" Margin="268,421,0,0" VerticalAlignment="Top" Width="99" IsEnabled="False"/>
+
+
+        <Frame Name="fLoadConfig" Width="643" Height="408" Margin="458,45,28,14"/>
+
+
+
+        <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="33" Margin="10,375,0,0" VerticalAlignment="Top" Width="421"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="10,386,0,0" VerticalAlignment="Top" Width="421"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="19,375,0,0" VerticalAlignment="Top" Width="403"/>
+
+        <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="421"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="414,10,0,0" VerticalAlignment="Top" Width="17"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="10,20,0,0" VerticalAlignment="Top" Width="421"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="19,10,0,0" VerticalAlignment="Top" Width="403"/>
+
+        <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="448,10,0,0" VerticalAlignment="Top" Width="661"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="448,20,0,0" VerticalAlignment="Top" Width="661"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="32" Margin="457,10,0,0" VerticalAlignment="Top" Width="644"/>
+
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="10,10,0,0" VerticalAlignment="Top" Width="17"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="448,10,0,0" VerticalAlignment="Top" Width="17"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="1092,10,0,0" VerticalAlignment="Top" Width="17"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="414,375,0,0" VerticalAlignment="Top" Width="17"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="10,375,0,0" VerticalAlignment="Top" Width="17"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="67" Margin="10,403,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="10,375,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5" Background="#FF2196F3"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="434" Margin="448,36,0,0" VerticalAlignment="Top" Width="661" CornerRadius="5"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="448,9,0,0" VerticalAlignment="Top" Width="661" CornerRadius="5" Background="#FF2196F3"/>
+        <Label Content="3. Packing" HorizontalAlignment="Left" Margin="25,379,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
+        <Button Content="Import Config" HorizontalAlignment="Left" Margin="839,10,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click" Background="{x:Null}" BorderBrush="{x:Null}"/>
+        <Button Content="Export Config" HorizontalAlignment="Left" Margin="974,10,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}"/>
+        <Label Content="2. Configuration" HorizontalAlignment="Left" Margin="465,14,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="321" Margin="10,38,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="10,9,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5" Background="#FF2196F3"/>
+        <Label Content="1. BaseRom" HorizontalAlignment="Left" Margin="25,14,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
     </Grid>
 </Page>
