@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Classes.ENUM;
 
 namespace UWUVCI_AIO_WPF.UI.Frames
 {
@@ -20,11 +21,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames
     /// </summary>
     public partial class INJECTFRAME : Page, IDisposable
     {
-        public INJECTFRAME()
+        public INJECTFRAME(GameConsole console)
         {
             InitializeComponent();
-            fLoadConfig.Content = new InjectFrames.Configurations.N64Config();
-            fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame();
+            if(console == GameConsole.N64)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.N64Config();
+            }
+            else
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs();
+            }
+
+            fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame(console);
         }
         public void Dispose()
         {
@@ -33,7 +42,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            
+            //import config
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            //Export config
         }
     }
 }

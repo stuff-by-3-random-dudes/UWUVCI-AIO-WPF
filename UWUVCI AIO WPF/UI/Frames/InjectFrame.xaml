@@ -46,7 +46,7 @@
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="448,9,0,0" VerticalAlignment="Top" Width="661" CornerRadius="5" Background="#FF2196F3"/>
         <Label Content="3. Packing" HorizontalAlignment="Left" Margin="25,379,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
         <Button Content="Import Config" HorizontalAlignment="Left" Margin="839,10,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <Button Content="Export Config" HorizontalAlignment="Left" Margin="974,10,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}"/>
+        <Button Content="Export Config" HorizontalAlignment="Left" Margin="974,10,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}" Click="Button_Click_1"/>
         <Label Content="2. Configuration" HorizontalAlignment="Left" Margin="465,14,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="321" Margin="10,38,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5"/>
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="10,9,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5" Background="#FF2196F3"/>

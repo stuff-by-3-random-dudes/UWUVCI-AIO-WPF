@@ -13,6 +13,7 @@ namespace UWUVCI_AIO_WPF
     {
         public GameConsole Console { get; set; }
         public GameBases BaseRom { get; set; }
+        public string CBasePath { get; set; }
         public string GameName { get; set; }
         public PNGTGA TGAIco { get; set; }
         public PNGTGA TGADrc { get; set; }

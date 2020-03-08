@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Classes.ENUM;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
@@ -20,9 +22,29 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     /// </summary>
     public partial class NonCustomBaseFrame : Page
     {
+        MainViewModel mvm;
+        public NonCustomBaseFrame(GameBases Base, GameConsole console, bool existing)
+        {
+            InitializeComponent();
+            mvm = (MainViewModel)FindResource("mvm");
+            if (!existing)
+            {
+                createConfig(Base, console);
+            }
+            
+        }
+       
         public NonCustomBaseFrame()
         {
             InitializeComponent();
+            mvm = (MainViewModel)FindResource("mvm");
+            
+        }
+        private void createConfig(GameBases Base, GameConsole console)
+        {
+            mvm.GameConfiguration = new GameConfig();
+            mvm.GameConfiguration.BaseRom = Base;
+            mvm.GameConfiguration.Console = console;
         }
     }
 }

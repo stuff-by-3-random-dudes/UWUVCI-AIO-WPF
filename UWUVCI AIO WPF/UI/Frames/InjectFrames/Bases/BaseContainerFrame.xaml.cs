@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Classes.ENUM;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
@@ -20,9 +22,45 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     /// </summary>
     public partial class BaseContainerFrame : Page
     {
-        public BaseContainerFrame()
+        private GameConsole console;
+        MainViewModel mvm;
+        bool insertedConfig = false;
+        public BaseContainerFrame(GameConsole console)
         {
             InitializeComponent();
+            this.console = console;
+            mvm = (MainViewModel)FindResource("mvm");
+            //READ INTO BASE LIST
+        }
+
+        public BaseContainerFrame(GameConsole console, GameBases index)
+        {
+            InitializeComponent();
+            this.console = console;
+            mvm = (MainViewModel)FindResource("mvm");
+            insertedConfig = true;
+            //READ INTO BASE LIST
+            cbCombo.SelectedItem = index;
+            ComboBox_SelectionChanged(null, null);
+            insertedConfig = false;
+           
+
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(cbCombo.SelectedIndex != -1)
+            { 
+                if (cbCombo.SelectedIndex == 0)
+                {
+                    fLoadFrame.Content = new CustomBaseFrame((GameBases)cbCombo.SelectedItem, console, insertedConfig);
+                }
+                else
+                {
+                    fLoadFrame.Content = new NonCustomBaseFrame((GameBases)cbCombo.SelectedItem, console, insertedConfig);
+                }
+            }
+          
         }
     }
 }

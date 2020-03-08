@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
-    class GameBases
+    public class GameBases
     {
         public string Name { get; set; }
         public string Path { get; set; }
+        public string Tid { get; set; }
     }
 }
