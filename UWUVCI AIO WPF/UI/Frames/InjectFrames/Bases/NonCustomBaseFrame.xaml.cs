@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
-using UWUVCI_AIO_WPF.Classes.ENUM;
+
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
@@ -23,7 +24,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     public partial class NonCustomBaseFrame : Page
     {
         MainViewModel mvm;
-        public NonCustomBaseFrame(GameBases Base, GameConsole console, bool existing)
+        public NonCustomBaseFrame(GameBases Base, GameConsoles console, bool existing)
         {
             InitializeComponent();
             mvm = (MainViewModel)FindResource("mvm");
@@ -40,7 +41,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             mvm = (MainViewModel)FindResource("mvm");
             
         }
-        private void createConfig(GameBases Base, GameConsole console)
+        private void createConfig(GameBases Base, GameConsoles console)
         {
             mvm.GameConfiguration = new GameConfig();
             mvm.GameConfiguration.BaseRom = Base;

@@ -71,7 +71,7 @@
                 </Grid>
                 <ListView  Foreground="White"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseLeftButtonUp="ListView_Click">
                     <!--NDS-->
-                    <ListViewItem Height="60" x:Name="NDS" IsEnabled="{Binding PathsSet}" Cursor="Hand">
+                    <ListViewItem Height="60" x:Name="NDS" IsEnabled="True" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/UWUVCI AIO WPF;component/UI/Images/nds64v64.png"></Image>
                             <TextBlock Text="NDS VC Inject" VerticalAlignment="Center" Margin="20 10"/>

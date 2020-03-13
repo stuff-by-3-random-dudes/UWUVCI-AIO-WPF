@@ -12,8 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UWUVCI_AIO_WPF.Classes.ENUM;
+
 using UWUVCI_AIO_WPF.Classes;
+using GameBaseClassLibrary;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
@@ -22,11 +23,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     /// </summary>
     public partial class CustomBaseFrame : Page
     {
-        GameConsole console;
+        GameConsoles console;
         GameBases bases;
         bool existing;
         MainViewModel mvm;
-        public CustomBaseFrame(GameBases Base, GameConsole console, bool existing)
+        public CustomBaseFrame(GameBases Base, GameConsoles console, bool existing)
         {
             InitializeComponent();
             mvm = (MainViewModel)FindResource("mvm");
@@ -34,7 +35,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             this.existing = existing;
             this.console = console;
         }
-        private void CreateConfig(GameBases Base, GameConsole console, bool existing)
+        private void CreateConfig(GameBases Base, GameConsoles console, bool existing)
         {
             if (!existing)
             {

@@ -1,17 +1,17 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UWUVCI_AIO_WPF.Classes;
-using UWUVCI_AIO_WPF.Classes.ENUM;
 
 namespace UWUVCI_AIO_WPF
 {
     [Serializable]
     class GameConfig
     {
-        public GameConsole Console { get; set; }
+        public GameConsoles Console { get; set; }
         public GameBases BaseRom { get; set; }
         public string CBasePath { get; set; }
         public string GameName { get; set; }

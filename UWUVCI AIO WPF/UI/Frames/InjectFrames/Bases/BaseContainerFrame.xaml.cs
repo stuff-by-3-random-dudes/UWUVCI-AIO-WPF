@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
-using UWUVCI_AIO_WPF.Classes.ENUM;
+
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
@@ -22,24 +23,24 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     /// </summary>
     public partial class BaseContainerFrame : Page
     {
-        private GameConsole console;
+        private GameConsoles console;
         MainViewModel mvm;
         bool insertedConfig = false;
-        public BaseContainerFrame(GameConsole console)
+        public BaseContainerFrame(GameConsoles console)
         {
             InitializeComponent();
             this.console = console;
             mvm = (MainViewModel)FindResource("mvm");
-            //READ INTO BASE LIST
+            mvm.GetBases(console);
         }
 
-        public BaseContainerFrame(GameConsole console, GameBases index)
+        public BaseContainerFrame(GameConsoles console, GameBases index)
         {
             InitializeComponent();
             this.console = console;
             mvm = (MainViewModel)FindResource("mvm");
             insertedConfig = true;
-            //READ INTO BASE LIST
+            mvm.GetBases(console);
             cbCombo.SelectedItem = index;
             ComboBox_SelectionChanged(null, null);
             insertedConfig = false;
@@ -52,12 +53,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             if(cbCombo.SelectedIndex != -1)
             { 
                 if (cbCombo.SelectedIndex == 0)
+
                 {
-                    fLoadFrame.Content = new CustomBaseFrame((GameBases)cbCombo.SelectedItem, console, insertedConfig);
+                    fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
                 }
                 else
                 {
-                    fLoadFrame.Content = new NonCustomBaseFrame((GameBases)cbCombo.SelectedItem, console, insertedConfig);
+                    fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
                 }
             }
           

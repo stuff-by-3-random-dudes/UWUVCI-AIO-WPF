@@ -10,30 +10,28 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UWUVCI_AIO_WPF.UI.Windows;
 
-namespace UWUVCI_AIO_WPF.UI.Frames
+namespace UWUVCI_AIO_WPF.UI.Windows
 {
     /// <summary>
-    /// Interaktionslogik für SettingsFrame.xaml
+    /// Interaktionslogik für EnterKey.xaml
     /// </summary>
-    public partial class SettingsFrame : Page, IDisposable
+    public partial class EnterKey : Window
     {
-        public SettingsFrame()
+        public EnterKey()
         {
             InitializeComponent();
-        }
-        public void Dispose()
-        {
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            TitleKeys tk = new TitleKeys();
-            tk.ShowDialog();
+            this.Close();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

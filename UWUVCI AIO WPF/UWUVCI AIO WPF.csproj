@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GameBaseClassLibrary">
+      <HintPath>..\..\GameBaseClassLibrary\GameBaseClassLibrary\bin\Debug\GameBaseClassLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="MaterialDesignColors, Version=1.2.2.920, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignColors.1.2.2\lib\net45\MaterialDesignColors.dll</HintPath>
     </Reference>
@@ -65,6 +68,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Classes\KeyFile.cs" />
+    <Compile Include="Classes\TKeys.cs" />
+    <Compile Include="UI\Windows\EnterKey.xaml.cs">
+      <DependentUpon>EnterKey.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\TitleKeys.xaml.cs">
+      <DependentUpon>TitleKeys.xaml</DependentUpon>
+    </Compile>
     <Page Include="UI\Frames\InjectFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -97,6 +108,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Windows\EnterKey.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\MenuWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -105,8 +120,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Classes\ENUM\GameConsole.cs" />
-    <Compile Include="Classes\GameBases.cs" />
     <Compile Include="Classes\Injection.cs" />
     <Compile Include="Classes\N64Conf.cs" />
     <Compile Include="Classes\PNGTGA.cs" />
@@ -141,6 +154,10 @@
       <DependentUpon>MenuWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\Windows\TitleKeys.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

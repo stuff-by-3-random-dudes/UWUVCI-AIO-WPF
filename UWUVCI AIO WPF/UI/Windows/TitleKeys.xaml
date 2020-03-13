@@ -1,0 +1,79 @@
+﻿<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.TitleKeys"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
+       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MAIN" Height="586.885" Width="1392.476" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize">
+
+
+
+    <Window.Resources>
+    </Window.Resources>
+
+
+    <Grid DataContext="{StaticResource mvm}">
+        <Grid Margin="0,70,0,0">
+
+            <DataGrid Name="dgNDS" ItemsSource="{Binding LNDS}" HorizontalAlignment="Left" Height="420" Margin="35,49,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False" SelectedItem="{Binding GbTemp}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock HorizontalAlignment="Left" Margin="38,21,0,0" TextWrapping="Wrap" Text="NDS" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
+            <DataGrid ItemsSource="{Binding LGBA}" Name="dgGBA" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="298,50,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock HorizontalAlignment="Left" Margin="301,22,0,0" TextWrapping="Wrap" Text="GBA" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
+            <DataGrid ItemsSource="{Binding LN64}" Name="dgN64" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="561,50,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock HorizontalAlignment="Left" Margin="564,22,0,0" TextWrapping="Wrap" Text="N64" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
+            <DataGrid Name="dgNES" ItemsSource="{Binding LNES}" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="821,49,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock HorizontalAlignment="Left" Margin="824,21,0,0" TextWrapping="Wrap" Text="NES" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
+            <DataGrid ItemsSource="{Binding LSNES}" Name="dgSNES" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="1088,50,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock HorizontalAlignment="Left" Margin="1091,22,0,0" TextWrapping="Wrap" Text="SNES" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
+            <Button Content="Enter Key of Selected Title" HorizontalAlignment="Left" Margin="1165,475,0,0" VerticalAlignment="Top" Width="205" Click="Button_Click"/>
+        </Grid>
+        <Grid Height="72" VerticalAlignment="Top" Margin="0,-2,0,0">
+            <Grid.Background>
+
+                <VisualBrush TileMode="Tile" Viewport="0,0,0.0965,1">
+                    <VisualBrush.Visual>
+                        <Image Source="/UWUVCI AIO WPF;component/UI/Images/bg maybe wpf.png"></Image>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+
+
+            </Grid.Background>
+            <TextBlock Name="tbTitleBar" HorizontalAlignment="Left" Margin="61,19,0,0" TextWrapping="Wrap" Text="UWUVCI AIO - TitleKeys" VerticalAlignment="Top" FontSize="25" Width="1266" TextAlignment="Center"/>
+        </Grid>
+
+
+        <TextBlock HorizontalAlignment="Left" Margin="1362,15,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <Button Content="" HorizontalAlignment="Left" Margin="1358,13,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Close"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1335,15,0,0" TextWrapping="Wrap" Text="__" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <Button Content="" HorizontalAlignment="Left" Margin="1333,13,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Minimize"/>
+    </Grid>
+
+</Window>
+

@@ -13,7 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Frames;
-using UWUVCI_AIO_WPF.Classes.ENUM;
+
+using GameBaseClassLibrary;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -58,30 +59,36 @@ namespace UWUVCI_AIO_WPF
         }
         private void ListView_Click(object sender, MouseButtonEventArgs e)
         {
-            DestroyFrame();
+            
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - NDS VC INJECT";
-                    load_frame.Content = new INJECTFRAME(GameConsole.NDS);
+                    load_frame.Content = new INJECTFRAME(GameConsoles.NDS);
                     break;
                 case 1:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - GBA VC INJECT";
-                    load_frame.Content = new INJECTFRAME(GameConsole.GBA);
+                    load_frame.Content = new INJECTFRAME(GameConsoles.GBA);
                     break;
                 case 2:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - N64 VC INJECT";
-                    load_frame.Content = new INJECTFRAME(GameConsole.N64);
+                    load_frame.Content = new INJECTFRAME(GameConsoles.N64);
                     break;
                 case 3:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - NES VC INJECT";
-                    load_frame.Content = new INJECTFRAME(GameConsole.NES);
+                    load_frame.Content = new INJECTFRAME(GameConsoles.NES);
                     break;
                 case 4:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SNES VC INJECT";
-                    load_frame.Content = new INJECTFRAME(GameConsole.SNES);
+                    load_frame.Content = new INJECTFRAME(GameConsoles.SNES);
                     break;
                 case 5:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SETTINGS";
                     load_frame.Content = new SettingsFrame();
                     break;
