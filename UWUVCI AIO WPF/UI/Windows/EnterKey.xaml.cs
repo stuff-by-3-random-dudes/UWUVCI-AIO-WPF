@@ -31,7 +31,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            
+            MainViewModel mvm = (MainViewModel)FindResource("mvm");
+            if (mvm.checkKey(tbKey.Text))
+            {
+                this.Close();
+            }
         }
     }
 }

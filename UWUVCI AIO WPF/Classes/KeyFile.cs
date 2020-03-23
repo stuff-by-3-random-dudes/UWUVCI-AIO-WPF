@@ -24,6 +24,8 @@ namespace UWUVCI_AIO_WPF.Classes
                 GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
                 IFormatter formatter = new BinaryFormatter();
                 lRet = (List<TKeys>)formatter.Deserialize(decompressedConfigStream);
+                inputConfigStream.Close();
+                decompressedConfigStream.Close();
             }
 
             return lRet;

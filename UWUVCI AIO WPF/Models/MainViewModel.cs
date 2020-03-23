@@ -200,12 +200,14 @@ namespace UWUVCI_AIO_WPF
             ek.ShowDialog();
         }
 
-        public void checkKey(string key)
+        public bool checkKey(string key)
         {
             if(GbTemp.KeyHash == key.GetHashCode())
             {
                 UpdateKeyInFile(key, $@"keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
+                return true;
             }
+            return false;
         }
         public void UpdateKeyInFile(string key, string file, GameBases Base, GameConsoles console)
         {
