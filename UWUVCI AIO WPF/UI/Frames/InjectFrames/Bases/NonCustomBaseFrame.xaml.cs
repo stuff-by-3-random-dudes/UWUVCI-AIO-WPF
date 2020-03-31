@@ -32,7 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             {
                 createConfig(Base, console);
             }
-            
+            checkStuff(mvm.getInfoOfBase(Base));
         }
        
         public NonCustomBaseFrame()
@@ -46,6 +46,30 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             mvm.GameConfiguration = new GameConfig();
             mvm.GameConfiguration.BaseRom = Base;
             mvm.GameConfiguration.Console = console;
+           
+        }
+        private void checkStuff(List<bool> info)
+        {
+            if (info[0])
+            {
+                tbDWNL.Text = "Base Downloaded";
+                tbDWNL.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            }
+            if (info[1])
+            {
+                tbTK.Text = "TitleKey Entered";
+                tbTK.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            }
+            if (info[2])
+            {
+                tbCK.Text = "CommonKey Entered";
+                tbCK.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+            }
+
+            if(info[1] && info[2])
+            {
+                btnDwnlnd.IsEnabled = true;
+            }
         }
     }
 }

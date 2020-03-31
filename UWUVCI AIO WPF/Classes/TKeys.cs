@@ -11,6 +11,6 @@ namespace UWUVCI_AIO_WPF.Classes
     public class TKeys
     {
         public GameBases Base { get; set; }
-        public string Tkey { get; set; }
+        public string Tkey { get; set; } = null;
     }
 }

@@ -6,53 +6,39 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="586.885" Width="1392.476" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize">
+        Title="MAIN" Height="550" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize">
 
 
 
     <Window.Resources>
+        <Storyboard x:Key="MenuOpen">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="GridMenu">
+                <EasingDoubleKeyFrame KeyTime="0" Value="60"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="210"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="MenuClose">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)" Storyboard.TargetName="GridMenu">
+                <EasingDoubleKeyFrame KeyTime="0" Value="200"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="60"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonOpenMenu">
+            <BeginStoryboard Storyboard="{StaticResource MenuOpen}"/>
 
+        </EventTrigger>
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="ButtonCloseMenu">
+            <BeginStoryboard Storyboard="{StaticResource MenuClose}"/>
+
+        </EventTrigger>
+    </Window.Triggers>
 
     <Grid DataContext="{StaticResource mvm}">
-        <Grid Margin="0,70,0,0">
-
-            <DataGrid Name="dgNDS" ItemsSource="{Binding LNDS}" HorizontalAlignment="Left" Height="420" Margin="35,49,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False" SelectedItem="{Binding GbTemp}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <TextBlock HorizontalAlignment="Left" Margin="38,21,0,0" TextWrapping="Wrap" Text="NDS" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
-            <DataGrid ItemsSource="{Binding LGBA}" Name="dgGBA" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="298,50,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <TextBlock HorizontalAlignment="Left" Margin="301,22,0,0" TextWrapping="Wrap" Text="GBA" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
-            <DataGrid ItemsSource="{Binding LN64}" Name="dgN64" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="561,50,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <TextBlock HorizontalAlignment="Left" Margin="564,22,0,0" TextWrapping="Wrap" Text="N64" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
-            <DataGrid Name="dgNES" ItemsSource="{Binding LNES}" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="821,49,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <TextBlock HorizontalAlignment="Left" Margin="824,21,0,0" TextWrapping="Wrap" Text="NES" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
-            <DataGrid ItemsSource="{Binding LSNES}" Name="dgSNES" SelectedItem="{Binding GbTemp}" HorizontalAlignment="Left" Height="420" Margin="1088,50,0,0" VerticalAlignment="Top" Width="247" Background="{x:Null}" BorderBrush="Black" SelectionMode="Single" AutoGenerateColumns="False" CanUserReorderColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserSortColumns="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <TextBlock HorizontalAlignment="Left" Margin="1091,22,0,0" TextWrapping="Wrap" Text="SNES" VerticalAlignment="Top" Foreground="Black" FontSize="18"/>
-            <Button Content="Enter Key of Selected Title" HorizontalAlignment="Left" Margin="1165,475,0,0" VerticalAlignment="Top" Width="205" Click="Button_Click"/>
+        <Grid Margin="60,70,0,0">
+            <Frame x:Name="load_frame" NavigationUIVisibility="Hidden"/>
+            <TextBlock Text="" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Height="106" Width="1115" FontSize="22" Name="tbA" Foreground="Black" />
         </Grid>
         <Grid Height="72" VerticalAlignment="Top" Margin="0,-2,0,0">
             <Grid.Background>
@@ -65,15 +51,70 @@
 
 
             </Grid.Background>
-            <TextBlock Name="tbTitleBar" HorizontalAlignment="Left" Margin="61,19,0,0" TextWrapping="Wrap" Text="UWUVCI AIO - TitleKeys" VerticalAlignment="Top" FontSize="25" Width="1266" TextAlignment="Center"/>
+            <TextBlock Name="tbTitleBar" HorizontalAlignment="Left" Margin="61,19,0,0" TextWrapping="Wrap" Text="UWUVCI AIO - TitleKeys" VerticalAlignment="Top" FontSize="25" Width="1075" TextAlignment="Center"/>
+        </Grid>
+        <Grid x:Name="GridMenu" Width="60" HorizontalAlignment="Left">
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#5B6EAD" Offset="1"/>
+                    <GradientStop Color="#7289DA" Offset="0"/>
+                    <GradientStop Color="#6175B7" Offset="0.5"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <StackPanel>
+                <Grid Height="70">
+                    <Button x:Name="ButtonCloseMenu" Width="60" Height="60" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,5,0,0" Visibility="Collapsed" Click="ButtonCloseMenu_Click">
+                        <materialDesign:PackIcon Foreground="White" Kind="ArrowLeft" Height="25" Width="25" />
+                    </Button>
+                    <Button x:Name="ButtonOpenMenu" Width="60" Height="60" Background="{x:Null}" BorderBrush="{x:Null}" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,0,0" Click="ButtonOpenMenu_Click">
+                        <materialDesign:PackIcon Foreground="White" Kind="HamburgerMenu" Height="25" Width="25"/>
+                    </Button>
+                </Grid>
+                <ListView  Foreground="White"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseLeftButtonUp="ListView_Click">
+                    <!--NDS-->
+                    <ListViewItem Height="60" x:Name="NDS" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/nds64v64.png"></Image>
+                            <TextBlock Text="NDS VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--GBA-->
+                    <ListViewItem Height="60" x:Name="GBA" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/gba64.png"></Image>
+                            <TextBlock Text="GBA VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--N64-->
+                    <ListViewItem Height="60" x:Name="N64"  Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/n64colorless.png"></Image>
+                            <TextBlock Text="N64 VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--NES-->
+                    <ListViewItem Height="60" x:Name="NES"  Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/nes64.png"></Image>
+                            <TextBlock Text="NES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                    <!--SNES-->
+                    <ListViewItem Height="60" x:Name="SNES" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/snes64.png"></Image>
+                            <TextBlock Text="SNES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                </ListView>
+
+            </StackPanel>
         </Grid>
 
-
-        <TextBlock HorizontalAlignment="Left" Margin="1362,15,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
-        <Button Content="" HorizontalAlignment="Left" Margin="1358,13,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Close"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1335,15,0,0" TextWrapping="Wrap" Text="__" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
-        <Button Content="" HorizontalAlignment="Left" Margin="1333,13,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Minimize"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1164,12,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="1160,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Close"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1144,11,0,0" TextWrapping="Wrap" Text="__" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="1140,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Minimize"/>
     </Grid>
 
 </Window>
-

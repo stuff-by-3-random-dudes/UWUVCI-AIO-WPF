@@ -121,6 +121,13 @@ namespace UWUVCI_AIO_WPF
             set { lSNES = value; OnPropertyChanged(); }
         }
 
+        private List<GameBases> ltemp = new List<GameBases>();
+
+        public List<GameBases> Ltemp
+        {
+            get { return ltemp; }
+            set { ltemp = value; OnPropertyChanged(); }
+        }
         #endregion
 
 
@@ -193,13 +200,55 @@ namespace UWUVCI_AIO_WPF
             }
                        
         }
-
-        public void EnterKey()
+        public void getTempList(GameConsoles console)
         {
-            EnterKey ek = new EnterKey();
-            ek.ShowDialog();
+            switch (console)
+            {
+                case GameConsoles.NDS:
+                    Ltemp = LNDS;
+                    break;
+                case GameConsoles.N64:
+                    Ltemp = LN64;
+                    break;
+                case GameConsoles.GBA:
+                    Ltemp = LGBA;
+                    break;
+                case GameConsoles.NES:
+                    Ltemp = LNES;
+                    break;
+                case GameConsoles.SNES:
+                    Ltemp = LSNES;
+                    break;
+            }
         }
 
+        public void EnterKey(bool ck)
+        {
+            EnterKey ek = new EnterKey(ck);
+            ek.ShowDialog();
+        }
+        public bool checkcKey(string key)
+        {
+            if (487391367 == key.GetHashCode())
+            {
+                Settings.Default.Ckey = key;
+                Settings.Default.Save();
+                
+                return true;
+            }
+            return false;
+        }
+        public bool isCkeySet()
+        {
+            if (Settings.Default.Ckey.GetHashCode() == 487391367)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public bool checkKey(string key)
         {
             if(GbTemp.KeyHash == key.GetHashCode())
@@ -216,7 +265,7 @@ namespace UWUVCI_AIO_WPF
                 var temp = KeyFile.ReadBasesFromKeyFile(file);
                 foreach(TKeys  t in temp)
                 {
-                    if(t.Base == Base)
+                    if(t.Base.Name == Base.Name && t.Base.Region == Base.Region)
                     {
                         t.Tkey = key;
                     }
@@ -224,6 +273,22 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(file);
                 KeyFile.ExportFile(temp, console);
             }
+        }
+        public bool isKeySet(GameBases bases)
+        {
+            var temp = KeyFile.ReadBasesFromKeyFile($@"keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            foreach(TKeys t in temp)
+            {
+                if(t.Base.Name == bases.Name && t.Base.Region == bases.Region)
+                {
+                    if(t.Tkey != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+
         }
         public GameConsoles GetConsoleOfBase(GameBases gb)
         {
@@ -282,6 +347,35 @@ namespace UWUVCI_AIO_WPF
                 }
             }
             return ret;
+        }
+        public List<bool> getInfoOfBase(GameBases gb)
+        {
+            List<bool> info = new List<bool>();
+            if (Directory.Exists($@"{Settings.Default.BasePath}\{gb.Name}[{gb.Region}]"))
+            {
+                info.Add(true);
+            }
+            else
+            {
+                info.Add(false);
+            }
+            if (isKeySet(gb))
+            {
+                info.Add(true);
+            }
+            else
+            {
+                info.Add(false);
+            }
+            if (isCkeySet())
+            {
+                info.Add(true);
+            }
+            else
+            {
+                info.Add(false);
+            }
+            return info;
         }
     }
 }

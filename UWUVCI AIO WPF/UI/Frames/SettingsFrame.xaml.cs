@@ -35,5 +35,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             TitleKeys tk = new TitleKeys();
             tk.ShowDialog();
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.EnterKey(true);
+        }
     }
 }

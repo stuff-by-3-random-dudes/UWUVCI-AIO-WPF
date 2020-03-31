@@ -19,9 +19,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// </summary>
     public partial class EnterKey : Window
     {
-        public EnterKey()
+        bool ckey = false;
+        public EnterKey(bool ckey)
         {
             InitializeComponent();
+            this.ckey = ckey;
+            if (ckey)
+            {
+                region.Visibility = Visibility.Hidden;
+                Key.Text = "CommonKey";
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -31,11 +38,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            MainViewModel mvm = (MainViewModel)FindResource("mvm");
-            if (mvm.checkKey(tbKey.Text))
+            if (ckey)
             {
-                this.Close();
+                MainViewModel mvm = (MainViewModel)FindResource("mvm");
+                if (mvm.checkcKey(tbKey.Text))
+                {
+                    this.Close();
+                }
             }
+            else
+            {
+                MainViewModel mvm = (MainViewModel)FindResource("mvm");
+                if (mvm.checkKey(tbKey.Text))
+                {
+                    this.Close();
+                }
+            }
+           
         }
     }
 }
