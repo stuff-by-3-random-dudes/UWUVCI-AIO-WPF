@@ -1,16 +1,18 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Xml;
+using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 
 namespace UWUVCI_AIO_WPF
 {
     internal static class Injection
     {
-        public enum Console { NDS, N64, GBA, NES, SNES }
+      
 
         private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "temp");
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
@@ -18,7 +20,7 @@ namespace UWUVCI_AIO_WPF
         private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "Tools");
 
         /*
-         * Console: Can either be NDS, N64, GBA, NES or SNES
+         * GameConsole: Can either be NDS, N64, GBA, NES or SNES
          * baseRom = Name of the BaseRom, which is the folder name too (example: Super Metroid EU will be saved at the BaseRom path under the folder SMetroidEU, so the BaseRom is in this case SMetroidEU).
          * customBasePath = Path to the custom Base. Is null if no custom base is used.
          * injectRomPath = Path to the Rom to be injected into the Base Game.
@@ -31,27 +33,27 @@ namespace UWUVCI_AIO_WPF
          * iniPath = Only used for N64. Path to the INI configuration. If "blank", a blank ini will be used.
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
-        public static void Inject(Console console, string baseRom, string customBasePath, string injectRomPath, string[] bootImages, string gameName, string iniPath = null, bool darkRemoval = false)
+        public static void Inject(GameConsoles console, string baseRom, string customBasePath, string injectRomPath, string[] bootImages, string gameName, string iniPath = null, bool darkRemoval = false)
         {
             CopyBase(baseRom, customBasePath);
             switch (console)
             {
-                case Console.NDS:
+                case GameConsoles.NDS:
                     NDS(injectRomPath);
                     break;
 
-                case Console.N64:
+                case GameConsoles.N64:
                     N64(injectRomPath, iniPath, darkRemoval);
                     break;
 
-                case Console.GBA:
+                case GameConsoles.GBA:
                     GBA(injectRomPath);
                     break;
 
-                case Console.NES:
+                case GameConsoles.NES:
                     NESSNES(injectRomPath);
                     break;
-                case Console.SNES:
+                case GameConsoles.SNES:
                     NESSNES(RemoveHeader(injectRomPath));
                     break;
             }
@@ -113,114 +115,21 @@ namespace UWUVCI_AIO_WPF
             Clean();
         }
 
-        public static void Download(string baseRom)
+        public static void Download(MainViewModel mvm)
         {
-            string TID = null;
-            //string TK = (string) Properties.Settings.Default[baseRom];
 
-            switch (baseRom)
-            {
-                #region NDS
-                case "ZSTEU":
-                    TID = "00050000101b8d00";
-                    break;
-                case "ZSTUS":
-                    TID = "00050000101b8c00";
-                    break;
-                case "ZPHEU":
-                    TID = "00050000101c3800";
-                    break;
-                case "ZPHUS":
-                    TID = "00050000101c3700";
-                    break;
-                case "WWEU":
-                    TID = "00050000101a2000";
-                    break;
-                case "WWUS":
-                    TID = "00050000101a1f00";
-                    break;
-                #endregion
-                #region N64
-                case "PMEU":
-                    TID = "0005000010199800";
-                    break;
-                case "PMUS":
-                    TID = "0005000010199700";
-                    break;
-                case "FZXUS":
-                    TID = "00050000101ebc00";
-                    break;
-                case "FZXJP":
-                    TID = "00050000101ebb00";
-                    break;
-                case "DK64EU":
-                    TID = "0005000010199300";
-                    break;
-                case "DK64US":
-                    TID = "0005000010199200";
-                    break;
-                #endregion
-                #region GBA
-                case "ZMCEU":
-                    TID = "000500001015e500";
-                    break;
-                case "ZMCUS":
-                    TID = "000500001015e400";
-                    break;
-                case "MKCEU":
-                    TID = "000500001017d200";
-                    break;
-                case "MKCUS":
-                    TID = "000500001017d300";
-                    break;
-                #endregion
-                #region NES
-                case "POEU":
-                    TID = "0005000010108c00";
-                    break;
-                case "POUS":
-                    TID = "0005000010108b00";
-                    break;
-                case "SMBEU":
-                    TID = "0005000010106e00";
-                    break;
-                case "SMBUS":
-                    TID = "0005000010106d00";
-                    break;
-                #endregion
-                #region SNES
-                case "SMetroidEU":
-                    TID = "000500001010a700";
-                    break;
-                case "SMetroidUS":
-                    TID = "000500001010a600";
-                    break;
-                case "SMetroidJP":
-                    TID = "000500001010a500";
-                    break;
-                case "EarthboundEU":
-                    TID = "0005000010133500";
-                    break;
-                case "EarthboundUS":
-                    TID = "0005000010133400";
-                    break;
-                case "EarthboundJP":
-                    TID = "0005000010133000";
-                    break;
-                case "DKCEU":
-                    TID = "0005000010109600";
-                    break;
-                case "DKCUS":
-                    TID = "0005000010109500";
-                    break;
-                #endregion
-            }
+            //GetCurrentSelectedBase
+            GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
+            //GetKeyOfBase
+            TKeys key = mvm.getTkey(b);
 
+
+            if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
             Directory.CreateDirectory(tempPath);
             using (Process download = new Process())
             {
                 download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                //download.StartInfo.Arguments = $"{TID} {TK} \"{Path.Combine(tempPath, "download")}\"";
+                download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
 
                 download.Start();
                 download.WaitForExit();
@@ -229,7 +138,7 @@ namespace UWUVCI_AIO_WPF
             using (Process decrypt = new Process())
             {
                 decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                //decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.CommonKey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BaseRomPath, baseRom)}\"";
+                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":","")} [{b.Region.ToString()}]")}\"";
 
                 decrypt.Start();
                 decrypt.WaitForExit();

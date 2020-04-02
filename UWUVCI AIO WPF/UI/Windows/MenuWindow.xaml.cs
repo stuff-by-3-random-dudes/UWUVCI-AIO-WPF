@@ -60,7 +60,9 @@ namespace UWUVCI_AIO_WPF
         }
         private void ListView_Click(object sender, MouseButtonEventArgs e)
         {
-            
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.CanInject = false;
+            mvm.BaseDownloaded = false;
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:

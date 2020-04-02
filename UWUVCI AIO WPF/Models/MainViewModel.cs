@@ -47,6 +47,13 @@ namespace UWUVCI_AIO_WPF
             set { gbTemp = value; }
         }
 
+        private string selectedBaseAsString;
+
+        public string SelectedBaseAsString
+        {
+            get { return selectedBaseAsString; }
+            set { selectedBaseAsString = value; }
+        }
 
 
         private List<string> lGameBasesString = new List<string>();
@@ -92,6 +99,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public int OldIndex { get; set; }
 
 
         private List<GameBases> lBases = new List<GameBases>();
@@ -138,6 +146,8 @@ namespace UWUVCI_AIO_WPF
 
         private List<GameBases> lSNES = new List<GameBases>();
 
+
+
         public List<GameBases> LSNES
         {
             get { return lSNES; }
@@ -153,13 +163,26 @@ namespace UWUVCI_AIO_WPF
         }
         #endregion
 
+        public bool BaseDownloaded { get; set; } = false;
+
+
+        private bool canInject = false;
+
+        public bool CanInject
+        {
+            get { return canInject; }
+            set { canInject = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public MainViewModel()
         {
             toolCheck();
 
             GameConfiguration = new GameConfig();
-            if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
+           if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
             {
                 MessageBox.Show("One of your added Paths seems to not exist anymore. Please check the paths in the Path menu!", "Issue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -265,6 +288,48 @@ namespace UWUVCI_AIO_WPF
             }
         }
         
+        public GameBases getBasefromName(string Name)
+        {
+            string NameWORegion = Name.Remove(Name.Length - 3, 3);
+            string Region = Name.Remove(0, Name.Length - 2);
+            foreach(GameBases b in LNDS)
+            {
+                if(b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
+            foreach (GameBases b in LN64)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
+            foreach (GameBases b in LNES)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
+            foreach (GameBases b in LSNES)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
+            foreach (GameBases b in LGBA)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
+            return null;
+        }
+
         private void GetAllBases()
         {
             LN64.Clear();
@@ -389,6 +454,26 @@ namespace UWUVCI_AIO_WPF
             return false;
 
         }
+        public TKeys getTkey(GameBases bases)
+        {
+            var temp = KeyFile.ReadBasesFromKeyFile($@"keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            foreach (TKeys t in temp)
+            {
+                if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
+                {
+                    if (t.Tkey != null)
+                    {
+                        return t;
+                    }
+                }
+            }
+            return null;
+
+        }
+        public void Download()
+        {
+            Injection.Download(this);
+        }
         public GameConsoles GetConsoleOfBase(GameBases gb)
         {
             GameConsoles ret = new GameConsoles();
@@ -450,7 +535,7 @@ namespace UWUVCI_AIO_WPF
         public List<bool> getInfoOfBase(GameBases gb)
         {
             List<bool> info = new List<bool>();
-            if (Directory.Exists($@"{Settings.Default.BasePath}\{gb.Name}[{gb.Region}]"))
+            if (Directory.Exists($@"{Settings.Default.BasePath}\{gb.Name.Replace(":","")} [{gb.Region}]"))
             {
                 info.Add(true);
             }

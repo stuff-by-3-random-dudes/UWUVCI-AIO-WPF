@@ -11,7 +11,7 @@
 
     <Grid DataContext="{StaticResource mvm}">
         <TextBlock Text="Choose a Base from the dropdown menu" Margin="10,2,10,275" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="15" Width="383"></TextBlock>
-        <ComboBox x:Name="cbCombo" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" Width="383" Background="#FFCFCFCF" BorderBrush="#FF008BFF" ItemsSource="{Binding LGameBasesString}" SelectionChanged="ComboBox_SelectionChanged"/>
+        <ComboBox x:Name="cbCombo" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" Width="383" Background="#FFCFCFCF" BorderBrush="#FF008BFF" ItemsSource="{Binding LGameBasesString}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding SelectedBaseAsString}"/>
         <Frame Name="fLoadFrame" HorizontalAlignment="Left" Height="198" Margin="10,90,0,0" VerticalAlignment="Top" Width="383"/>
 
     </Grid>

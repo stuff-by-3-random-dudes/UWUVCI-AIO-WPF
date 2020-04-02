@@ -24,6 +24,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     public partial class NonCustomBaseFrame : Page
     {
         MainViewModel mvm;
+        GameBases Base;
         public NonCustomBaseFrame(GameBases Base, GameConsoles console, bool existing)
         {
             InitializeComponent();
@@ -32,6 +33,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             {
                 createConfig(Base, console);
             }
+            this.Base = Base;
             checkStuff(mvm.getInfoOfBase(Base));
         }
        
@@ -53,23 +55,38 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             if (info[0])
             {
                 tbDWNL.Text = "Base Downloaded";
-                tbDWNL.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                tbDWNL.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
             }
             if (info[1])
             {
                 tbTK.Text = "TitleKey Entered";
-                tbTK.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                tbTK.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
             }
             if (info[2])
             {
                 tbCK.Text = "CommonKey Entered";
-                tbCK.Foreground = new SolidColorBrush(Color.FromRgb(0, 255, 0));
+                tbCK.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
             }
 
             if(info[1] && info[2])
             {
                 btnDwnlnd.IsEnabled = true;
+                if (info[0])
+                {
+                    mvm.BaseDownloaded = true;
+                }
+                else
+                {
+                    mvm.BaseDownloaded = false;
+                }
             }
+            
+        }
+
+        private void btnDwnlnd_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.Download();
+            checkStuff(mvm.getInfoOfBase(Base));
         }
     }
 }

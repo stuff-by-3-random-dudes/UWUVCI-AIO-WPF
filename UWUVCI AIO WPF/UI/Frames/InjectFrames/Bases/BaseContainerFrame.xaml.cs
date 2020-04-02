@@ -50,18 +50,27 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(cbCombo.SelectedIndex != -1)
-            { 
-                if (cbCombo.SelectedIndex == 0)
+            try
+            {
+                if (cbCombo.SelectedIndex != -1 && cbCombo.SelectedIndex != mvm.OldIndex)
+                {
+                    if (cbCombo.SelectedIndex == 0)
 
-                {
-                    fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
-                }
-                else
-                {
-                    fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
+                    {
+                        fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
+                    }
+                    else
+                    {
+                        fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
+                    }
+                    mvm.OldIndex = cbCombo.SelectedIndex;
                 }
             }
+            catch (Exception)
+            {
+
+            }
+            
           
         }
     }
