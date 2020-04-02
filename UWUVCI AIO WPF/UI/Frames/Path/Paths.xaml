@@ -1,0 +1,20 @@
+﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.Path.Paths"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames.Path"
+       mc:Ignorable="d" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+     d:DesignHeight="480" d:DesignWidth="1130"
+      Title="Paths">
+
+    <Grid DataContext="{StaticResource mvm}">
+        <TextBox materialDesign:HintAssist.Hint="PATH TO STORE DOWNLOADED BASES" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="180,139,474,296" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding BaseStore}"/>
+        <TextBox materialDesign:HintAssist.Hint="PATH TO STORE INJECTS" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="180,212,474,222" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding InjectStore}"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="700,152,0,0" VerticalAlignment="Top" Width="126" Click="Button_Click"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="700,226,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click_1"/>
+        <Button Content="Back" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="82" Click="Button_Click_2"/>
+
+    </Grid>
+</Page>

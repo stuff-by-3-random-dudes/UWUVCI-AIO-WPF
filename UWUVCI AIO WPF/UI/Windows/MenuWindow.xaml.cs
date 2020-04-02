@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Frames;
 
 using GameBaseClassLibrary;
+using UWUVCI_AIO_WPF.UI.Frames.Path;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -90,10 +91,25 @@ namespace UWUVCI_AIO_WPF
                 case 5:
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SETTINGS";
-                    load_frame.Content = new SettingsFrame();
+                    load_frame.Content = new SettingsFrame(this);
                     break;
             }
         }
+
+        public void paths(bool remove)
+        {
+
+            load_frame.Content = null;
+            if (remove)
+            {
+                load_frame.Content = new SettingsFrame(this);
+            }
+            else
+            {
+                load_frame.Content = new Paths(this);
+            }
+        }
+
         private void Window_Close(object sender, RoutedEventArgs e)
         {
             this.Close();

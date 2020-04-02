@@ -16,7 +16,7 @@
         <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,286,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True"/>
         <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,283,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116"/>
         <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,174,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1"/>
-        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,127,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116"/>
+        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,127,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
         <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,223,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click"/>
 
     </Grid>

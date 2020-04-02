@@ -50,6 +50,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -72,6 +73,9 @@
     <Compile Include="Classes\TKeys.cs" />
     <Compile Include="UI\Frames\KeyFrame\TKFrame.xaml.cs">
       <DependentUpon>TKFrame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Frames\Path\Paths.xaml.cs">
+      <DependentUpon>Paths.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\EnterKey.xaml.cs">
       <DependentUpon>EnterKey.xaml</DependentUpon>
@@ -104,6 +108,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Frames\KeyFrame\TKFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Frames\Path\Paths.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

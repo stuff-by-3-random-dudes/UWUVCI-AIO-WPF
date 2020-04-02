@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -70,6 +71,28 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
+
+        private string baseStore;
+
+        public string BaseStore
+        {
+            get { return baseStore; }
+            set { baseStore = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string injectStore;
+
+        public string InjectStore
+        {
+            get { return injectStore; }
+            set { injectStore = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
         private List<GameBases> lBases = new List<GameBases>();
 
@@ -136,13 +159,63 @@ namespace UWUVCI_AIO_WPF
             
 
             GameConfiguration = new GameConfig();
-            UpdatePathSet(Properties.Settings.Default.PathsSet);
+            if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
+            {
+                MessageBox.Show("One of your added Paths seems to not exist anymore. Please check the paths in the Path menu!", "Issue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            UpdatePathSet();
             GetAllBases();
+            
         }
 
-        public void UpdatePathSet(bool newValue)
+        public void UpdatePathSet()
         {
-            PathsSet = newValue;
+            PathsSet = Settings.Default.PathsSet;
+            if(BaseStore != Settings.Default.BasePath)
+            {
+                BaseStore = Settings.Default.BasePath;
+            }
+            if (InjectStore != Settings.Default.BasePath)
+            {
+                InjectStore = Settings.Default.OutPath;
+            }
+        }
+
+        public bool ValidatePathsStillExist()
+        {
+            bool ret = false;
+            bool basep = false;
+            try
+            {
+                if (Directory.Exists(Settings.Default.BasePath))
+                {
+                    basep = true;
+                }
+                else
+                {
+                    Settings.Default.BasePath = string.Empty;
+                    Settings.Default.PathsSet = false;
+                    Settings.Default.Save();
+                }
+                if (Directory.Exists(Settings.Default.OutPath))
+                {
+                    if (basep)
+                    {
+                        ret = true;
+                    }
+                }
+                else
+                {
+                    Settings.Default.OutPath = string.Empty;
+                    Settings.Default.PathsSet = false;
+                    Settings.Default.Save();
+                }
+            }
+            catch (Exception)
+            {
+                ret = false;
+            }
+            return ret;
         }
 
         public void GetBases(GameConsoles Console)
@@ -376,6 +449,118 @@ namespace UWUVCI_AIO_WPF
                 info.Add(false);
             }
             return info;
+        }
+
+        public void SetInjectPath()
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                if(result == DialogResult.OK)
+                {
+                    try
+                    {
+                        if (DirectoryIsEmpty(dialog.SelectedPath))
+                        {
+                            Settings.Default.OutPath = dialog.SelectedPath;
+                            Settings.Default.SetOutOnce = true;
+                            Settings.Default.Save();
+                            UpdatePathSet();
+                        }
+                        else
+                        {
+                            DialogResult r = MessageBox.Show("Folder contains Files or Subfolders, do you really want to use this folder as the Inject Folder?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                            if (r == DialogResult.Yes)
+                            {
+                                Settings.Default.OutPath = dialog.SelectedPath;
+                                Settings.Default.SetOutOnce = true;
+                                Settings.Default.Save();
+                                UpdatePathSet();
+                            }
+                            else
+                            {
+                                SetInjectPath();
+                            }
+                        }
+                    }catch(Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        MessageBox.Show("An Error occured, please try again!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                  
+                }
+            }
+            ArePathsSet();
+        }
+        public void SetBasePath()
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    try
+                    {
+                        if (DirectoryIsEmpty(dialog.SelectedPath))
+                        {
+                            Settings.Default.BasePath = dialog.SelectedPath;
+                            Settings.Default.SetBaseOnce = true;
+                            Settings.Default.Save();
+                            UpdatePathSet();
+                        }
+                        else
+                        {
+                            DialogResult r = MessageBox.Show("Folder contains Files or Subfolders, do you really want to use this folder as the Base Folder?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                            if (r == DialogResult.Yes)
+                            {
+                                Settings.Default.BasePath = dialog.SelectedPath;
+                                Settings.Default.SetBaseOnce = true;
+                                Settings.Default.Save();
+                                UpdatePathSet();
+                            }
+                            else
+                            {
+                                SetBasePath();
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        MessageBox.Show("An Error occured, please try again!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+                }
+            }
+            ArePathsSet();
+        }
+        public void ArePathsSet()
+        {
+            if (ValidatePathsStillExist())
+            {
+                Settings.Default.PathsSet = true;
+                Settings.Default.Save();
+            }
+            UpdatePathSet();
+        }
+        public bool DirectoryIsEmpty(string path)
+        {
+            int fileCount = Directory.GetFiles(path).Length;
+            if (fileCount > 0)
+            {
+                return false;
+            }
+
+            string[] dirs = Directory.GetDirectories(path);
+            foreach (string dir in dirs)
+            {
+                if (!DirectoryIsEmpty(dir))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -70,5 +70,29 @@ namespace UWUVCI_AIO_WPF.Properties {
                 this["Ckey"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SetBaseOnce {
+            get {
+                return ((bool)(this["SetBaseOnce"]));
+            }
+            set {
+                this["SetBaseOnce"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SetOutOnce {
+            get {
+                return ((bool)(this["SetOutOnce"]));
+            }
+            set {
+                this["SetOutOnce"] = value;
+            }
+        }
     }
 }
