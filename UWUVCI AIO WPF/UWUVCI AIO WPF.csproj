@@ -71,6 +71,7 @@
     </ApplicationDefinition>
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\TKeys.cs" />
+    <Compile Include="Classes\ToolCheck.cs" />
     <Compile Include="UI\Frames\KeyFrame\TKFrame.xaml.cs">
       <DependentUpon>TKFrame.xaml</DependentUpon>
     </Compile>
@@ -210,15 +211,6 @@
   <ItemGroup>
     <Resource Include="UI\Images\gba64.png" />
     <Resource Include="UI\Images\nds64v64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="UI\Images\Colored\n64new.png" />
-    <Resource Include="UI\Images\Colored\nds64v64.png" />
-    <Resource Include="UI\Images\Colored\nes64.png" />
-    <Resource Include="UI\Images\Colored\snes64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="UI\Images\Colored\gba64.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\nes64.png" />

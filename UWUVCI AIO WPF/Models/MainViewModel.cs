@@ -156,7 +156,7 @@ namespace UWUVCI_AIO_WPF
 
         public MainViewModel()
         {
-            
+            toolCheck();
 
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
@@ -166,6 +166,32 @@ namespace UWUVCI_AIO_WPF
             UpdatePathSet();
             GetAllBases();
             
+        }
+
+        private void toolCheck()
+        {
+            if (ToolCheck.DoesToolsFolderExist())
+            {
+                List<MissingTool> missingTools = new List<MissingTool>();
+                missingTools = ToolCheck.CheckForMissingTools();
+                if(missingTools.Count > 0)
+                {
+                    string errorMessage = "Error 002:\nFollowing Tools seem to be missing:\n\n";
+                    foreach(MissingTool m in missingTools)
+                    {
+                        errorMessage += $"{m.Name} not found under {m.Path}\n\n";
+                    }
+                    errorMessage += "Please add listed files to their corresponding Path.\nThe Programm will be terminated";
+                    MessageBox.Show(errorMessage, "Error 002: \"Missing Tools\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Windows.Application.Current.Shutdown();
+                }
+            }
+            else
+            {
+                string path = $@"{Directory.GetCurrentDirectory()}\Tools";
+                MessageBox.Show($"Error: 001\nThe Tools folder seems to be missing.\nPlease make sure that the Tools Folder exists at this location:\n\n{path} \n\nThe Programm will be terminated.", "Error 001: \"Missing Tools folder\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Application.Current.Shutdown();
+            }
         }
 
         public void UpdatePathSet()
