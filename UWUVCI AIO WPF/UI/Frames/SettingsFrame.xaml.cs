@@ -48,5 +48,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             parent.paths(false);
         }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.UpdateBases();
+        }
     }
 }

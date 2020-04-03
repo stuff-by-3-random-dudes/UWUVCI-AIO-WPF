@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -180,15 +181,153 @@ namespace UWUVCI_AIO_WPF
         public MainViewModel()
         {
             toolCheck();
-
+            BaseCheck();
+            
             GameConfiguration = new GameConfig();
            if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
             {
                 MessageBox.Show("One of your added Paths seems to not exist anymore. Please check the paths in the Path menu!", "Issue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             UpdatePathSet();
+
             GetAllBases();
+        }
+        private void BaseCheck()
+        {
+            if (Directory.Exists(@"bases"))
+            {
+                var test = GetMissingVCBs();
+                if(test.Count > 0)
+                {
+                    DialogResult res = MessageBox.Show("There are no vcb Base files stored in the bases folder. Would you like to download the missing base files?", "Error 004: \"Missing VCB Bases\"", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if(res == DialogResult.Yes)
+                    {
+                        foreach(string s in test)
+                        {
+                            DownloadBase(s);
+
+                        }
+                        BaseCheck();
+                        
+                    }
+                    else if(res == DialogResult.No)
+                    {
+                        MessageBox.Show("The Programm will now terminate.");
+                        Environment.Exit(1);
+                    }
+                }
+            }
+            else
+            {
+                DialogResult res = MessageBox.Show("No bases folder found.\nShould a bases folder be created and the missing vcb bases downloaded?", "Error 003: \"Missing VCB Bases Folder\"", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (res == DialogResult.Yes)
+                {
+                    Directory.CreateDirectory(@"bases");
+                    var test = GetMissingVCBs();
+                    foreach (string s in test)
+                    {
+                        DownloadBase(s);
+                        
+                    }
+                    BaseCheck();
+                }
+                else
+                {
+                    MessageBox.Show("The Programm will now terminate.");
+                    Environment.Exit(1);
+                }
+            }
             
+        }
+        public void UpdateBases()
+        {
+            
+            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes" };
+            foreach(string s in bases)
+            {
+                DownloadBase(s);
+                DeleteBase(s);
+                CopyBase(s);
+            }
+            MessageBox.Show("Finished Updating! Restarting UWUVCI AIO");
+            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+            Environment.Exit(0);
+            
+        }
+        private static void CopyBase(string console)
+        {
+            File.Copy(console, $@"bases\{console}");
+            File.Delete(console);
+        }
+        private static void DeleteBase(string console)
+        {
+            File.Delete($@"bases\{console}");
+        }
+        public static List<string> GetMissingVCBs()
+        {
+            List<string> ret = new List<string>();
+            string path = @"bases\bases.vcb";
+            if (!File.Exists(path + "nds"))
+            {
+                ret.Add(path + "nds");
+            }
+            if (!File.Exists(path + "nes"))
+            {
+                ret.Add(path + "nes");
+            }
+            if (!File.Exists(path + "n64"))
+            {
+                ret.Add(path + "n64");
+            }
+            if (!File.Exists(path + "snes"))
+            {
+                ret.Add(path + "snes");
+            }
+            if (!File.Exists(path + "gba"))
+            {
+                ret.Add(path + "gba");
+            }
+            return ret;
+        }
+        public static void DownloadBase(string name)
+        {
+            try
+            {
+                string basePath = $@"\bases\{name}";
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(getDownloadLink(name), name);
+                }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                MessageBox.Show("There was an Error downloading the VCB Base File.\nThe Programm will now terminate.", "Error 005: \"Unable to Download VCB Base\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
+            
+        }
+        private static string getDownloadLink(string basefile)
+        {
+            try
+            {
+                //get download link from uwuvciapi
+                WebRequest request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVCBLink?vcb=" + basefile);
+                var response = request.GetResponse();
+                using (Stream dataStream = response.GetResponseStream())
+                {
+                    // Open the stream using a StreamReader for easy access.  
+                    StreamReader reader = new StreamReader(dataStream);
+                    // Read the content.  
+                    string responseFromServer = reader.ReadToEnd();
+                    // Display the content.  
+                    return responseFromServer;
+                }
+               
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private void toolCheck()
