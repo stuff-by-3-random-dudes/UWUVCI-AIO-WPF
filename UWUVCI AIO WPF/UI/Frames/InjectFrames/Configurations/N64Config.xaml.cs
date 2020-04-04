@@ -47,7 +47,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void InjectGame(object sender, RoutedEventArgs e)
         {
-
+            mvm.Inject();
+            mvm.Injected = true;
         }
 
         private void Set_TvTex(object sender, RoutedEventArgs e)

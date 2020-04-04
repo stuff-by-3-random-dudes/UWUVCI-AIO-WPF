@@ -25,7 +25,7 @@
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,21,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path"/>
         <RadioButton x:Name="rbRDF" Content="Remove DarkFilter" HorizontalAlignment="Left" Margin="11,369,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="{Binding GameConfiguration.N64Stuff.DarkFilter}"/>
         <RadioButton Content="Keep DarkFilter" HorizontalAlignment="Left" Margin="151,369,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="True"/>
-        <TextBox materialDesign:HintAssist.Hint="INI PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,58,157,305" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}"/>
+        <TextBox materialDesign:HintAssist.Hint="INI PATH (LEAVE EMPTY FOR BLANK INI)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,58,157,305" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}"/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_IniPath"/>
     </Grid>
 </Page>

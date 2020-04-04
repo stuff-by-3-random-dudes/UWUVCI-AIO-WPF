@@ -20,7 +20,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "RetroInject.exe",
             "tga_verify.exe",
             "WiiUDownloader.exe",
-            "wiiurpxtool.exe"
+            "wiiurpxtool.exe",
+            "INICreator.exe"
             //"7za.exe" will re-add later
         };
 

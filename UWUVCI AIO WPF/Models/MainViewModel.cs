@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
+using UWUVCI_AIO_WPF.UI;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
@@ -100,6 +101,16 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        private bool injected = false;
+
+        public bool Injected
+        {
+            get { return injected; }
+            set { injected = value;
+                OnPropertyChanged();
+            }
+        }
+
         public int OldIndex { get; set; }
 
         public bool RomSet { get; set; }
@@ -178,6 +189,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        private MainWindow mw;
 
         public MainViewModel()
         {
@@ -192,6 +204,34 @@ namespace UWUVCI_AIO_WPF
             UpdatePathSet();
 
             GetAllBases();
+        }
+        public void setMW(MainWindow mwi)
+        {
+            mw = mwi;
+        }
+        public void Pack(bool loadiine)
+        {
+            if (loadiine)
+            {
+                Injection.Loadiine(GameConfiguration.GameName);
+
+            }
+            else
+            {
+                Injection.Packing(GameConfiguration.GameName);
+            }
+            mw.load_frame.Content = new Done();
+            GameConfiguration = new GameConfig();
+            LGameBasesString.Clear();
+            CanInject = false;
+            BaseDownloaded = false;
+            RomSet = false;
+            RomPath = null;
+            Injected = false;
+        }
+        public void Inject()
+        {
+            Injection.Inject(GameConfiguration, RomPath);
         }
         private void BaseCheck()
         {
@@ -664,7 +704,7 @@ namespace UWUVCI_AIO_WPF
             bool cont = false;
             foreach(GameBases b in lNDS)
             {
-                if(b == gb)
+                if(b.Name == gb.Name && b.Region == gb.Region)
                 {
                     ret = GameConsoles.NDS;
                     cont = true;
@@ -674,7 +714,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (GameBases b in lN64)
                 {
-                    if (b == gb)
+                    if (b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.N64;
                         cont = true;
@@ -685,7 +725,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (GameBases b in lNES)
                 {
-                    if (b == gb)
+                    if (b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.NES;
                         cont = true;
@@ -695,8 +735,7 @@ namespace UWUVCI_AIO_WPF
             if (!cont)
             {
                 foreach (GameBases b in lSNES)
-                {
-                    if (b == gb)
+                { if(b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.SNES;
                         cont = true;
@@ -707,7 +746,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (GameBases b in lGBA)
                 {
-                    if (b == gb)
+                    if (b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.GBA;
                         cont = true;

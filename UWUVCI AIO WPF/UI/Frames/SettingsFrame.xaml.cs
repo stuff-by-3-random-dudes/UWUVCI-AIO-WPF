@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Windows;
+
 
 namespace UWUVCI_AIO_WPF.UI.Frames
 {
@@ -53,6 +55,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.UpdateBases();
+        }
+
+        private void Button_Click_4(object sender, RoutedEventArgs e)
+        {
+            Process.Start(@"Tools\INICreator.exe");
         }
     }
 }

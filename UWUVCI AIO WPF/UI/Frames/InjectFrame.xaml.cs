@@ -20,8 +20,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
     /// </summary>
     public partial class INJECTFRAME : Page, IDisposable
     {
+        MainViewModel mvm;
         public INJECTFRAME(GameConsoles console)
         {
+            mvm = FindResource("mvm") as MainViewModel;
             InitializeComponent();
             if(console == GameConsoles.N64)
             {
@@ -47,6 +49,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             //Export config
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            mvm.Pack(true);
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            mvm.Pack(false);
         }
     }
 }

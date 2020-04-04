@@ -8,7 +8,7 @@ namespace UWUVCI_AIO_WPF.Classes
 {
     class N64Conf : BaseModel
     {
-        private string iniPath;
+        private string iniPath = null;
 
         public string INIPath
         {

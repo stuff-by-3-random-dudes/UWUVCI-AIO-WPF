@@ -1,9 +1,11 @@
 ﻿using GameBaseClassLibrary;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Windows;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
@@ -33,7 +35,7 @@ namespace UWUVCI_AIO_WPF
          * iniPath = Only used for N64. Path to the INI configuration. If "blank", a blank ini will be used.
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
-        public static void Inject(GameConsoles console, string baseRom, string customBasePath, string injectRomPath, string[] bootImages, string gameName, string iniPath = null, bool darkRemoval = false)
+        /*public static void Inject(GameConsoles console, string baseRom, string customBasePath, string injectRomPath, string[] bootImages, string gameName, string iniPath = null, bool darkRemoval = false)
         {
             CopyBase(baseRom, customBasePath);
             switch (console)
@@ -61,6 +63,49 @@ namespace UWUVCI_AIO_WPF
             EditXML(gameName);
             Images(bootImages);
             //MessageBox.Show(Resources.InjectionFinishedText, Resources.InjectionFinishedCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }*/
+
+        public static void Inject(GameConfig Configuration, string RomPath)
+        {
+            if(Configuration.BaseRom.Name != "Custom")
+            {
+                //Normal Base functionality here
+                CopyBase($"{Configuration.BaseRom.Name.Replace(":", "")} [{Configuration.BaseRom.Region.ToString()}]", null);
+            }
+            else
+            {
+                //Custom Base Functionality here
+                CopyBase($"Custom", Configuration.CBasePath);
+            }
+            RunSpecificInjection(Configuration, RomPath);
+            EditXML(Configuration.GameName);
+            //Images(Configuration);
+            MessageBox.Show("Injection Finished, please choose how you want to export the Inject next", "Finished Injection Part", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private static void RunSpecificInjection(GameConfig console, string RomPath)
+        {
+            switch (console.Console)
+            {
+                case GameConsoles.NDS:
+                    NDS(RomPath);
+                    break;
+
+                case GameConsoles.N64:
+                   N64(RomPath, console.N64Stuff);
+                    break;
+
+                /*case GameConsoles.GBA:
+                    GBA(RomPath);
+                    break;
+
+                case GameConsoles.NES:
+                    NESSNES(RomPath);
+                    break;
+                case GameConsoles.SNES:
+                    NESSNES(RemoveHeader(RomPath));
+                    break;*/
+            }
         }
 
         public static void Clean()
@@ -73,29 +118,31 @@ namespace UWUVCI_AIO_WPF
 
         public static void Loadiine(string gameName)
         {
+            if (gameName == null || gameName == string.Empty) gameName = "NoName";
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = string.Empty;
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{gameName}");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                //outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, $"{gameName}_{i}");
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{gameName}_{i}");
                 i++;
             }
 
-            //Directory.Move(baseRomPath,outputPath);
-           // MessageBox.Show(string.Format(Resources.InjectCreatedText, outputPath), Resources.InjectCreatedCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            DirectoryCopy(baseRomPath,outputPath, true);
+            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Clean();
         }
 
         public static void Packing(string gameName)
         {
+            if (gameName == null || gameName == string.Empty) gameName = "NoName";
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = string.Empty;
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{gameName}");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                //outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, $"{gameName}_{i}");
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{gameName}_{i}");
                 i++;
             }
 
@@ -104,13 +151,13 @@ namespace UWUVCI_AIO_WPF
                 cnuspacker.StartInfo.UseShellExecute = false;
                 cnuspacker.StartInfo.CreateNoWindow = true;
                 cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                //cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.CommonKey}";
+                cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
 
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
             }
 
-            //MessageBox.Show(string.Format(Resources.InjectCreatedText, outputPath), Resources.InjectCreatedCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Clean();
         }
@@ -148,6 +195,7 @@ namespace UWUVCI_AIO_WPF
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
         private static void EditXML(string gameName)
         {
+
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();
@@ -157,35 +205,42 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 doc.Load(metaXml);
-                doc.SelectSingleNode("menu/longname_ja").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_en").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_fr").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_de").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_it").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_es").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_ko").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_nl").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_pt").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_ru").InnerText = gameName;
-                doc.SelectSingleNode("menu/longname_zht").InnerText = gameName;
+                if(gameName != null && gameName != string.Empty)
+                {
+                    doc.SelectSingleNode("menu/longname_ja").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_en").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_fr").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_de").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_it").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_es").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_ko").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_nl").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_pt").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_ru").InnerText = gameName;
+                    doc.SelectSingleNode("menu/longname_zht").InnerText = gameName;
+                }
+               
 
                 doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID}";
                 doc.SelectSingleNode("menu/title_id").InnerText = $"0005000010{ID}00";
                 doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID}";
-
-                doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_de").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_en").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_it").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_es").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName;
-                doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName;
+                if(gameName != null && gameName != string.Empty)
+                {
+                    doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_de").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_en").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_it").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_es").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName;
+                    doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName;
+                }
+                
                 doc.Save(metaXml);
             }
             catch (NullReferenceException)
@@ -219,7 +274,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                ///DirectoryCopy(Path.Combine(Properties.Settings.Default.BaseRomPath, baserom), baseRomPath, true);
+                DirectoryCopy(Path.Combine(Properties.Settings.Default.BasePath, baserom), baseRomPath, true);
             }
         }
 
@@ -259,16 +314,44 @@ namespace UWUVCI_AIO_WPF
 
         private static void NDS(string injectRomPath)
         {
-            using (ZipArchive archive = ZipFile.Open(Path.Combine(baseRomPath, "content", "0010", "rom.zip"), ZipArchiveMode.Update))
-            {
-                string romname = archive.Entries[0].FullName;
-                archive.Entries[0].Delete();
-                archive.CreateEntryFromFile(injectRomPath, romname);
-            }
             
+            string RomName = string.Empty;
+            using (Process getRomName = new Process())
+            {
+                getRomName.StartInfo.UseShellExecute = false;
+                getRomName.StartInfo.CreateNoWindow = false;
+                getRomName.StartInfo.RedirectStandardOutput = true;
+                getRomName.StartInfo.FileName = "cmd.exe";
+                Console.WriteLine(Directory.GetCurrentDirectory());
+                //getRomName.StartInfo.Arguments = $"/c \"Tools\\7za.exe\" l \"temp\\baserom\\content\\0010\\rom.zip\" | findstr \"WUP\"";
+                getRomName.StartInfo.Arguments = "/c Tools\\7za.exe l temp\\baserom\\content\\0010\\rom.zip | findstr WUP";
+                getRomName.Start();
+                getRomName.WaitForExit();
+                var s = getRomName.StandardOutput.ReadToEnd();
+                var split = s.Split(' ');
+                RomName = split[split.Length - 1].Replace("\r\n", "");
+            }
+            using (Process RomEdit = new Process())
+            {
+                RomEdit.StartInfo.UseShellExecute = false;
+                RomEdit.StartInfo.CreateNoWindow = true;
+                RomEdit.StartInfo.RedirectStandardOutput = true;
+                RomEdit.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
+                //d Path.Combine(baseRomPath, "content", "0010", "rom.zip")
+                RomEdit.StartInfo.Arguments = $"d temp\\baserom\\content\\0010\\rom.zip";
+                RomEdit.Start();
+                RomEdit.WaitForExit();
+                File.Copy(injectRomPath, $"{RomName}");
+                RomEdit.StartInfo.Arguments = $"u temp\\baserom\\content\\0010\\rom.zip {RomName}";
+                RomEdit.Start();
+                RomEdit.WaitForExit();
+            }
+            File.Delete(RomName);
+
         }
 
-        private static void N64(string injectRomPath, string iniPath, bool darkRemoval)
+    
+        private static void N64(string injectRomPath, N64Conf config)
         {
             string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
             string mainIni = Path.Combine(baseRomPath, "content", "config", $"{Path.GetFileName(mainRomPath)}.ini");
@@ -283,13 +366,18 @@ namespace UWUVCI_AIO_WPF
                 n64convert.WaitForExit();
             }
 
-            if (iniPath != null)
+            if (config.INIPath == null)
             {
                 File.Delete(mainIni);
-                File.Copy((iniPath == "blank") ? Path.Combine(toolsPath, "blank.ini") : iniPath, mainIni);
+                File.Copy(Path.Combine(toolsPath, "blank.ini"), mainIni);
+            }
+            else
+            {
+                File.Delete(mainIni);
+                File.Copy(config.INIPath, mainIni);
             }
 
-            if (darkRemoval)
+            if (config.DarkFilter)
             {
                 string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
                 using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))

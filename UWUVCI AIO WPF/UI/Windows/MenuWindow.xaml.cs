@@ -28,6 +28,7 @@ namespace UWUVCI_AIO_WPF
         {
             InitializeComponent();
             load_frame.Content = new StartFrame();
+            (FindResource("mvm") as MainViewModel).setMW(this);
         }
         private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -67,6 +68,7 @@ namespace UWUVCI_AIO_WPF
             mvm.BaseDownloaded = false;
             mvm.RomSet = false;
             mvm.RomPath = null;
+            mvm.Injected = false;
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:
@@ -83,6 +85,7 @@ namespace UWUVCI_AIO_WPF
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - N64 VC INJECT";
                     load_frame.Content = new INJECTFRAME(GameConsoles.N64);
+                    mvm.GameConfiguration.N64Stuff = new Classes.N64Conf();
                     break;
                 case 3:
                     DestroyFrame();

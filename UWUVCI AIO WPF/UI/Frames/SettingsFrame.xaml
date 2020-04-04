@@ -18,7 +18,8 @@
         <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,166,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1"/>
         <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,119,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
         <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,215,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click"/>
-        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,312,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
+        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,308,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
+        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,351,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
 
     </Grid>
 </Page>

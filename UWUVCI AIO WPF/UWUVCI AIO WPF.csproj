@@ -90,6 +90,9 @@
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
+    <Compile Include="UI\Done.xaml.cs">
+      <DependentUpon>Done.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Frames\KeyFrame\TKFrame.xaml.cs">
       <DependentUpon>TKFrame.xaml</DependentUpon>
     </Compile>
@@ -102,6 +105,10 @@
     <Compile Include="UI\Windows\TitleKeys.xaml.cs">
       <DependentUpon>TitleKeys.xaml</DependentUpon>
     </Compile>
+    <Page Include="UI\Done.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Frames\InjectFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
