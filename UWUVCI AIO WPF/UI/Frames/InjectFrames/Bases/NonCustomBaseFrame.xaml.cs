@@ -52,6 +52,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
         }
         private void checkStuff(List<bool> info)
         {
+            mvm.CanInject = false;
             if (info[0])
             {
                 tbDWNL.Text = "Base Downloaded";
@@ -74,10 +75,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                 if (info[0])
                 {
                     mvm.BaseDownloaded = true;
+                    if (mvm.RomSet) mvm.CanInject = true;
                 }
                 else
                 {
                     mvm.BaseDownloaded = false;
+                   
                 }
             }
             

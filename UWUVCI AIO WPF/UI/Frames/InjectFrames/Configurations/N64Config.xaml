@@ -17,15 +17,15 @@
         <TextBox materialDesign:HintAssist.Hint="BOOTTVTEX" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,219,157,144" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTLOGOTEX" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,264,157,99" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGALog.ImgPath}"/>
         <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,317,157,46" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}"/>
-        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,357,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click"  IsEnabled="{Binding CanInject}"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,277,0,0" VerticalAlignment="Top" Width="127"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,232,0,0" VerticalAlignment="Top" Width="127"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,187,0,0" VerticalAlignment="Top" Width="127"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,141,0,0" VerticalAlignment="Top" Width="127"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,21,0,0" VerticalAlignment="Top" Width="127"/>
+        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,357,0,0" VerticalAlignment="Top" Width="127" Click="InjectGame"  IsEnabled="{Binding CanInject}"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,277,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,232,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,187,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,141,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,21,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path"/>
         <RadioButton x:Name="rbRDF" Content="Remove DarkFilter" HorizontalAlignment="Left" Margin="11,369,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="{Binding GameConfiguration.N64Stuff.DarkFilter}"/>
         <RadioButton Content="Keep DarkFilter" HorizontalAlignment="Left" Margin="151,369,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="True"/>
         <TextBox materialDesign:HintAssist.Hint="INI PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,58,157,305" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_IniPath"/>
     </Grid>
 </Page>

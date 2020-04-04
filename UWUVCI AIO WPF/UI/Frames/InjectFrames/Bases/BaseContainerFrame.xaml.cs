@@ -32,6 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             this.console = console;
             mvm = (MainViewModel)FindResource("mvm");
             mvm.GetBases(console);
+            mvm.GameConfiguration.Console = console;
         }
 
         public BaseContainerFrame(GameConsoles console, GameBases index)
@@ -52,6 +53,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
         {
             try
             {
+                mvm = FindResource("mvm") as MainViewModel;
                 if (cbCombo.SelectedIndex != -1 && cbCombo.SelectedIndex != mvm.OldIndex)
                 {
                     if (cbCombo.SelectedIndex == 0)

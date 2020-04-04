@@ -61,8 +61,12 @@ namespace UWUVCI_AIO_WPF
         private void ListView_Click(object sender, MouseButtonEventArgs e)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.GameConfiguration = new GameConfig();
+            mvm.LGameBasesString.Clear();
             mvm.CanInject = false;
             mvm.BaseDownloaded = false;
+            mvm.RomSet = false;
+            mvm.RomPath = null;
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:

@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
-    class PNGTGA
+    class PNGTGA : BaseModel
     {
-        public string ImgPath { get; set; }
-        public byte[] ImgBin { get; set; }
+		private string imgPath;
+
+		public string ImgPath
+		{
+			get { return imgPath; }
+			set { imgPath = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public byte[] ImgBin { get; set; }
     }
 }

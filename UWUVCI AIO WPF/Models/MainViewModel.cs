@@ -102,6 +102,7 @@ namespace UWUVCI_AIO_WPF
 
         public int OldIndex { get; set; }
 
+        public bool RomSet { get; set; }
 
         private List<GameBases> lBases = new List<GameBases>();
 
@@ -254,6 +255,50 @@ namespace UWUVCI_AIO_WPF
             Environment.Exit(0);
             
         }
+
+        public string GetFilePath(bool ROM, bool INI)
+        {
+            string ret = string.Empty;
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                if (ROM)
+                {
+                    switch (GameConfiguration.Console)
+                    {
+                        case GameConsoles.NDS:
+                            dialog.Filter = "Nintendo DS ROM (*.nds; *.srl) | *.nds;*.srl";
+                            break;
+                        case GameConsoles.N64:
+                            dialog.Filter = "Nintendo 64 ROM (*.n64; *.v64; *.z64) | *.n64;*.v64;*.z64";
+                            break;
+                        case GameConsoles.GBA:
+                            dialog.Filter = "GameBoy Advance ROM (*.gba) | *.gba";
+                            break;
+                        case GameConsoles.NES:
+                            dialog.Filter = "Nintendo Entertainment System ROM (*.nes) | *.nes";
+                            break;
+                        case GameConsoles.SNES:
+                            dialog.Filter = "Super Nintendo Entertainment System ROM (*.sfc; *.smc) | *.sfc;*.smc";
+                            break;
+                    }
+                }
+                else if(!INI)
+                {
+                    dialog.Filter = "BootImages (*.png; *.tga) | *.png;*.tga";
+                }
+                else
+                {
+                    dialog.Filter = "N64 VC Configuration (*.ini) | *.ini";
+                }
+                DialogResult res = dialog.ShowDialog();
+                if(res == DialogResult.OK)
+                {
+                    ret = dialog.FileName;
+                }
+            }
+            return ret;
+        }
+
         private static void CopyBase(string console)
         {
             File.Copy(console, $@"bases\{console}");
