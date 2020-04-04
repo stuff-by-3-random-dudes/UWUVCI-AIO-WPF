@@ -21,8 +21,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "tga_verify.exe",
             "WiiUDownloader.exe",
             "wiiurpxtool.exe",
-            "INICreator.exe"
-            //"7za.exe" will re-add later
+            "INICreator.exe",
+            "7za.exe",
+            "blank.ini"
         };
 
         public static bool DoesToolsFolderExist()

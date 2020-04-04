@@ -95,11 +95,11 @@ namespace UWUVCI_AIO_WPF
                    N64(RomPath, console.N64Stuff);
                     break;
 
-                /*case GameConsoles.GBA:
+                case GameConsoles.GBA:
                     GBA(RomPath);
                     break;
 
-                case GameConsoles.NES:
+                /*case GameConsoles.NES:
                     NESSNES(RomPath);
                     break;
                 case GameConsoles.SNES:

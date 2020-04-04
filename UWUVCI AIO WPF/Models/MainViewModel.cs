@@ -220,11 +220,8 @@ namespace UWUVCI_AIO_WPF
             {
                 Injection.Packing(GameConfiguration.GameName);
             }
-            mw.load_frame.Content = new Done();
-            GameConfiguration = new GameConfig();
             LGameBasesString.Clear();
             CanInject = false;
-            BaseDownloaded = false;
             RomSet = false;
             RomPath = null;
             Injected = false;
