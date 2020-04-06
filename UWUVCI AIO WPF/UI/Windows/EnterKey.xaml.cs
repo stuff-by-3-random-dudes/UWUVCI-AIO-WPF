@@ -45,6 +45,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     this.Close();
                     MessageBox.Show("The entered CommonKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
+                    mvm.ArePathsSet();
                 }
                 else
                 {

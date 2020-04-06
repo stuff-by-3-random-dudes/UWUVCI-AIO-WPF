@@ -10,11 +10,11 @@
       Title="NDSFrame">
 
     <Grid DataContext="{StaticResource mvm}">
-        <DataGrid Background="Transparent" AutoGenerateColumns="False" ItemsSource="{Binding Ltemp}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False" SelectedItem="{Binding GbTemp}" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True">
+        <DataGrid Background="Transparent" AutoGenerateColumns="False" ItemsSource="{Binding Ltemp}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False" SelectedItem="{Binding GbTemp}" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Name="Grid">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Region" Binding="{Binding Region}"/>
-                <DataGridTextColumn Header="Title ID" Binding="{Binding Tid}"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" x:Name="Name" Width="Auto"/>
+                <DataGridTextColumn Header="Region" Binding="{Binding Region}" x:Name="Region" Width="Auto"/>
+                <DataGridTextColumn Header="Title ID" Binding="{Binding Tid}" x:Name="ID" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
         

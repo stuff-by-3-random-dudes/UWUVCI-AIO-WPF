@@ -27,6 +27,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.KeyFrame
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
             mvm.getTempList(c);
+
+           
         }
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -36,5 +38,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.KeyFrame
                 mvm.EnterKey(false);
             }
         }
+        
     }
 }

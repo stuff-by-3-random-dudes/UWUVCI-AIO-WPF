@@ -9,7 +9,7 @@
       Title="SettingsFrame">
 
     <Grid>
-        <TextBlock Margin="10,10,0,0" TextWrapping="Wrap" Text="If this is your first time using UWUVCI AIO, or you updated from v1.x, please click on the Settings Icon to set your Paths to begin Injecting. It is recommended to also set the CommonKey and TitleKeys." FontSize="20" Height="143" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
+        <TextBlock Margin="10,10,0,0" TextWrapping="Wrap" Text="If this is your first time using UWUVCI AIO, or you updated from v1.x, please click on the Settings Icon to set your Paths and the CommonKey to begin Injecting. It is recommended to also set the TitleKeys." FontSize="20" Height="143" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" />
         
 
     </Grid>

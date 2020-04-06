@@ -33,6 +33,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             mvm = (MainViewModel)FindResource("mvm");
             mvm.GetBases(console);
             mvm.GameConfiguration.Console = console;
+            if(console == GameConsoles.NES)
+            {
+                cbCombo.ToolTip = "If you want to inject ROMs bigger than 200Kb we recommend using Punch-Out!! as a base. For ROMs smaller than 200Kb we recommend Metroid";
+            }
         }
 
         public BaseContainerFrame(GameConsoles console, GameBases index)

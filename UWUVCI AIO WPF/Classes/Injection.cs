@@ -102,7 +102,10 @@ namespace UWUVCI_AIO_WPF
                     break;
             }
         }
-
+        public static void NES(string injectRomPath)
+        {
+            // new nes injection method
+        }
         public static void Clean()
         {
             if (Directory.Exists(tempPath))

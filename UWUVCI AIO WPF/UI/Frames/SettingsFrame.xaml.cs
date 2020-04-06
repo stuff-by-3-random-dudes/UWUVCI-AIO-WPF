@@ -61,5 +61,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             Process.Start(@"Tools\INICreator.exe");
         }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("UWUVCI AIO - NicoAICP, Morilli, Lreiia Bot\n\n7za - Igor Pavlov\nBuildPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli\nINICreator - NicoAICP\nN64Creator - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli\nwiiurpxtool - 0CHB0", "Credits");
+        }
     }
 }

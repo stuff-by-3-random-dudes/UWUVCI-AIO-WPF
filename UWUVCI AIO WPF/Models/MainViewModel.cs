@@ -460,6 +460,14 @@ namespace UWUVCI_AIO_WPF
                 DownloadBase(s);
                 DeleteBase(s);
                 CopyBase(s);
+                GameConsoles g = new GameConsoles();
+                if (s.Contains("nds")) g = GameConsoles.NDS;
+                if (s.Contains("nes")) g = GameConsoles.NES;
+                if (s.Contains("snes")) g = GameConsoles.SNES;
+                if (s.Contains("n64")) g = GameConsoles.N64;
+                if (s.Contains("gba")) g = GameConsoles.GBA;
+                if (s.Contains("tg16")) g = GameConsoles.TG16;
+                UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bases/{s}"),g);
             }
             MessageBox.Show("Finished Updating! Restarting UWUVCI AIO");
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
@@ -514,7 +522,7 @@ namespace UWUVCI_AIO_WPF
                             dialog.Filter = "GameBoy Advance ROM (*.gba) | *.gba";
                             break;
                         case GameConsoles.NES:
-                            dialog.Filter = "Nintendo Entertainment System ROM (*.nes) | *.nes";
+                            dialog.Filter = "Nintendo Entertainment System ROM (*.nes; *.fds) | *.nes;*.fds";
                             break;
                         case GameConsoles.SNES:
                             dialog.Filter = "Super Nintendo Entertainment System ROM (*.sfc; *.smc) | *.sfc;*.smc";
@@ -587,7 +595,7 @@ namespace UWUVCI_AIO_WPF
                 string basePath = $@"\bases\{name}";
                 using (var client = new WebClient())
                 {
-                    client.DownloadFile(getDownloadLink(name), name);
+                    client.DownloadFile(getDownloadLink(name, false), name);
                 }
             }catch(Exception e)
             {
@@ -597,12 +605,42 @@ namespace UWUVCI_AIO_WPF
             }
             
         }
-        private static string getDownloadLink(string basefile)
+        public static void DownloadTool(string name)
         {
             try
             {
+                string basePath = $@"Tools\{name}";
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(getDownloadLink(name, true), name);
+                    File.Copy(name, basePath);
+                    File.Delete(name);
+                }
+               
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                MessageBox.Show("There was an Error downloading the Tool.\nThe Programm will now terminate.", "Error 006: \"Unable to Download Tool\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+            }
+
+        }
+        private static string getDownloadLink(string toolname, bool tool)
+        {
+            try
+            {
+                WebRequest request;
                 //get download link from uwuvciapi
-                WebRequest request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVCBLink?vcb=" + basefile);
+                if (tool)
+                {
+                     request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?tool=" + toolname);
+                }
+                else
+                {
+                    request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVcbLink?vcb=" + toolname);
+                }
+                
                 var response = request.GetResponse();
                 using (Stream dataStream = response.GetResponseStream())
                 {
@@ -632,18 +670,42 @@ namespace UWUVCI_AIO_WPF
                     string errorMessage = "Error 002:\nFollowing Tools seem to be missing:\n\n";
                     foreach(MissingTool m in missingTools)
                     {
-                        errorMessage += $"{m.Name} not found under {m.Path}\n\n";
+                        errorMessage += $"{m.Name}\n";
                     }
-                    errorMessage += "Please add listed files to their corresponding Path.\nThe Programm will be terminated";
-                    MessageBox.Show(errorMessage, "Error 002: \"Missing Tools\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    System.Windows.Application.Current.Shutdown();
+                    errorMessage += "\nDo you want to automatically download them?";
+                    DialogResult res = MessageBox.Show(errorMessage, "Error 002: \"Missing Tools\"", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+
+                    if (res == DialogResult.Yes)
+                    {
+                        //Download Tools
+                        foreach(MissingTool m in missingTools)
+                        {
+                            DownloadTool(m.Name);
+                        }
+                        toolCheck();
+                    }
+                    else
+                    {
+                        MessageBox.Show("The Programm will now terminate");
+                        Environment.Exit(1);
+                    }
                 }
             }
             else
             {
                 string path = $@"{Directory.GetCurrentDirectory()}\Tools";
-                MessageBox.Show($"Error: 001\nThe Tools folder seems to be missing.\nPlease make sure that the Tools Folder exists at this location:\n\n{path} \n\nThe Programm will be terminated.", "Error 001: \"Missing Tools folder\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                System.Windows.Application.Current.Shutdown();
+                DialogResult res = MessageBox.Show($"Error: 001\nThe Tools folder seems to be missing.\nDo you want to create one?", "Error 001: \"Missing Tools folder\"", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                if(res == DialogResult.Yes)
+                {
+                    Directory.CreateDirectory("Tools");
+                    toolCheck();
+                }
+                else
+                {
+                    MessageBox.Show("The Programm will now terminate");
+                    System.Windows.Application.Current.Shutdown();
+                }
+                
             }
         }
 
@@ -803,6 +865,37 @@ namespace UWUVCI_AIO_WPF
                 KeyFile.ExportFile(temp, console);
             }
                        
+        }
+        private void UpdateKeyFile(List<GameBases> l, GameConsoles console)
+        {
+            string file = $@"keys\{console.ToString().ToLower()}.vck";
+            if (File.Exists(file))
+            {
+                List<TKeys> keys = KeyFile.ReadBasesFromKeyFile($@"keys\{console.ToString().ToLower()}.vck");
+                List <TKeys> newTK = new List<TKeys>();
+                foreach(GameBases gb in l)
+                {
+                    bool inOld = false;
+                    foreach(TKeys tk in keys)
+                    {
+                        if(gb.Name == tk.Base.Name && gb.Region == tk.Base.Region)
+                        {
+                            newTK.Add(tk);
+                            inOld = true;
+                        }
+                        if (inOld) break;
+                    }
+                    if (!inOld)
+                    {
+                        TKeys tkn = new TKeys();
+                        tkn.Base = gb;
+                        tkn.Tkey = null;
+                        newTK.Add(tkn);
+                    }
+                }
+                File.Delete($@"keys\{console.ToString().ToLower()}.vck");
+                KeyFile.ExportFile(newTK, console);
+            }
         }
         public void getTempList(GameConsoles console)
         {
@@ -1117,7 +1210,11 @@ namespace UWUVCI_AIO_WPF
         {
             if (ValidatePathsStillExist())
             {
-                Settings.Default.PathsSet = true;
+                if (isCkeySet())
+                {
+                    Settings.Default.PathsSet = true;
+                }
+                
                 Settings.Default.Save();
             }
             UpdatePathSet();
