@@ -10,7 +10,7 @@
       Title="CustomBaseFrame">
 
     <Grid DataContext="{StaticResource mvm}">
-        <TextBox materialDesign:HintAssist.Hint="BASE PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,5,108,145" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.CBasePath}" IsReadOnly="True" Focusable="False" />
+        <TextBox materialDesign:HintAssist.Hint="BASE PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,5,108,145" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding CBasePath}" IsReadOnly="True" Focusable="False" />
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="280,21,0,0" VerticalAlignment="Top" Width="103" Height="26" Click="Button_Click"/>
         <TextBlock x:Name="tbCode" HorizontalAlignment="Center" Margin="10,84,10,0" TextWrapping="Wrap" Text="Code folder not found" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
         <TextBlock  x:Name="tbContent" HorizontalAlignment="Center" Margin="10,119,10,0" TextWrapping="Wrap" Text="Content folder not found" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>

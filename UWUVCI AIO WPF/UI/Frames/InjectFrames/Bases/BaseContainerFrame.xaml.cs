@@ -60,6 +60,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                     if (cbCombo.SelectedIndex == 0)
 
                     {
+
                         fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
                     }
                     else

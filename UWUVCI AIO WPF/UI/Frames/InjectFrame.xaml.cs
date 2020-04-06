@@ -44,11 +44,23 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //import config
+            string s = mvm.selectConfig();
+
+            if (s != null)
+            {
+                if (mvm.GetConsoleOfConfig(s, mvm.GameConfiguration.Console))
+                {
+                    mvm.ImportConfig(s);
+                }
+            }
+            MessageBox.Show("Please re-select a base!");
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             //Export config
+            mvm.ExportFile();
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)

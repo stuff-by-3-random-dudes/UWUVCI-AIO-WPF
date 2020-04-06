@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
+    
 {
-    class N64Conf : BaseModel
+    [Serializable]
+    class N64Conf
     {
         private string iniPath = null;
 
@@ -14,7 +16,6 @@ namespace UWUVCI_AIO_WPF.Classes
         {
             get { return iniPath; }
             set { iniPath = value;
-                OnPropertyChanged();
             }
         }
         private bool darkFilter;
@@ -23,7 +24,6 @@ namespace UWUVCI_AIO_WPF.Classes
         {
             get { return darkFilter; }
             set { darkFilter = value;
-                OnPropertyChanged();
             }
         }
 

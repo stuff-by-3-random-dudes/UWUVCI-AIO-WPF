@@ -29,11 +29,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
         {
             InitializeComponent();
             mvm = (MainViewModel)FindResource("mvm");
-            if (!existing)
-            {
-                createConfig(Base, console);
-            }
+            
             this.Base = Base;
+            createConfig(Base, console);
             checkStuff(mvm.getInfoOfBase(Base));
         }
        
@@ -45,7 +43,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
         }
         private void createConfig(GameBases Base, GameConsoles console)
         {
-            mvm.GameConfiguration = new GameConfig();
+            
             mvm.GameConfiguration.BaseRom = Base;
             mvm.GameConfiguration.Console = console;
            

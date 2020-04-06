@@ -7,6 +7,7 @@ using System.Text;
 
 namespace UWUVCI_AIO_WPF
 {
+    [Serializable]
     public class BaseModel : INotifyPropertyChanged
     {
         // Declare the PropertyChanged event

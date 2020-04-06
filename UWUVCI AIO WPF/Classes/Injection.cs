@@ -401,17 +401,26 @@ namespace UWUVCI_AIO_WPF
                 n64convert.Start();
                 n64convert.WaitForExit();
             }
-
-            if (config.INIPath == null)
+            if(config.INIBin == null)
             {
-                File.Delete(mainIni);
-                File.Copy(Path.Combine(toolsPath, "blank.ini"), mainIni);
+                if (config.INIPath == null)
+                {
+                    File.Delete(mainIni);
+                    File.Copy(Path.Combine(toolsPath, "blank.ini"), mainIni);
+                }
+                else
+                {
+                    File.Delete(mainIni);
+                    File.Copy(config.INIPath, mainIni);
+                }
             }
             else
             {
+                ReadFileFromBin(config.INIBin, "custom.ini");
                 File.Delete(mainIni);
-                File.Copy(config.INIPath, mainIni);
+                File.Move("custom.ini", mainIni);
             }
+            
 
             if (config.DarkFilter)
             {

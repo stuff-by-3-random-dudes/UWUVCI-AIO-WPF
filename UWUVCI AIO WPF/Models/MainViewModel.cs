@@ -3,15 +3,20 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
+using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
@@ -21,7 +26,7 @@ namespace UWUVCI_AIO_WPF
         //public GameConfig GameConfiguration { get; set; }
         private GameConfig gameConfiguration = new GameConfig();
 
-        
+
         public GameConfig GameConfiguration
         {
             get { return gameConfiguration; }
@@ -112,6 +117,14 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        private Page thing;
+
+        public Page Thing
+        {
+            get { return thing; }
+            set { thing = value; }
+        }
+
         public int OldIndex { get; set; }
 
         public bool RomSet { get; set; }
@@ -144,7 +157,7 @@ namespace UWUVCI_AIO_WPF
         }
 
         private List<GameBases> lNES = new List<GameBases>();
-            
+
         public List<GameBases> LNES
         {
             get { return lNES; }
@@ -200,6 +213,20 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        private string cBasePath;
+
+        public string CBasePath
+        {
+            get { return cBasePath; }
+            set { cBasePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
+
+
         private MainWindow mw;
         private CustomBaseFrame cb = null;
 
@@ -207,9 +234,9 @@ namespace UWUVCI_AIO_WPF
         {
             toolCheck();
             BaseCheck();
-            
+
             GameConfiguration = new GameConfig();
-           if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
+            if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
             {
                 MessageBox.Show("One of your added Paths seems to not exist anymore. Please check the paths in the Path menu!", "Issue", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -219,11 +246,15 @@ namespace UWUVCI_AIO_WPF
         }
         public void resetCBASE()
         {
-         if(cb != null)   cb.Reset();
+            if (cb != null) cb.Reset();
         }
         public void removeCBASE()
         {
             cb = null;
+        }
+        public void setThing(Page T)
+        {
+            Thing = T;
         }
         public void SetCBASE(CustomBaseFrame cbs)
         {
@@ -232,6 +263,122 @@ namespace UWUVCI_AIO_WPF
         public void setMW(MainWindow mwi)
         {
             mw = mwi;
+        }
+        public void ExportFile()
+        {
+            ReadImagesIntoConfig();
+            if (GameConfiguration.Console == GameConsoles.N64)
+            {
+                ReadIniIntoConfig();
+            }
+            CheckAndFixConfigFolder();
+            Stream createConfigStream = new FileStream($@"configs\{GameConfiguration.GameName}.uwuvci", FileMode.Create, FileAccess.Write);
+            GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
+            IFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(compressedStream, GameConfiguration);
+            compressedStream.Close();
+            createConfigStream.Close();
+        }
+        public void ImportConfig(string configPath)
+        {
+            FileInfo fn = new FileInfo(configPath);
+            if (fn.Extension.Contains("uwuvci"))
+            {
+                FileStream inputConfigStream = new FileStream(configPath, FileMode.Open, FileAccess.Read);
+                GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
+                IFormatter formatter = new BinaryFormatter();
+                GameConfiguration = (GameConfig)formatter.Deserialize(decompressedConfigStream);
+            }
+            if(GameConfiguration.Console == GameConsoles.N64)
+            {
+                (thing as N64Config).getInfoFromConfig();
+            }
+            else
+            {
+                (thing as OtherConfigs).getInfoFromConfig();
+            }
+        }
+
+        
+        public void ReadImagesIntoConfig()
+        {
+            ReadFileAsBin(GameConfiguration, GameConfiguration.TGAIco.ImgPath, 1);
+            ReadFileAsBin(GameConfiguration, GameConfiguration.TGADrc.ImgPath, 2);
+            ReadFileAsBin(GameConfiguration, GameConfiguration.TGATv.ImgPath, 3);
+            ReadFileAsBin(GameConfiguration, GameConfiguration.TGALog.ImgPath, 4);
+        }
+        public void ReadIniIntoConfig()
+        {
+            ReadFileAsBin(GameConfiguration, GameConfiguration.N64Stuff.INIPath, 5);
+        }
+        
+        private void ReadFileAsBin(GameConfig file, string FilePath, int scase)
+        {
+            if(FilePath != null)
+            {
+                try
+                {
+                    var filedata = new FileStream(FilePath, FileMode.Open);
+                    var len = (int)filedata.Length;
+                    switch (scase)
+                    {
+                        case 1:
+                            file.TGAIco.ImgBin = new byte[len];
+                            filedata.Read(file.TGAIco.ImgBin, 0, len);
+                            break;
+                        case 2:
+                            file.TGADrc.ImgBin = new byte[len];
+                            filedata.Read(file.TGADrc.ImgBin, 0, len);
+                            break;
+                        case 3:
+                            file.TGATv.ImgBin = new byte[len];
+                            filedata.Read(file.TGATv.ImgBin, 0, len);
+                            break;
+                        case 4:
+                            file.TGALog.ImgBin = new byte[len];
+                            filedata.Read(file.TGALog.ImgBin, 0, len);
+                            break;
+                        case 5:
+                            file.N64Stuff.INIBin = new byte[len];
+                            filedata.Read(file.N64Stuff.INIBin, 0, len);
+                            break;
+                    }
+
+                    filedata.Close();
+                }
+                catch (Exception)
+                {
+                    switch (scase)
+                    {
+                        case 1:
+                            file.TGAIco.ImgBin = null;
+                            break;
+                        case 2:
+                            file.TGADrc.ImgBin = null;
+
+                            break;
+                        case 3:
+                            file.TGATv.ImgBin = null;
+
+                            break;
+                        case 4:
+                            file.TGALog.ImgBin = null;
+                            break;
+                        case 5:
+                            file.N64Stuff.INIBin = null;
+                            break;
+                    }
+                }
+            }
+            
+
+        }
+        private static void CheckAndFixConfigFolder()
+        {
+            if (!Directory.Exists(@"configs"))
+            {
+                Directory.CreateDirectory(@"configs");
+            }
         }
         public void Pack(bool loadiine)
         {
@@ -318,6 +465,34 @@ namespace UWUVCI_AIO_WPF
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
             
+        }
+        public bool GetConsoleOfConfig(string configPath, GameConsoles console)
+        {
+            FileInfo fn = new FileInfo(configPath);
+            if (fn.Extension.Contains("uwuvci"))
+            {
+                FileStream inputConfigStream = new FileStream(configPath, FileMode.Open, FileAccess.Read);
+                GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
+                IFormatter formatter = new BinaryFormatter();
+                GameConfig check = (GameConfig)formatter.Deserialize(decompressedConfigStream);
+                if (check.Console == console) return true;
+                
+            }
+            return false;
+        }
+        public string selectConfig()
+        {
+            string ret = string.Empty;
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                dialog.Filter = "UWUVCI Config (*.uwuvci) | *.uwuvci";
+                DialogResult res = dialog.ShowDialog();
+                if (res == DialogResult.OK)
+                {
+                    ret = dialog.FileName;
+                }
+            }
+            return ret;
         }
 
         public string GetFilePath(bool ROM, bool INI)

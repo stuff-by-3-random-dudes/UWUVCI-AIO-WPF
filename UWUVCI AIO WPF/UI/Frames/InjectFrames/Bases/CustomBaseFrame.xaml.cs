@@ -45,17 +45,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             this.console = console;
             mvm.SetCBASE(this);
         }
-        private void CreateConfig(GameBases Base, GameConsoles console, bool existing)
-        {
-            if (!existing)
-            {
-                mvm.GameConfiguration = new GameConfig();
-                mvm.GameConfiguration.Console = console;
-            }
-            
-            mvm.GameConfiguration.BaseRom = Base;
-
-        }
+       
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -67,8 +57,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             tbMeta.Text = "Meta Folder not found";
             tbMeta.Foreground = new SolidColorBrush(Color.FromRgb(205, 50, 50));
             mvm.BaseDownloaded = false;
-            //warning if using custom bases programm may crash
-            DialogResult res = System.Windows.Forms.MessageBox.Show("If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please select Yes", "Custom base Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            mvm.CBasePath = null;
+           //warning if using custom bases programm may crash
+           DialogResult res = System.Windows.Forms.MessageBox.Show("If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please select Yes", "Custom base Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
             if(res == DialogResult.Yes)
             {                //get folder
                 using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
@@ -96,7 +87,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                         if (Directory.Exists(System.IO.Path.Combine(dialog.SelectedPath, "content")) && Directory.Exists(System.IO.Path.Combine(dialog.SelectedPath, "code")) && Directory.Exists(System.IO.Path.Combine(dialog.SelectedPath, "meta")))
                                         {
                                             //create new Game Config
-                                            mvm.GameConfiguration = new GameConfig();
                                             mvm.GameConfiguration.Console = console;
                                             mvm.GameConfiguration.CBasePath = dialog.SelectedPath;
                                             GameBases gb = new GameBases();
@@ -133,6 +123,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                                 gb.Name = "Custom";
                                                 gb.Region = Regions.EU;
                                                 gb.Path = mvm.GameConfiguration.CBasePath;
+                                                mvm.CBasePath = mvm.GameConfiguration.CBasePath;
                                                 mvm.GameConfiguration.BaseRom = gb;
                                                 tbCode.Text = "Code Folder exists";
                                                 tbCode.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));

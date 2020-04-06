@@ -9,7 +9,7 @@ using UWUVCI_AIO_WPF.Classes;
 namespace UWUVCI_AIO_WPF
 {
     [Serializable]
-    class GameConfig : BaseModel
+    class GameConfig
     {
         public GameConsoles Console { get; set; }
         public GameBases BaseRom { get; set; }
@@ -20,7 +20,7 @@ namespace UWUVCI_AIO_WPF
         {
             get { return cBasePath; }
             set { cBasePath = value;
-                OnPropertyChanged();
+
             }
         }
 

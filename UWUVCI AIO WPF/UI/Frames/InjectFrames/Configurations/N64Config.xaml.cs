@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,8 +28,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm = (MainViewModel)FindResource("mvm");
             mvm.GameConfiguration.N64Stuff = new N64Conf();
             InitializeComponent();
-            
+            mvm.setThing(this);
         }
+
+
 
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
@@ -50,13 +53,26 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.Inject();
            
         }
-
+        public void getInfoFromConfig()
+        {
+            tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+            ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+            drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
+            log.Text = mvm.GameConfiguration.TGALog.ImgPath;
+            gn.Text = mvm.GameConfiguration.GameName;
+            ini.Text = mvm.GameConfiguration.N64Stuff.INIPath;
+            
+        }
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGATv.ImgPath = path;
-
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.TGATv.ImgPath = path;
+                mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
+                tv.Text = path;
+            }
 
         }
 
@@ -64,21 +80,37 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGADrc.ImgPath = path;
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.TGADrc.ImgPath = path;
+                mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
+                drc.Text = path;
+            }
+
         }
 
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGAIco.ImgPath = path;
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.TGAIco.ImgPath = path;
+                mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
+                ic.Text = path;
+            }
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGALog.ImgPath = path;
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.TGALog.ImgPath = path;
+                mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
+                log.Text = path;
+            }
         }
 
         private bool CheckIfNull(string s)
@@ -93,7 +125,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void Set_IniPath(object sender, RoutedEventArgs e)
         {
             string path = mvm.GetFilePath(false, true);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.N64Stuff.INIPath = path;
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.N64Stuff.INIPath = path;
+                ini.Text = path;
+            }
         }
     }
 }

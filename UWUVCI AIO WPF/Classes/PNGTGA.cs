@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
-    class PNGTGA : BaseModel
+	[Serializable]
+    class PNGTGA
     {
 		private string imgPath = null;
 
@@ -14,7 +15,6 @@ namespace UWUVCI_AIO_WPF.Classes
 		{
 			get { return imgPath; }
 			set { imgPath = value;
-				OnPropertyChanged();
 			}
 		}
 

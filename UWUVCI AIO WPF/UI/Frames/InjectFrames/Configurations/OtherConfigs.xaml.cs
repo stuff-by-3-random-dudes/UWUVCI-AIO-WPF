@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
+            mvm.setThing(this);
         }
         public void Dispose()
         {
@@ -56,8 +58,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGATv.ImgPath = path;
-
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.TGATv.ImgPath = path;
+                mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
+                tv.Text = path;
+            }
 
         }
 
@@ -65,23 +71,45 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGADrc.ImgPath = path;
-        }
+            if (!CheckIfNull(path))
+            {
+                mvm.GameConfiguration.TGADrc.ImgPath = path;
+                mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
+                drc.Text = path;
+            }
 
+        }
+        
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGAIco.ImgPath = path;
+            if (!CheckIfNull(path)) {
+                mvm.GameConfiguration.TGAIco.ImgPath = path;
+                mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
+                ic.Text = path;
+            } 
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) mvm.GameConfiguration.TGALog.ImgPath = path;
+            if (!CheckIfNull(path)) {
+                mvm.GameConfiguration.TGALog.ImgPath = path;
+                mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
+                log.Text = path;
+            } 
         }
+        public void getInfoFromConfig()
+        {
+            tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+            ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+            drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
+            log.Text = mvm.GameConfiguration.TGALog.ImgPath;
+            gn.Text = mvm.GameConfiguration.GameName;
 
+        }
         private bool CheckIfNull(string s)
         {
             if(s == null || s.Equals(string.Empty))
