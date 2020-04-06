@@ -44,6 +44,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if (mvm.checkcKey(tbKey.Text))
                 {
                     this.Close();
+                    MessageBox.Show("The entered CommonKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("The entered CommonKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
@@ -51,7 +56,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 MainViewModel mvm = (MainViewModel)FindResource("mvm");
                 if (mvm.checkKey(tbKey.Text))
                 {
+                    MessageBox.Show("The entered TitleKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
                     this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("The entered TitleKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
            

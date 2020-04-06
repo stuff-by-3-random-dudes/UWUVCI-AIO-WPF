@@ -14,5 +14,6 @@
         <TextBox Name="tbKey" materialDesign:HintAssist.Hint="TITLE KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,35,20,78" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18"/>
 
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="{Binding GbTemp.Region}" VerticalAlignment="Top" Height="25" Width="24" FontSize="18" Foreground="Black" Name="region"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="161" VerticalAlignment="Top" Width="500"/>
     </Grid>
 </Window>
