@@ -8,9 +8,9 @@ namespace UWUVCI_AIO_WPF.Classes
 {
     class PNGTGA : BaseModel
     {
-		private string imgPath;
+		private string imgPath = null;
 
-		public string ImgPath
+		public string ImgPath 
 		{
 			get { return imgPath; }
 			set { imgPath = value;
@@ -18,6 +18,8 @@ namespace UWUVCI_AIO_WPF.Classes
 			}
 		}
 
-		public byte[] ImgBin { get; set; }
+		public byte[] ImgBin { get; set; } = null;
+
+		public string extension { get; set; }
     }
 }

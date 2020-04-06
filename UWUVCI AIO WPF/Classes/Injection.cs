@@ -22,7 +22,7 @@ namespace UWUVCI_AIO_WPF
         private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "Tools");
 
         /*
-         * GameConsole: Can either be NDS, N64, GBA, NES or SNES
+         * GameConsole: Can either be NDS, N64, GBA, NES, SNES or TG16
          * baseRom = Name of the BaseRom, which is the folder name too (example: Super Metroid EU will be saved at the BaseRom path under the folder SMetroidEU, so the BaseRom is in this case SMetroidEU).
          * customBasePath = Path to the custom Base. Is null if no custom base is used.
          * injectRomPath = Path to the Rom to be injected into the Base Game.
@@ -35,52 +35,44 @@ namespace UWUVCI_AIO_WPF
          * iniPath = Only used for N64. Path to the INI configuration. If "blank", a blank ini will be used.
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
-        /*public static void Inject(GameConsoles console, string baseRom, string customBasePath, string injectRomPath, string[] bootImages, string gameName, string iniPath = null, bool darkRemoval = false)
+
+        public static bool Inject(GameConfig Configuration, string RomPath)
         {
-            CopyBase(baseRom, customBasePath);
-            switch (console)
+            try
             {
-                case GameConsoles.NDS:
-                    NDS(injectRomPath);
-                    break;
+                if (Configuration.BaseRom.Name != "Custom")
+                {
+                    //Normal Base functionality here
+                    CopyBase($"{Configuration.BaseRom.Name.Replace(":", "")} [{Configuration.BaseRom.Region.ToString()}]", null);
+                }
+                else
+                {
+                    //Custom Base Functionality here
+                    CopyBase($"Custom", Configuration.CBasePath);
+                }
+                RunSpecificInjection(Configuration, RomPath);
+                EditXML(Configuration.GameName);
+                Images(Configuration);
+                MessageBox.Show("Injection Finished, please choose how you want to export the Inject next", "Finished Injection Part", MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }catch(Exception e)
+            {
+                
+                if (e.Message.Contains("Images")){
+                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (e.Message.Contains("Size"))
+                {
+                    MessageBox.Show("Injection Failed due to Image Issues. Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                case GameConsoles.N64:
-                    N64(injectRomPath, iniPath, darkRemoval);
-                    break;
-
-                case GameConsoles.GBA:
-                    GBA(injectRomPath);
-                    break;
-
-                case GameConsoles.NES:
-                    NESSNES(injectRomPath);
-                    break;
-                case GameConsoles.SNES:
-                    NESSNES(RemoveHeader(injectRomPath));
-                    break;
+                }
+                return false;
             }
 
-            EditXML(gameName);
-            Images(bootImages);
-            //MessageBox.Show(Resources.InjectionFinishedText, Resources.InjectionFinishedCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }*/
-
-        public static void Inject(GameConfig Configuration, string RomPath)
-        {
-            if(Configuration.BaseRom.Name != "Custom")
-            {
-                //Normal Base functionality here
-                CopyBase($"{Configuration.BaseRom.Name.Replace(":", "")} [{Configuration.BaseRom.Region.ToString()}]", null);
-            }
-            else
-            {
-                //Custom Base Functionality here
-                CopyBase($"Custom", Configuration.CBasePath);
-            }
-            RunSpecificInjection(Configuration, RomPath);
-            EditXML(Configuration.GameName);
-            //Images(Configuration);
-            MessageBox.Show("Injection Finished, please choose how you want to export the Inject next", "Finished Injection Part", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private static void RunSpecificInjection(GameConfig console, string RomPath)
@@ -439,83 +431,174 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        private static void Images(string[] paths)
+        private static void ReadFileFromBin(byte[] bin, string output)
         {
-            bool tv = false;
-            bool drc = false;
-            bool icon = false;
-            bool logo = false;
-
-            if (Directory.Exists(imgPath)) // sanity check
-            {
-                Directory.Delete(imgPath, true);
-            }
-            Directory.CreateDirectory(imgPath);
-
-            if (paths[0] != null)
-            {
-                tv = true;
-                CopyAndConvertImage(paths[0], Path.Combine(imgPath, "bootTvTex.tga"));
-            }
-
-            if (paths[1] != null)
-            {
-                drc = true;
-                CopyAndConvertImage(paths[1], Path.Combine(imgPath, "bootDrcTex.tga"));
-            }
-
-            if (paths[2] != null)
-            {
-                icon = true;
-                CopyAndConvertImage(paths[2], Path.Combine(imgPath, "iconTex.tga"));
-            }
-
-            if (paths[3] != null)
-            {
-                logo = true;
-                CopyAndConvertImage(paths[3], Path.Combine(imgPath, "bootLogoTex.tga"));
-            }
-
-            if (tv || drc || icon || logo) {
-                using (Process tgaverifyFixup = new Process())
-                {
-                    tgaverifyFixup.StartInfo.UseShellExecute = false;
-                    tgaverifyFixup.StartInfo.CreateNoWindow = true;
-                    tgaverifyFixup.StartInfo.FileName = Path.Combine(toolsPath, "tga_verify.exe");
-                    tgaverifyFixup.StartInfo.Arguments = $"--fixup \"{imgPath}\"";
-
-                    tgaverifyFixup.Start();
-                    tgaverifyFixup.WaitForExit();
-                }
-
-                if (tv)
-                {
-                    File.Delete(Path.Combine(baseRomPath, "meta", "bootTvTex.tga"));
-                    File.Move(Path.Combine(imgPath, "bootTvTex.tga"), Path.Combine(baseRomPath, "meta", "bootTvTex.tga"));
-                }
-                if (drc)
-                {
-                    File.Delete(Path.Combine(baseRomPath, "meta", "bootDrcTex.tga"));
-                    File.Move(Path.Combine(imgPath, "bootDrcTex.tga"), Path.Combine(baseRomPath, "meta", "bootDrcTex.tga"));
-                }
-                if (icon)
-                {
-                    File.Delete(Path.Combine(baseRomPath, "meta", "iconTex.tga"));
-                    File.Move(Path.Combine(imgPath, "iconTex.tga"), Path.Combine(baseRomPath, "meta", "iconTex.tga"));
-                }
-                if (logo)
-                {
-                    File.Delete(Path.Combine(baseRomPath, "meta", "bootLogoTex.tga"));
-                    File.Move(Path.Combine(imgPath, "bootLogoTex.tga"), Path.Combine(baseRomPath, "meta", "bootLogoTex.tga"));
-                }
-            }
+            File.WriteAllBytes(output, bin);
         }
+        private static void Images(GameConfig config)
+        {
+            try
+            {
 
-        private static void CopyAndConvertImage(string inputPath, string outputPath)
+
+                //is an image embedded? yes => export them and check for issues
+                //no => using path
+                if (Directory.Exists(imgPath)) // sanity check
+                {
+                    Directory.Delete(imgPath, true);
+                }
+                Directory.CreateDirectory(imgPath);
+                //ICON
+                List<bool> Images = new List<bool>();
+                if (config.TGAIco.ImgBin == null)
+                {
+                    //use path
+                    if (config.TGAIco.ImgPath != null)
+                    {
+                        Images.Add(true);
+                        CopyAndConvertImage(config.TGAIco.ImgPath, Path.Combine(imgPath), false, 128,128,32, "iconTex.tga");
+                    }
+                    else
+                    {
+                        Images.Add(false);
+                    }
+                }
+                else
+                {
+                    ReadFileFromBin(config.TGAIco.ImgBin, $"iconTex.{config.TGAIco.extension}");
+                    CopyAndConvertImage($"iconTex.{config.TGAIco.extension}", Path.Combine(imgPath), true, 128, 128, 32, "iconTex.tga");
+                    Images.Add(true);
+                }
+
+                //Drc
+                if (config.TGADrc.ImgBin == null)
+                {
+                    //use path
+                    if (config.TGADrc.ImgPath != null)
+                    {
+                        Images.Add(true);
+                        CopyAndConvertImage(config.TGADrc.ImgPath, Path.Combine(imgPath), false, 854,480,24, "bootDrcTex.tga");
+                    }
+                    else
+                    {
+                        Images.Add(false);
+                    }
+                }
+                else
+                {
+                    ReadFileFromBin(config.TGADrc.ImgBin, $"bootDrcTex.{config.TGADrc.extension}");
+                    CopyAndConvertImage($"bootDrcTex.{config.TGADrc.extension}", Path.Combine(imgPath), true,854,480,24, "bootDrcTex.tga");
+                    Images.Add(true);
+                }
+
+                //tv
+                if (config.TGATv.ImgBin == null)
+                {
+                    //use path
+                    if (config.TGATv.ImgPath != null)
+                    {
+                        Images.Add(true);
+                        CopyAndConvertImage(config.TGATv.ImgPath, Path.Combine(imgPath), false,1280,720,24, "bootTvTex.tga");
+                    }
+                    else
+                    {
+                        Images.Add(false);
+                    }
+                }
+                else
+                {
+                    ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
+                    CopyAndConvertImage($"bootTvTex.{config.TGATv.extension}", Path.Combine(imgPath), true, 1280, 720, 24, "bootTvTex.tga");
+                    Images.Add(true);
+                }
+
+                //logo
+                if (config.TGALog.ImgBin == null)
+                {
+                    //use path
+                    if (config.TGALog.ImgPath != null)
+                    {
+                        Images.Add(true);
+                        CopyAndConvertImage(config.TGALog.ImgPath, Path.Combine(imgPath), false, 170,42,32, "bootLogoTex.tga");
+                    }
+                    else
+                    {
+                        Images.Add(false);
+                    }
+                }
+                else
+                {
+                    ReadFileFromBin(config.TGALog.ImgBin, $"bootLogoTex.{config.TGALog.extension}");
+                    CopyAndConvertImage($"bootLogoTex.{config.TGALog.extension}", Path.Combine(imgPath), true, 170, 42, 32, "bootLogoTex.tga");
+                    Images.Add(true);
+                }
+
+                //Fixing Images + Injecting them
+                if (Images[0] || Images[1] || Images[2] || Images[3])
+                {
+                    using (Process checkIfIssue = new Process())
+                    {
+                        checkIfIssue.StartInfo.UseShellExecute = false;
+                        checkIfIssue.StartInfo.CreateNoWindow = false;
+                        checkIfIssue.StartInfo.RedirectStandardOutput = true;
+                        checkIfIssue.StartInfo.RedirectStandardError = true;
+                        checkIfIssue.StartInfo.FileName = $"{Path.Combine(toolsPath,"tga_verify.exe")}";
+                        Console.WriteLine(Directory.GetCurrentDirectory());
+                        checkIfIssue.StartInfo.Arguments = $"\"{imgPath}\"";
+                        checkIfIssue.Start();
+                        checkIfIssue.WaitForExit();
+                        var s = checkIfIssue.StandardOutput.ReadToEnd();
+                        if (s.Contains("width") || s.Contains("height") || s.Contains("depth"))
+                        {
+                            throw new Exception("Size");
+                        }
+                        var e = checkIfIssue.StandardError.ReadToEnd();
+                        if (e.Contains("width") || e.Contains("height") || e.Contains("depth"))
+                        {
+                            throw new Exception("Size");
+                        }
+                        
+                        Console.ReadLine();
+                    }
+
+                    if (Images[2])
+                    {
+                        File.Delete(Path.Combine(baseRomPath, "meta", "bootTvTex.tga"));
+                        File.Move(Path.Combine(imgPath, "bootTvTex.tga"), Path.Combine(baseRomPath, "meta", "bootTvTex.tga"));
+                    }
+                    if (Images[1])
+                    {
+                        File.Delete(Path.Combine(baseRomPath, "meta", "bootDrcTex.tga"));
+                        File.Move(Path.Combine(imgPath, "bootDrcTex.tga"), Path.Combine(baseRomPath, "meta", "bootDrcTex.tga"));
+                    }
+                    if (Images[0])
+                    {
+                        File.Delete(Path.Combine(baseRomPath, "meta", "iconTex.tga"));
+                        File.Move(Path.Combine(imgPath, "iconTex.tga"), Path.Combine(baseRomPath, "meta", "iconTex.tga"));
+                    }
+                    if (Images[3])
+                    {
+                        File.Delete(Path.Combine(baseRomPath, "meta", "bootLogoTex.tga"));
+                        File.Move(Path.Combine(imgPath, "bootLogoTex.tga"), Path.Combine(baseRomPath, "meta", "bootLogoTex.tga"));
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                if (e.Message.Contains("Size"))
+                {
+                    throw e;
+                }
+                throw new Exception("Images");
+            }
+
+        }
+        
+        private static void CopyAndConvertImage(string inputPath, string outputPath, bool delete, int widht, int height, int bit, string newname)
         {
             if (inputPath.EndsWith(".tga"))
             {
-                File.Copy(inputPath, outputPath);
+                File.Copy(inputPath, Path.Combine(outputPath,newname));
             }
             else
             {
@@ -524,11 +607,20 @@ namespace UWUVCI_AIO_WPF
                     png2tga.StartInfo.UseShellExecute = false;
                     png2tga.StartInfo.CreateNoWindow = true;
                     png2tga.StartInfo.FileName = Path.Combine(toolsPath, "png2tga.exe");
-                    png2tga.StartInfo.Arguments = $"\"{inputPath}\" \"{outputPath}\"";
+                    png2tga.StartInfo.Arguments = $"-i \"{inputPath}\" -o \"{outputPath}\" --width={widht} --height={height} --tga-bpp={bit} --tga-compression=none";
 
                     png2tga.Start();
                     png2tga.WaitForExit();
                 }
+                string name = Path.GetFileNameWithoutExtension(inputPath);
+                if(File.Exists(Path.Combine(outputPath , name + ".tga")))
+                {
+                    File.Move(Path.Combine(outputPath, name + ".tga"), Path.Combine(outputPath, newname));
+                }
+            }
+            if (delete)
+            {
+                File.Delete(inputPath);
             }
         }
 

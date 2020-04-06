@@ -238,7 +238,9 @@ namespace UWUVCI_AIO_WPF
         }
         public void Inject()
         {
-            Injection.Inject(GameConfiguration, RomPath);
+            if (Injection.Inject(GameConfiguration, RomPath)) Injected = true;
+            else Injected = false;
+
         }
         private void BaseCheck()
         {
@@ -704,6 +706,24 @@ namespace UWUVCI_AIO_WPF
             }
             return false;
 
+        }
+        public void ImageWarning()
+        {
+            MessageBox.Show("Images need to either be in a Bit Depth of 32bit or 24bit. \nIf using Tools like paint.net do not choose the Auto function.", "Image Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        public void CBaseWarning()
+        {
+            MessageBox.Show("If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.", "Custom base Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        public bool CBaseConvertInfo()
+        {
+            bool ret = false;
+            DialogResult res = MessageBox.Show("You seem to have added a NUS format Custom Base.\nDo you want it to be converted to be used with the Injector?", "NUS Custom Base", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if(res == DialogResult.Yes)
+            {
+                ret = true;
+            }
+            return ret;
         }
         public TKeys getTkey(GameBases bases)
         {

@@ -46,12 +46,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             mvm.GameConfiguration.BaseRom = Base;
 
         }
-       
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            //warning if using custom bases programm may crash
             //get folder
-            //check if everything fine
+            //check if WUP or Loadiine
             //if yes, enable config and create new game config
         }
     }

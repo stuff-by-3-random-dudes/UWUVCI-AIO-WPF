@@ -23,7 +23,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "wiiurpxtool.exe",
             "INICreator.exe",
             "7za.exe",
-            "blank.ini"
+            "blank.ini",
+            "FreeImage.dll",
+            "BuildPcePkg.exe"
         };
 
         public static bool DoesToolsFolderExist()

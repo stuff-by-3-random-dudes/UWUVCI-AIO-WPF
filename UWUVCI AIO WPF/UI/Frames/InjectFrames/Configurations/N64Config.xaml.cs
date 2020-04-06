@@ -48,11 +48,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void InjectGame(object sender, RoutedEventArgs e)
         {
             mvm.Inject();
-            mvm.Injected = true;
+           
         }
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
+            mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path)) mvm.GameConfiguration.TGATv.ImgPath = path;
 
@@ -61,18 +62,21 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)
         {
+            mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path)) mvm.GameConfiguration.TGADrc.ImgPath = path;
         }
 
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
+            mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path)) mvm.GameConfiguration.TGAIco.ImgPath = path;
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
+            mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path)) mvm.GameConfiguration.TGALog.ImgPath = path;
         }
