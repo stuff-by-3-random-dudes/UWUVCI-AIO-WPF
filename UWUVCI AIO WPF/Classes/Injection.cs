@@ -186,7 +186,29 @@ namespace UWUVCI_AIO_WPF
                 decrypt.WaitForExit();
             }
         }
+        public static string ExtractBase(string path, GameConsoles console)
+        {
+            if(!Directory.Exists(Path.Combine(Properties.Settings.Default.BasePath, "CustomBases")))
+            {
+                Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.BasePath, "CustomBases"));
+            }
+            string outputPath = Path.Combine(Properties.Settings.Default.BasePath, "CustomBases", $"[{console.ToString()}] Custom");
+            int i = 0;
+            while (Directory.Exists(outputPath))
+            {
+                outputPath = Path.Combine(Properties.Settings.Default.BasePath, $"[{console.ToString()}] Custom_{i}");
+                i++;
+            }
+            using (Process decrypt = new Process())
+            {
+                decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{path}\" \"{outputPath}";
 
+                decrypt.Start();
+                decrypt.WaitForExit();
+            }
+            return outputPath;
+        }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
         private static void EditXML(string gameName)
         {

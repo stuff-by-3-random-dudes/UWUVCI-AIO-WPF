@@ -54,11 +54,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             mvm.Pack(true);
+            mvm.resetCBASE();
         }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             mvm.Pack(false);
+            mvm.resetCBASE();
         }
     }
 }

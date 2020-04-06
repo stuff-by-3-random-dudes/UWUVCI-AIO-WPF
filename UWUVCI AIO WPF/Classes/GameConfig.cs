@@ -13,7 +13,19 @@ namespace UWUVCI_AIO_WPF
     {
         public GameConsoles Console { get; set; }
         public GameBases BaseRom { get; set; }
-        public string CBasePath { get; set; }
+
+        private string cBasePath;
+
+        public string CBasePath
+        {
+            get { return cBasePath; }
+            set { cBasePath = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+
         public string GameName { get; set; }
 
 

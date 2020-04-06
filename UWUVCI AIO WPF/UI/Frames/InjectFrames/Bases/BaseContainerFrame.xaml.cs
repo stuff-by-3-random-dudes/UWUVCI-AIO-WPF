@@ -54,6 +54,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             try
             {
                 mvm = FindResource("mvm") as MainViewModel;
+                mvm.removeCBASE();
                 if (cbCombo.SelectedIndex != -1 && cbCombo.SelectedIndex != mvm.OldIndex)
                 {
                     if (cbCombo.SelectedIndex == 0)

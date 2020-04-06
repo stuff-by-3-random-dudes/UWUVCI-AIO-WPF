@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI;
+using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
@@ -200,6 +201,7 @@ namespace UWUVCI_AIO_WPF
         }
 
         private MainWindow mw;
+        private CustomBaseFrame cb = null;
 
         public MainViewModel()
         {
@@ -214,6 +216,18 @@ namespace UWUVCI_AIO_WPF
             UpdatePathSet();
 
             GetAllBases();
+        }
+        public void resetCBASE()
+        {
+         if(cb != null)   cb.Reset();
+        }
+        public void removeCBASE()
+        {
+            cb = null;
+        }
+        public void SetCBASE(CustomBaseFrame cbs)
+        {
+            cb = cbs;
         }
         public void setMW(MainWindow mwi)
         {
@@ -235,6 +249,7 @@ namespace UWUVCI_AIO_WPF
             RomSet = false;
             RomPath = null;
             Injected = false;
+            GameConfiguration.CBasePath = null;
         }
         public void Inject()
         {
@@ -711,10 +726,6 @@ namespace UWUVCI_AIO_WPF
         {
             MessageBox.Show("Images need to either be in a Bit Depth of 32bit or 24bit. \nIf using Tools like paint.net do not choose the Auto function.", "Image Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-        public void CBaseWarning()
-        {
-            MessageBox.Show("If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.", "Custom base Warning", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
         public bool CBaseConvertInfo()
         {
             bool ret = false;
@@ -842,6 +853,7 @@ namespace UWUVCI_AIO_WPF
             }
             return info;
         }
+        
 
         public void SetInjectPath()
         {
