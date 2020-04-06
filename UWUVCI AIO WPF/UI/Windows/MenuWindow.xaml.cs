@@ -99,6 +99,11 @@ namespace UWUVCI_AIO_WPF
                     break;
                 case 5:
                     DestroyFrame();
+                    tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
+                    load_frame.Content = new INJECTFRAME(GameConsoles.TG16);
+                    break;
+                case 6:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SETTINGS";
                     load_frame.Content = new SettingsFrame(this);
                     break;

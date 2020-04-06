@@ -106,6 +106,13 @@
                             <TextBlock Text="SNES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
+                    <!--TG16-->
+                    <ListViewItem Height="60" x:Name="TG16" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/tg16.png"></Image>
+                            <TextBlock Text="TG16 VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
                 </ListView>
 
             </StackPanel>

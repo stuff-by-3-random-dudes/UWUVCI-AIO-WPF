@@ -167,6 +167,16 @@ namespace UWUVCI_AIO_WPF
             set { lSNES = value; OnPropertyChanged(); }
         }
 
+        private List<GameBases> lTG16 = new List<GameBases>();
+
+
+
+        public List<GameBases> LTG16
+        {
+            get { return lTG16; }
+            set { lTG16 = value; OnPropertyChanged(); }
+        }
+
         private List<GameBases> ltemp = new List<GameBases>();
 
         public List<GameBases> Ltemp
@@ -317,6 +327,9 @@ namespace UWUVCI_AIO_WPF
                         case GameConsoles.SNES:
                             dialog.Filter = "Super Nintendo Entertainment System ROM (*.sfc; *.smc) | *.sfc;*.smc";
                             break;
+                        case GameConsoles.TG16:
+                            dialog.Filter = "TurboGrafX-16 ROM (*.pce) | *.pce";
+                            break;
                     }
                 }
                 else if(!INI)
@@ -368,6 +381,10 @@ namespace UWUVCI_AIO_WPF
             if (!File.Exists(path + "gba"))
             {
                 ret.Add(path + "gba");
+            }
+            if (!File.Exists(path + "tg16"))
+            {
+                ret.Add(path + "tg16");
             }
             return ret;
         }
@@ -548,6 +565,13 @@ namespace UWUVCI_AIO_WPF
                     return b;
                 }
             }
+            foreach (GameBases b in LTG16)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
             return null;
         }
 
@@ -558,16 +582,19 @@ namespace UWUVCI_AIO_WPF
             LNES.Clear();
             LSNES.Clear();
             LGBA.Clear();
+            LTG16.Clear();
             lNDS = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbnds");
             lNES = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbnes");
             lSNES = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbsnes");
             lN64 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbn64");
             lGBA = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbgba");
+            lTG16 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbtg16");
             CreateSettingIfNotExist(lNDS, GameConsoles.NDS);
             CreateSettingIfNotExist(lNES, GameConsoles.NES);
             CreateSettingIfNotExist(lSNES, GameConsoles.SNES);
             CreateSettingIfNotExist(lGBA, GameConsoles.GBA);
             CreateSettingIfNotExist(lN64, GameConsoles.N64);
+            CreateSettingIfNotExist(lTG16, GameConsoles.TG16);
         }
         private void CreateSettingIfNotExist(List<GameBases> l, GameConsoles console)
         {
@@ -603,6 +630,9 @@ namespace UWUVCI_AIO_WPF
                     break;
                 case GameConsoles.SNES:
                     Ltemp = LSNES;
+                    break;
+                case GameConsoles.TG16:
+                    Ltemp = LTG16;
                     break;
             }
         }
@@ -746,6 +776,17 @@ namespace UWUVCI_AIO_WPF
                     if (b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.GBA;
+                        cont = true;
+                    }
+                }
+            }
+            if (!cont)
+            {
+                foreach (GameBases b in lTG16)
+                {
+                    if (b.Name == gb.Name && b.Region == gb.Region)
+                    {
+                        ret = GameConsoles.TG16;
                         cont = true;
                     }
                 }

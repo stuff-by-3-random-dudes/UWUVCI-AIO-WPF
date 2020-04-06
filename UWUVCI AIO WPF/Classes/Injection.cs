@@ -99,12 +99,15 @@ namespace UWUVCI_AIO_WPF
                     GBA(RomPath);
                     break;
 
-                /*case GameConsoles.NES:
+                case GameConsoles.NES:
                     NESSNES(RomPath);
                     break;
                 case GameConsoles.SNES:
                     NESSNES(RemoveHeader(RomPath));
-                    break;*/
+                    break;
+                case GameConsoles.TG16:
+                    TG16(RomPath);
+                    break;
             }
         }
 
@@ -276,6 +279,25 @@ namespace UWUVCI_AIO_WPF
             {
                 DirectoryCopy(Path.Combine(Properties.Settings.Default.BasePath, baserom), baseRomPath, true);
             }
+        }
+
+        private static void TG16(string injectRomPath)
+        {
+
+            //creating pkg file including the TG16 rom
+            using (Process TurboInject = new Process())
+            {
+                TurboInject.StartInfo.UseShellExecute = false;
+                TurboInject.StartInfo.CreateNoWindow = true;
+                TurboInject.StartInfo.FileName = Path.Combine(toolsPath, "BuildPcePkg.exe");
+                TurboInject.StartInfo.Arguments = $"\"{injectRomPath}\"";
+                TurboInject.Start();
+                TurboInject.WaitForExit();
+            }
+            //replacing tg16 rom
+            File.Delete(Path.Combine(baseRomPath, "content", "pceemu", "pce.pkg"));
+            File.Copy("pce.pkg", Path.Combine(baseRomPath, "content", "pceemu", "pce.pkg"));
+            File.Delete("pce.pkg");
         }
 
         private static void NESSNES(string injectRomPath)
