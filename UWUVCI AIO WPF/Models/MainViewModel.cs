@@ -249,7 +249,7 @@ namespace UWUVCI_AIO_WPF
                 var test = GetMissingVCBs();
                 if(test.Count > 0)
                 {
-                    DialogResult res = MessageBox.Show("There are no vcb Base files stored in the bases folder. Would you like to download the missing base files?", "Error 004: \"Missing VCB Bases\"", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    DialogResult res = MessageBox.Show("There are vcb Base files missing in the bases folder. Would you like to download the missing base files?", "Error 004: \"Missing VCB Bases\"", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if(res == DialogResult.Yes)
                     {
                         foreach(string s in test)
@@ -292,7 +292,7 @@ namespace UWUVCI_AIO_WPF
         public void UpdateBases()
         {
             
-            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes" };
+            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16" };
             foreach(string s in bases)
             {
                 DownloadBase(s);
