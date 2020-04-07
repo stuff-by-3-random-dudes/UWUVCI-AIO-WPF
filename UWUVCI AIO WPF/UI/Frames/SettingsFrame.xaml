@@ -21,6 +21,9 @@
         <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,308,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
         <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,351,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
         <Button Content="Credits" HorizontalAlignment="Left" Margin="1045,438,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_5"/>
+        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,308,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
+        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="325,308,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1040,10,0,0" TextWrapping="Wrap" Text="v2.0 Beta" VerticalAlignment="Top" FontSize="20"/>
 
     </Grid>
 </Page>

@@ -18,6 +18,7 @@ using UWUVCI_AIO_WPF.UI;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
+using AutoUpdaterDotNET;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -289,9 +290,21 @@ namespace UWUVCI_AIO_WPF
 
         private MainWindow mw;
         private CustomBaseFrame cb = null;
-
+        public void Update()
+        {
+            AutoUpdater.Start("https://raw.githubusercontent.com/Hotbrawl20/testing/master/update.xml");
+            if (Properties.Settings.Default.UpgradeRequired)
+            {
+                Properties.Settings.Default.Upgrade();
+                Properties.Settings.Default.UpgradeRequired = false;
+                Properties.Settings.Default.Save();
+            }
+        }
         public MainViewModel()
         {
+
+            Update();
+
             toolCheck();
             BaseCheck();
 
@@ -511,6 +524,18 @@ namespace UWUVCI_AIO_WPF
             }
             
         }
+        public void UpdateTools()
+        {
+            string[] bases = ToolCheck.ToolNames;
+            foreach (string s in bases)
+            {
+                DeleteTool(s);
+                DownloadTool(s);
+            }
+            MessageBox.Show("Finished Updating Tools! Restarting UWUVCI AIO");
+            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+            Environment.Exit(0);
+        }
         public void UpdateBases()
         {
             
@@ -530,7 +555,7 @@ namespace UWUVCI_AIO_WPF
                 if (s.Contains("msx")) g = GameConsoles.MSX;
                 UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bases/{s}"),g);
             }
-            MessageBox.Show("Finished Updating! Restarting UWUVCI AIO");
+            MessageBox.Show("Finished Updating Bases! Restarting UWUVCI AIO");
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
             
@@ -580,7 +605,7 @@ namespace UWUVCI_AIO_WPF
                             dialog.Filter = "Nintendo 64 ROM (*.n64; *.v64; *.z64) | *.n64;*.v64;*.z64";
                             break;
                         case GameConsoles.GBA:
-                            dialog.Filter = "GameBoy Advance ROM (*.gba) | *.gba";
+                            dialog.Filter = "GameBoy Advance ROM (*.gba) | *.gba | GameBoy Color ROM (*.gbc) | *.gbc | GameBoy ROM (*.gb) | *.gb";
                             break;
                         case GameConsoles.NES:
                             dialog.Filter = "Nintendo Entertainment System ROM (*.nes; *.fds) | *.nes;*.fds";
@@ -617,6 +642,11 @@ namespace UWUVCI_AIO_WPF
         {
             File.Copy(console, $@"bases\{console}");
             File.Delete(console);
+        }
+
+        private static void DeleteTool(string tool)
+        {
+            File.Delete($@"Tools\{tool}");
         }
         private static void DeleteBase(string console)
         {

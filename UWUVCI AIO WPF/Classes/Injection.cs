@@ -287,7 +287,7 @@ namespace UWUVCI_AIO_WPF
                
 
                 doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID}";
-                doc.SelectSingleNode("menu/title_id").InnerText = $"0005000010{ID}00";
+                doc.SelectSingleNode("menu/title_id").InnerText = $"0005000060{ID}00";
                 doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID}";
                 if(gameName != null && gameName != string.Empty)
                 {
@@ -315,7 +315,7 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 doc.Load(appXml);
-                doc.SelectSingleNode("app/title_id").InnerText = $"0005000010{ID}00";
+                doc.SelectSingleNode("app/title_id").InnerText = $"0005000060{ID}00";
                 doc.SelectSingleNode("app/group_id").InnerText = $"0000{ID}";
                 doc.Save(appXml);
             }
@@ -402,6 +402,33 @@ namespace UWUVCI_AIO_WPF
 
         private static void GBA(string injectRomPath)
         {
+            bool delete = false;
+            if(!new FileInfo(injectRomPath).Extension.Contains("gba"))
+            {
+                //it's a GBC or GB rom so it needs to be copied into goomba.gba and then padded to 32Mb (16 would work too but just ot be save)
+                using (Process goomba = new Process())
+                {
+                    goomba.StartInfo.UseShellExecute = false;
+                    goomba.StartInfo.CreateNoWindow = true;
+                    goomba.StartInfo.FileName = "cmd.exe";
+                    goomba.StartInfo.Arguments = $"/c copy /b \"{Path.Combine(toolsPath, "goomba.gba")}\"+\"{injectRomPath}\" \"{Path.Combine(toolsPath, "goombamenu.gba")}\"";
+
+                    goomba.Start();
+                    goomba.WaitForExit();
+                }
+
+                //padding
+                byte[] rom = new byte[33554432];
+                FileStream fs = new FileStream(Path.Combine(toolsPath, "goombamenu.gba"), FileMode.Open);
+                fs.Read(rom, 0, (int)fs.Length);
+                fs.Close();
+                File.WriteAllBytes(Path.Combine(toolsPath, "goombaPadded.gba"), rom);
+                Console.ReadLine();
+                injectRomPath = Path.Combine(toolsPath, "goombaPadded.gba");
+                delete = true;
+            }
+
+
             using (Process psb = new Process())
             {
                 psb.StartInfo.UseShellExecute = false;
@@ -411,6 +438,11 @@ namespace UWUVCI_AIO_WPF
 
                 psb.Start();
                 psb.WaitForExit();
+            }
+            if (delete)
+            {
+                File.Delete(injectRomPath);
+                File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
 
