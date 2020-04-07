@@ -191,6 +191,15 @@ namespace UWUVCI_AIO_WPF
             set { lTG16 = value; OnPropertyChanged(); }
         }
 
+        private List<GameBases> lMSX = new List<GameBases>();
+
+        public List<GameBases> LMSX
+        {
+            get { return lMSX; }
+            set { lMSX = value; OnPropertyChanged(); }
+        }
+
+
         private List<GameBases> ltemp = new List<GameBases>();
 
         public List<GameBases> Ltemp
@@ -454,7 +463,7 @@ namespace UWUVCI_AIO_WPF
         public void UpdateBases()
         {
             
-            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16" };
+            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx" };
             foreach(string s in bases)
             {
                 DownloadBase(s);
@@ -467,6 +476,7 @@ namespace UWUVCI_AIO_WPF
                 if (s.Contains("n64")) g = GameConsoles.N64;
                 if (s.Contains("gba")) g = GameConsoles.GBA;
                 if (s.Contains("tg16")) g = GameConsoles.TG16;
+                if (s.Contains("msx")) g = GameConsoles.MSX;
                 UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bases/{s}"),g);
             }
             MessageBox.Show("Finished Updating! Restarting UWUVCI AIO");
@@ -530,6 +540,9 @@ namespace UWUVCI_AIO_WPF
                         case GameConsoles.TG16:
                             dialog.Filter = "TurboGrafX-16 ROM (*.pce) | *.pce";
                             break;
+                        case GameConsoles.MSX:
+                            dialog.Filter = "MSX/MSX2 ROM (*.ROM) | *.ROM";
+                            break;
                     }
                 }
                 else if(!INI)
@@ -585,6 +598,10 @@ namespace UWUVCI_AIO_WPF
             if (!File.Exists(path + "tg16"))
             {
                 ret.Add(path + "tg16");
+            }
+            if (!File.Exists(path + "msx"))
+            {
+                ret.Add(path + "msx");
             }
             return ret;
         }
@@ -826,6 +843,13 @@ namespace UWUVCI_AIO_WPF
                     return b;
                 }
             }
+            foreach (GameBases b in LMSX)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
             return null;
         }
 
@@ -843,12 +867,14 @@ namespace UWUVCI_AIO_WPF
             lN64 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbn64");
             lGBA = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbgba");
             lTG16 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbtg16");
+            lMSX = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbmsx");
             CreateSettingIfNotExist(lNDS, GameConsoles.NDS);
             CreateSettingIfNotExist(lNES, GameConsoles.NES);
             CreateSettingIfNotExist(lSNES, GameConsoles.SNES);
             CreateSettingIfNotExist(lGBA, GameConsoles.GBA);
             CreateSettingIfNotExist(lN64, GameConsoles.N64);
             CreateSettingIfNotExist(lTG16, GameConsoles.TG16);
+            CreateSettingIfNotExist(lMSX, GameConsoles.MSX);
         }
         private void CreateSettingIfNotExist(List<GameBases> l, GameConsoles console)
         {
@@ -918,6 +944,9 @@ namespace UWUVCI_AIO_WPF
                     break;
                 case GameConsoles.TG16:
                     Ltemp = LTG16;
+                    break;
+                case GameConsoles.MSX:
+                    Ltemp = LMSX;
                     break;
             }
         }
@@ -1086,6 +1115,17 @@ namespace UWUVCI_AIO_WPF
                     if (b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.TG16;
+                        cont = true;
+                    }
+                }
+            }
+            if (!cont)
+            {
+                foreach (GameBases b in lMSX)
+                {
+                    if (b.Name == gb.Name && b.Region == gb.Region)
+                    {
+                        ret = GameConsoles.MSX;
                         cont = true;
                     }
                 }

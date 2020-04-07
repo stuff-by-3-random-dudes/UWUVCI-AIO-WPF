@@ -91,6 +91,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     tbTitleBar.Text = "UWUVCI AIO - TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.TG16);
                     break;
+                case 6:
+                    DestroyFrame();
+                    tbTitleBar.Text = "UWUVCI AIO - TKeys";
+                    load_frame.Content = new TKFrame(GameConsoles.MSX);
+                    break;
             }
         }
         private void Window_Close(object sender, RoutedEventArgs e)

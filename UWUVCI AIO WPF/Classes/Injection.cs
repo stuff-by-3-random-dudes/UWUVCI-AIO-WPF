@@ -100,7 +100,14 @@ namespace UWUVCI_AIO_WPF
                 case GameConsoles.TG16:
                     TG16(RomPath);
                     break;
+                case GameConsoles.MSX:
+                    MSX(RomPath);
+                    break;
             }
+        }
+        public static void MSX(string injectRomPath)
+        {
+
         }
         public static void NES(string injectRomPath)
         {

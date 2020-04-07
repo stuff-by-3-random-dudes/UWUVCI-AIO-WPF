@@ -59,8 +59,7 @@
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
-    <Reference Include="GameBaseClassLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="GameBaseClassLibrary">
       <HintPath>..\..\GameBaseClassLibrary\GameBaseClassLibrary\bin\Debug\GameBaseClassLibrary.dll</HintPath>
     </Reference>
     <Reference Include="MaterialDesignColors, Version=1.2.2.920, Culture=neutral, processorArchitecture=MSIL">
@@ -265,6 +264,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\TG16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\msx.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets')" />

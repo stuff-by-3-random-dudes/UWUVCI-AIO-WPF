@@ -112,6 +112,13 @@
                             <TextBlock Text="TG16 VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
+                    <!--MSX-->
+                    <ListViewItem Height="60" x:Name="MSX" IsEnabled="{Binding PathsSet}" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/msx.png"></Image>
+                            <TextBlock Text="MSX VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
                     <!--Settings-->
                     <ListViewItem Height="60" x:Name="Settings" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
