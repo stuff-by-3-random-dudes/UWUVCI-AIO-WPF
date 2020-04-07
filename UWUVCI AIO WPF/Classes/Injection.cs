@@ -107,7 +107,44 @@ namespace UWUVCI_AIO_WPF
         }
         public static void MSX(string injectRomPath)
         {
+            byte[] test = new byte[0x580B3];
+            using (var fs = new FileStream(Path.Combine(baseRomPath, "content" , "msx", "msx.pkg"),
+                                 FileMode.Open,
+                                 FileAccess.ReadWrite))
+            {
 
+
+                fs.Read(test, 0, 0x580B3);
+                fs.Close();
+                File.Delete(Path.Combine(baseRomPath, "content", "msx", "msx.pkg"));
+            }
+            using (var fs = new FileStream(Path.Combine(baseRomPath, "content", "msx", "msx.pkg"),
+                                 FileMode.OpenOrCreate,
+                                 FileAccess.ReadWrite))
+            {
+
+
+                fs.Write(test, 0, 0x580B3);
+                fs.Close();
+
+            }
+            using (var fs = new FileStream(injectRomPath,
+                                 FileMode.OpenOrCreate,
+                                 FileAccess.ReadWrite))
+            {
+
+
+                test = new byte[fs.Length];
+                fs.Read(test, 0, test.Length - 1);
+
+            }
+            using (var fs = new FileStream(Path.Combine(baseRomPath, "content", "msx", "msx.pkg"),
+                                FileMode.Append))
+            {
+
+                fs.Write(test, 0, test.Length);
+
+            }
         }
         public static void NES(string injectRomPath)
         {
