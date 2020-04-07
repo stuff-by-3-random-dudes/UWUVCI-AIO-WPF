@@ -46,6 +46,57 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public string turbocd()
+        {
+            string ret = string.Empty;
+           MessageBox.Show("Please put a TurboGraf CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
+           using(var dialog = new FolderBrowserDialog())
+            {
+
+                        System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                        if (result == DialogResult.OK)
+                        {
+                            try
+                            {
+                                if (DirectoryIsEmpty(dialog.SelectedPath))
+                                {
+                                    System.Windows.Forms.MessageBox.Show("The folder is Empty. Please choose another folder");
+                                }
+                                else
+                                {
+                                    if (Directory.GetDirectories(dialog.SelectedPath).Length > 0)
+                                    {
+                                        MessageBox.Show("This folder mustn't contain any subfolders");
+                                    }
+                                    else
+                                    {
+                                            //WUP
+                                            if (Directory.GetFiles(dialog.SelectedPath, "*.hcd").Length == 1 && Directory.GetFiles(dialog.SelectedPath, "*.ogg").Length > 0 && Directory.GetFiles(dialog.SelectedPath, "*.bin").Length > 0)
+                                            {
+                                            ret = dialog.SelectedPath;
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show("This Folder does not contain needed minimum of Files");
+                                            }
+                                        
+                                    }
+                                }
+                            }
+                            catch (Exception)
+                            {
+
+                            }
+                        }
+
+                    }
+
+
+
+                
+            
+            return ret;
+        }
 
         private GameBases gbTemp;
 

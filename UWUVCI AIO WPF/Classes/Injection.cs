@@ -344,17 +344,36 @@ namespace UWUVCI_AIO_WPF
 
         private static void TG16(string injectRomPath)
         {
-
-            //creating pkg file including the TG16 rom
-            using (Process TurboInject = new Process())
+            //checking if folder
+            if (Directory.Exists(injectRomPath))
             {
-                TurboInject.StartInfo.UseShellExecute = false;
-                TurboInject.StartInfo.CreateNoWindow = true;
-                TurboInject.StartInfo.FileName = Path.Combine(toolsPath, "BuildPcePkg.exe");
-                TurboInject.StartInfo.Arguments = $"\"{injectRomPath}\"";
-                TurboInject.Start();
-                TurboInject.WaitForExit();
+                DirectoryCopy(injectRomPath, "test", true);
+                //TurboGrafCD
+                using (Process TurboInject = new Process())
+                {
+                    TurboInject.StartInfo.UseShellExecute = false;
+                    TurboInject.StartInfo.CreateNoWindow = true;
+                    TurboInject.StartInfo.FileName = Path.Combine(toolsPath, "BuildTurboCDPcePkg.exe");
+                    TurboInject.StartInfo.Arguments = $"test";
+                    TurboInject.Start();
+                    TurboInject.WaitForExit();
+                }
+                Directory.Delete("test", true);
             }
+            else
+            {
+                //creating pkg file including the TG16 rom
+                using (Process TurboInject = new Process())
+                {
+                    TurboInject.StartInfo.UseShellExecute = false;
+                    TurboInject.StartInfo.CreateNoWindow = true;
+                    TurboInject.StartInfo.FileName = Path.Combine(toolsPath, "BuildPcePkg.exe");
+                    TurboInject.StartInfo.Arguments = $"\"{injectRomPath}\"";
+                    TurboInject.Start();
+                    TurboInject.WaitForExit();
+                }
+            }
+            
             //replacing tg16 rom
             File.Delete(Path.Combine(baseRomPath, "content", "pceemu", "pce.pkg"));
             File.Copy("pce.pkg", Path.Combine(baseRomPath, "content", "pceemu", "pce.pkg"));

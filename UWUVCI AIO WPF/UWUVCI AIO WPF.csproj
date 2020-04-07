@@ -97,6 +97,9 @@
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren.xaml.cs">
+      <DependentUpon>OtherConfigs - Kopieren.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Frames\KeyFrame\TKFrame.xaml.cs">
       <DependentUpon>TKFrame.xaml</DependentUpon>
     </Compile>
@@ -132,6 +135,10 @@
     <Page Include="UI\Frames\InjectFrames\Configurations\N64Config.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs.xaml">
       <SubType>Designer</SubType>

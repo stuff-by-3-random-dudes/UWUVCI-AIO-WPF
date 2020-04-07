@@ -25,7 +25,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "7za.exe",
             "blank.ini",
             "FreeImage.dll",
-            "BuildPcePkg.exe"
+            "BuildPcePkg.exe",
+            "BuildTurboCDPcePkg.exe"
         };
 
         public static bool DoesToolsFolderExist()

@@ -28,6 +28,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             if(console == GameConsoles.N64)
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.N64Config();
+            } else if (console == GameConsoles.TG16)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.TurboGrafX();
             }
             else
             {
