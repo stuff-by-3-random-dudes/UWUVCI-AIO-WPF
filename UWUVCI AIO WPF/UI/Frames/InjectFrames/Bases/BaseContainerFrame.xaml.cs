@@ -35,7 +35,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             mvm.GameConfiguration.Console = console;
             if(console == GameConsoles.NES)
             {
-                cbCombo.ToolTip = "If you want to inject ROMs bigger than 200Kb we recommend using Punch-Out!! as a base. For ROMs smaller than 200Kb we recommend Metroid";
+                cbCombo.ToolTip = "We recommend Metal Slader Glory for NES Injection!";
+            }
+            if(console == GameConsoles.MSX)
+            {
+                cbCombo.ToolTip = "You need to try which base works best.\nNemesis has the best MSX compatibility and Goemon the best MSX2. \nBoth support MSX and MSX2 ROMs";
             }
         }
 

@@ -47,57 +47,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        public string turbocd()
-        {
-            string ret = string.Empty;
-           MessageBox.Show("Please put a TurboGraf CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
-           using(var dialog = new FolderBrowserDialog())
-            {
-
-                        System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                        if (result == DialogResult.OK)
-                        {
-                            try
-                            {
-                                if (DirectoryIsEmpty(dialog.SelectedPath))
-                                {
-                                    System.Windows.Forms.MessageBox.Show("The folder is Empty. Please choose another folder");
-                                }
-                                else
-                                {
-                                    if (Directory.GetDirectories(dialog.SelectedPath).Length > 0)
-                                    {
-                                        MessageBox.Show("This folder mustn't contain any subfolders");
-                                    }
-                                    else
-                                    {
-                                            //WUP
-                                            if (Directory.GetFiles(dialog.SelectedPath, "*.hcd").Length == 1 && Directory.GetFiles(dialog.SelectedPath, "*.ogg").Length > 0 && Directory.GetFiles(dialog.SelectedPath, "*.bin").Length > 0)
-                                            {
-                                            ret = dialog.SelectedPath;
-                                            }
-                                            else
-                                            {
-                                                MessageBox.Show("This Folder does not contain needed minimum of Files");
-                                            }
-                                        
-                                    }
-                                }
-                            }
-                            catch (Exception)
-                            {
-
-                            }
-                        }
-
-                    }
-
-
-
-                
-            
-            return ret;
-        }
+        
 
         private GameBases gbTemp;
 
@@ -288,7 +238,7 @@ namespace UWUVCI_AIO_WPF
 
 
 
-        private MainWindow mw;
+        public MainWindow mw;
         private CustomBaseFrame cb = null;
         public void Update()
         {
@@ -316,6 +266,57 @@ namespace UWUVCI_AIO_WPF
             UpdatePathSet();
 
             GetAllBases();
+        }
+        public string turbocd()
+        {
+            string ret = string.Empty;
+            MessageBox.Show("Please put a TurboGraf CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
+            using (var dialog = new FolderBrowserDialog())
+            {
+
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    try
+                    {
+                        if (DirectoryIsEmpty(dialog.SelectedPath))
+                        {
+                            System.Windows.Forms.MessageBox.Show("The folder is Empty. Please choose another folder");
+                        }
+                        else
+                        {
+                            if (Directory.GetDirectories(dialog.SelectedPath).Length > 0)
+                            {
+                                MessageBox.Show("This folder mustn't contain any subfolders");
+                            }
+                            else
+                            {
+                                //WUP
+                                if (Directory.GetFiles(dialog.SelectedPath, "*.hcd").Length == 1 && Directory.GetFiles(dialog.SelectedPath, "*.ogg").Length > 0 && Directory.GetFiles(dialog.SelectedPath, "*.bin").Length > 0)
+                                {
+                                    ret = dialog.SelectedPath;
+                                }
+                                else
+                                {
+                                    MessageBox.Show("This Folder does not contain needed minimum of Files");
+                                }
+
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
+            }
+
+
+
+
+
+            return ret;
         }
         public void resetCBASE()
         {
@@ -592,6 +593,15 @@ namespace UWUVCI_AIO_WPF
         public string GetFilePath(bool ROM, bool INI)
         {
             string ret = string.Empty;
+            switch (GameConfiguration.Console)
+            {
+                case GameConsoles.NDS:
+                    MessageBox.Show("You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+                case GameConsoles.SNES:
+                    MessageBox.Show("You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+            }
             using (var dialog = new System.Windows.Forms.OpenFileDialog())
             {
                 if (ROM)

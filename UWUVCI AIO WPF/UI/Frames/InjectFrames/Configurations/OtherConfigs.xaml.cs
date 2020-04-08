@@ -28,6 +28,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
             mvm.setThing(this);
+            
         }
         public void Dispose()
         {

@@ -23,6 +23,6 @@
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,180,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,134,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,51,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path"/>
-        <CheckBox Content="TurboGrafxCD" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click"/>
+        <CheckBox Content="TurboGrafxCD" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click" ToolTip="If checked alows you to inject TurboGrafx-CD ROMs"/>
     </Grid>
 </Page>

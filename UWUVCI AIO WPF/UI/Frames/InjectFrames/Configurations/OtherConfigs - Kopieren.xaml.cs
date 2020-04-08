@@ -128,8 +128,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.RomPath = null;
             mvm.RomSet = false;
             mvm.CanInject = false;
-            if (cd) cd = false;
-            else cd = true;
+            if (cd)
+            {
+                cd = false;
+                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
+            }
+
+            else 
+            {
+                cd = true;
+                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
+            }
         }
     }
 }
