@@ -596,10 +596,10 @@ namespace UWUVCI_AIO_WPF
             switch (GameConfiguration.Console)
             {
                 case GameConsoles.NDS:
-                    MessageBox.Show("You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
                 case GameConsoles.SNES:
-                    MessageBox.Show("You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
             }
             using (var dialog = new System.Windows.Forms.OpenFileDialog())
