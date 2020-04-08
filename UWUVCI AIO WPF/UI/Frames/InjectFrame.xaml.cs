@@ -54,9 +54,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
                 if (mvm.GetConsoleOfConfig(s, mvm.GameConfiguration.Console))
                 {
                     mvm.ImportConfig(s);
+                    MessageBox.Show("Please re-select a base!");
                 }
+               
             }
-            MessageBox.Show("Please re-select a base!");
+            
 
         }
 

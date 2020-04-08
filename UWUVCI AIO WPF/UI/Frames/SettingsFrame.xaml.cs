@@ -78,5 +78,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.UpdateTools();
         }
+
+        private void Button_Click_8(object sender, RoutedEventArgs e)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.ResetTitleKeys();
+        }
     }
 }

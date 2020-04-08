@@ -537,6 +537,23 @@ namespace UWUVCI_AIO_WPF
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
         }
+        public void ResetTitleKeys()
+        {
+            DialogResult res = MessageBox.Show("This Option will reset all entered TitleKeys meaning you will need to reenter them again!\nDo you still wish to continue?", "Resetting TitleKeys", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if(res == DialogResult.Yes)
+            {
+                File.Delete("keys/gba.vck");
+                File.Delete("keys/nds.vck");
+                File.Delete("keys/nes.vck");
+                File.Delete("keys/n64.vck");
+                File.Delete("keys/msx.vck");
+                File.Delete("keys/tg16.vck");
+                File.Delete("keys/snes.vck");
+            }
+            MessageBox.Show("Reset complete! The Programm will now Restart!");
+            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+            Environment.Exit(0);
+        }
         public void UpdateBases()
         {
             
