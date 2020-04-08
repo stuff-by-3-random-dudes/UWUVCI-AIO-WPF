@@ -65,11 +65,16 @@ namespace UWUVCI_AIO_WPF
                 {
                     MessageBox.Show("Injection Failed due to Image Issues. Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                else if (e.Message.Contains("retro"))
+                {
+                    MessageBox.Show("The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
                 else
                 {
                     MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 }
+                Clean();
                 return false;
             }
 
@@ -390,11 +395,19 @@ namespace UWUVCI_AIO_WPF
             {
                 retroinject.StartInfo.UseShellExecute = false;
                 retroinject.StartInfo.CreateNoWindow = true;
+                retroinject.StartInfo.RedirectStandardOutput = true;
+                retroinject.StartInfo.RedirectStandardError = true;
                 retroinject.StartInfo.FileName = Path.Combine(toolsPath, "retroinject.exe");
                 retroinject.StartInfo.Arguments = $"\"{rpxFile}\" \"{injectRomPath}\" \"{rpxFile}\"";
 
                 retroinject.Start();
                 retroinject.WaitForExit();
+                var s = retroinject.StandardOutput.ReadToEnd();
+                var e = retroinject.StandardError.ReadToEnd();
+                if (e.Contains("is too large") || s.Contains("is too large"))
+                {
+                    throw new Exception("retro");
+                }
             }
 
             RPXcomp(rpxFile); //Compresses the RPX
