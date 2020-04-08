@@ -1071,7 +1071,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkcKey(string key)
         {
-            if (487391367 == key.GetHashCode())
+            if (1274359530 == key.ToLower().GetHashCode())
             {
                 Settings.Default.Ckey = key;
                 Settings.Default.Save();
@@ -1093,7 +1093,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkKey(string key)
         {
-            if(GbTemp.KeyHash == key.GetHashCode())
+            if(GbTemp.KeyHash == key.ToLower().GetHashCode())
             {
                 UpdateKeyInFile(key, $@"keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
