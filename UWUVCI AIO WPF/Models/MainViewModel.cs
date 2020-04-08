@@ -592,7 +592,7 @@ namespace UWUVCI_AIO_WPF
             }
             return false;
         }
-        public string selectConfig()
+        public void selectConfig(GameConsoles console)
         {
             string ret = string.Empty;
             using (var dialog = new System.Windows.Forms.OpenFileDialog())
@@ -602,9 +602,14 @@ namespace UWUVCI_AIO_WPF
                 if (res == DialogResult.OK)
                 {
                     ret = dialog.FileName;
+                    if (GetConsoleOfConfig(ret, console))
+                    {
+                        ImportConfig(ret);
+                        MessageBox.Show("Please re-select a base!");
+                    }
                 }
             }
-            return ret;
+            
         }
 
         public string GetFilePath(bool ROM, bool INI)

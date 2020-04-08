@@ -21,10 +21,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
     public partial class INJECTFRAME : Page, IDisposable
     {
         MainViewModel mvm;
+        GameConsoles console;
         public INJECTFRAME(GameConsoles console)
         {
             mvm = FindResource("mvm") as MainViewModel;
             InitializeComponent();
+            this.console = console;
             if(console == GameConsoles.N64)
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.N64Config();
@@ -47,17 +49,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //import config
-            string s = mvm.selectConfig();
+            mvm.selectConfig(console);
 
-            if (s != null)
-            {
-                if (mvm.GetConsoleOfConfig(s, mvm.GameConfiguration.Console))
-                {
-                    mvm.ImportConfig(s);
-                    MessageBox.Show("Please re-select a base!");
-                }
-               
-            }
             
 
         }
