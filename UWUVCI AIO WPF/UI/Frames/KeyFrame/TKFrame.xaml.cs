@@ -28,7 +28,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.KeyFrame
             mvm = FindResource("mvm") as MainViewModel;
             mvm.getTempList(c);
 
-           
+
         }
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)

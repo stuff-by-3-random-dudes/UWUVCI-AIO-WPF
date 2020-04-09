@@ -76,12 +76,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     tbTitleBar.Text = "UWUVCI AIO - N64 TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.N64);
                     break;
-                case 3:
+                case 4:
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - NES TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.NES);
                     break;
-                case 4:
+                case 3:
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.SNES);

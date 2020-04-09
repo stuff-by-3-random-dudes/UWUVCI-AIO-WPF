@@ -346,12 +346,20 @@ namespace UWUVCI_AIO_WPF
                 ReadIniIntoConfig();
             }
             CheckAndFixConfigFolder();
-            Stream createConfigStream = new FileStream($@"configs\{GameConfiguration.GameName}.uwuvci", FileMode.Create, FileAccess.Write);
+            string outputPath = $@"configs\{ GameConfiguration.GameName}.uwuvci";
+            int i = 0;
+            while (Directory.Exists(outputPath))
+            {
+                outputPath = $@"configs\{ GameConfiguration.GameName}_{i}.uwuvci";
+                i++;
+            }
+            Stream createConfigStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
             GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
             IFormatter formatter = new BinaryFormatter();
             formatter.Serialize(compressedStream, GameConfiguration);
             compressedStream.Close();
             createConfigStream.Close();
+            MessageBox.Show($"Succesfully exported Config.\nYou can find your config under following Path:\n{Path.Combine(Directory.GetCurrentDirectory(),outputPath)}", "Successfully exported Config", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         public void ImportConfig(string configPath)
         {
@@ -471,11 +479,14 @@ namespace UWUVCI_AIO_WPF
             RomPath = null;
             Injected = false;
             GameConfiguration.CBasePath = null;
+            MessageBox.Show("The Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.","Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            
         }
         public void Inject()
         {
             if (Injection.Inject(GameConfiguration, RomPath)) Injected = true;
             else Injected = false;
+
 
         }
         private void BaseCheck()

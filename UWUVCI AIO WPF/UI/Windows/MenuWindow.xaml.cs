@@ -89,12 +89,12 @@ namespace UWUVCI_AIO_WPF
                     load_frame.Content = new INJECTFRAME(GameConsoles.N64);
                     mvm.GameConfiguration.N64Stuff = new Classes.N64Conf();
                     break;
-                case 3:
+                case 4:
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - NES VC INJECT";
                     load_frame.Content = new INJECTFRAME(GameConsoles.NES);
                     break;
-                case 4:
+                case 3:
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SNES VC INJECT";
                     load_frame.Content = new INJECTFRAME(GameConsoles.SNES);

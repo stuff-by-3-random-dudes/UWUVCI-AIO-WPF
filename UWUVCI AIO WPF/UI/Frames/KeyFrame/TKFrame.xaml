@@ -10,7 +10,7 @@
       Title="NDSFrame">
 
     <Grid DataContext="{StaticResource mvm}">
-        <DataGrid Background="Transparent" AutoGenerateColumns="False" ItemsSource="{Binding Ltemp}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False" SelectedItem="{Binding GbTemp}" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Name="Grid">
+        <DataGrid Background="Transparent" AutoGenerateColumns="False" ItemsSource="{Binding Ltemp}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False" SelectedItem="{Binding GbTemp}" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Name="Grid" SelectionMode = "Single">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" x:Name="Name" Width="Auto"/>
                 <DataGridTextColumn Header="Region" Binding="{Binding Region}" x:Name="Region" Width="Auto"/>

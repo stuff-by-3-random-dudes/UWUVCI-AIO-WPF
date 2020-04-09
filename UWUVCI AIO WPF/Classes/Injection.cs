@@ -699,7 +699,18 @@ namespace UWUVCI_AIO_WPF
                         {
                             throw new Exception("Size");
                         }
-                        
+                        if (e.Contains("TRUEVISION") || s.Contains("TRUEVISION"))
+                        {
+                            checkIfIssue.StartInfo.UseShellExecute = false;
+                            checkIfIssue.StartInfo.CreateNoWindow = false;
+                            checkIfIssue.StartInfo.RedirectStandardOutput = true;
+                            checkIfIssue.StartInfo.RedirectStandardError = true;
+                            checkIfIssue.StartInfo.FileName = $"{Path.Combine(toolsPath, "tga_verify.exe")}";
+                            Console.WriteLine(Directory.GetCurrentDirectory());
+                            checkIfIssue.StartInfo.Arguments = $"--fixup \"{imgPath}\"";
+                            checkIfIssue.Start();
+                            checkIfIssue.WaitForExit();
+                        }
                         Console.ReadLine();
                     }
 

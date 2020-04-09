@@ -44,7 +44,7 @@
 
                 <VisualBrush TileMode="Tile" Viewport="0,0,0.0965,1">
                     <VisualBrush.Visual>
-                        <Image Source="/UWUVCI AIO WPF;component/UI/Images/bg maybe wpf.png"></Image>
+                        <Image Source="/UI/Images/bg maybe wpf.png"></Image>
                     </VisualBrush.Visual>
                 </VisualBrush>
 
@@ -73,7 +73,7 @@
                     <!--NDS-->
                     <ListViewItem Height="60" x:Name="NDS" IsEnabled="{Binding PathsSet}" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/nds64v64.png"></Image>
+                            <Image Source="/UI/Images/ds64x64alt4.png"></Image>
                             <TextBlock Text="NDS VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
@@ -81,42 +81,43 @@
                     <ListViewItem Height="60" x:Name="GBA" IsEnabled="{Binding PathsSet}"  Cursor="Hand" ToolTip="Also supports GameBoy/GameBoy Color">
                         
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/gba64.png"></Image>
+                            <Image Source="/UI/Images/gba64alt3.png"></Image>
                             <TextBlock Text="GBA VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
                     <!--N64-->
                     <ListViewItem Height="60" x:Name="N64" IsEnabled="{Binding PathsSet}"  Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/n64colorless.png"></Image>
+                            <Image Source="/UI/Images/n64colorlessalt5.png"></Image>
                             <TextBlock Text="N64 VC Inject" VerticalAlignment="Center" Margin="20 10"/>
-                        </StackPanel>
-                    </ListViewItem>
-                    <!--NES-->
-                    <ListViewItem Height="60" x:Name="NES" IsEnabled="{Binding PathsSet}"  Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/nes64alt2.png"></Image>
-                            <TextBlock Text="NES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
                     <!--SNES-->
                     <ListViewItem Height="60" x:Name="SNES" IsEnabled="{Binding PathsSet}" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/snes64.png"></Image>
+                            <Image Source="/UI/Images/snes64alt2.png"></Image>
                             <TextBlock Text="SNES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
+                    <!--NES-->
+                    <ListViewItem Height="60" x:Name="NES" IsEnabled="{Binding PathsSet}"  Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UI/Images/nes64alt5.png"></Image>
+                            <TextBlock Text="NES VC Inject" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
+                   
                     <!--TG16-->
                     <ListViewItem Height="60" x:Name="TG16alt" IsEnabled="{Binding PathsSet}" Cursor="Hand" ToolTip="Also supports TurboGrafX-CD">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/tg16alt.png"></Image>
+                            <Image Source="/UI/Images/tg16alt.png"></Image>
                             <TextBlock Text="TG16 VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
                     <!--MSX-->
                     <ListViewItem Height="60" x:Name="MSX" IsEnabled="{Binding PathsSet}" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UWUVCI AIO WPF;component/UI/Images/msx.png"></Image>
+                            <Image Source="/UI/Images/msx.png"></Image>
                             <TextBlock Text="MSX VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
