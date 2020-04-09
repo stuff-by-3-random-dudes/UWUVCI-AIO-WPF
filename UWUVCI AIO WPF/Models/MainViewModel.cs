@@ -648,7 +648,7 @@ namespace UWUVCI_AIO_WPF
                             dialog.Filter = "Nintendo 64 ROM (*.n64; *.v64; *.z64) | *.n64;*.v64;*.z64";
                             break;
                         case GameConsoles.GBA:
-                            dialog.Filter = "GameBoy Advance ROM (*.gba) | *.gba | GameBoy Color ROM (*.gbc) | *.gbc | GameBoy ROM (*.gb) | *.gb";
+                            dialog.Filter = "GameBoy Series ROM (*.gba;*.gbc;*.gb) | *.gba;*.gbc;*.gb";
                             break;
                         case GameConsoles.NES:
                             dialog.Filter = "Nintendo Entertainment System ROM (*.nes; *.fds) | *.nes;*.fds";
