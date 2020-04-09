@@ -844,7 +844,7 @@ namespace UWUVCI_AIO_WPF
                 else
                 {
                     MessageBox.Show("The Programm will now terminate");
-                    System.Windows.Application.Current.Shutdown();
+                    Environment.Exit(1);
                 }
                 
             }
