@@ -38,7 +38,7 @@
     <Grid DataContext="{StaticResource mvm}">
         <Grid Margin="60,70,0,0">
             <Frame x:Name="load_frame" NavigationUIVisibility="Hidden"/>
-            <TextBlock Text="" HorizontalAlignment="Left" Margin="10,158,0,0" VerticalAlignment="Top" Height="106" Width="1115" FontSize="22" Name="tbA" Foreground="Black" />
+            <TextBlock x:Name="tb" Margin="10,10,0,0" TextWrapping="Wrap" FontSize="20" Height="143" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="Black" />
         </Grid>
         <Grid Height="72" VerticalAlignment="Top" Margin="0,-2,0,0">
             <Grid.Background>

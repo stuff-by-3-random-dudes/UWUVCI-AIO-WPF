@@ -25,7 +25,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public TitleKeys()
         {
             InitializeComponent();
-            tbA.Text = "To enter a TitleKey, first select the console on your left\nand then double click on a Title you want to enter the Key for.";
+            tb.Text = "To enter a TitleKey, first select the console on your left\nand then double click on a Title you want to enter the Key for.";
         }
         private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -58,7 +58,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void ListView_Click(object sender, MouseButtonEventArgs e)
         {
-            tbA.Visibility = Visibility.Hidden;
+            tb.Visibility = Visibility.Hidden;
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:
@@ -83,17 +83,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     break;
                 case 3:
                     DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - TKeys";
+                    tbTitleBar.Text = "UWUVCI AIO - SNES TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.SNES);
                     break;
                 case 5:
                     DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - TKeys";
+                    tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.TG16);
                     break;
                 case 6:
                     DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - TKeys";
+                    tbTitleBar.Text = "UWUVCI AIO - MSX TKeys";
                     load_frame.Content = new TKFrame(GameConsoles.MSX);
                     break;
             }
