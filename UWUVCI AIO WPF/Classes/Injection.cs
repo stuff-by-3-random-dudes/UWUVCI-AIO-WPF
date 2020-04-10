@@ -40,6 +40,7 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
+
                 if (Configuration.BaseRom.Name != "Custom")
                 {
                     //Normal Base functionality here
@@ -69,6 +70,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     MessageBox.Show("The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+               
                 else
                 {
                     MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -176,7 +178,7 @@ namespace UWUVCI_AIO_WPF
             }
 
             DirectoryCopy(baseRomPath,outputPath, true);
-            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Clean();
         }
@@ -204,7 +206,7 @@ namespace UWUVCI_AIO_WPF
                 cnuspacker.WaitForExit();
             }
 
-            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Clean();
         }
@@ -408,6 +410,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     throw new Exception("retro");
                 }
+               
             }
 
             RPXcomp(rpxFile); //Compresses the RPX

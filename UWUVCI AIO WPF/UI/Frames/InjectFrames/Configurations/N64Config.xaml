@@ -22,7 +22,7 @@
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,232,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,187,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,141,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,21,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,21,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
         <RadioButton x:Name="rbRDF" Content="Remove DarkFilter" HorizontalAlignment="Left" Margin="11,369,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="{Binding GameConfiguration.N64Stuff.DarkFilter}"/>
         <RadioButton Content="Keep DarkFilter" HorizontalAlignment="Left" Margin="151,369,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="True"/>
         <TextBox Name="ini" materialDesign:HintAssist.Hint="INI PATH (LEAVE EMPTY FOR BLANK INI)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,58,157,305" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}"/>

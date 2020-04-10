@@ -479,7 +479,6 @@ namespace UWUVCI_AIO_WPF
             RomPath = null;
             Injected = false;
             GameConfiguration.CBasePath = null;
-            MessageBox.Show("The Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.","Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             
         }
         public void Inject()

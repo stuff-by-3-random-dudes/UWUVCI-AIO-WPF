@@ -29,6 +29,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.GameConfiguration.N64Stuff = new N64Conf();
             InitializeComponent();
             mvm.setThing(this);
+            Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            
         }
 
 
