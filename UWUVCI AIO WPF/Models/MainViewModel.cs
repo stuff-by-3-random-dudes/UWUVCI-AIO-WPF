@@ -471,7 +471,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                Injection.Packing(GameConfiguration.GameName);
+                Injection.Packing(GameConfiguration.GameName, this);
             }
             LGameBasesString.Clear();
             CanInject = false;
@@ -483,7 +483,7 @@ namespace UWUVCI_AIO_WPF
         }
         public void Inject()
         {
-            if (Injection.Inject(GameConfiguration, RomPath)) Injected = true;
+            if (Injection.Inject(GameConfiguration, RomPath, this)) Injected = true;
             else Injected = false;
 
 
@@ -800,6 +800,35 @@ namespace UWUVCI_AIO_WPF
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public void InjcttoolCheck()
+        {
+            if (ToolCheck.DoesToolsFolderExist())
+            {
+
+                List<MissingTool> missingTools = new List<MissingTool>();
+                missingTools = ToolCheck.CheckForMissingTools();
+                if (missingTools.Count > 0)
+                {
+                    MessageBox.Show("There are tools missing.\nThe Download will start after you press OK", "Missing Tools", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //Download Tools
+                        foreach (MissingTool m in missingTools)
+                        {
+                            DownloadTool(m.Name);
+                        }
+                        InjcttoolCheck();
+                    
+                }
+            }
+            else
+            {
+                string path = $@"{Directory.GetCurrentDirectory()}\Tools";
+                
+                    Directory.CreateDirectory("Tools");
+                    InjcttoolCheck();
+              
             }
         }
 

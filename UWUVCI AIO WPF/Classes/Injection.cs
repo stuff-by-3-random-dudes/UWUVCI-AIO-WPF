@@ -36,8 +36,9 @@ namespace UWUVCI_AIO_WPF
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
 
-        public static bool Inject(GameConfig Configuration, string RomPath)
+        public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm)
         {
+            mvm.InjcttoolCheck();
             try
             {
 
@@ -183,8 +184,9 @@ namespace UWUVCI_AIO_WPF
             Clean();
         }
 
-        public static void Packing(string gameName)
+        public static void Packing(string gameName, MainViewModel mvm)
         {
+            mvm.InjcttoolCheck();
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
             string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{gameName}");
@@ -213,7 +215,7 @@ namespace UWUVCI_AIO_WPF
 
         public static void Download(MainViewModel mvm)
         {
-
+            mvm.InjcttoolCheck();
             //GetCurrentSelectedBase
             GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
             //GetKeyOfBase
