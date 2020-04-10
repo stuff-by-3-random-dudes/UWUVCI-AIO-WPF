@@ -206,7 +206,7 @@ namespace UWUVCI_AIO_WPF
                 cnuspacker.WaitForExit();
             }
 
-            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"Injection Complete!\nDisclaimer: Only install injections to USB to prevent a brick in a worst case scenario\n\nThe Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Clean();
         }
