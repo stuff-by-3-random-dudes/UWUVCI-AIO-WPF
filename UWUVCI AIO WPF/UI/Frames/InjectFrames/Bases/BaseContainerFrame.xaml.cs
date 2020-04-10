@@ -37,6 +37,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             {
                 cbCombo.ToolTip = "We recommend Metal Slader Glory for NES Injection!";
             }
+            if(console == GameConsoles.SNES)
+            {
+                cbCombo.ToolTip = "We recommend Kirby's Dream Land 3 for SNES Injection!";
+            }
             if(console == GameConsoles.MSX)
             {
                 cbCombo.ToolTip = "You need to try which base works best.\nNemesis has the best MSX compatibility and Goemon the best MSX2. \nBoth support MSX and MSX2 ROMs";
