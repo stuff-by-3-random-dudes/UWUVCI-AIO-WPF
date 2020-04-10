@@ -618,6 +618,10 @@ namespace UWUVCI_AIO_WPF
                         ImportConfig(ret);
                         MessageBox.Show("Please re-select a base!");
                     }
+                    else
+                    {
+                        MessageBox.Show($"The config you are trying to import is not made for {console.ToString()} Injections. \nPlease choose a config made for these kind of Injections or choose a different kind of Injection","Issue Importing", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
             }
             
@@ -651,7 +655,7 @@ namespace UWUVCI_AIO_WPF
                             dialog.Filter = "GameBoy Series ROM (*.gba;*.gbc;*.gb) | *.gba;*.gbc;*.gb";
                             break;
                         case GameConsoles.NES:
-                            dialog.Filter = "Nintendo Entertainment System ROM (*.nes; *.fds) | *.nes;*.fds";
+                            dialog.Filter = "Nintendo Entertainment System ROM (*.nes) | *.nes";
                             break;
                         case GameConsoles.SNES:
                             dialog.Filter = "Super Nintendo Entertainment System ROM (*.sfc; *.smc) | *.sfc;*.smc";
