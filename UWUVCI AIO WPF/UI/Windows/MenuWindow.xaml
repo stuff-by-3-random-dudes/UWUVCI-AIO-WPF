@@ -115,7 +115,7 @@
                         </StackPanel>
                     </ListViewItem>
                     <!--MSX-->
-                    <ListViewItem Height="60" x:Name="MSX" IsEnabled="{Binding PathsSet}" Cursor="Hand">
+                    <ListViewItem Height="60" x:Name="MSX" IsEnabled="{Binding PathsSet}" Cursor="Hand" ToolTip="Supports MSX and MSX2 Games">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="/UI/Images/msx.png"></Image>
                             <TextBlock Text="MSX VC Inject" VerticalAlignment="Center" Margin="20 10"/>
