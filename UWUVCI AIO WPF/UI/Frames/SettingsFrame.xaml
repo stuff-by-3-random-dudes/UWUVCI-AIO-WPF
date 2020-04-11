@@ -23,7 +23,7 @@
         <Button Content="Credits" HorizontalAlignment="Left" Margin="1040,438,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5"/>
         <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,292,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
         <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="465,372,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1040,10,0,0" TextWrapping="Wrap" Text="v2.0 Beta" VerticalAlignment="Top" FontSize="20"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1084,10,0,0" TextWrapping="Wrap" Text="v2.0" VerticalAlignment="Top" FontSize="20" Width="36"/>
         <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,292,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
 
     </Grid>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -140,6 +141,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 cd = true;
                 mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
             }
+        }
+
+        private void gn_KeyUp(object sender, KeyEventArgs e)
+        {
+            Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³]");
+            gn.Text = reg.Replace(gn.Text, string.Empty);
+            gn.CaretIndex = gn.Text.Length;
+            gn.ScrollToHorizontalOffset(double.MaxValue);
         }
     }
 }
