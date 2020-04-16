@@ -29,11 +29,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
         public BaseContainerFrame(GameConsoles console)
         {
             InitializeComponent();
-            this.console = console;
+            
+           
+
             mvm = (MainViewModel)FindResource("mvm");
-            mvm.GetBases(console);
+            
             mvm.GameConfiguration.Console = console;
-            if(console == GameConsoles.NES)
+            if (console == GameConsoles.GCN) this.console = GameConsoles.WII;
+            else this.console = console;
+            mvm.GetBases(this.console);
+            if (console == GameConsoles.NES)
             {
                 cbCombo.ToolTip = "We recommend Metal Slader Glory for NES Injection!";
             }
@@ -47,19 +52,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             }
         }
 
-        public BaseContainerFrame(GameConsoles console, GameBases index)
-        {
-            InitializeComponent();
-            this.console = console;
-            mvm = (MainViewModel)FindResource("mvm");
-            insertedConfig = true;
-            mvm.GetBases(console);
-            cbCombo.SelectedItem = index;
-            ComboBox_SelectionChanged(null, null);
-            insertedConfig = false;
-           
-
-        }
+       
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

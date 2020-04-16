@@ -9,6 +9,7 @@ using System.Windows;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
+using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -20,6 +21,7 @@ namespace UWUVCI_AIO_WPF
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
         private static readonly string imgPath = Path.Combine(tempPath, "img");
         private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "Tools");
+        static string code = null;
 
         /*
          * GameConsole: Can either be NDS, N64, GBA, NES, SNES or TG16
@@ -36,8 +38,10 @@ namespace UWUVCI_AIO_WPF
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
 
-        public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm)
+        public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
+            if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
+            Directory.CreateDirectory(tempPath);
             mvm.InjcttoolCheck();
             try
             {
@@ -52,14 +56,23 @@ namespace UWUVCI_AIO_WPF
                     //Custom Base Functionality here
                     CopyBase($"Custom", Configuration.CBasePath);
                 }
-                RunSpecificInjection(Configuration, RomPath);
-                EditXML(Configuration.GameName);
+                if (mvm.GC)
+                {
+                    RunSpecificInjection(Configuration, GameConsoles.GCN, RomPath, force, mvm);
+                }
+                else
+                {
+                    RunSpecificInjection(Configuration, Configuration.Console, RomPath, force, mvm);
+                }
+               
+                EditXML(Configuration.GameName, mvm.Index, code);
                 Images(Configuration);
                 MessageBox.Show("Injection Finished, please choose how you want to export the Inject next", "Finished Injection Part", MessageBoxButton.OK, MessageBoxImage.Information);
+                code = null;
                 return true;
             }catch(Exception e)
             {
-                
+                code = null;
                 if (e.Message.Contains("Images")){
                     MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -71,7 +84,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     MessageBox.Show("The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-               
+                
                 else
                 {
                     MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -80,19 +93,24 @@ namespace UWUVCI_AIO_WPF
                 Clean();
                 return false;
             }
+            finally
+            {
+                mvm.Index = -1;
+                mvm.LR = false;
+            }
 
         }
 
-        private static void RunSpecificInjection(GameConfig console, string RomPath)
+        private static void RunSpecificInjection(GameConfig cfg, GameConsoles console, string RomPath, bool force, MainViewModel mvm)
         {
-            switch (console.Console)
+            switch (console)
             {
                 case GameConsoles.NDS:
                     NDS(RomPath);
                     break;
 
                 case GameConsoles.N64:
-                   N64(RomPath, console.N64Stuff);
+                   N64(RomPath, cfg.N64Stuff);
                     break;
 
                 case GameConsoles.GBA:
@@ -111,8 +129,179 @@ namespace UWUVCI_AIO_WPF
                 case GameConsoles.MSX:
                     MSX(RomPath);
                     break;
+                case GameConsoles.WII:
+                    WII(RomPath, mvm, false);
+                    break;
+                case GameConsoles.GCN:
+                    WII(RomPath, mvm, force);
+                    break;
             }
         }
+
+        private static void WII(string romPath, MainViewModel mvm, bool force)
+        {
+            Console.WriteLine("Removing unnecessary Files...");
+
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
+            {
+                File.Delete(sFile);
+            }
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "meta"), "*.jpg"))
+            {
+                File.Delete(sFile);
+            }
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "meta"), "*.bfma"))
+            {
+                File.Delete(sFile);
+            }
+
+            if (File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tmd"))) File.Delete(Path.Combine(baseRomPath, "code", "rvlt.tmd"));
+            if (File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tik"))) File.Delete(Path.Combine(baseRomPath, "code", "rvlt.tik"));
+
+            Console.WriteLine("Finished removing Files");
+
+            using (Process tik = new Process())
+            {
+                if (!mvm.GC)
+                {
+                    if (new FileInfo(romPath).Extension.Contains("wbfs"))
+                    {
+                        Console.WriteLine("Converting WBFS to ISO...");
+                        tik.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
+                        tik.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\"";
+                        tik.Start();
+                        tik.WaitForExit();
+                        if (!File.Exists(Path.Combine(tempPath, "pre.iso")))
+                        {
+                            Console.WriteLine("An error occured while converting WBFS to ISO");
+                            throw new Exception();
+                        }
+                        if (File.Exists(Path.Combine(tempPath, "rom.wbfs"))) { File.Delete(Path.Combine(tempPath, "rom.wbfs")); }
+                        romPath = Path.Combine(tempPath, "pre.iso");
+                        Console.WriteLine("Finished Conversion");
+                    }
+                    tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+
+                    Console.WriteLine("Trimming ROM...");
+
+                    tik.StartInfo.Arguments = $"extract \"{romPath}\" --DEST \"{Path.Combine(tempPath, "IsoExt")}\" --psel data -vv1";
+                    tik.Start();
+                    tik.WaitForExit();
+                    if (!Directory.Exists(Path.Combine(tempPath, "IsoExt")))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("An error occured while trimming the ROM");
+                        throw new Exception();
+                    }
+                    Console.WriteLine("Finished trimming");
+                    if (mvm.Index == 4)
+                    {
+                        Console.WriteLine("Patching the ROM to force Classic Controller input");
+                        tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                        tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "IsoExt", "sys", "main.dol")}\"";
+                        tik.Start();
+                        tik.WaitForExit();
+                        tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    }
+                    Console.WriteLine("Creating ISO from trimmed ROM...");
+                    tik.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "IsoExt")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                    tik.Start();
+                    tik.WaitForExit();
+
+                    if (!File.Exists(Path.Combine(tempPath, "game.iso")))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("An error occured while Creating the ISO");
+                        throw new Exception();
+                    }
+                    romPath = Path.Combine(tempPath, "game.iso");
+                }
+                else
+                {
+                    if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+                    Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
+                    tik.StartInfo.FileName =  Path.Combine(toolsPath, "7za.exe");
+                    tik.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
+                    tik.Start();
+                    tik.WaitForExit();
+                    DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
+                    if (force)
+                    {
+                        File.Copy(Path.Combine(toolsPath, "nintendont_force.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
+                    }
+                    else
+                    {
+                        File.Copy(Path.Combine(toolsPath, "nintendont.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
+                    }
+                    File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+                    tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    tik.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                    tik.Start();
+                    tik.WaitForExit();
+                    if (!File.Exists(Path.Combine(tempPath, "game.iso")))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("An error occured while Creating the ISO");
+                        throw new Exception();
+                    }
+                    romPath = Path.Combine(tempPath, "game.iso");
+                }
+
+                Console.WriteLine("Extracting Ticket and TMD from ISO...");
+                tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                tik.StartInfo.Arguments = $"extract \"{romPath}\" --psel data --files +tmd.bin --files +ticket.bin --dest \"{Path.Combine(tempPath, "tik")}\" -vv1";
+                tik.Start();
+                tik.WaitForExit();
+                if (!Directory.Exists(Path.Combine(tempPath, "tik")) || !File.Exists(Path.Combine(tempPath, "tik", "tmd.bin")) || !File.Exists(Path.Combine(tempPath, "tik", "ticket.bin")))
+                {
+                    Console.Clear();
+                    Console.WriteLine("An error occured while extracting the Ticket and TMD");
+                    throw new Exception();
+                }
+                Console.WriteLine("Finished extracting");
+                Console.WriteLine("Copying TIK and TMD...");
+                if (File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tmd"))) { File.Delete(Path.Combine(baseRomPath, "code", "rvlt.tmd")); }
+                File.Copy(Path.Combine(tempPath, "tik", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
+                if (File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tik"))) { File.Delete(Path.Combine(baseRomPath, "code", "rvlt.tik")); }
+                File.Copy(Path.Combine(tempPath, "tik", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
+                if (!File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tik")) || !File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tmd")))
+                {
+                    Console.Clear();
+                    Console.WriteLine("An error occured while copying the Ticket and TMD");
+                    throw new Exception();
+                }
+                Console.WriteLine("Finished Copying");
+                Console.WriteLine("Converting Game to NFS format...");
+                string olddir = Directory.GetCurrentDirectory();
+                Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+                tik.StartInfo.FileName = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
+                if (!mvm.GC)
+                {
+                    string extra = "";
+                    if (mvm.Index == 2)
+                    {
+                        extra = "-horizontal ";
+                    }
+                    if (mvm.Index == 3) { extra = "-wiimote "; }
+                    if (mvm.Index == 4) { extra = "-instantcc "; }
+                    if (mvm.Index == 5) { extra = "-nocc "; }
+                    if (mvm.LR) { extra += "-lrpatch "; }
+                    Console.WriteLine(extra);
+                    Console.ReadLine();
+                    tik.StartInfo.Arguments = $"-enc {extra}-iso \"{romPath}\"";
+                }
+                else
+                {
+                    tik.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso \"{romPath}\"";
+                }
+                tik.Start();
+                tik.WaitForExit();
+                Console.WriteLine("Finished Conversion");
+                Directory.SetCurrentDirectory(olddir);
+            }
+        }
+
+       
         public static void MSX(string injectRomPath)
         {
             byte[] test = new byte[0x580B3];
@@ -154,10 +343,7 @@ namespace UWUVCI_AIO_WPF
 
             }
         }
-        public static void NES(string injectRomPath)
-        {
-            // new nes injection method
-        }
+       
         public static void Clean()
         {
             if (Directory.Exists(tempPath))
@@ -207,40 +393,84 @@ namespace UWUVCI_AIO_WPF
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
             }
-
-            MessageBox.Show($"Injection Complete!\nDisclaimer: Only install injections to USB to prevent a brick in a worst case scenario\n\nThe Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            string extra = "";
+            if (mvm.GameConfiguration.Console == GameConsoles.WII) extra = "\nDISCLAIMER: Some games cannot reboot into the WiiU Menu. Shut down the console via the GamePad Power Button.\nIf Stuck in a BlackScreen, you need to unplug your wiiu";
+            if (mvm.GC) extra = "\nDISCLAIMER: Make sure to have Nintendont + config on your sd card. You can add them under Settings -> \"Start Nintendont Config Tool\"";
+            MessageBox.Show($"Injection Complete!\nDisclaimer: Only install injections to USB to prevent a brick in a worst case scenario{extra}\n\nThe Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
 
             Clean();
         }
 
         public static void Download(MainViewModel mvm)
+
         {
             mvm.InjcttoolCheck();
-            //GetCurrentSelectedBase
             GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
+
             //GetKeyOfBase
             TKeys key = mvm.getTkey(b);
-
-
-            if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
-            Directory.CreateDirectory(tempPath);
-            using (Process download = new Process())
+            if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
             {
-                download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
+                using (Process zip = new Process())
+                {
+                    if(Directory.Exists(Path.Combine(toolsPath, "IKVM"))) { Directory.Delete(Path.Combine(toolsPath, "IKVM"), true); }
+                    zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
+                    zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "IKVM.zip")}\" -o\"{Path.Combine(toolsPath, "IKVM")}\"";
+                    zip.Start();
+                    zip.WaitForExit();
+                    string[] JNUSToolConfig = { "http://ccs.cdn.wup.shop.nintendo.net/ccs/download", Properties.Settings.Default.Ckey };
+                    string savedir = Directory.GetCurrentDirectory();
+                    
+                    File.WriteAllLines(Path.Combine(toolsPath, "IKVM", "config"), JNUSToolConfig);
+                    Directory.SetCurrentDirectory(Path.Combine(toolsPath, "IKVM"));
+                    zip.StartInfo.FileName = "JNUSTool.exe";
+                    zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file .*";
+                    zip.Start();
+                    zip.WaitForExit();
+                    Directory.SetCurrentDirectory(savedir);
+                    var directories = Directory.GetDirectories(Path.Combine(toolsPath, "IKVM"));
+                    string name = "";
+                    foreach (var s in directories)
+                    {
+                        if (s.Contains(b.Name))
+                        {
+                            var split = s.Split('\\');
+                            name = split[split.Length - 1];
 
-                download.Start();
-                download.WaitForExit();
+                        }
+
+                    }
+                    DirectoryCopy(Path.Combine(toolsPath, "IKVM", name), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]"), true);
+                    Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);
+                }
             }
-
-            using (Process decrypt = new Process())
+            else
             {
-                decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":","")} [{b.Region.ToString()}]")}\"";
+              
 
-                decrypt.Start();
-                decrypt.WaitForExit();
+
+                if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
+                Directory.CreateDirectory(tempPath);
+                using (Process download = new Process())
+                {
+                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
+                    download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
+
+                    download.Start();
+                    download.WaitForExit();
+                }
+
+                using (Process decrypt = new Process())
+                {
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+
+                    decrypt.Start();
+                    decrypt.WaitForExit();
+                }
             }
+            //GetCurrentSelectedBase
+            
         }
         public static string ExtractBase(string path, GameConsoles console)
         {
@@ -266,72 +496,84 @@ namespace UWUVCI_AIO_WPF
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
-        private static void EditXML(string gameName)
+        private static void EditXML(string gameName, int index, string code)
         {
-
+            
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();
             string ID = $"{random.Next(0x3000, 0x10000):X4}";
-
-            XmlDocument doc = new XmlDocument();
-            try
-            {
-                doc.Load(metaXml);
-                if(gameName != null && gameName != string.Empty)
+            
+                XmlDocument doc = new XmlDocument();
+                try
                 {
-                    doc.SelectSingleNode("menu/longname_ja").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_en").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_fr").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_de").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_it").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_es").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_ko").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_nl").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_pt").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_ru").InnerText = gameName;
-                    doc.SelectSingleNode("menu/longname_zht").InnerText = gameName;
-                }
-               
+                    doc.Load(metaXml);
+                    if (gameName != null && gameName != string.Empty)
+                    {
+                        doc.SelectSingleNode("menu/longname_ja").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_en").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_fr").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_de").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_it").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_es").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_ko").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_nl").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_pt").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_ru").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_zht").InnerText = gameName;
+                    }
 
-                doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID}";
+                    if(code != null)
+                    {
+                        doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{code}";
+                    }
+                    else
+                    {
+                        doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID}";
+                    }
+                     if (index > 0)
+                    {
+                    doc.SelectSingleNode("menu/drc_use").InnerText = "65537";
+                    }
                 doc.SelectSingleNode("menu/title_id").InnerText = $"0005000060{ID}00";
-                doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID}";
-                if(gameName != null && gameName != string.Empty)
-                {
-                    doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_de").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_en").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_it").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_es").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName;
-                    doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName;
-                }
-                
-                doc.Save(metaXml);
-            }
-            catch (NullReferenceException)
-            {
-                //MessageBox.Show("Error when editing the meta.xml: Values seem to be missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                    doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID}";
+                    if (gameName != null && gameName != string.Empty)
+                    {
+                        doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_de").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_en").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_it").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_es").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName;
+                    }
 
-            try
-            {
-                doc.Load(appXml);
-                doc.SelectSingleNode("app/title_id").InnerText = $"0005000060{ID}00";
-                doc.SelectSingleNode("app/group_id").InnerText = $"0000{ID}";
-                doc.Save(appXml);
-            }
-            catch (NullReferenceException)
-            {
-               // MessageBox.Show("Error when editing the app.xml: Values seem to be missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                    doc.Save(metaXml);
+                }
+                catch (NullReferenceException)
+                {
+                    //MessageBox.Show("Error when editing the meta.xml: Values seem to be missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                try
+                {
+                    doc.Load(appXml);
+                    doc.SelectSingleNode("app/title_id").InnerText = $"0005000060{ID}00";
+                    doc.SelectSingleNode("app/group_id").InnerText = $"0000{ID}";
+                    doc.Save(appXml);
+                }
+                catch (NullReferenceException)
+                {
+                    // MessageBox.Show("Error when editing the app.xml: Values seem to be missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            
+            
         }
 
         //This function copies the custom or normal Base to the working directory
@@ -463,7 +705,48 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
+        private static void DownloadSysTitle(MainViewModel mvm)
+        {
+            if (mvm.SysKeyset() && mvm.SysKey1set())
+            {
+                using (Process download = new Process())
+                {
+                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
+                    download.StartInfo.Arguments = $"0005001010004001 {Properties.Settings.Default.SysKey} \"{Path.Combine(tempPath, "download")}\"";
 
+                    download.Start();
+                    download.WaitForExit();
+                }
+                using (Process decrypt = new Process())
+                {
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys")}\"";
+
+                    decrypt.Start();
+                    decrypt.WaitForExit();
+                }
+                using (Process download = new Process())
+                {
+                    Directory.Delete(Path.Combine(tempPath, "download"), true);
+                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
+                    download.StartInfo.Arguments = $"0005001010004000 {Properties.Settings.Default.SysKey1} \"{Path.Combine(tempPath, "download")}\"";
+
+                    download.Start();
+                    download.WaitForExit();
+                }
+                using (Process decrypt = new Process())
+                {
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(tempPath, "tempd")}\"";
+
+                    decrypt.Start();
+                    decrypt.WaitForExit();
+                    File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
+                    File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
+                    File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "app.xml"));
+                }
+            }
+        }
         private static void NDS(string injectRomPath)
         {
             

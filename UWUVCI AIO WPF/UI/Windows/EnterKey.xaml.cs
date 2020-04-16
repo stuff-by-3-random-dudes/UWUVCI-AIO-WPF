@@ -20,6 +20,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     public partial class EnterKey : Window
     {
         bool ckey = false;
+        bool wiiu = false;
+        bool sys1 = false;
         public EnterKey(bool ckey)
         {
             InitializeComponent();
@@ -29,6 +31,24 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 region.Visibility = Visibility.Hidden;
                 Key.Text = "CommonKey";
             }
+        }
+
+        public EnterKey(int i)
+        {
+            InitializeComponent();
+            region.Visibility = Visibility.Hidden;
+            
+            Key.Text = "Enter the TitleKey for 000500101000400";
+            if (i == 1)
+            {
+                Key.Text += "0";
+            }
+            else
+            {
+                Key.Text += "1";
+            }
+            wiiu = true;
+            if (i == 1) sys1 = true;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -51,6 +71,35 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     MessageBox.Show("The entered CommonKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+            }
+            else if (wiiu)
+            {
+                MainViewModel mvm = (MainViewModel)FindResource("mvm");
+                if (sys1)
+                {
+                    if (mvm.checkSysKey1(tbKey.Text))
+                    {
+                        MessageBox.Show("The entered TitleKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("The entered TitleKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    if (mvm.checkSysKey(tbKey.Text))
+                    {
+                        MessageBox.Show("The entered TitleKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("The entered TitleKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                
             }
             else
             {

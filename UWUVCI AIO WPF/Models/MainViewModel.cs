@@ -200,7 +200,13 @@ namespace UWUVCI_AIO_WPF
             get { return lMSX; }
             set { lMSX = value; OnPropertyChanged(); }
         }
+        private List<GameBases> lWii = new List<GameBases>();
 
+        public List<GameBases> LWII
+        {
+            get { return lWii; }
+            set { lWii = value; OnPropertyChanged(); }
+        }
 
         private List<GameBases> ltemp = new List<GameBases>();
 
@@ -235,8 +241,9 @@ namespace UWUVCI_AIO_WPF
         }
 
 
-
-
+        public int Index = -1;
+        public bool LR = false;
+        public bool GC = false;
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
@@ -479,11 +486,11 @@ namespace UWUVCI_AIO_WPF
             RomPath = null;
             Injected = false;
             GameConfiguration.CBasePath = null;
-            
+            GC = false;
         }
-        public void Inject()
+        public void Inject(bool force)
         {
-            if (Injection.Inject(GameConfiguration, RomPath, this)) Injected = true;
+            if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
             else Injected = false;
 
 
@@ -559,15 +566,16 @@ namespace UWUVCI_AIO_WPF
                 File.Delete("keys/msx.vck");
                 File.Delete("keys/tg16.vck");
                 File.Delete("keys/snes.vck");
+                MessageBox.Show("Reset complete! The Programm will now Restart!");
+                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                Environment.Exit(0);
             }
-            MessageBox.Show("Reset complete! The Programm will now Restart!");
-            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
-            Environment.Exit(0);
+           
         }
         public void UpdateBases()
         {
             
-            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx" };
+            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
             foreach(string s in bases)
             {
                 DownloadBase(s);
@@ -581,12 +589,41 @@ namespace UWUVCI_AIO_WPF
                 if (s.Contains("gba")) g = GameConsoles.GBA;
                 if (s.Contains("tg16")) g = GameConsoles.TG16;
                 if (s.Contains("msx")) g = GameConsoles.MSX;
+                if (s.Contains("wii")) g = GameConsoles.WII;
                 UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bases/{s}"),g);
             }
             MessageBox.Show("Finished Updating Bases! Restarting UWUVCI AIO");
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
             
+        }
+        public bool checkSysKey(string key)
+        {
+            if(key.GetHashCode() == -589797700)
+            {
+                Properties.Settings.Default.SysKey = key;
+                Properties.Settings.Default.Save();
+                return true;
+            }
+            return false;
+        }
+        public bool SysKey1set()
+        {
+            return checkSysKey1(Properties.Settings.Default.SysKey1);
+        }
+        public bool checkSysKey1(string key)
+        {
+            if (key.GetHashCode() == -1230232583)
+            {
+                Properties.Settings.Default.SysKey1 = key;
+                Properties.Settings.Default.Save();
+                return true;
+            }
+            return false;
+        }
+        public bool SysKeyset()
+        {
+            return checkSysKey(Properties.Settings.Default.SysKey);
         }
         public bool GetConsoleOfConfig(string configPath, GameConsoles console)
         {
@@ -665,6 +702,12 @@ namespace UWUVCI_AIO_WPF
                         case GameConsoles.MSX:
                             dialog.Filter = "MSX/MSX2 ROM (*.ROM) | *.ROM";
                             break;
+                        case GameConsoles.WII:
+                            dialog.Filter = "Wii ROM (*.iso; *.wbfs) | *.iso; *.wbfs";
+                            break;
+                        case GameConsoles.GCN:
+                            dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
+                            break;
                     }
                 }
                 else if(!INI)
@@ -729,6 +772,10 @@ namespace UWUVCI_AIO_WPF
             if (!File.Exists(path + "msx"))
             {
                 ret.Add(path + "msx");
+            }
+            if (!File.Exists(path + "wii"))
+            {
+                ret.Add(path + "wii");
             }
             return ret;
         }
@@ -1006,6 +1053,13 @@ namespace UWUVCI_AIO_WPF
                     return b;
                 }
             }
+            foreach (GameBases b in LWII)
+            {
+                if (b.Name == NameWORegion && b.Region.ToString() == Region)
+                {
+                    return b;
+                }
+            }
             return null;
         }
 
@@ -1017,6 +1071,8 @@ namespace UWUVCI_AIO_WPF
             LSNES.Clear();
             LGBA.Clear();
             LTG16.Clear();
+            LMSX.Clear();
+            LWII.Clear();
             lNDS = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbnds");
             lNES = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbnes");
             lSNES = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbsnes");
@@ -1024,6 +1080,7 @@ namespace UWUVCI_AIO_WPF
             lGBA = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbgba");
             lTG16 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbtg16");
             lMSX = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbmsx");
+            lWii = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbwii");
             CreateSettingIfNotExist(lNDS, GameConsoles.NDS);
             CreateSettingIfNotExist(lNES, GameConsoles.NES);
             CreateSettingIfNotExist(lSNES, GameConsoles.SNES);
@@ -1031,6 +1088,7 @@ namespace UWUVCI_AIO_WPF
             CreateSettingIfNotExist(lN64, GameConsoles.N64);
             CreateSettingIfNotExist(lTG16, GameConsoles.TG16);
             CreateSettingIfNotExist(lMSX, GameConsoles.MSX);
+            CreateSettingIfNotExist(lWii, GameConsoles.WII);
         }
         private void CreateSettingIfNotExist(List<GameBases> l, GameConsoles console)
         {
@@ -1103,6 +1161,9 @@ namespace UWUVCI_AIO_WPF
                     break;
                 case GameConsoles.MSX:
                     Ltemp = LMSX;
+                    break;
+                case GameConsoles.WII:
+                    Ltemp = LWII;
                     break;
             }
         }
@@ -1282,6 +1343,17 @@ namespace UWUVCI_AIO_WPF
                     if (b.Name == gb.Name && b.Region == gb.Region)
                     {
                         ret = GameConsoles.MSX;
+                        cont = true;
+                    }
+                }
+            }
+            if (!cont)
+            {
+                foreach (GameBases b in lWii)
+                {
+                    if (b.Name == gb.Name && b.Region == gb.Region)
+                    {
+                        ret = GameConsoles.WII;
                         cont = true;
                     }
                 }

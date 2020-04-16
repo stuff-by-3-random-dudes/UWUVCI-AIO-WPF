@@ -5,26 +5,27 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames"
       mc:Ignorable="d" 
-      d:DesignHeight="480" d:DesignWidth="1130"
+      d:DesignHeight="600" d:DesignWidth="1135"
       Title="SettingsFrame">
 
-    <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="325,108,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,155,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,204,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,247,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" />
-        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,254,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True"/>
-        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,247,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116"/>
-        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,150,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1"/>
-        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,103,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
-        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,199,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click"/>
-        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,292,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
-        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,335,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
-        <Button Content="Credits" HorizontalAlignment="Left" Margin="1040,438,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5"/>
-        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,292,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
-        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="465,372,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1084,10,0,0" TextWrapping="Wrap" Text="v2.0" VerticalAlignment="Top" FontSize="20" Width="36"/>
-        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,292,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
+    <Grid Margin="0,2,0,-2">
+        <TextBlock HorizontalAlignment="Left" Margin="325,154,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
+        <TextBlock HorizontalAlignment="Left" Margin="325,201,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" />
+        <TextBlock HorizontalAlignment="Left" Margin="325,250,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" />
+        <TextBlock HorizontalAlignment="Left" Margin="325,293,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" />
+        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,300,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True"/>
+        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,293,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116"/>
+        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,196,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1"/>
+        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,149,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
+        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,245,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click"/>
+        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,338,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
+        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,381,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
+        <Button Content="Credits" HorizontalAlignment="Left" Margin="1040,558,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5"/>
+        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,338,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
+        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="597,422,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1022,10,0,0" TextWrapping="Wrap" Text="v2.1 BETA" VerticalAlignment="Top" FontSize="20" Width="98"/>
+        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,338,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
+        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="325,422,0,0" VerticalAlignment="Top" Width="267" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9"/>
 
     </Grid>
 </Page>

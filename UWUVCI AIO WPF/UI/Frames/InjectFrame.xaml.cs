@@ -34,6 +34,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.TurboGrafX();
             }
+            else if (console == GameConsoles.WII)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.WiiConfig();
+            }
+            else if (console == GameConsoles.GCN)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.GCConfig();
+            }
             else
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs();

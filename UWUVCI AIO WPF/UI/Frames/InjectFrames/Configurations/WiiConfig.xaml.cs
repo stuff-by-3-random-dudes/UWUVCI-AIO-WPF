@@ -14,23 +14,30 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using UWUVCI_AIO_WPF.Properties;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
     /// <summary>
-    /// Interaktionslogik für OtherConfigs.xaml
+    /// Interaktionslogik für WiiConfig.xaml
     /// </summary>
-    public partial class TurboGrafX : Page, IDisposable
+    public partial class WiiConfig : Page, IDisposable
     {
         MainViewModel mvm;
-        bool cd = false;
-        public TurboGrafX()
+        public WiiConfig()
         {
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            List<string> gpEmu = new List<string>();
+            gpEmu.Add("None");
+            gpEmu.Add("Classic Controller");
+            gpEmu.Add("Horizontal WiiMote");
+            gpEmu.Add("Vertical WiiMote");
+            gpEmu.Add("Force Classic Controller");
+            gpEmu.Add("Force No Classic Controller");
+            gamepad.ItemsSource = gpEmu;
+            gamepad.SelectedIndex = 0;
         }
         public void Dispose()
         {
@@ -39,24 +46,31 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
-            string path = string.Empty;
-            if (!cd) path = mvm.GetFilePath(true, false);
-            else path = mvm.turbocd();
-
-            if (!CheckIfNull(path)) {
+            string path = mvm.GetFilePath(true, false);
+            if (!CheckIfNull(path))
+            {
                 mvm.RomPath = path;
                 mvm.RomSet = true;
                 if (mvm.BaseDownloaded)
                 {
                     mvm.CanInject = true;
-                    
+
                 }
-                    }
-            
+            }
+
         }
 
         private void InjectGame(object sender, RoutedEventArgs e)
         {
+            mvm.Index = gamepad.SelectedIndex;
+            if(LR.IsChecked == true)
+            {
+                mvm.LR = true;
+            }
+            else
+            {
+                mvm.LR = false;
+            }
             mvm.Inject(false);
         }
 
@@ -85,27 +99,29 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
 
         }
-        
+
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) {
+            if (!CheckIfNull(path))
+            {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
                 mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
                 ic.Text = path;
-            } 
+            }
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
             mvm.ImageWarning();
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) {
+            if (!CheckIfNull(path))
+            {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
                 log.Text = path;
-            } 
+            }
         }
         public void getInfoFromConfig()
         {
@@ -118,29 +134,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private bool CheckIfNull(string s)
         {
-            if(s == null || s.Equals(string.Empty))
+            if (s == null || s.Equals(string.Empty))
             {
                 return true;
             }
             return false;
-        }
-
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            mvm.RomPath = null;
-            mvm.RomSet = false;
-            mvm.CanInject = false;
-            if (cd)
-            {
-                cd = false;
-                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
-            }
-
-            else 
-            {
-                cd = true;
-                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
-            }
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
@@ -149,6 +147,24 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gn.Text = reg.Replace(gn.Text, string.Empty);
             gn.CaretIndex = gn.Text.Length;
             gn.ScrollToHorizontalOffset(double.MaxValue);
+        }
+
+        private void gn_KeyUp_1(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void gamepad_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
+            {
+                LR.IsEnabled = true;
+            }
+            else
+            {
+                LR.IsChecked = false;
+                LR.IsEnabled = false;
+            }
         }
     }
 }

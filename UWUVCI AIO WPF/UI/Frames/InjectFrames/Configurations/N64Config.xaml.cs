@@ -53,7 +53,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void InjectGame(object sender, RoutedEventArgs e)
         {
-            mvm.Inject();
+            mvm.Inject(false);
            
         }
         public void getInfoFromConfig()

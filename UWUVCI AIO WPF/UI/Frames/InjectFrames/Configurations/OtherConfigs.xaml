@@ -17,11 +17,11 @@
         <TextBox materialDesign:HintAssist.Hint="BOOTTVTEX" Name="tv" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 24 and a Dimension of 1280x720" Margin="10,202,157,161" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTLOGOTEX" ToolTip="Needs a BitDepth of 32 and a Dimension of 170x42" Name="log"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,247,157,116" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" Text="{Binding GameConfiguration.TGALog.ImgPath}"/>
         <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,316,157,47" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" Name="gn" KeyUp="gn_KeyUp" MaxLength="250"/>
-        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,340,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame" />
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,260,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,215,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,170,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,124,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,51,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
+        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,360,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame" />
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,261,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,216,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,171,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,125,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
+        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,50,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
     </Grid>
 </Page>

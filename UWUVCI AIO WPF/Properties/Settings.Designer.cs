@@ -106,5 +106,29 @@ namespace UWUVCI_AIO_WPF.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SysKey {
+            get {
+                return ((string)(this["SysKey"]));
+            }
+            set {
+                this["SysKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SysKey1 {
+            get {
+                return ((string)(this["SysKey1"]));
+            }
+            set {
+                this["SysKey1"] = value;
+            }
+        }
     }
 }

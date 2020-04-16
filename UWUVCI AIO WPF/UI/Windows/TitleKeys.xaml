@@ -37,8 +37,12 @@
 
     <Grid DataContext="{StaticResource mvm}">
         <Grid Margin="60,70,0,0">
-            <Frame x:Name="load_frame" NavigationUIVisibility="Hidden"/>
-            <TextBlock x:Name="tb" Margin="10,10,0,0" TextWrapping="Wrap" FontSize="20" Height="143" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="Black" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="193*"/>
+                <RowDefinition Height="47*"/>
+            </Grid.RowDefinitions>
+            <Frame x:Name="load_frame" NavigationUIVisibility="Hidden" Grid.RowSpan="2"/>
+            <TextBlock x:Name="tb" Margin="572,174,563,70" TextWrapping="Wrap" FontSize="20" Height="142" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="Black" />
         </Grid>
         <Grid Height="72" VerticalAlignment="Top" Margin="0,-2,0,0">
             <Grid.Background>
@@ -121,15 +125,21 @@
                             <TextBlock Text="MSX Title Keys" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
+                    <!--WIIGCN-->
+                    <ListViewItem Height="60" x:Name="WIIGCN" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="/UI/Images/WIIGC.png"></Image>
+                            <TextBlock Text="WII/GCN Title Keys" VerticalAlignment="Center" Margin="20 10"/>
+                        </StackPanel>
+                    </ListViewItem>
                 </ListView>
 
             </StackPanel>
         </Grid>
 
-        <TextBlock HorizontalAlignment="Left" Margin="1164,12,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="1160,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Close"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1144,11,0,0" TextWrapping="Wrap" Text="__" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="1140,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Minimize"/>
+
+        <Button Content="Back" HorizontalAlignment="Left" Margin="1096,20,0,0" VerticalAlignment="Top" Width="83"  Height="29" Click="Window_Close"/>
+
     </Grid>
 
 </Window>

@@ -21,11 +21,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
     /// <summary>
     /// Interaktionslogik für OtherConfigs.xaml
     /// </summary>
-    public partial class TurboGrafX : Page, IDisposable
+    public partial class GCConfig : Page, IDisposable
     {
         MainViewModel mvm;
         bool cd = false;
-        public TurboGrafX()
+        public GCConfig()
         {
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
@@ -40,8 +40,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = string.Empty;
-            if (!cd) path = mvm.GetFilePath(true, false);
-            else path = mvm.turbocd();
+            path = mvm.GetFilePath(true, false);
+            
 
             if (!CheckIfNull(path)) {
                 mvm.RomPath = path;
@@ -57,7 +57,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void InjectGame(object sender, RoutedEventArgs e)
         {
-            mvm.Inject(false);
+            mvm.GC = true;
+            mvm.Inject(cd);
+            mvm.Index = -1;
+            gp.IsChecked = false;
         }
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
@@ -127,20 +130,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            mvm.RomPath = null;
-            mvm.RomSet = false;
-            mvm.CanInject = false;
-            if (cd)
-            {
-                cd = false;
-                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
-            }
-
-            else 
-            {
-                cd = true;
-                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
-            }
+            cd = true;
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
@@ -149,6 +139,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gn.Text = reg.Replace(gn.Text, string.Empty);
             gn.CaretIndex = gn.Text.Length;
             gn.ScrollToHorizontalOffset(double.MaxValue);
+        }
+
+        private void CheckBox_Click_1(object sender, RoutedEventArgs e)
+        {
+            if(mvm.Index == 1)
+            {
+                mvm.Index = -1;
+            }
+            else
+            {
+                mvm.Index = 1;
+            }
         }
     }
 }

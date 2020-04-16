@@ -111,6 +111,16 @@ namespace UWUVCI_AIO_WPF
                     break;
                 case 7:
                     DestroyFrame();
+                    tbTitleBar.Text = "UWUVCI AIO - Wii VC INJECT";
+                    load_frame.Content = new INJECTFRAME(GameConsoles.WII);
+                    break;
+                case 8:
+                    DestroyFrame();
+                    tbTitleBar.Text = "UWUVCI AIO - GC VC INJECT";
+                    load_frame.Content = new INJECTFRAME(GameConsoles.GCN);
+                    break;
+                case 9:
+                    DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SETTINGS";
                     load_frame.Content = new SettingsFrame(this);
                     break;

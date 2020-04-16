@@ -27,7 +27,19 @@ namespace UWUVCI_AIO_WPF.Classes
             "FreeImage.dll",
             "BuildPcePkg.exe",
             "BuildTurboCdPcePkg.exe",
-            "goomba.gba"
+            "goomba.gba",
+            "nfs2iso2nfs.exe",
+            "nintendont.dol",
+            "nintendont_force.dol",
+            "GetExtTypePatcher.exe",
+            "wbfs_file.exe",
+            "wit.exe",
+            "cygwin1.dll",
+            "cygz.dll",
+            "cyggcc_s-1.dll",
+            "IKVM.zip",
+            "NintendontConfig.exe",
+            "BASE.zip"
         };
 
         public static bool DoesToolsFolderExist()
