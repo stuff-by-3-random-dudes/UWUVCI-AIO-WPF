@@ -150,5 +150,30 @@ namespace UWUVCI_AIO_WPF
         {
             this.WindowState = WindowState.Minimized;
         }
+
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+            min.Background = new SolidColorBrush(Color.FromArgb(20, 250, 250, 250));
+        }
+
+        private void close_MouseEnter(object sender, MouseEventArgs e)
+        {
+            close.Background = new SolidColorBrush(Color.FromArgb(20, 250, 250, 250));
+        }
+
+        private void close_MouseLeave(object sender, MouseEventArgs e)
+        {
+            close.Background = new SolidColorBrush(Color.FromArgb(0, 250, 250, 250));
+        }
+
+        private void min_MouseLeave(object sender, MouseEventArgs e)
+        {
+            min.Background = new SolidColorBrush(Color.FromArgb(0, 250, 250, 250));
+        }
+        public void setDebug()
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.debug = true;
+        }
     }
 }

@@ -119,8 +119,14 @@
     <Compile Include="UI\Frames\Path\Paths.xaml.cs">
       <DependentUpon>Paths.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Windows\DownloadWait.xaml.cs">
+      <DependentUpon>DownloadWait.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\EnterKey.xaml.cs">
       <DependentUpon>EnterKey.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\TitleKeys - Kopieren.xaml.cs">
+      <DependentUpon>TitleKeys - Kopieren.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\TitleKeys.xaml.cs">
       <DependentUpon>TitleKeys.xaml</DependentUpon>
@@ -181,6 +187,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Windows\DownloadWait.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\EnterKey.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -227,6 +237,10 @@
       <DependentUpon>MenuWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\Windows\TitleKeys - Kopieren.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\TitleKeys.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

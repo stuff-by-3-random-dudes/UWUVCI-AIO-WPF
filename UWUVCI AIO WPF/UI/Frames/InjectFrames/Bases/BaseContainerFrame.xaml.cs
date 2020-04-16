@@ -70,7 +70,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                     }
                     else
                     {
-                        fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
+                        fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig, this);
                     }
                     mvm.OldIndex = cbCombo.SelectedIndex;
                 }

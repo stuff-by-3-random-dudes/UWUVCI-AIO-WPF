@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,12 +26,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
     {
         MainViewModel mvm;
         GameBases Base;
-        public NonCustomBaseFrame(GameBases Base, GameConsoles console, bool existing)
+        BaseContainerFrame bc;
+        bool ex;
+        GameConsoles consoles;
+        public NonCustomBaseFrame(GameBases Base, GameConsoles console, bool existing, BaseContainerFrame bcf)
         {
             InitializeComponent();
             mvm = (MainViewModel)FindResource("mvm");
-            
+            bc = bcf;
             this.Base = Base;
+            ex = existing;
+            consoles = console;
             createConfig(Base, console);
             checkStuff(mvm.getInfoOfBase(Base));
         }
@@ -87,8 +93,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 
         private void btnDwnlnd_Click(object sender, RoutedEventArgs e)
         {
-            mvm.Download();
-            checkStuff(mvm.getInfoOfBase(Base));
+            
+                mvm.Download();
+                checkStuff(mvm.getInfoOfBase(Base));
+         
+           
+            
         }
     }
 }

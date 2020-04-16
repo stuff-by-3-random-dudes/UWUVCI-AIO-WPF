@@ -140,6 +140,15 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
+        private int progress = 0;
+
+        public int Progress
+        {
+            get { return progress ; }
+            set { progress = value;
+                OnPropertyChanged();
+            }
+        }
 
         #region TKLIST
         private List<GameBases> lNDS = new List<GameBases>();
@@ -244,6 +253,19 @@ namespace UWUVCI_AIO_WPF
         public int Index = -1;
         public bool LR = false;
         public bool GC = false;
+        public bool debug = false;
+        public string doing = "";
+        private string Msg;
+
+        public string msg
+        {
+            get { return Msg; }
+            set { Msg = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
@@ -478,7 +500,11 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                Injection.Packing(GameConfiguration.GameName, this);
+                
+                Task.Run(() => { Injection.Packing(GameConfiguration.GameName, this); });
+
+                new DownloadWait("Packing Inject - Please Wait", "").ShowDialog();
+                Progress = 0;
             }
             LGameBasesString.Clear();
             CanInject = false;
@@ -490,8 +516,12 @@ namespace UWUVCI_AIO_WPF
         }
         public void Inject(bool force)
         {
-            if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
-            else Injected = false;
+            Task.Run(() =>
+            {
+                if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
+                else Injected = false;
+            });
+            new DownloadWait("Injecting Game - Please Wait", "").ShowDialog();
 
 
         }
@@ -1268,7 +1298,11 @@ namespace UWUVCI_AIO_WPF
         }
         public void Download()
         {
-            Injection.Download(this);
+            Task.Run(() => { Injection.Download(this); });
+            
+            new DownloadWait("Downloading Base - Please Wait", "test").ShowDialog();
+            Progress = 0;
+            
         }
         public GameConsoles GetConsoleOfBase(GameBases gb)
         {
