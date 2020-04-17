@@ -539,7 +539,13 @@ namespace UWUVCI_AIO_WPF
                 
                 Task.Run(() => { Injection.Packing(GameConfiguration.GameName, this); });
 
-                new DownloadWait("Packing Inject - Please Wait", "",this).ShowDialog();
+                DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
+                try
+                {
+                    dw.Owner = mw;
+                }
+                catch (Exception) { }
+                dw.ShowDialog();
                 Progress = 0;
                 string extra = "";
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
@@ -571,7 +577,14 @@ namespace UWUVCI_AIO_WPF
             var task = new Task(() => runInjectThread(force));
 
             task.Start();
-            new DownloadWait("Injecting Game - Please Wait", "",this).ShowDialog();
+            DownloadWait dw = new DownloadWait("Injecting Game - Please Wait", "",this);
+            try
+            {
+                dw.Owner = mw;
+            }
+            catch (Exception) { }
+           
+            dw.ShowDialog();
             if (Injected)
             {
                 new Custom_Message("Finished Injection Part", "Injection Finished, please choose how you want to export the Inject next.").ShowDialog();
@@ -596,7 +609,14 @@ namespace UWUVCI_AIO_WPF
                         }
                         Progress = 100;
                     });
-                    new DownloadWait("Downloading needed Data - Please Wait", "",this).ShowDialog();
+                    DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
+                    try
+                    {
+                        dw.Owner = mw;
+                    }
+                    catch (Exception) { }
+                    dw.ShowDialog();
+                   
                     BaseCheck();
 
 
@@ -619,7 +639,13 @@ namespace UWUVCI_AIO_WPF
                     }
                     Progress = 100;
                 });
-                new DownloadWait("Downloading needed Data - Please Wait", "",this).ShowDialog();
+                DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "",this);
+                try
+                {
+                    dw.Owner = mw;
+                }
+                catch (Exception) { }
+                dw.ShowDialog();
                 BaseCheck();
 
             }
@@ -640,7 +666,17 @@ namespace UWUVCI_AIO_WPF
                 }
                 Progress = 100;
             });
-            new DownloadWait("Updating Tools - Please Wait", "", this).ShowDialog();
+
+            DownloadWait dw = new DownloadWait("Updating Tools - Please Wait", "", this);
+            try
+            {
+                dw.Owner = mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            dw.ShowDialog();
             new Custom_Message("Finished Updating Tools! Restarting UWUVCI AIO", "Finished Update").ShowDialog();
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
@@ -692,7 +728,17 @@ namespace UWUVCI_AIO_WPF
                 }
                 Progress = 100;
             });
-            new DownloadWait("Updating Base Files - Please Wait", "", this).ShowDialog();
+            DownloadWait dw = new DownloadWait("Updating Base Files - Please Wait", "", this);
+            try
+            {
+                dw.Owner = mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            dw.ShowDialog();
+            
             new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO").ShowDialog();
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
@@ -993,25 +1039,39 @@ namespace UWUVCI_AIO_WPF
               
             }
         }
+        private void ThreadDownload(List<MissingTool> missingTools)
+        {
+            var thread = new Thread(() =>
+            {
+                double l = 100 / missingTools.Count;
 
+
+                foreach (MissingTool m in missingTools)
+                {
+                    DownloadTool(m.Name);
+                    Progress += Convert.ToInt32(l);
+                }
+                Progress = 100;
+                
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            
+        }
         private void toolCheck()
         {
             if (ToolCheck.DoesToolsFolderExist())
             {
                 List<MissingTool> missingTools = new List<MissingTool>();
                 missingTools = ToolCheck.CheckForMissingTools();
+                
                 if(missingTools.Count > 0)
                 {
-     
-                    
-
-                        foreach (MissingTool m in missingTools)
-                        {
-                            DownloadTool(m.Name);
-                        }
-                        
-                        //Download Tools
-                        
+                    Task.Run(() => ThreadDownload(missingTools));
+                    new DownloadWait("Downloading Tools - Please Wait", "", this).ShowDialog();
+                    Thread.Sleep(200);
+                    //Download Tools
+                    Progress = 0;
                         toolCheck();
                     
                 }
@@ -1371,7 +1431,13 @@ namespace UWUVCI_AIO_WPF
         {
             Task.Run(() => { Injection.Download(this); });
             
-            new DownloadWait("Downloading Base - Please Wait", "", this).ShowDialog();
+            DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
+            try
+            {
+                dw.Owner = mw;
+            }
+            catch (Exception) { }
+            dw.ShowDialog();
             Progress = 0;
             
         }

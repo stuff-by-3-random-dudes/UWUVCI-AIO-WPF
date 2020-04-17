@@ -27,10 +27,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
             this.ckey = ckey;
+           
             if (ckey)
             {
                 Key.Text = "CommonKey";
                 region.Text = "WIIU";
+            }
+            else
+            {
+                if ((FindResource("mvm") as MainViewModel).GbTemp.Tid != "")
+                {
+                    ID.Text = $"({(FindResource("mvm") as MainViewModel).GbTemp.Tid})";
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Folder_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(path);
+            Process.Start(new FileInfo(path).DirectoryName);
             this.Close();
         }
 
