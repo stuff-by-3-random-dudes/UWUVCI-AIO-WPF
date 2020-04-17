@@ -1586,5 +1586,41 @@ namespace UWUVCI_AIO_WPF
 
             return true;
         }
+        public string getInternalName(string OpenGame)
+        {
+            string ret = "";
+            using (var reader = new BinaryReader(File.OpenRead(OpenGame)))
+            {
+                reader.BaseStream.Position = 0x00;
+                char TempChar;
+                //WBFS Check
+                if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
+                {
+
+                    reader.BaseStream.Position = 0x200;
+
+                    reader.BaseStream.Position = 0x218;
+
+                    
+                    reader.BaseStream.Position = 0x220;
+                    while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
+                    
+                }
+                else
+                {
+
+                    
+                        
+                        reader.BaseStream.Position = 0x18;
+                        
+                        reader.BaseStream.Position = 0x20;
+                        while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
+
+
+                    
+                }
+            }
+            return ret;
+        }
     }
 }

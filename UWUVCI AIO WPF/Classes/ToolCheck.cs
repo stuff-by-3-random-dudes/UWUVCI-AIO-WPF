@@ -42,7 +42,7 @@ namespace UWUVCI_AIO_WPF.Classes
             "BASE.zip",
             "tga2png.exe",
             "iconTex.tga",
-            "wii-vnc.exe"
+            "wii-vmc.exe"
         };
 
         public static bool DoesToolsFolderExist()

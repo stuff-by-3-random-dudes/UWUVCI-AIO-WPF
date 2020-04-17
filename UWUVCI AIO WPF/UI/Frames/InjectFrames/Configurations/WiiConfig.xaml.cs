@@ -56,7 +56,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
 
                 }
+                string rom = mvm.getInternalName(mvm.RomPath);
+                Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³]");
+                gn.Text = reg.Replace(rom, string.Empty);
+                mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
+
             }
+
 
         }
 
