@@ -85,22 +85,27 @@ namespace UWUVCI_AIO_WPF
                 return true;
             }catch(Exception e)
             {
+                mvm.Progress = 100;
                 code = null;
                 if (e.Message.Contains("Images")){
-                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    mvm.OpenDialog("Injection Failed","Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit");
                 }
                 else if (e.Message.Contains("Size"))
                 {
-                    MessageBox.Show("Injection Failed due to Image Issues. Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    mvm.OpenDialog("Injection Failed","Injection Failed due to Image Issues.Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32");
+                  
                 }
                 else if (e.Message.Contains("retro"))
                 {
-                    MessageBox.Show("The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    mvm.OpenDialog("Injection Failed","The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base");
                 }
-                
+                else if (e.Message.Contains("WII"))
+                {
+                    mvm.OpenDialog("Injection Failed", $"{e.Message.Replace("WII", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.");
+                }
                 else
                 {
-                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    mvm.OpenDialog("Injection Failed", "Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord");
 
                 }
                 Clean();
@@ -108,9 +113,11 @@ namespace UWUVCI_AIO_WPF
             }
             finally
             {
+                
                 mvm.Index = -1;
                 mvm.LR = false;
                 mvm.msg = "";
+                mvm.Progress = 0;
             }
 
         }
@@ -194,8 +201,7 @@ namespace UWUVCI_AIO_WPF
                         tik.WaitForExit();
                         if (!File.Exists(Path.Combine(tempPath, "pre.iso")))
                         {
-                            Console.WriteLine("An error occured while converting WBFS to ISO");
-                            throw new Exception();
+                            throw new Exception("WIIAn error occured while converting WBFS to ISO");
                         }
                         if (File.Exists(Path.Combine(tempPath, "rom.wbfs"))) { File.Delete(Path.Combine(tempPath, "rom.wbfs")); }
                         romPath = Path.Combine(tempPath, "pre.iso");
@@ -211,9 +217,8 @@ namespace UWUVCI_AIO_WPF
                     tik.WaitForExit();
                     if (!Directory.Exists(Path.Combine(tempPath, "IsoExt")))
                     {
-                        Console.Clear();
-                        Console.WriteLine("An error occured while trimming the ROM");
-                        throw new Exception();
+
+                        throw new Exception("WIIAn error occured while trimming the ROM");
                     }
                     mvvm.Progress = 40;
                     Console.WriteLine("Finished trimming");
@@ -263,9 +268,7 @@ namespace UWUVCI_AIO_WPF
 
                     if (!File.Exists(Path.Combine(tempPath, "game.iso")))
                     {
-                        Console.Clear();
-                        Console.WriteLine("An error occured while Creating the ISO");
-                        throw new Exception();
+                        throw new Exception("WIIAn error occured while Creating the ISO");
                     }
                     romPath = Path.Combine(tempPath, "game.iso");
                     mvvm.Progress = 60;
@@ -302,8 +305,8 @@ namespace UWUVCI_AIO_WPF
                     if (!File.Exists(Path.Combine(tempPath, "game.iso")))
                     {
                         Console.Clear();
-                        Console.WriteLine("An error occured while Creating the ISO");
-                        throw new Exception();
+
+                        throw new Exception("WIIAn error occured while Creating the ISO");
                     }
                     romPath = Path.Combine(tempPath, "game.iso");
                     mvvm.Progress = 60;
@@ -316,9 +319,7 @@ namespace UWUVCI_AIO_WPF
                 tik.WaitForExit();
                 if (!Directory.Exists(Path.Combine(tempPath, "tik")) || !File.Exists(Path.Combine(tempPath, "tik", "tmd.bin")) || !File.Exists(Path.Combine(tempPath, "tik", "ticket.bin")))
                 {
-                    Console.Clear();
-                    Console.WriteLine("An error occured while extracting the Ticket and TMD");
-                    throw new Exception();
+                    throw new Exception("WIIAn error occured while extracting the Ticket and TMD");
                 }
                 Console.WriteLine("Finished extracting");
                 mvvm.Progress = 65;
@@ -331,8 +332,7 @@ namespace UWUVCI_AIO_WPF
                 if (!File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tik")) || !File.Exists(Path.Combine(baseRomPath, "code", "rvlt.tmd")))
                 {
                     Console.Clear();
-                    Console.WriteLine("An error occured while copying the Ticket and TMD");
-                    throw new Exception();
+                    throw new Exception("WIIAn error occured while copying the Ticket and TMD");
                 }
                 Console.WriteLine("Finished Copying");
                 mvvm.Progress = 70;
@@ -709,7 +709,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (NullReferenceException)
                 {
-                    //MessageBox.Show("Error when editing the meta.xml: Values seem to be missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                   
                 }
 
                 try
@@ -721,7 +721,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (NullReferenceException)
                 {
-                    // MessageBox.Show("Error when editing the app.xml: Values seem to be missing.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                  
                 }
             
             

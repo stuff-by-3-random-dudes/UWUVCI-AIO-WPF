@@ -17,7 +17,7 @@ using UWUVCI_AIO_WPF.Classes;
 using GameBaseClassLibrary;
 using System.Windows.Forms;
 using System.IO;
-using MessageBox = System.Windows.Forms.MessageBox;
+using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
 {
@@ -58,10 +58,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             tbMeta.Foreground = new SolidColorBrush(Color.FromRgb(205, 50, 50));
             mvm.BaseDownloaded = false;
             mvm.CBasePath = null;
-           //warning if using custom bases programm may crash
-           DialogResult res = System.Windows.Forms.MessageBox.Show("If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please select Yes", "Custom base Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if(res == DialogResult.Yes)
-            {                //get folder
+            //warning if using custom bases programm may crash
+            new Custom_Message("Information", "If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please hit continue").ShowDialog();
+          
+            if(mvm.choosefolder)
+            {
+                mvm.choosefolder = false;        //get folder
                 using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
                 {
                     System.Windows.Forms.DialogResult result = dialog.ShowDialog();
@@ -71,13 +73,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                         {
                             if (mvm.DirectoryIsEmpty(dialog.SelectedPath))
                             {
-                                System.Windows.Forms.MessageBox.Show("The folder is Empty. Please choose another folder");
+                                new Custom_Message("Issue", "The Folder is Empty. Please choose another Folder.").ShowDialog();
+                                
                             }
                             else
                             { 
                                if(Directory.GetDirectories(dialog.SelectedPath).Length > 3)
                                 {
-                                    MessageBox.Show("This folder has too many subfolders. Please choose another folder");
+                                    new Custom_Message("Issue", "This Folder has too many subfolders. Please choose another folder").ShowDialog();
+                                   
                                 }
                                 else
                                 {
@@ -104,7 +108,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                         }
                                         else
                                         {
-                                            MessageBox.Show("This Folder is not in the \"loadiine\" format");
+                                            new Custom_Message("Issue", "This folder is not in the \"loadiine\" format").ShowDialog();
                                         }
                                     }
                                     else
@@ -136,7 +140,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                         }
                                         else
                                         {
-                                            MessageBox.Show("This Folder does not contain needed NUS files");
+                                            new Custom_Message("Issue", "This Folder does not contain needed NUS files").ShowDialog();
                                         }
                                     }
                                 }

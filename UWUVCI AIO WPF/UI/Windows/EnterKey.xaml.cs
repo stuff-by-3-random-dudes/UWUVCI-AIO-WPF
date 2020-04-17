@@ -66,54 +66,29 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if (mvm.checkcKey(tbKey.Text))
                 {
                     this.Close();
-                    MessageBox.Show("The entered CommonKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
+                    new Custom_Message("Correct Key", "The entered CommonKey is correct!").ShowDialog();
+                   
                     mvm.ArePathsSet();
                 }
                 else
                 {
-                    MessageBox.Show("The entered CommonKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
+                    new Custom_Message("Incorrect Key", "The entered CommonKey is incorrect!").ShowDialog();
                 }
             }
-            else if (wiiu)
-            {
-                MainViewModel mvm = (MainViewModel)FindResource("mvm");
-                if (sys1)
-                {
-                    if (mvm.checkSysKey1(tbKey.Text))
-                    {
-                        MessageBox.Show("The entered TitleKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("The entered TitleKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-                else
-                {
-                    if (mvm.checkSysKey(tbKey.Text))
-                    {
-                        MessageBox.Show("The entered TitleKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
-                        this.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("The entered TitleKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-                
-            }
+            
             else
             {
                 MainViewModel mvm = (MainViewModel)FindResource("mvm");
                 if (mvm.checkKey(tbKey.Text))
                 {
-                    MessageBox.Show("The entered TitleKey is correct!", "Correct Key", MessageBoxButton.OK, MessageBoxImage.Information);
+                    new Custom_Message("Correct Key", "The entered TitleKey is correct!").ShowDialog();
+
                     this.Close();
                 }
                 else
                 {
-                    MessageBox.Show("The entered TitleKey is incorrect!", "Incorrect Key", MessageBoxButton.OK, MessageBoxImage.Error);
+                    new Custom_Message("Incorrect Key", "The entered TitleKey is incorrect!").ShowDialog();
+                    
                 }
             }
            
