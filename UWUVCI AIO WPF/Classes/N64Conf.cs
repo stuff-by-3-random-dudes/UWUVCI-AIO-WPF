@@ -8,7 +8,7 @@ namespace UWUVCI_AIO_WPF.Classes
     
 {
     [Serializable]
-    class N64Conf
+   public class N64Conf
     {
         private string iniPath = null;
 

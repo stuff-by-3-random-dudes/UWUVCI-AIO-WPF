@@ -18,7 +18,7 @@
         <Button Content="Loadiine" HorizontalAlignment="Left" Margin="270,533,0,0" VerticalAlignment="Top" Width="99" IsEnabled="{Binding Injected}" Click="Button_Click_2"/>
 
 
-        <Frame Name="fLoadConfig" Width="643" Height="408" Margin="459,108,28,84"/>
+        <Frame Name="fLoadConfig" Width="643" Height="483" Margin="459,70,28,47"/>
 
 
 

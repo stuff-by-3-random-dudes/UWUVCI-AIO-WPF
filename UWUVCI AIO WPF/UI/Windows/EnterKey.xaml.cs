@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,8 +29,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             this.ckey = ckey;
             if (ckey)
             {
-                region.Visibility = Visibility.Hidden;
                 Key.Text = "CommonKey";
+                region.Text = "WIIU";
             }
         }
 
@@ -50,6 +51,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             wiiu = true;
             if (i == 1) sys1 = true;
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

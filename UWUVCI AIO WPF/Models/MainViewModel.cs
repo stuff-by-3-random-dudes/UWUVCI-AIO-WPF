@@ -22,7 +22,7 @@ using AutoUpdaterDotNET;
 
 namespace UWUVCI_AIO_WPF
 {
-    class MainViewModel : BaseModel
+    public class MainViewModel : BaseModel
     {
         //public GameConfig GameConfiguration { get; set; }
         private GameConfig gameConfiguration = new GameConfig();
@@ -255,7 +255,10 @@ namespace UWUVCI_AIO_WPF
         public bool GC = false;
         public bool debug = false;
         public string doing = "";
+        public bool Patch = false;
+        public bool toPal = false;
         private string Msg;
+        
 
         public string msg
         {
@@ -281,6 +284,31 @@ namespace UWUVCI_AIO_WPF
         }
         public MainViewModel()
         {
+
+          
+            //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
+            if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
+            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+
+            if (Directory.Exists(@"keys"))
+            {
+               if(Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
+                Injection.DirectoryCopy("keys", "bin/keys", true);
+                Directory.Delete("keys", true);
+            }
+            if (!Directory.Exists("InjectedGames")) Directory.CreateDirectory("InjectedGames");
+            if (!Directory.Exists("SourceFiles")) Directory.CreateDirectory("SourceFiles");
+            if (!Directory.Exists("bin\\BaseGames")) Directory.CreateDirectory("bin\\BaseGames");
+            if(Properties.Settings.Default.OutPath == "" || Properties.Settings.Default.OutPath == null)
+            {
+                Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+            }
+            if(Settings.Default.BasePath == "" || Properties.Settings.Default.BasePath == null)
+            {
+                Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+            }
+            Settings.Default.Save();
+            ArePathsSet();
 
             Update();
 
@@ -496,15 +524,20 @@ namespace UWUVCI_AIO_WPF
             if (loadiine)
             {
                 Injection.Loadiine(GameConfiguration.GameName);
-
+                //
             }
             else
             {
                 
                 Task.Run(() => { Injection.Packing(GameConfiguration.GameName, this); });
 
-                new DownloadWait("Packing Inject - Please Wait", "").ShowDialog();
+                new DownloadWait("Packing Inject - Please Wait", "",this).ShowDialog();
                 Progress = 0;
+                string extra = "";
+                if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
+                if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them under Settings -> \"Start Nintendont Config Tool\".";
+
+                new Custom_Message("Injection Complete", $"Only Install to USB!{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath).ShowDialog();
             }
             LGameBasesString.Clear();
             CanInject = false;
@@ -514,72 +547,85 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration.CBasePath = null;
             GC = false;
         }
+        [STAThread]
         public void Inject(bool force)
         {
+            
             Task.Run(() =>
             {
                 if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
                 else Injected = false;
             });
-            new DownloadWait("Injecting Game - Please Wait", "").ShowDialog();
-
+            new DownloadWait("Injecting Game - Please Wait", "",this).ShowDialog();
+            if (Injected)
+            {
+                new Custom_Message("Finished Injection Part", "Injection Finished, please choose how you want to export the Inject next.").ShowDialog();
+            }
 
         }
         private void BaseCheck()
         {
-            if (Directory.Exists(@"bases"))
+            if (Directory.Exists(@"bin\bases"))
             {
                 var test = GetMissingVCBs();
-                if(test.Count > 0)
+                if (test.Count > 0)
                 {
-                    DialogResult res = MessageBox.Show("There are vcb Base files missing in the bases folder. Would you like to download the missing base files?", "Error 004: \"Missing VCB Bases\"", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                    if(res == DialogResult.Yes)
+                    Progress = 0;
+                    Task.Run(() =>
                     {
-                        foreach(string s in test)
+                        double stuff = 100 / test.Count;
+                        foreach (string s in test)
                         {
                             DownloadBase(s);
-
+                            Progress += Convert.ToInt32(stuff);
                         }
-                        BaseCheck();
-                        
-                    }
-                    else if(res == DialogResult.No)
-                    {
-                        MessageBox.Show("The Programm will now terminate.");
-                        Environment.Exit(1);
-                    }
+                        Progress = 100;
+                    });
+                    new DownloadWait("Downloading needed Data - Please Wait", "",this).ShowDialog();
+                    BaseCheck();
+
+
+
                 }
             }
             else
             {
-                DialogResult res = MessageBox.Show("No bases folder found.\nShould a bases folder be created and the missing vcb bases downloaded?", "Error 003: \"Missing VCB Bases Folder\"", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (res == DialogResult.Yes)
+
+                Directory.CreateDirectory(@"bin\bases");
+                var test = GetMissingVCBs();
+                Progress = 0;
+                Task.Run(() =>
                 {
-                    Directory.CreateDirectory(@"bases");
-                    var test = GetMissingVCBs();
+                    double stuff = 100 / test.Count;
                     foreach (string s in test)
                     {
                         DownloadBase(s);
-                        
+                        Progress += Convert.ToInt32(stuff);
                     }
-                    BaseCheck();
-                }
-                else
-                {
-                    MessageBox.Show("The Programm will now terminate.");
-                    Environment.Exit(1);
-                }
+                    Progress = 100;
+                });
+                new DownloadWait("Downloading needed Data - Please Wait", "",this).ShowDialog();
+                BaseCheck();
+
             }
-            
+
         }
         public void UpdateTools()
         {
             string[] bases = ToolCheck.ToolNames;
-            foreach (string s in bases)
+            Task.Run(() =>
             {
-                DeleteTool(s);
-                DownloadTool(s);
-            }
+                Progress = 0;
+                double l = 100 / bases.Length;
+                foreach (string s in bases)
+                {
+                    DeleteTool(s);
+                    DownloadTool(s);
+                    Progress += Convert.ToInt32(l);
+                }
+                Progress = 100;
+            });
+            new DownloadWait("Updating Tools - Please Wait", "", this).ShowDialog();
             MessageBox.Show("Finished Updating Tools! Restarting UWUVCI AIO");
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
@@ -589,13 +635,14 @@ namespace UWUVCI_AIO_WPF
             DialogResult res = MessageBox.Show("This Option will reset all entered TitleKeys meaning you will need to reenter them again!\nDo you still wish to continue?", "Resetting TitleKeys", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if(res == DialogResult.Yes)
             {
-                File.Delete("keys/gba.vck");
-                File.Delete("keys/nds.vck");
-                File.Delete("keys/nes.vck");
-                File.Delete("keys/n64.vck");
-                File.Delete("keys/msx.vck");
-                File.Delete("keys/tg16.vck");
-                File.Delete("keys/snes.vck");
+                File.Delete("bin/keys/gba.vck");
+                File.Delete("bin/keys/nds.vck");
+                File.Delete("bin/keys/nes.vck");
+                File.Delete("bin/keys/n64.vck");
+                File.Delete("bin/keys/msx.vck");
+                File.Delete("bin/keys/tg16.vck");
+                File.Delete("bin/keys/snes.vck");
+                File.Delete("bin/keys/wii.vck");
                 MessageBox.Show("Reset complete! The Programm will now Restart!");
                 System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
                 Environment.Exit(0);
@@ -606,22 +653,29 @@ namespace UWUVCI_AIO_WPF
         {
             
             string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
-            foreach(string s in bases)
-            {
-                DownloadBase(s);
-                DeleteBase(s);
-                CopyBase(s);
-                GameConsoles g = new GameConsoles();
-                if (s.Contains("nds")) g = GameConsoles.NDS;
-                if (s.Contains("nes")) g = GameConsoles.NES;
-                if (s.Contains("snes")) g = GameConsoles.SNES;
-                if (s.Contains("n64")) g = GameConsoles.N64;
-                if (s.Contains("gba")) g = GameConsoles.GBA;
-                if (s.Contains("tg16")) g = GameConsoles.TG16;
-                if (s.Contains("msx")) g = GameConsoles.MSX;
-                if (s.Contains("wii")) g = GameConsoles.WII;
-                UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bases/{s}"),g);
-            }
+            Task.Run(() => {
+                Progress = 0;
+                double l = 100 / bases.Length;
+                foreach (string s in bases)
+                {
+                    DeleteBase(s);
+                    DownloadBase(s);
+
+                    GameConsoles g = new GameConsoles();
+                    if (s.Contains("nds")) g = GameConsoles.NDS;
+                    if (s.Contains("nes")) g = GameConsoles.NES;
+                    if (s.Contains("snes")) g = GameConsoles.SNES;
+                    if (s.Contains("n64")) g = GameConsoles.N64;
+                    if (s.Contains("gba")) g = GameConsoles.GBA;
+                    if (s.Contains("tg16")) g = GameConsoles.TG16;
+                    if (s.Contains("msx")) g = GameConsoles.MSX;
+                    if (s.Contains("wii")) g = GameConsoles.WII;
+                    UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bin/bases/{s}"), g);
+                    Progress += Convert.ToInt32(l);
+                }
+                Progress = 100;
+            });
+            new DownloadWait("Updating Base Files - Please Wait", "", this).ShowDialog();
             MessageBox.Show("Finished Updating Bases! Restarting UWUVCI AIO");
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
@@ -759,22 +813,22 @@ namespace UWUVCI_AIO_WPF
 
         private static void CopyBase(string console)
         {
-            File.Copy(console, $@"bases\{console}");
+            File.Copy(console, $@"bin\bases\{console}");
             File.Delete(console);
         }
 
         private static void DeleteTool(string tool)
         {
-            File.Delete($@"Tools\{tool}");
+            File.Delete($@"bin\Tools\{tool}");
         }
         private static void DeleteBase(string console)
         {
-            File.Delete($@"bases\{console}");
+            File.Delete($@"bin\bases\{console}");
         }
         public static List<string> GetMissingVCBs()
         {
             List<string> ret = new List<string>();
-            string path = @"bases\bases.vcb";
+            string path = @"bin\bases\bases.vcb";
             if (!File.Exists(path + "nds"))
             {
                 ret.Add(path + "nds");
@@ -811,12 +865,16 @@ namespace UWUVCI_AIO_WPF
         }
         public static void DownloadBase(string name)
         {
+            string olddir = Directory.GetCurrentDirectory();
             try
             {
-                string basePath = $@"\bases\{name}";
+                string basePath = $@"bin\bases\";
+                Directory.SetCurrentDirectory(basePath);
                 using (var client = new WebClient())
+
                 {
-                    client.DownloadFile(getDownloadLink(name, false), name);
+                    var fixname = name.Split('\\');
+                    client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length -1]);
                 }
             }catch(Exception e)
             {
@@ -824,18 +882,21 @@ namespace UWUVCI_AIO_WPF
                 MessageBox.Show("There was an Error downloading the VCB Base File.\nThe Programm will now terminate.", "Error 005: \"Unable to Download VCB Base\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
             }
-            
+            Directory.SetCurrentDirectory(olddir);
         }
         public static void DownloadTool(string name)
         {
+            string olddir = Directory.GetCurrentDirectory();
             try
             {
-                string basePath = $@"Tools\{name}";
+               
+
+                string basePath = $@"bin\Tools\";
+                Directory.SetCurrentDirectory(basePath);
                 using (var client = new WebClient())
                 {
                     client.DownloadFile(getDownloadLink(name, true), name);
-                    File.Copy(name, basePath);
-                    File.Delete(name);
+                    
                 }
                
             }
@@ -845,7 +906,7 @@ namespace UWUVCI_AIO_WPF
                 MessageBox.Show("There was an Error downloading the Tool.\nThe Programm will now terminate.", "Error 006: \"Unable to Download Tool\"", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Environment.Exit(1);
             }
-
+            Directory.SetCurrentDirectory(olddir);
         }
         private static string getDownloadLink(string toolname, bool tool)
         {
@@ -879,7 +940,6 @@ namespace UWUVCI_AIO_WPF
                 return null;
             }
         }
-
         public void InjcttoolCheck()
         {
             if (ToolCheck.DoesToolsFolderExist())
@@ -889,21 +949,26 @@ namespace UWUVCI_AIO_WPF
                 missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
-                    MessageBox.Show("There are tools missing.\nThe Download will start after you press OK", "Missing Tools", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        //Download Tools
+                   
+                    
+                        
                         foreach (MissingTool m in missingTools)
                         {
                             DownloadTool(m.Name);
+                            
                         }
+                       
+                    
+                   
                         InjcttoolCheck();
                     
                 }
             }
             else
             {
-                string path = $@"{Directory.GetCurrentDirectory()}\Tools";
+                string path = $@"{Directory.GetCurrentDirectory()}bin\\Tools";
                 
-                    Directory.CreateDirectory("Tools");
+                    Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
                     InjcttoolCheck();
               
             }
@@ -917,44 +982,26 @@ namespace UWUVCI_AIO_WPF
                 missingTools = ToolCheck.CheckForMissingTools();
                 if(missingTools.Count > 0)
                 {
-                    string errorMessage = "Error 002:\nFollowing Tools seem to be missing:\n\n";
-                    foreach(MissingTool m in missingTools)
-                    {
-                        errorMessage += $"{m.Name}\n";
-                    }
-                    errorMessage += "\nDo you want to automatically download them?";
-                    DialogResult res = MessageBox.Show(errorMessage, "Error 002: \"Missing Tools\"", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+     
+                    
 
-                    if (res == DialogResult.Yes)
-                    {
-                        //Download Tools
-                        foreach(MissingTool m in missingTools)
+                        foreach (MissingTool m in missingTools)
                         {
                             DownloadTool(m.Name);
                         }
+                        
+                        //Download Tools
+                        
                         toolCheck();
-                    }
-                    else
-                    {
-                        MessageBox.Show("The Programm will now terminate");
-                        Environment.Exit(1);
-                    }
+                    
                 }
             }
             else
             {
-                string path = $@"{Directory.GetCurrentDirectory()}\Tools";
-                DialogResult res = MessageBox.Show($"Error: 001\nThe Tools folder seems to be missing.\nDo you want to create one?", "Error 001: \"Missing Tools folder\"", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-                if(res == DialogResult.Yes)
-                {
-                    Directory.CreateDirectory("Tools");
+                
+                    Directory.CreateDirectory("bin/Tools");
                     toolCheck();
-                }
-                else
-                {
-                    MessageBox.Show("The Programm will now terminate");
-                    Environment.Exit(1);
-                }
+               
                 
             }
         }
@@ -1012,7 +1059,7 @@ namespace UWUVCI_AIO_WPF
         public void GetBases(GameConsoles Console)
         {
             List<GameBases> lTemp = new List<GameBases>();
-            string vcbpath = $@"bases/bases.vcb{Console.ToString().ToLower()}";
+            string vcbpath = $@"bin/bases/bases.vcb{Console.ToString().ToLower()}";
             lTemp = VCBTool.ReadBasesFromVCB(vcbpath);
             LBases.Clear();
             GameBases custom = new GameBases();
@@ -1103,14 +1150,14 @@ namespace UWUVCI_AIO_WPF
             LTG16.Clear();
             LMSX.Clear();
             LWII.Clear();
-            lNDS = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbnds");
-            lNES = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbnes");
-            lSNES = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbsnes");
-            lN64 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbn64");
-            lGBA = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbgba");
-            lTG16 = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbtg16");
-            lMSX = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbmsx");
-            lWii = VCBTool.ReadBasesFromVCB($@"bases/bases.vcbwii");
+            lNDS = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnds");
+            lNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnes");
+            lSNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbsnes");
+            lN64 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbn64");
+            lGBA = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbgba");
+            lTG16 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbtg16");
+            lMSX = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbmsx");
+            lWii = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbwii");
             CreateSettingIfNotExist(lNDS, GameConsoles.NDS);
             CreateSettingIfNotExist(lNES, GameConsoles.NES);
             CreateSettingIfNotExist(lSNES, GameConsoles.SNES);
@@ -1122,7 +1169,7 @@ namespace UWUVCI_AIO_WPF
         }
         private void CreateSettingIfNotExist(List<GameBases> l, GameConsoles console)
         {
-            string file = $@"keys\{console.ToString().ToLower()}.vck";
+            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
             if (!File.Exists(file))
             {
                 List<TKeys> temp = new List<TKeys>();
@@ -1138,10 +1185,10 @@ namespace UWUVCI_AIO_WPF
         }
         private void UpdateKeyFile(List<GameBases> l, GameConsoles console)
         {
-            string file = $@"keys\{console.ToString().ToLower()}.vck";
+            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
             if (File.Exists(file))
             {
-                List<TKeys> keys = KeyFile.ReadBasesFromKeyFile($@"keys\{console.ToString().ToLower()}.vck");
+                List<TKeys> keys = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{console.ToString().ToLower()}.vck");
                 List <TKeys> newTK = new List<TKeys>();
                 foreach(GameBases gb in l)
                 {
@@ -1163,7 +1210,7 @@ namespace UWUVCI_AIO_WPF
                         newTK.Add(tkn);
                     }
                 }
-                File.Delete($@"keys\{console.ToString().ToLower()}.vck");
+                File.Delete($@"bin\keys\{console.ToString().ToLower()}.vck");
                 KeyFile.ExportFile(newTK, console);
             }
         }
@@ -1229,7 +1276,7 @@ namespace UWUVCI_AIO_WPF
         {
             if(GbTemp.KeyHash == key.ToLower().GetHashCode())
             {
-                UpdateKeyInFile(key, $@"keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
+                UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
             }
             return false;
@@ -1252,7 +1299,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool isKeySet(GameBases bases)
         {
-            var temp = KeyFile.ReadBasesFromKeyFile($@"keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
             foreach(TKeys t in temp)
             {
                 if(t.Base.Name == bases.Name && t.Base.Region == bases.Region)
@@ -1282,7 +1329,7 @@ namespace UWUVCI_AIO_WPF
         }
         public TKeys getTkey(GameBases bases)
         {
-            var temp = KeyFile.ReadBasesFromKeyFile($@"keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
             foreach (TKeys t in temp)
             {
                 if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
@@ -1300,7 +1347,7 @@ namespace UWUVCI_AIO_WPF
         {
             Task.Run(() => { Injection.Download(this); });
             
-            new DownloadWait("Downloading Base - Please Wait", "test").ShowDialog();
+            new DownloadWait("Downloading Base - Please Wait", "", this).ShowDialog();
             Progress = 0;
             
         }
@@ -1512,10 +1559,9 @@ namespace UWUVCI_AIO_WPF
         {
             if (ValidatePathsStillExist())
             {
-                if (isCkeySet())
-                {
+               
                     Settings.Default.PathsSet = true;
-                }
+                
                 
                 Settings.Default.Save();
             }

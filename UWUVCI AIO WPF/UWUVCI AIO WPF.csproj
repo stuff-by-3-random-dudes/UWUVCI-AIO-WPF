@@ -119,6 +119,9 @@
     <Compile Include="UI\Frames\Path\Paths.xaml.cs">
       <DependentUpon>Paths.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Windows\Custom Message.xaml.cs">
+      <DependentUpon>Custom Message.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\DownloadWait.xaml.cs">
       <DependentUpon>DownloadWait.xaml</DependentUpon>
     </Compile>
@@ -184,6 +187,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Frames\StartFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\Custom Message.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

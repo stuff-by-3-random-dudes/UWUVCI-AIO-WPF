@@ -7,13 +7,13 @@
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="MAIN" Height="93.662" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico">
-    <Grid DataContext="{StaticResource mvm}">
+    <Grid>
 
         <TextBlock HorizontalAlignment="Left" Margin="10,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="480" FontSize="18" Foreground="Black" Name="Key" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="{Binding msg}"  VerticalAlignment="Top" Height="18" Width="480" FontSize="10" Foreground="Black" Name="msgT" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap"   VerticalAlignment="Top" Height="18" Width="480" FontSize="10" Foreground="Black" Name="msgT" TextAlignment="Center"/>
 
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="93" VerticalAlignment="Top" Width="500"/>
-        <ProgressBar HorizontalAlignment="Left" Height="11" Margin="31,59,0,0" VerticalAlignment="Top" Width="443" Value="{Binding Progress}"/>
+        <ProgressBar HorizontalAlignment="Left" Height="11" Margin="31,59,0,0" VerticalAlignment="Top" Width="443" Name="pb"/>
     </Grid>
 </Window>
 

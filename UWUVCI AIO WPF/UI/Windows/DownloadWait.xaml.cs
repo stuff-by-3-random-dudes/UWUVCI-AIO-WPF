@@ -18,12 +18,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für DownloadWait.xaml
     /// </summary>
+   
     partial class DownloadWait : Window
     {
         MainViewModel mvm;
-        public DownloadWait(string doing, string msg)
+        
+        public DownloadWait(string doing, string msg, MainViewModel mvm)
         {
-            mvm = FindResource("mvm") as MainViewModel;
+            this.mvm = mvm;
             InitializeComponent();
             Key.Text = doing;
             DispatcherTimer timer = new DispatcherTimer();
@@ -34,6 +36,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         void timer_Tick(object sender, EventArgs e)
         {
+            msgT.Text = mvm.msg;
+            pb.Value = mvm.Progress;
             if(mvm.Progress == 100)
             {
                 this.Close();

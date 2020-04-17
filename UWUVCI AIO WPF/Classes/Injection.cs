@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
@@ -13,14 +14,15 @@ using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
 {
+    
     internal static class Injection
     {
       
 
-        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "temp");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "temp");
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
         private static readonly string imgPath = Path.Combine(tempPath, "img");
-        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "Tools");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "Tools");
         static string code = null;
         static MainViewModel mvvm;
 
@@ -38,7 +40,7 @@ namespace UWUVCI_AIO_WPF
          * iniPath = Only used for N64. Path to the INI configuration. If "blank", a blank ini will be used.
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
-
+        [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
             mvvm = mvm;
@@ -77,7 +79,8 @@ namespace UWUVCI_AIO_WPF
                 mvm.msg = "Changing Images...";
                 Images(Configuration);
                 mvm.Progress = 100;
-                MessageBox.Show("Injection Finished, please choose how you want to export the Inject next", "Finished Injection Part", MessageBoxButton.OK, MessageBoxImage.Information);
+               
+                
                 code = null;
                 return true;
             }catch(Exception e)
@@ -107,6 +110,7 @@ namespace UWUVCI_AIO_WPF
             {
                 mvm.Index = -1;
                 mvm.LR = false;
+                mvm.msg = "";
             }
 
         }
@@ -224,6 +228,33 @@ namespace UWUVCI_AIO_WPF
                         tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                         mvvm.Progress = 45;
                     }
+                    if (mvm.Patch)
+                    {
+                        mvvm.msg = "Video Patching ROM...";
+                        using (Process process = new Process())
+                        {
+                            process.StartInfo.FileName = "wii-vmc.exe";
+                            process.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "IsoExt", "sys", "main.dol")}\"";
+                            process.StartInfo.RedirectStandardInput = true;
+                            process.StartInfo.UseShellExecute = false;
+                            process.Start();
+                            process.StandardInput.WriteLine("a");
+                            if (mvm.toPal)
+                            {
+                                process.StandardInput.WriteLine("1");
+                            }
+                            else
+                            {
+                                process.StandardInput.WriteLine("2");
+                            }
+                            
+                            Thread.Sleep(200);
+                            process.StandardInput.WriteLine();
+                            process.WaitForExit();
+                        }
+                        mvvm.Progress = 50;
+                    }
+                   
                     mvvm.msg = "Creating ISO from trimmed ROM...";
                     Console.WriteLine("Creating ISO from trimmed ROM...");
                     tik.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "IsoExt")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -395,7 +426,7 @@ namespace UWUVCI_AIO_WPF
                 Directory.Delete(tempPath, true);
             }
         }
-
+        [STAThread]
         public static void Loadiine(string gameName)
         {
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
@@ -409,11 +440,11 @@ namespace UWUVCI_AIO_WPF
             }
 
             DirectoryCopy(baseRomPath,outputPath, true);
-            MessageBox.Show($"Injection Complete! The Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            new Custom_Message("Injection Complete", $"Config will stay filled, choose a Console again to clear it.\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath).ShowDialog();
 
             Clean();
         }
-
+        [STAThread]
         public static void Packing(string gameName, MainViewModel mvm)
         {
             mvm.msg = "Checking Tools...";
@@ -450,12 +481,8 @@ namespace UWUVCI_AIO_WPF
             mvm.msg = "Cleaning...";
             Clean();
             mvm.Progress = 100;
-            string extra = "";
-            if (mvm.GameConfiguration.Console == GameConsoles.WII) extra = "\nDISCLAIMER: Some games cannot reboot into the WiiU Menu. Shut down the console via the GamePad Power Button.\nIf Stuck in a BlackScreen, you need to unplug your wiiu";
-            if (mvm.GC) extra = "\nDISCLAIMER: Make sure to have Nintendont + config on your sd card. You can add them under Settings -> \"Start Nintendont Config Tool\"";
-            MessageBox.Show($"Injection Complete!\nDisclaimer: Only install injections to USB to prevent a brick in a worst case scenario{extra}\n\nThe Inject is stored here:\n{outputPath}\n\nThe Configuration will not be cleared, so you can Export the Config if you want. To clear the Configuration, reselect the Console you want to Inject into.", "Inject Complete", MessageBoxButton.OK, MessageBoxImage.Information);
-
             
+            mvm.msg = "";
         }
 
         public static void Download(MainViewModel mvm)
@@ -1042,13 +1069,53 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        Images.Add(false);
+                        if(File.Exists(Path.Combine(toolsPath, "iconTex.tga")))
+                        {
+                            CopyAndConvertImage(Path.Combine(toolsPath, "iconTex.tga"), Path.Combine(imgPath), false, 128, 128, 32, "iconTex.tga");
+
+                            Images.Add(true);
+                        }
+                        else
+                        {
+                            Images.Add(false);
+                        }
+                      
                     }
                 }
                 else
                 {
                     ReadFileFromBin(config.TGAIco.ImgBin, $"iconTex.{config.TGAIco.extension}");
                     CopyAndConvertImage($"iconTex.{config.TGAIco.extension}", Path.Combine(imgPath), true, 128, 128, 32, "iconTex.tga");
+                    Images.Add(true);
+                }
+                if (config.TGATv.ImgBin == null)
+                {
+                    //use path
+                    if (config.TGATv.ImgPath != null)
+                    {
+                        Images.Add(true);
+                        CopyAndConvertImage(config.TGATv.ImgPath, Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
+                        config.TGATv.ImgPath = Path.Combine(imgPath, "bootTvTex.tga");
+                    }
+                    else
+                    {
+                        if (File.Exists(Path.Combine(toolsPath, "bootTvTex.tga")))
+                        {
+                            CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.tga"), Path.Combine(imgPath), false, 128, 128, 32, "iconTex.tga");
+
+                            Images.Add(true);
+                        }
+                        else
+                        {
+                            Images.Add(false);
+                        }
+                    }
+                }
+                else
+                {
+                    ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
+                    CopyAndConvertImage($"bootTvTex.{config.TGATv.extension}", Path.Combine(imgPath), true, 1280, 720, 24, "bootTvTex.tga");
+                    config.TGATv.ImgPath = Path.Combine(imgPath, "bootTvTex.tga");
                     Images.Add(true);
                 }
 
@@ -1063,7 +1130,30 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        Images.Add(false);
+                        if (Images[1])
+                        {
+                            using(Process conv = new Process())
+                            {
+                                if (!mvvm.debug)
+                                {
+                                    conv.StartInfo.UseShellExecute = false;
+                                    conv.StartInfo.CreateNoWindow = true;
+                                }
+                                conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+
+                                conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
+                                conv.Start();
+                                conv.WaitForExit();
+                                File.Move(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                                CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
+                                Images.Add(true);
+                            }
+                        }
+                        else
+                        {
+                            Images.Add(false);
+                        }
+                        
                     }
                 }
                 else
@@ -1074,25 +1164,8 @@ namespace UWUVCI_AIO_WPF
                 }
 
                 //tv
-                if (config.TGATv.ImgBin == null)
-                {
-                    //use path
-                    if (config.TGATv.ImgPath != null)
-                    {
-                        Images.Add(true);
-                        CopyAndConvertImage(config.TGATv.ImgPath, Path.Combine(imgPath), false,1280,720,24, "bootTvTex.tga");
-                    }
-                    else
-                    {
-                        Images.Add(false);
-                    }
-                }
-                else
-                {
-                    ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
-                    CopyAndConvertImage($"bootTvTex.{config.TGATv.extension}", Path.Combine(imgPath), true, 1280, 720, 24, "bootTvTex.tga");
-                    Images.Add(true);
-                }
+               
+               
 
                 //logo
                 if (config.TGALog.ImgBin == null)
@@ -1154,12 +1227,12 @@ namespace UWUVCI_AIO_WPF
                         Console.ReadLine();
                     }
 
-                    if (Images[2])
+                    if (Images[1])
                     {
                         File.Delete(Path.Combine(baseRomPath, "meta", "bootTvTex.tga"));
                         File.Move(Path.Combine(imgPath, "bootTvTex.tga"), Path.Combine(baseRomPath, "meta", "bootTvTex.tga"));
                     }
-                    if (Images[1])
+                    if (Images[2])
                     {
                         File.Delete(Path.Combine(baseRomPath, "meta", "bootDrcTex.tga"));
                         File.Move(Path.Combine(imgPath, "bootDrcTex.tga"), Path.Combine(baseRomPath, "meta", "bootDrcTex.tga"));
@@ -1240,7 +1313,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);

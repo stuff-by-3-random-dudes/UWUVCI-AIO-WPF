@@ -5,7 +5,7 @@ using UWUVCI_AIO_WPF.Classes;
 namespace UWUVCI_AIO_WPF
 {
     [Serializable]
-    class GameConfig
+    public class GameConfig
     {
         public GameConsoles Console { get; set; }
         public GameBases BaseRom { get; set; }

@@ -166,5 +166,23 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 LR.IsEnabled = false;
             }
         }
+
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.toPal = true;
+            mvm.Patch = true;
+        }
+
+        private void RadioButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            mvm.toPal = false;
+            mvm.Patch = false;
+        }
+
+        private void RadioButton_Click_2(object sender, RoutedEventArgs e)
+        {
+            mvm.toPal = false;
+            mvm.Patch =true;
+        }
     }
 }

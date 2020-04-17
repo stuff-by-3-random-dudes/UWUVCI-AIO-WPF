@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace UWUVCI_AIO_WPF.Classes
 {
 	[Serializable]
-    class PNGTGA
+    public class PNGTGA
     {
 		private string imgPath = null;
 

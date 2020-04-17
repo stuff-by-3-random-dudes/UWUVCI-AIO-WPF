@@ -65,13 +65,23 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             }
             if (info[1])
             {
+                TK.Visibility = Visibility.Hidden;
                 tbTK.Text = "TitleKey Entered";
                 tbTK.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
             }
+            else
+            {
+                TK.Visibility = Visibility.Visible;
+            }
             if (info[2])
             {
+                CK.Visibility = Visibility.Hidden;
                 tbCK.Text = "CommonKey Entered";
                 tbCK.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
+            }
+            else
+            {
+                CK.Visibility = Visibility.Visible;
             }
 
             if(info[1] && info[2])
@@ -99,6 +109,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
          
            
             
+        }
+
+        private void btnDwnlnd_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.GbTemp = Base;
+            mvm.EnterKey(false);
+            checkStuff(mvm.getInfoOfBase(Base));
+        }
+
+        private void btnDwnlnd_Copy1_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.EnterKey(true);
+            checkStuff(mvm.getInfoOfBase(Base));
         }
     }
 }
