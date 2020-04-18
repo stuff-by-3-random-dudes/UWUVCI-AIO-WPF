@@ -20,6 +20,8 @@ using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
 using AutoUpdaterDotNET;
 using System.Threading;
+using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -273,8 +275,14 @@ namespace UWUVCI_AIO_WPF
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
-        public void Update()
+        DispatcherTimer timer = new DispatcherTimer();
+        Thread injct;
+        public void Update(bool button)
         {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+
             AutoUpdater.Start("https://raw.githubusercontent.com/Hotbrawl20/testing/master/update.xml");
             if (Properties.Settings.Default.UpgradeRequired)
             {
@@ -282,10 +290,58 @@ namespace UWUVCI_AIO_WPF
                 Properties.Settings.Default.UpgradeRequired = false;
                 Properties.Settings.Default.Save();
             }
+            if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
+            {
+                Custom_Message cm = new Custom_Message("No Updates available", "You are currently using the newest version of UWUVCI AIO");
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+
+            }
         }
-       public void OpenDialog(string title, string msg)
+
+        private int GetNewVersion()
         {
-            new Custom_Message(title, msg).ShowDialog();
+
+            try
+            {
+                WebRequest request;
+                //get download link from uwuvciapi
+               
+                    request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
+               
+
+                var response = request.GetResponse();
+                using (Stream dataStream = response.GetResponseStream())
+                {
+                    // Open the stream using a StreamReader for easy access.  
+                    StreamReader reader = new StreamReader(dataStream);
+                    // Read the content.  
+                    string responseFromServer = reader.ReadToEnd();
+                    // Display the content.  
+                    return Convert.ToInt32(responseFromServer);
+                }
+
+            }
+            catch (Exception)
+            {
+                return 100000;
+            }
+        }
+
+        public void OpenDialog(string title, string msg)
+        {
+
+            Custom_Message cm = new Custom_Message(title, msg);
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
         }
             public MainViewModel()
       {
@@ -315,7 +371,7 @@ namespace UWUVCI_AIO_WPF
             Settings.Default.Save();
             ArePathsSet();
 
-            Update();
+            Update(false);
 
             toolCheck();
             BaseCheck();
@@ -332,7 +388,13 @@ namespace UWUVCI_AIO_WPF
         public string turbocd()
         {
             string ret = string.Empty;
-            new Custom_Message("Information", "Please put a TurboGraf CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!").ShowDialog();
+            Custom_Message cm = new Custom_Message("Information", "Please put a TurboGraf CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
 
             using (var dialog = new FolderBrowserDialog())
             {
@@ -344,13 +406,25 @@ namespace UWUVCI_AIO_WPF
                     {
                         if (DirectoryIsEmpty(dialog.SelectedPath))
                         {
-                            new Custom_Message("Issue", "The folder is Empty. Please choose another folder").ShowDialog();
+                            cm = new Custom_Message("Issue", "The folder is Empty. Please choose another folder");
+                            try
+                            {
+                                cm.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            cm.ShowDialog();
                         }
                         else
                         {
                             if (Directory.GetDirectories(dialog.SelectedPath).Length > 0)
                             {
-                                new Custom_Message("Issue", "This folder mustn't contain any subfolders.").ShowDialog();
+                                cm = new Custom_Message("Issue", "This folder mustn't contain any subfolders.");
+                                try
+                                {
+                                    cm.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                cm.ShowDialog();
 
                             }
                             else
@@ -362,8 +436,14 @@ namespace UWUVCI_AIO_WPF
                                 }
                                 else
                                 {
-                                    new Custom_Message("Issue", "This Folder does not contain needed minimum of Files").ShowDialog();
-                                    
+                                    cm = new Custom_Message("Issue", "This Folder does not contain needed minimum of Files");
+                                    try
+                                    {
+                                        cm.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    cm.ShowDialog();
+
                                 }
 
                             }
@@ -424,8 +504,14 @@ namespace UWUVCI_AIO_WPF
             formatter.Serialize(compressedStream, GameConfiguration);
             compressedStream.Close();
             createConfigStream.Close();
-            new Custom_Message("Export success", "The Config was successfully exported.\nClick the Open Folder Button to open the Location where the Config is stored.", Path.Combine(Directory.GetCurrentDirectory(), outputPath)).ShowDialog();
-             }
+            Custom_Message cm = new Custom_Message("Export success", "The Config was successfully exported.\nClick the Open Folder Button to open the Location where the Config is stored.", Path.Combine(Directory.GetCurrentDirectory(), outputPath));
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
+        }
         public void ImportConfig(string configPath)
         {
             FileInfo fn = new FileInfo(configPath);
@@ -551,7 +637,13 @@ namespace UWUVCI_AIO_WPF
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
                 if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them under Settings -> \"Start Nintendont Config Tool\".";
 
-                new Custom_Message("Injection Complete", $"Only Install to USB!{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath).ShowDialog();
+                Custom_Message cm = new Custom_Message("Injection Complete", $"Only Install to USB!{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
             }
             LGameBasesString.Clear();
             CanInject = false;
@@ -561,35 +653,56 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration.CBasePath = null;
             GC = false;
         }
-        [STAThread]
+
+        DownloadWait Injectwait;
         public void runInjectThread(bool force)
         {
+            
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick2;
+            timer.Start();
             var thread = new Thread(() =>
+            {
+                Injectwait =new DownloadWait("Injecting Game - Please Wait", "", this);
+
+                try
+                {
+                    Injectwait.Owner = mw;
+                }
+                catch (Exception) { }
+                Injectwait.Topmost = true;
+                Injectwait.ShowDialog();
+
+            });
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            
+
+        }
+
+
+        public void Inject(bool force)
+        {
+            /* var task = new Task(() => runInjectThread(true));
+              task.Start();*/
+            Task.Run(() =>
             {
                 if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
                 else Injected = false;
             });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-        }
-        public void Inject(bool force)
-        {
-            var task = new Task(() => runInjectThread(force));
-
-            task.Start();
-            DownloadWait dw = new DownloadWait("Injecting Game - Please Wait", "",this);
-            try
-            {
-                dw.Owner = mw;
-            }
-            catch (Exception) { }
-           
-            dw.ShowDialog();
+            new DownloadWait("Injecting Game - Please Wait", "", this).ShowDialog();
+            Progress = 0;
             if (Injected)
             {
-                new Custom_Message("Finished Injection Part", "Injection Finished, please choose how you want to export the Inject next.").ShowDialog();
+                Custom_Message cm = new Custom_Message("Finished Injection Part", "Injection Finished, please choose how you want to export the Inject next.");
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
             }
-
+            
         }
         private void BaseCheck()
         {
@@ -604,7 +717,7 @@ namespace UWUVCI_AIO_WPF
                         double stuff = 100 / test.Count;
                         foreach (string s in test)
                         {
-                            DownloadBase(s);
+                            DownloadBase(s, this);
                             Progress += Convert.ToInt32(stuff);
                         }
                         Progress = 100;
@@ -634,7 +747,7 @@ namespace UWUVCI_AIO_WPF
                     double stuff = 100 / test.Count;
                     foreach (string s in test)
                     {
-                        DownloadBase(s);
+                        DownloadBase(s, this);
                         Progress += Convert.ToInt32(stuff);
                     }
                     Progress = 100;
@@ -646,6 +759,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 dw.ShowDialog();
+                Progress = 0;
                 BaseCheck();
 
             }
@@ -661,7 +775,7 @@ namespace UWUVCI_AIO_WPF
                 foreach (string s in bases)
                 {
                     DeleteTool(s);
-                    DownloadTool(s);
+                    DownloadTool(s,this);
                     Progress += Convert.ToInt32(l);
                 }
                 Progress = 100;
@@ -677,13 +791,25 @@ namespace UWUVCI_AIO_WPF
 
             }
             dw.ShowDialog();
-            new Custom_Message("Finished Updating Tools! Restarting UWUVCI AIO", "Finished Update").ShowDialog();
+            Custom_Message cm = new Custom_Message("Finished Update","Finished Updating Tools! Restarting UWUVCI AIO" );
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
         }
         public void ResetTKQuest()
         {
-            new Custom_Message("Resetting TitleKeys", "This Option will reset all entered TitleKeys meaning you will need to reenter them again!\nDo you still wish to continue?").ShowDialog();
+            Custom_Message cm = new Custom_Message("Resetting TitleKeys", "This Option will reset all entered TitleKeys meaning you will need to reenter them again!\nDo you still wish to continue?");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog(); ;
 
         }
         public void ResetTitleKeys()
@@ -696,8 +822,14 @@ namespace UWUVCI_AIO_WPF
                 File.Delete("bin/keys/tg16.vck");
                 File.Delete("bin/keys/snes.vck");
                 File.Delete("bin/keys/wii.vck");
-                new Custom_Message("Reset Successfull", "The TitleKeys are now reseted.\nThe Programm will now restart.").ShowDialog();
-                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                Custom_Message cm = new Custom_Message("Reset Successfull", "The TitleKeys are now reseted.\nThe Programm will now restart.");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
+            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
                 Environment.Exit(0);
             
            
@@ -712,7 +844,7 @@ namespace UWUVCI_AIO_WPF
                 foreach (string s in bases)
                 {
                     DeleteBase(s);
-                    DownloadBase(s);
+                    DownloadBase(s, this);
 
                     GameConsoles g = new GameConsoles();
                     if (s.Contains("nds")) g = GameConsoles.NDS;
@@ -739,7 +871,13 @@ namespace UWUVCI_AIO_WPF
             }
             dw.ShowDialog();
             
-            new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO").ShowDialog();
+            Custom_Message cm = new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
             Environment.Exit(0);
             
@@ -799,11 +937,23 @@ namespace UWUVCI_AIO_WPF
                     if (GetConsoleOfConfig(ret, console))
                     {
                         ImportConfig(ret);
-                        new Custom_Message("Import Complete", "Importing of Config completed.\nPlease reselect a Base!").ShowDialog();
+                        Custom_Message cm = new Custom_Message("Import Complete", "Importing of Config completed.\nPlease reselect a Base!");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
                     }
                     else
                     {
-                        new Custom_Message("Import Failed", $"The config you are trying to import is not made for {console.ToString()} Injections. \nPlease choose a config made for these kind of Injections or choose a different kind of Injection").ShowDialog();
+                        Custom_Message cm = new Custom_Message("Import Failed", $"The config you are trying to import is not made for {console.ToString()} Injections. \nPlease choose a config made for these kind of Injections or choose a different kind of Injection");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
                     }
                 }
             }
@@ -812,15 +962,28 @@ namespace UWUVCI_AIO_WPF
 
         public string GetFilePath(bool ROM, bool INI)
         {
+            Custom_Message cm;
             string ret = string.Empty;
             switch (GameConfiguration.Console)
             {
                 case GameConsoles.NDS:
-                    new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection").ShowDialog();
-                    
+                    cm = new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection");
+                    try
+                    {
+                        cm.Owner = mw;
+                    }
+                    catch (Exception) { }
+                    cm.ShowDialog();
+
                     break;
                 case GameConsoles.SNES:
-                    new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection").ShowDialog();
+                    cm = new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection");
+                    try
+                    {
+                        cm.Owner = mw;
+                    }
+                    catch (Exception) { }
+                    cm.ShowDialog();
 
                     break;
             }
@@ -828,36 +991,53 @@ namespace UWUVCI_AIO_WPF
             {
                 if (ROM)
                 {
-                    switch (GameConfiguration.Console)
+                    if (GC)
                     {
-                        case GameConsoles.NDS:
-                            dialog.Filter = "Nintendo DS ROM (*.nds; *.srl) | *.nds;*.srl";
-                            break;
-                        case GameConsoles.N64:
-                            dialog.Filter = "Nintendo 64 ROM (*.n64; *.v64; *.z64) | *.n64;*.v64;*.z64";
-                            break;
-                        case GameConsoles.GBA:
-                            dialog.Filter = "GameBoy Series ROM (*.gba;*.gbc;*.gb) | *.gba;*.gbc;*.gb";
-                            break;
-                        case GameConsoles.NES:
-                            dialog.Filter = "Nintendo Entertainment System ROM (*.nes) | *.nes";
-                            break;
-                        case GameConsoles.SNES:
-                            dialog.Filter = "Super Nintendo Entertainment System ROM (*.sfc; *.smc) | *.sfc;*.smc";
-                            break;
-                        case GameConsoles.TG16:
-                            dialog.Filter = "TurboGrafX-16 ROM (*.pce) | *.pce";
-                            break;
-                        case GameConsoles.MSX:
-                            dialog.Filter = "MSX/MSX2 ROM (*.ROM) | *.ROM";
-                            break;
-                        case GameConsoles.WII:
-                            dialog.Filter = "Wii ROM (*.iso; *.wbfs) | *.iso; *.wbfs";
-                            break;
-                        case GameConsoles.GCN:
-                            dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
-                            break;
+                        dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
                     }
+                    else
+                    {
+                        switch (GameConfiguration.Console)
+                        {
+                            case GameConsoles.NDS:
+                                dialog.Filter = "Nintendo DS ROM (*.nds; *.srl) | *.nds;*.srl";
+                                break;
+                            case GameConsoles.N64:
+                                dialog.Filter = "Nintendo 64 ROM (*.n64; *.v64; *.z64) | *.n64;*.v64;*.z64";
+                                break;
+                            case GameConsoles.GBA:
+                                dialog.Filter = "GameBoy Series ROM (*.gba;*.gbc;*.gb) | *.gba;*.gbc;*.gb";
+                                break;
+                            case GameConsoles.NES:
+                                dialog.Filter = "Nintendo Entertainment System ROM (*.nes) | *.nes";
+                                break;
+                            case GameConsoles.SNES:
+                                dialog.Filter = "Super Nintendo Entertainment System ROM (*.sfc; *.smc) | *.sfc;*.smc";
+                                break;
+                            case GameConsoles.TG16:
+                                dialog.Filter = "TurboGrafX-16 ROM (*.pce) | *.pce";
+                                break;
+                            case GameConsoles.MSX:
+                                dialog.Filter = "MSX/MSX2 ROM (*.ROM) | *.ROM";
+                                break;
+                            case GameConsoles.WII:
+                                if(test == GameConsoles.GCN)
+                                {
+                                    dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
+                                }
+                                else
+                                {
+                                    dialog.Filter = "Wii ROM (*.iso; *.wbfs) | *.iso; *.wbfs";
+                                }
+                                
+                                break;
+                            case GameConsoles.GCN:
+                                dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
+                                break;
+                        }
+                    }
+                   
+                   
                 }
                 else if(!INI)
                 {
@@ -867,6 +1047,11 @@ namespace UWUVCI_AIO_WPF
                 {
                     dialog.Filter = "N64 VC Configuration (*.ini) | *.ini";
                 }
+                if (Directory.Exists("SourceFiles"))
+                {
+                    dialog.InitialDirectory = "SourceFiles";
+                }
+               
                 DialogResult res = dialog.ShowDialog();
                 if(res == DialogResult.OK)
                 {
@@ -875,7 +1060,7 @@ namespace UWUVCI_AIO_WPF
             }
             return ret;
         }
-
+        public GameConsoles test;
         private static void CopyBase(string console)
         {
             File.Copy(console, $@"bin\bases\{console}");
@@ -928,7 +1113,7 @@ namespace UWUVCI_AIO_WPF
             }
             return ret;
         }
-        public static void DownloadBase(string name)
+        public static void DownloadBase(string name, MainViewModel mvm)
         {
             string olddir = Directory.GetCurrentDirectory();
             try
@@ -944,12 +1129,18 @@ namespace UWUVCI_AIO_WPF
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
-                new Custom_Message("Error 005: \"Unable to Download VCB Base\"", "There was an Error downloading the VCB Base File.\nThe Programm will now terminate.").ShowDialog();
+                Custom_Message cm = new Custom_Message("Error 005: \"Unable to Download VCB Base\"", "There was an Error downloading the VCB Base File.\nThe Programm will now terminate.");
+                try
+                {
+                    cm.Owner = mvm.mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
                 Environment.Exit(1);
             }
             Directory.SetCurrentDirectory(olddir);
         }
-        public static void DownloadTool(string name)
+        public static void DownloadTool(string name, MainViewModel mvm)
         {
             string olddir = Directory.GetCurrentDirectory();
             try
@@ -968,7 +1159,13 @@ namespace UWUVCI_AIO_WPF
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                new Custom_Message("Error 006: \"Unable to Download Tool\"", "There was an Error downloading the Tool.\nThe Programm will now terminate.").ShowDialog();
+                Custom_Message cm = new Custom_Message("Error 006: \"Unable to Download Tool\"", "There was an Error downloading the Tool.\nThe Programm will now terminate.");
+                try
+                {
+                    cm.Owner = mvm.mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
 
                 Environment.Exit(1);
             }
@@ -1020,7 +1217,7 @@ namespace UWUVCI_AIO_WPF
                         
                         foreach (MissingTool m in missingTools)
                         {
-                            DownloadTool(m.Name);
+                            DownloadTool(m.Name,this);
                             
                         }
                        
@@ -1041,6 +1238,7 @@ namespace UWUVCI_AIO_WPF
         }
         private void ThreadDownload(List<MissingTool> missingTools)
         {
+           
             var thread = new Thread(() =>
             {
                 double l = 100 / missingTools.Count;
@@ -1048,15 +1246,28 @@ namespace UWUVCI_AIO_WPF
 
                 foreach (MissingTool m in missingTools)
                 {
-                    DownloadTool(m.Name);
+                    DownloadTool(m.Name,this);
                     Progress += Convert.ToInt32(l);
                 }
                 Progress = 100;
                 
             });
-            thread.SetApartmentState(ApartmentState.STA);
+           thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             
+        }
+        private void timer_Tick2(object sender, EventArgs e)
+        {
+           
+            
+            if (Progress == 100)
+            {
+                Injectwait.Close();
+                injct.Abort();
+                timer.Stop();
+                
+                Progress = 0;
+            }
         }
         private void toolCheck()
         {
@@ -1395,16 +1606,28 @@ namespace UWUVCI_AIO_WPF
         }
         public void ImageWarning()
         {
-            new Custom_Message("Image Warning", "Images need to either be in a Bit Depth of 32bit or 24bit. \nIf using Tools like paint.net do not choose the Auto function.").ShowDialog();
-  
+            Custom_Message cm = new Custom_Message("Image Warning", "Images need to either be in a Bit Depth of 32bit or 24bit. \nIf using Tools like paint.net do not choose the Auto function.");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
+
         }
         public bool choosefolder = false;
         public bool CBaseConvertInfo()
         {
             bool ret = false;
-            new Custom_Message("NUS Custom Base", "You seem to have added a NUS format Custom Base.\nDo you want it to be converted to be used with the Injector?").ShowDialog();
+            Custom_Message cm = new Custom_Message("NUS Custom Base", "You seem to have added a NUS format Custom Base.\nDo you want it to be converted to be used with the Injector?");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
 
-            if(choosefolder)
+            if (choosefolder)
             {
                 ret = true;
                 choosefolder = false;
@@ -1427,10 +1650,16 @@ namespace UWUVCI_AIO_WPF
             return null;
 
         }
+        public void ThreadDOwn()
+        {
+
+           
+        }
         public void Download()
         {
-            Task.Run(() => { Injection.Download(this); });
             
+            Task.Run(() => { Injection.Download(this); });
+
             DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
             try
             {
@@ -1580,7 +1809,13 @@ namespace UWUVCI_AIO_WPF
                         }
                         else
                         {
-                            new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Inject Folder?").ShowDialog();
+                            Custom_Message cm = new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Inject Folder?");
+                            try
+                            {
+                                cm.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            cm.ShowDialog();
                             if (choosefolder)
                             {
                                 choosefolder = false;
@@ -1598,7 +1833,13 @@ namespace UWUVCI_AIO_WPF
                     }catch(Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        new Custom_Message("Error", "An Error occured, please try again!").ShowDialog();
+                        Custom_Message cm = new Custom_Message("Error", "An Error occured, please try again!");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
                     }
                   
                 }
@@ -1623,7 +1864,13 @@ namespace UWUVCI_AIO_WPF
                         }
                         else
                         {
-                            new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Base Folder?").ShowDialog();
+                            Custom_Message cm = new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Base Folder?");
+                            try
+                            {
+                                cm.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            cm.ShowDialog();
 
                             if (choosefolder)
                             {
@@ -1642,7 +1889,13 @@ namespace UWUVCI_AIO_WPF
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        new Custom_Message("Error", "An Error occured, please try again!").ShowDialog();
+                        Custom_Message cm = new Custom_Message("Error", "An Error occured, please try again!");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
                     }
 
                 }
@@ -1718,7 +1971,13 @@ namespace UWUVCI_AIO_WPF
                 }
             }catch(Exception e)
             {
-                new Custom_Message("Unknown ROM", "It seems that you inserted an unknown ROM as a Wii or GameCube game.\nIt is not recommended continuing with said ROM!").ShowDialog();
+                Custom_Message cm = new Custom_Message("Unknown ROM", "It seems that you inserted an unknown ROM as a Wii or GameCube game.\nIt is not recommended continuing with said ROM!");
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
                 ret = "";
             }
            

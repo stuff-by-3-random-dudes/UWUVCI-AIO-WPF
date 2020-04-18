@@ -21,8 +21,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     public partial class EnterKey : Window
     {
         bool ckey = false;
-        bool wiiu = false;
-        bool sys1 = false;
+
         public EnterKey(bool ckey)
         {
             InitializeComponent();
@@ -56,8 +55,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Key.Text += "1";
             }
-            wiiu = true;
-            if (i == 1) sys1 = true;
+           
         }
 
 
@@ -68,37 +66,53 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (ckey)
+            if(tbKey.Text.Length > 32 || tbKey.Text.Length < 32)
             {
-                MainViewModel mvm = (MainViewModel)FindResource("mvm");
-                if (mvm.checkcKey(tbKey.Text))
+                if(tbKey.Text.Length > 32)
                 {
-                    this.Close();
-                    new Custom_Message("Correct Key", "The entered CommonKey is correct!").ShowDialog();
-                   
-                    mvm.ArePathsSet();
+                    new Custom_Message("Wrong Key", "The entered Key is too long").ShowDialog();
                 }
                 else
                 {
-                    new Custom_Message("Incorrect Key", "The entered CommonKey is incorrect!").ShowDialog();
+                    new Custom_Message("Wrong Key", "The entered Key is too short").ShowDialog();
                 }
+                    
             }
-            
             else
             {
-                MainViewModel mvm = (MainViewModel)FindResource("mvm");
-                if (mvm.checkKey(tbKey.Text))
+                if (ckey)
                 {
-                    new Custom_Message("Correct Key", "The entered TitleKey is correct!").ShowDialog();
+                    MainViewModel mvm = (MainViewModel)FindResource("mvm");
+                    if (mvm.checkcKey(tbKey.Text))
+                    {
+                        this.Close();
+                        new Custom_Message("Correct Key", "The entered CommonKey is correct!").ShowDialog();
 
-                    this.Close();
+                        mvm.ArePathsSet();
+                    }
+                    else
+                    {
+                        new Custom_Message("Incorrect Key", "The entered CommonKey is incorrect!").ShowDialog();
+                    }
                 }
+
                 else
                 {
-                    new Custom_Message("Incorrect Key", "The entered TitleKey is incorrect!").ShowDialog();
-                    
+                    MainViewModel mvm = (MainViewModel)FindResource("mvm");
+                    if (mvm.checkKey(tbKey.Text))
+                    {
+                        new Custom_Message("Correct Key", "The entered TitleKey is correct!").ShowDialog();
+
+                        this.Close();
+                    }
+                    else
+                    {
+                        new Custom_Message("Incorrect Key", "The entered TitleKey is incorrect!").ShowDialog();
+
+                    }
                 }
             }
+           
            
         }
     }

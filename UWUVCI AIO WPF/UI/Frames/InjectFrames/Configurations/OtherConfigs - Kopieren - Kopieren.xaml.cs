@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm = FindResource("mvm") as MainViewModel;
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            mvm.test = GameConsoles.GCN;
         }
         public void Dispose()
         {
@@ -51,11 +53,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
                     
                 }
-                    }
-            string rom = mvm.getInternalName(mvm.RomPath);
-            Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³]");
-            gn.Text = reg.Replace(rom, string.Empty);
-            mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
+                string rom = mvm.getInternalName(mvm.RomPath);
+                Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³]");
+                gn.Text = reg.Replace(rom, string.Empty);
+                mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
+            }
+            
 
         }
 

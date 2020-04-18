@@ -49,6 +49,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Message.Content = message;
             this.path = Path;
             Folder.Visibility = Visibility.Visible;
+           
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {

@@ -33,14 +33,32 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             timer.Tick += timer_Tick;
             timer.Start();
         }
+        public DownloadWait(string doing, string msg, MainViewModel mvm, bool t)
+        {
+            this.mvm = mvm;
+            InitializeComponent();
+            Key.Text = doing;
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            
+        }
 
-        void timer_Tick(object sender, EventArgs e)
+        private void timer_Tick(object sender, EventArgs e)
         {
             msgT.Text = mvm.msg;
             pb.Value = mvm.Progress;
+            if(Key.Text.Contains("Downloading Base"))
+            {
+                if(mvm.Progress < 70)
+                {
+                    mvm.Progress += 5;
+                }
+            }
             if(mvm.Progress == 100)
             {
-                this.Close();
+                Close();
+                mvm.Progress = 0;
             }
         }
 

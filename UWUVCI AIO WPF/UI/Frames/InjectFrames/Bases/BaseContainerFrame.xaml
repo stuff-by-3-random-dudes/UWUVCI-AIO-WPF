@@ -5,15 +5,16 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases"
       mc:Ignorable="d" 
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      d:DesignHeight="297" d:DesignWidth="403"
-      Title="BaseContainerFrame">
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DesignWidth="403"
+      Title="BaseContainerFrame" Height="406">
 
     <Grid DataContext="{StaticResource mvm}">
-        <TextBlock Text="Choose a Base from the dropdown menu" Margin="10,2,10,275" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="15" Width="383"></TextBlock>
+        <TextBlock Text="Choose a Base from the dropdown menu" Margin="10,5,10,381" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="15" Width="383"></TextBlock>
         <ComboBox x:Name="cbCombo" HorizontalAlignment="Left" Margin="10,27,0,0" VerticalAlignment="Top" Width="383" Background="#FFCFCFCF" BorderBrush="#FF008BFF" ItemsSource="{Binding LGameBasesString}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding SelectedBaseAsString}">
         </ComboBox>
-        <Frame Name="fLoadFrame" HorizontalAlignment="Left" Height="198" Margin="10,65,0,0" VerticalAlignment="Top" Width="383"/>
+        <Frame Name="fLoadFrame" HorizontalAlignment="Left" Height="198" Margin="10,126,0,0" VerticalAlignment="Top" Width="383"/>
+        <Button Content="Copy ID" HorizontalAlignment="Left" Margin="298,61,0,0" VerticalAlignment="Top" Width="94" Height="31" Name="id" Click="id_Click" Visibility="Hidden" />
+        <Label Content="" HorizontalAlignment="Left" Margin="179,64,0,0" VerticalAlignment="Top" Width="114" Name="idtxt" Visibility="Hidden" Foreground="Black"/>
 
     </Grid>
 </Page>

@@ -59,7 +59,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            Process.Start(@"bin\Tools\INICreator.exe");
+            Process[] pname = Process.GetProcessesByName("INICreator");
+            if (pname.Length == 0)
+            {
+                Process.Start(@"bin\Tools\INICreator.exe");
+            }
+                
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
@@ -70,7 +75,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            mvm.Update();
+            mvm.Update(true);
         }
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
@@ -87,7 +92,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
-            Process.Start(@"bin\Tools\NintendontConfig.exe");
+            Process[] pname = Process.GetProcessesByName("NintendontConfig");
+            if (pname.Length == 0)
+            {
+                Process.Start(@"bin\Tools\NintendontConfig.exe");
+            }
+                
         }
     }
 }

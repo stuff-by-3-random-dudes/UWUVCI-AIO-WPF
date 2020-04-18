@@ -16,18 +16,18 @@
         <TextBox materialDesign:HintAssist.Hint="BOOTLOGOTEX (OPTIONAL)" ToolTip="Needs a BitDepth of 32 and a Dimension of 170x42" x:Name="log"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,317,157,121" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" Text="{Binding GameConfiguration.TGALog.ImgPath}"/>
         <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,369,157,69" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" x:Name="gn" KeyUp="gn_KeyUp"  MaxLength="250"/>
         <Button Content="Inject" HorizontalAlignment="Left" Margin="506,413,0,0" VerticalAlignment="Top" Width="127" Click="InjectGame"  IsEnabled="{Binding CanInject}"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,329,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,239,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,284,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
-        <Button Content="Set Path" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" x:Name="Injection"/>
+        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,329,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
+        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,239,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
+        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,284,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
+        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
+        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" x:Name="Injection"/>
         <ComboBox HorizontalAlignment="Left" Margin="10,138,0,0" VerticalAlignment="Top" Width="476" x:Name="gamepad" SelectionChanged="gamepad_SelectionChanged"/>
         <Label Content="Use GamePad as:" HorizontalAlignment="Left" Margin="6,113,0,0" VerticalAlignment="Top" FontSize="14"/>
         <CheckBox Content="Swap L/R and ZL/ZR" HorizontalAlignment="Left" Margin="506,142,0,0" VerticalAlignment="Top" Width="137" x:Name="LR" IsEnabled="False" IsChecked="False"/>
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="This may not work with every Game">
             <Label Content="Video Patch:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="102"/>
             <RadioButton Content="None" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" IsChecked="True" Click="RadioButton_Click_2" Width="78"/>
-            <RadioButton Content="NTSC to PAL" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click" Width="111"/>
+            <RadioButton Content="NTSC TO PAL" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click" Width="111"/>
             <RadioButton Content="PAL TO NTSC" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click_1"/>
         </StackPanel>
     </Grid>

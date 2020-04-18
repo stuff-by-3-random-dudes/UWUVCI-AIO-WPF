@@ -58,8 +58,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             tbMeta.Foreground = new SolidColorBrush(Color.FromRgb(205, 50, 50));
             mvm.BaseDownloaded = false;
             mvm.CBasePath = null;
-            //warning if using custom bases programm may crash
-            new Custom_Message("Information", "If using Custom Bases there will be a chance that the programm crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please hit continue").ShowDialog();
+            //warning if using custom bases program may crash
+            new Custom_Message("Information", "If using Custom Bases there will be a chance that the program crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please hit continue").ShowDialog();
           
             if(mvm.choosefolder)
             {

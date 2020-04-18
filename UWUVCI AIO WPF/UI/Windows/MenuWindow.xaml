@@ -146,11 +146,11 @@
 
             </StackPanel>
         </Grid>
-
-        <TextBlock HorizontalAlignment="Left" Margin="1164,12,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="1160,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Close" Name="close" MouseEnter="close_MouseEnter" MouseLeave="close_MouseLeave"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1141,10,0,0" TextWrapping="Wrap" Text="🗕" VerticalAlignment="Top" Foreground="White" FontSize="16"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1164,12,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16" IsHitTestVisible="False"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="1140,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Minimize" MouseEnter="Button_MouseEnter" Name="min" MouseLeave="min_MouseLeave"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1141,10,0,0" TextWrapping="Wrap" Text="🗕" VerticalAlignment="Top" Foreground="White" FontSize="16" IsHitTestVisible="False"/>
+        
     </Grid>
 
 </Window>

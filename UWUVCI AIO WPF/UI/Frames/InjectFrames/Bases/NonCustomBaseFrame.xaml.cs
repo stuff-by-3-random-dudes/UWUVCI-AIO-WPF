@@ -62,6 +62,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             {
                 tbDWNL.Text = "Base Downloaded";
                 tbDWNL.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
+                btnDwnlnd.Content = "Redownload";
             }
             if (info[1])
             {
@@ -105,6 +106,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
         {
             
                 mvm.Download();
+            Thread.Sleep(500);
                 checkStuff(mvm.getInfoOfBase(Base));
          
            

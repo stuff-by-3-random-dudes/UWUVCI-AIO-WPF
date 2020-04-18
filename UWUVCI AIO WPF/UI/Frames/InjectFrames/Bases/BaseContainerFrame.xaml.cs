@@ -65,12 +65,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                     if (cbCombo.SelectedIndex == 0)
 
                     {
-
+                        id.Visibility = Visibility.Hidden;
+                        idtxt.Visibility = Visibility.Hidden;
                         fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
                     }
                     else
                     {
+                        id.Visibility = Visibility.Visible;
+                        
+                        idtxt.Visibility = Visibility.Visible;
                         fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig, this);
+                        idtxt.Content = mvm.GameConfiguration.BaseRom.Tid;
                     }
                     mvm.OldIndex = cbCombo.SelectedIndex;
                 }
@@ -81,6 +86,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             }
             
           
+        }
+
+        private void id_Click(object sender, RoutedEventArgs e)
+        {
+            
+            Clipboard.SetText(mvm.GameConfiguration.BaseRom.Tid);
         }
     }
 }

@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="223.859" Width="717.416" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" SizeToContent="WidthAndHeight" BorderThickness="1" BorderBrush="Black">
+        Title="MAIN" Height="223.859" Width="717.416" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False">
     <Grid Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="496*"/>
@@ -19,7 +19,7 @@
             <RowDefinition Height="48"/>
         </Grid.RowDefinitions>
 
-        <TextBlock HorizontalAlignment="Left" Margin="7,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="618" FontSize="18" Foreground="Black" Name="Title" Grid.ColumnSpan="2" Grid.Row="0"/>
+        <TextBlock HorizontalAlignment="Left" Margin="7,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="618" FontSize="15" Foreground="Black" Name="Title" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"/>
         <Label HorizontalAlignment="Left" Margin="2,10,0,0" VerticalAlignment="Top" Height="Auto" Width="Auto" FontSize="15" Foreground="Black" x:Name="Message" HorizontalContentAlignment="Left" Content="" VerticalContentAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3"/>
         <Button Content="Close" HorizontalAlignment="Left" Margin="7,8,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Grid.Column="2"/>
         <Button Content="Open Folder" HorizontalAlignment="Left" Margin="5,8,0,0" VerticalAlignment="Top" Width="121" Name="Folder" Click="Folder_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1"/>

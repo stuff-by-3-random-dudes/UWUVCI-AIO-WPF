@@ -6,7 +6,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
@@ -40,15 +42,20 @@ namespace UWUVCI_AIO_WPF
          * iniPath = Only used for N64. Path to the INI configuration. If "blank", a blank ini will be used.
          * darkRemoval = Only used for N64. Indicates whether the dark filter should be removed.
          */
+
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
             mvvm = mvm;
+
+
             if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
             Directory.CreateDirectory(tempPath);
+
             mvm.msg = "Checking Tools...";
             mvm.InjcttoolCheck();
             mvm.Progress = 5;
+
             mvm.msg = "Copying Base...";
             try
             {
@@ -117,11 +124,18 @@ namespace UWUVCI_AIO_WPF
                 mvm.Index = -1;
                 mvm.LR = false;
                 mvm.msg = "";
-                mvm.Progress = 0;
+
             }
 
         }
-
+        static void timer_Tick(object sender, EventArgs e)
+        {
+            if(mvvm.Progress < 50)
+            {
+                mvvm.Progress += 5;
+            }
+            
+        }
         private static void RunSpecificInjection(GameConfig cfg, GameConsoles console, string RomPath, bool force, MainViewModel mvm)
         {
             switch (console)
@@ -238,12 +252,16 @@ namespace UWUVCI_AIO_WPF
                         mvvm.msg = "Video Patching ROM...";
                         using (Process process = new Process())
                         {
-                            process.StartInfo.FileName = "wii-vmc.exe";
+                            process.StartInfo.FileName = Path.Combine(toolsPath,"wii-vmc.exe");
                             process.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "IsoExt", "sys", "main.dol")}\"";
                             process.StartInfo.RedirectStandardInput = true;
                             process.StartInfo.UseShellExecute = false;
+                            process.StartInfo.CreateNoWindow = true;
+                            
                             process.Start();
+                            Thread.Sleep(2000);
                             process.StandardInput.WriteLine("a");
+                            Thread.Sleep(2000);
                             if (mvm.toPal)
                             {
                                 process.StandardInput.WriteLine("1");
@@ -252,9 +270,10 @@ namespace UWUVCI_AIO_WPF
                             {
                                 process.StandardInput.WriteLine("2");
                             }
-                            
-                            Thread.Sleep(200);
+
+                            Thread.Sleep(2000);
                             process.StandardInput.WriteLine();
+                            
                             process.WaitForExit();
                         }
                         mvvm.Progress = 50;
@@ -298,10 +317,12 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 40;
                     mvvm.msg = "Injecting GameCube Game into NintendontBase...";
                     File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+                    Thread.Sleep(6000);
                     tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                     tik.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
                     tik.Start();
                     tik.WaitForExit();
+                    Thread.Sleep(6000);
                     if (!File.Exists(Path.Combine(tempPath, "game.iso")))
                     {
                         Console.Clear();
@@ -336,6 +357,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 Console.WriteLine("Finished Copying");
                 mvvm.Progress = 70;
+                Thread.Sleep(6000);
                 mvvm.msg = "Injecting ROM...";
                 Console.WriteLine("Converting Game to NFS format...");
                 string olddir = Directory.GetCurrentDirectory();
@@ -491,13 +513,14 @@ namespace UWUVCI_AIO_WPF
             
             mvm.InjcttoolCheck();
             GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
-
+            
             //GetKeyOfBase
             TKeys key = mvm.getTkey(b);
             if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
             {
                 using (Process zip = new Process())
                 {
+                    
                     if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
                     Directory.CreateDirectory(tempPath);
                     using (Process download = new Process())
@@ -514,7 +537,8 @@ namespace UWUVCI_AIO_WPF
                         download.Start();
                         download.WaitForExit();
                     }
-                    mvm.Progress += 10;
+                    mvm.Progress = 75;
+                    
                     using (Process decrypt = new Process())
                     {
                         if (!mvm.debug)
@@ -531,9 +555,9 @@ namespace UWUVCI_AIO_WPF
                     }
                     mvm.Progress += 10;
                     File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]","code","fw.img"));
-                    mvm.Progress += 10;
+
                     File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
-                    mvm.Progress += 10;
+
                     if (Directory.Exists(Path.Combine(toolsPath, "IKVM"))) { Directory.Delete(Path.Combine(toolsPath, "IKVM"), true); }
                     if (!mvm.debug)
                     {
@@ -548,18 +572,17 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress += 10;
                     string[] JNUSToolConfig = { "http://ccs.cdn.wup.shop.nintendo.net/ccs/download", Properties.Settings.Default.Ckey };
                     string savedir = Directory.GetCurrentDirectory();
-                    mvm.Progress += 5;
                     File.WriteAllLines(Path.Combine(toolsPath, "IKVM", "config"), JNUSToolConfig);
                     Directory.SetCurrentDirectory(Path.Combine(toolsPath, "IKVM"));
                     zip.StartInfo.FileName = "JNUSTool.exe";
                     zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file /code/fw.img";
                     zip.Start();
                     zip.WaitForExit();
-                    mvm.Progress += 10;
+                   
                     zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file /code/fw.tmd";
                     zip.Start();
                     zip.WaitForExit();
-                    mvm.Progress += 5;
+                    
                     Directory.SetCurrentDirectory(savedir);
                     var directories = Directory.GetDirectories(Path.Combine(toolsPath, "IKVM"));
                     string name = "";
@@ -574,17 +597,17 @@ namespace UWUVCI_AIO_WPF
 
                     }
                     File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.img"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]","code","fw.img"));
-                    mvm.Progress += 10;
+
                     File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.tmd"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
-                    mvm.Progress += 10;
+
                     Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);
-                    mvm.Progress += 10;
+                    mvm.Progress += 5;
                 }
             }
             else
             {
               
-
+               
 
                 if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
                 Directory.CreateDirectory(tempPath);
@@ -601,7 +624,7 @@ namespace UWUVCI_AIO_WPF
                     download.Start();
                     download.WaitForExit();
                 }
-                mvm.Progress += 50;
+                mvm.Progress = 75;
                 using (Process decrypt = new Process())
                 {
                     if (!mvm.debug)
@@ -615,7 +638,7 @@ namespace UWUVCI_AIO_WPF
                     decrypt.Start();
                     decrypt.WaitForExit();
                 }
-                mvm.Progress += 50;
+                mvm.Progress =100;
             }
             //GetCurrentSelectedBase
             

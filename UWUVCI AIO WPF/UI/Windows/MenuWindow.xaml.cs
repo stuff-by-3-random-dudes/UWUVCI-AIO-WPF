@@ -153,12 +153,12 @@ namespace UWUVCI_AIO_WPF
 
         private void Button_MouseEnter(object sender, MouseEventArgs e)
         {
-            min.Background = new SolidColorBrush(Color.FromArgb(20, 250, 250, 250));
+            min.Background = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
         }
 
         private void close_MouseEnter(object sender, MouseEventArgs e)
         {
-            close.Background = new SolidColorBrush(Color.FromArgb(20, 250, 250, 250));
+            close.Background = new SolidColorBrush(Color.FromArgb(150,255, 100, 100));
         }
 
         private void close_MouseLeave(object sender, MouseEventArgs e)

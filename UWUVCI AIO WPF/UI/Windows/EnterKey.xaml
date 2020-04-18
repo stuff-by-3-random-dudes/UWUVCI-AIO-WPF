@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="160.656" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico">
+        Title="MAIN" Height="160.656" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False">
     <Grid DataContext="{StaticResource mvm}">
         <Button Content="Check" HorizontalAlignment="Left" Margin="315,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
         <Button Content="Abort" HorizontalAlignment="Left" Margin="405,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
@@ -19,6 +19,6 @@
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="25" Width="Auto" FontSize="18" Foreground="Black" x:Name="ID"/>
         </StackPanel>
         <TextBox Name="tbKey" materialDesign:HintAssist.Hint="ENTER KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,35,20,78" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18"/>
-        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="161" VerticalAlignment="Top" Width="500"/>
+
     </Grid>
 </Window>

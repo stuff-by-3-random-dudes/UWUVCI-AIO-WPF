@@ -38,6 +38,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gpEmu.Add("Force No Classic Controller");
             gamepad.ItemsSource = gpEmu;
             gamepad.SelectedIndex = 0;
+            mvm.test = GameBaseClassLibrary.GameConsoles.WII;
         }
         public void Dispose()
         {
@@ -182,13 +183,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void RadioButton_Click_1(object sender, RoutedEventArgs e)
         {
             mvm.toPal = false;
-            mvm.Patch = false;
+            mvm.Patch = true;
         }
 
         private void RadioButton_Click_2(object sender, RoutedEventArgs e)
         {
             mvm.toPal = false;
-            mvm.Patch =true;
+            mvm.Patch = false;
         }
     }
 }
