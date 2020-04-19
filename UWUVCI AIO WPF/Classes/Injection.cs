@@ -221,14 +221,15 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (!mvm.debug)
                     {
-                       
-                        toiso.StartInfo.CreateNoWindow = true;
+                       toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                       // toiso.StartInfo.CreateNoWindow = true;
                     }
                     toiso.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
                     toiso.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\" -t";
+                   
                     toiso.Start();
                     toiso.WaitForExit();
-                    mvm.Progress = 15;
+                   mvm.Progress = 15;
                 }
             }
             else if (new FileInfo(romPath).Extension.Contains("iso"))
@@ -242,7 +243,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                     
-                    trimm.StartInfo.CreateNoWindow = true;
+                    trimm.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 mvm.msg = "Trimming ROM...";
                 trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
@@ -310,7 +311,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                   
-                    repack.StartInfo.CreateNoWindow = true;
+                    repack.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -326,7 +327,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    extract.StartInfo.CreateNoWindow = true;
+                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
@@ -354,7 +355,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    iso2nfs.StartInfo.CreateNoWindow = true;
+                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 string extra = "";
@@ -385,7 +386,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                   zip.StartInfo.CreateNoWindow = true;
+                   zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
                 zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
@@ -415,7 +416,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    wit.StartInfo.CreateNoWindow = true;
+                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -439,7 +440,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!mvm.debug)
                 {
-                    extract.StartInfo.CreateNoWindow = true;
+                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
@@ -467,7 +468,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    iso2nfs.StartInfo.CreateNoWindow = true;
+                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso game.iso";
@@ -1258,7 +1259,7 @@ namespace UWUVCI_AIO_WPF
                 getRomName.StartInfo.FileName = "cmd.exe";
                 Console.WriteLine(Directory.GetCurrentDirectory());
                 //getRomName.StartInfo.Arguments = $"/c \"Tools\\7za.exe\" l \"temp\\baserom\\content\\0010\\rom.zip\" | findstr \"WUP\"";
-                getRomName.StartInfo.Arguments = "/c Tools\\7za.exe l temp\\baserom\\content\\0010\\rom.zip | findstr WUP";
+                getRomName.StartInfo.Arguments = "/c bin\\Tools\\7za.exe l bin\\temp\\baserom\\content\\0010\\rom.zip | findstr WUP";
                 getRomName.Start();
                 getRomName.WaitForExit();
                 var s = getRomName.StandardOutput.ReadToEnd();
@@ -1274,13 +1275,13 @@ namespace UWUVCI_AIO_WPF
                 RomEdit.StartInfo.RedirectStandardOutput = true;
                 RomEdit.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
                 //d Path.Combine(baseRomPath, "content", "0010", "rom.zip")
-                RomEdit.StartInfo.Arguments = $"d temp\\baserom\\content\\0010\\rom.zip";
+                RomEdit.StartInfo.Arguments = $"d bin\\temp\\baserom\\content\\0010\\rom.zip";
                 RomEdit.Start();
                 RomEdit.WaitForExit();
                 mvvm.Progress = 40;
                 mvvm.msg = "Injecting ROM...";
                 File.Copy(injectRomPath, $"{RomName}");
-                RomEdit.StartInfo.Arguments = $"u temp\\baserom\\content\\0010\\rom.zip {RomName}";
+                RomEdit.StartInfo.Arguments = $"u bin\\temp\\baserom\\content\\0010\\rom.zip {RomName}";
                 RomEdit.Start();
                 RomEdit.WaitForExit();
                 mvvm.Progress = 80;
@@ -1432,9 +1433,9 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        if (File.Exists(Path.Combine(toolsPath, "bootTvTex.tga")))
+                        if (File.Exists(Path.Combine(toolsPath, "bootTvTex.png")))
                         {
-                            CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.tga"), Path.Combine(imgPath), false, 128, 128, 32, "iconTex.tga");
+                            CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
 
                             Images.Add(true);
                         }
@@ -1467,17 +1468,17 @@ namespace UWUVCI_AIO_WPF
                         {
                             using(Process conv = new Process())
                             {
-                                if (!mvvm.debug)
+                               if (!mvvm.debug)
                                 {
                                     conv.StartInfo.UseShellExecute = false;
                                     conv.StartInfo.CreateNoWindow = true;
                                 }
-                                conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                                /*conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
 
                                 conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
                                 conv.Start();
-                                conv.WaitForExit();
-                                File.Move(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                                conv.WaitForExit();*/
+                                File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
                                 CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
                                 Images.Add(true);
                             }

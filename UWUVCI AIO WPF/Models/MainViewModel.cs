@@ -1029,29 +1029,33 @@ namespace UWUVCI_AIO_WPF
         {
             Custom_Message cm;
             string ret = string.Empty;
-            switch (GameConfiguration.Console)
+            if (ROM)
             {
-                case GameConsoles.NDS:
-                    cm = new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection");
-                    try
-                    {
-                        cm.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    cm.ShowDialog();
+                switch (GameConfiguration.Console)
+                {
+                    case GameConsoles.NDS:
+                        cm = new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
 
-                    break;
-                case GameConsoles.SNES:
-                    cm = new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection");
-                    try
-                    {
-                        cm.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    cm.ShowDialog();
+                        break;
+                    case GameConsoles.SNES:
+                        cm = new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
 
-                    break;
+                        break;
+                }
             }
+            
             using (var dialog = new System.Windows.Forms.OpenFileDialog())
             {
                 if (ROM)
