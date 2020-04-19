@@ -1380,6 +1380,7 @@ namespace UWUVCI_AIO_WPF
         }
         private static void Images(GameConfig config)
         {
+            bool usetemp = false;
             try
             {
 
@@ -1406,7 +1407,7 @@ namespace UWUVCI_AIO_WPF
                         if(File.Exists(Path.Combine(toolsPath, "iconTex.tga")))
                         {
                             CopyAndConvertImage(Path.Combine(toolsPath, "iconTex.tga"), Path.Combine(imgPath), false, 128, 128, 32, "iconTex.tga");
-
+                            usetemp = true;
                             Images.Add(true);
                         }
                         else
@@ -1438,6 +1439,7 @@ namespace UWUVCI_AIO_WPF
                             CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
 
                             Images.Add(true);
+                            
                         }
                         else
                         {
@@ -1468,17 +1470,28 @@ namespace UWUVCI_AIO_WPF
                         {
                             using(Process conv = new Process())
                             {
+                               
                                if (!mvvm.debug)
                                 {
                                     conv.StartInfo.UseShellExecute = false;
                                     conv.StartInfo.CreateNoWindow = true;
                                 }
-                                /*conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                                if (usetemp)
+                                {
+                                    File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                                }
+                                else
+                                {
+                                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
 
-                                conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
-                                conv.Start();
-                                conv.WaitForExit();*/
-                                File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                                    conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
+                                    conv.Start();
+                                    conv.WaitForExit();
+                                    File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                                    File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
+                                }
+                                
+                                
                                 CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
                                 Images.Add(true);
                             }

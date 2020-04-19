@@ -368,7 +368,7 @@ namespace UWUVCI_AIO_WPF
         }
             public MainViewModel()
       {
-
+            
           
             //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
             if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
@@ -676,6 +676,7 @@ namespace UWUVCI_AIO_WPF
             Injected = false;
             GameConfiguration.CBasePath = null;
             GC = false;
+            Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
         }
 
         DownloadWait Injectwait;
@@ -871,7 +872,8 @@ namespace UWUVCI_AIO_WPF
                 cm.Owner = mw;
             }
             catch (Exception) { }
-            cm.ShowDialog(); ;
+            cm.ShowDialog();
+            cm.Close();
 
         }
         public void ResetTitleKeys()
@@ -884,17 +886,18 @@ namespace UWUVCI_AIO_WPF
                 File.Delete("bin/keys/tg16.vck");
                 File.Delete("bin/keys/snes.vck");
                 File.Delete("bin/keys/wii.vck");
-                Custom_Message cm = new Custom_Message("Reset Successfull", "The TitleKeys are now reseted.\nThe Programm will now restart.");
+                Custom_Message cm = new Custom_Message("Reset Successful", "The TitleKeys are now reset.\nThe Program will now restart.");
             try
             {
                 cm.Owner = mw;
             }
             catch (Exception) { }
             cm.ShowDialog();
+            mw.Close();
             System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
-                Environment.Exit(0);
-            
-           
+            Environment.Exit(0);
+
+
         }
         public void UpdateBases()
         {
@@ -1022,7 +1025,22 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
             }
-            
+
+        }
+        private bool RemoteFileExists(string url)
+        {
+            try
+            {
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                request.Method = "HEAD";
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                response.Close();
+                return (response.StatusCode == HttpStatusCode.OK);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public string GetFilePath(bool ROM, bool INI)
@@ -2031,13 +2049,20 @@ namespace UWUVCI_AIO_WPF
 
             return true;
         }
-        public string getInternalName(string OpenGame)
+        public string getInternalName(string OpenGame, bool gc)
         {
             string ret = "";
             try
             {
                 using (var reader = new BinaryReader(File.OpenRead(OpenGame)))
                 {
+                    string TempString = "";
+                    string SystemType = "wii";
+                    if (gc)
+                    {
+                        SystemType = "gcn";
+                    }
+                    IMG_Message img;
                     reader.BaseStream.Position = 0x00;
                     char TempChar;
                     //WBFS Check
@@ -2051,19 +2076,116 @@ namespace UWUVCI_AIO_WPF
 
                         reader.BaseStream.Position = 0x220;
                         while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
-
+                        reader.BaseStream.Position = 0x200;
+                        while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
+                        string repoid = TempString;
+                        if (CheckForInternetConnectionWOWarning())
+                        {
+                            if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png") == true)
+                            {
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                            else if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + "/iconTex.png") == true)
+                            {
+                                repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                            else if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + "/iconTex.png") == true)
+                            {
+                                repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                            else if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + "/iconTex.png") == true)
+                            {
+                                repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                        }
                     }
                     else
                     {
 
 
-
+                        string repoid = "";
                         reader.BaseStream.Position = 0x18;
 
                         reader.BaseStream.Position = 0x20;
                         while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
-
-
+                        reader.BaseStream.Position = 0x00;
+                            while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
+                            repoid = TempString;
+                        
+                        
+                        if (CheckForInternetConnectionWOWarning())
+                        {
+                            if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png") == true)
+                            {
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                            else if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + "/iconTex.png") == true)
+                            {
+                                repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                            else if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + "/iconTex.png") == true)
+                            {
+                                repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                            else if (RemoteFileExists("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + "/iconTex.png") == true)
+                            {
+                                repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
+                                img = new IMG_Message("https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/iconTex.png", "https://raw.githubusercontent.com/cucholix/wiivc-bis/master/" + SystemType + "/image/" + repoid + "/bootTvTex.png");
+                                try
+                                {
+                                    img.Owner = mw;
+                                }
+                                catch (Exception) { }
+                                img.ShowDialog();
+                            }
+                        }
 
                     }
                 }

@@ -1,0 +1,31 @@
+﻿<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.IMG_Message"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
+       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MAIN" Height="250" Width="490" MinHeight="250" MinWidth="490" MaxHeight="250" MaxWidth="490" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="29*"/>
+            <RowDefinition Height="150*"/>
+            <RowDefinition Height="49*"/>
+            <RowDefinition Height="18*"/>
+        </Grid.RowDefinitions>
+        <TextBlock HorizontalAlignment="Left" Margin="7,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="463" FontSize="15" Foreground="Black" Name="Title" Grid.Row="0" FontWeight="Bold" Text="Do you want to use these BootImages?" Grid.RowSpan="2"/>
+        <Image Margin="352,15,10,8" Grid.Row="1" Source="/UWUVCI AIO WPF;component/UI/Images/iconborder.png" />
+        <Image Name="icon" Margin="354,17,12,10" Grid.Row="1" />
+
+        <Image  Grid.Column="0" Margin="9,17,155,2" Grid.Row="1" Grid.RowSpan="2" Source="/UWUVCI AIO WPF;component/UI/Images/tvborder.png"/>
+        <Image Name="tv" Grid.Column="0" Margin="15,18,160,3" Grid.Row="1" Grid.RowSpan="2"/>
+
+        <Button Content="Yes" HorizontalAlignment="Left" Margin="354,14,0,0" VerticalAlignment="Top" Width="53" Click="Yes_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2"/>
+        <Button Content="No" HorizontalAlignment="Left" Margin="423,14,0,0" VerticalAlignment="Top" Width="53" Click="Canc_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2"/>
+        <Label Content="bootTvTex" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Height="24" Width="62"/>
+        <Label Content="iconTex" HorizontalAlignment="Left" Margin="354,26,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Height="24" Width="47"/>
+
+    </Grid>
+</Window>

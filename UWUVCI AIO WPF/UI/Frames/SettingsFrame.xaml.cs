@@ -69,7 +69,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            new Custom_Message("Credits", "UWUVCI AIO - NicoAICP, Morilli, Lreiia Bot\nBeta Testers/Contributors - wowjinxy, Danis, Adolfobenjaminv\n\n7za - Igor Pavlov\nBuildPcePkg & BuildTurboCDPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli\nINICreator - NicoAICP\nN64Converter - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli\nwiiurpxtool - 0CHB0\nGoomba - FluBBa\nDarkFilter Removal N64 - MelonSpeedruns\nNintendont SD Card Menu - TeconMoon\nwit - Wiimm\nGetExtTypePatcher - Fix94\nnfs2iso2nfs - sabykos, piratesephiroth, Fix94 and many more\nWii-VMC - wanikoko").ShowDialog();
+            new Custom_Message("Credits", "UWUVCI AIO - NicoAICP, Morilli, Lreiia Bot\nBeta Testers/Contributors - wowjinxy, Danis, Adolfobenjaminv\n\n7za - Igor Pavlov\nBuildPcePkg & BuildTurboCDPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli\nINICreator - NicoAICP\nN64Converter - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli\nwiiurpxtool - 0CHB0\nGoomba - FluBBa\nDarkFilter Removal N64 - MelonSpeedruns\nNintendont SD Card Menu - TeconMoon\nwit - Wiimm\nGetExtTypePatcher - Fix94\nnfs2iso2nfs - sabykos, piratesephiroth, Fix94 and many more\nWii-VMC - wanikoko\nWii/GC Bootimages - Cucholix").ShowDialog();
         }
 
         private void Button_Click_6(object sender, RoutedEventArgs e)

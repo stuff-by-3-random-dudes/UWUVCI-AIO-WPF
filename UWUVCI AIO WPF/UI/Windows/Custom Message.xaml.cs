@@ -66,6 +66,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (reset)
             {
+                this.Close();
                 ((MainViewModel)FindResource("mvm")).ResetTitleKeys();
             }
             else

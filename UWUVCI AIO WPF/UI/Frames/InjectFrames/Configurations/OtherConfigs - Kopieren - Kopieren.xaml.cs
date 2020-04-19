@@ -53,11 +53,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
                     
                 }
-                string rom = mvm.getInternalName(mvm.RomPath);
+                string rom = mvm.getInternalName(mvm.RomPath, true);
                 Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                 gn.Text = reg.Replace(rom, string.Empty);
                 mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
                 mvm.gc2rom = "";
+                if(mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
+                {
+                    ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+                }
+                if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
+                {
+                    tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                }
             }
             
 
