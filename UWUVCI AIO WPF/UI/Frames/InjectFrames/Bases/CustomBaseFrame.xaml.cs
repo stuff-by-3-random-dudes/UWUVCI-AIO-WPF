@@ -44,6 +44,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             this.existing = existing;
             this.console = console;
             mvm.SetCBASE(this);
+            if (mvm.Ckeys)
+            {
+                CK.Visibility = Visibility.Hidden;
+            }
         }
        
 
@@ -59,7 +63,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             mvm.BaseDownloaded = false;
             mvm.CBasePath = null;
             //warning if using custom bases program may crash
-            new Custom_Message("Information", "If using Custom Bases there will be a chance that the program crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please hit continue").ShowDialog();
+            new Custom_Message("Information", "If using Custom Bases there will be a chance that the program crashes if adding a wrong base (example: a normal wiiu game instead of a nds vc game).\nA custom base is containing either the code/content/meta folders or Installable files (*.h3, *.app, ...)\nIf you add a wrong base, we will not assist you fixing it, other than telling you to use another base.\nIf you agree to this please hit continue").ShowDialog();
           
             if(mvm.choosefolder)
             {
@@ -168,6 +172,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             tbMeta.Text = "Meta Folder not found";
             tbMeta.Foreground = new SolidColorBrush(Color.FromRgb(205, 50, 50));
             mvm = (MainViewModel)FindResource("mvm");
+        }
+
+        private void CK_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.EnterKey(true);
+            if (mvm.Ckeys)
+            {
+                CK.Visibility = Visibility.Hidden;
+                path.IsEnabled = true;
+            }
+
         }
     }
 }

@@ -58,7 +58,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Folder_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new FileInfo(path).DirectoryName);
+            Process.Start(path);
             this.Close();
         }
 

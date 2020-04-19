@@ -52,13 +52,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if(mvm.Progress < 70)
                 {
-                    mvm.Progress += 5;
+                    mvm.Progress += 1;
                 }
             }
             if(mvm.Progress == 100)
             {
                 Close();
-                mvm.Progress = 0;
+                
             }
         }
 

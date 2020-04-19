@@ -58,7 +58,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 }
                 string rom = mvm.getInternalName(mvm.RomPath);
-                Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³]");
+                Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                 gn.Text = reg.Replace(rom, string.Empty);
                 mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
 
@@ -69,6 +69,39 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void InjectGame(object sender, RoutedEventArgs e)
         {
+            if (File.Exists(tv.Text))
+            {
+                mvm.GameConfiguration.TGATv.ImgPath = tv.Text;
+            }
+            else
+            {
+                mvm.GameConfiguration.TGATv.ImgPath = null;
+            }
+            if (File.Exists(ic.Text))
+            {
+                mvm.GameConfiguration.TGAIco.ImgPath = ic.Text;
+            }
+            else
+            {
+                mvm.GameConfiguration.TGAIco.ImgPath = null;
+
+            }
+            if (File.Exists(log.Text))
+            {
+                mvm.GameConfiguration.TGALog.ImgPath = log.Text;
+            }
+            else
+            {
+                mvm.GameConfiguration.TGALog.ImgPath = null;
+            }
+            if (File.Exists(drc.Text))
+            {
+                mvm.GameConfiguration.TGADrc.ImgPath = drc.Text;
+            }
+            else
+            {
+                mvm.GameConfiguration.TGADrc.ImgPath = null;
+            }
             mvm.Index = gamepad.SelectedIndex;
             if(LR.IsChecked == true)
             {

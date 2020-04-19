@@ -21,7 +21,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     public partial class EnterKey : Window
     {
         bool ckey = false;
-
+        Custom_Message cm;
         public EnterKey(bool ckey)
         {
             InitializeComponent();
@@ -70,11 +70,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if(tbKey.Text.Length > 32)
                 {
-                    new Custom_Message("Wrong Key", "The entered Key is too long").ShowDialog();
+                    cm = new Custom_Message("Wrong Key", "The entered Key is too long");
+                    cm.Owner = this;
+                    cm.ShowDialog();
                 }
                 else
                 {
-                    new Custom_Message("Wrong Key", "The entered Key is too short").ShowDialog();
+                    cm = new Custom_Message("Wrong Key", "The entered Key is too short");
+                    cm.Owner = this;
+                    cm.ShowDialog();
                 }
                     
             }
@@ -85,14 +89,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     MainViewModel mvm = (MainViewModel)FindResource("mvm");
                     if (mvm.checkcKey(tbKey.Text))
                     {
+                        
+                        cm = new Custom_Message("Correct Key", "The entered CommonKey is correct!");
+                        cm.Owner = this;
+                        cm.ShowDialog();
                         this.Close();
-                        new Custom_Message("Correct Key", "The entered CommonKey is correct!").ShowDialog();
-
                         mvm.ArePathsSet();
                     }
                     else
                     {
-                        new Custom_Message("Incorrect Key", "The entered CommonKey is incorrect!").ShowDialog();
+                       cm =  new Custom_Message("Incorrect Key", "The entered CommonKey is incorrect!");
+                        cm.Owner = this;
+                        cm.ShowDialog();
                     }
                 }
 
@@ -101,19 +109,27 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     MainViewModel mvm = (MainViewModel)FindResource("mvm");
                     if (mvm.checkKey(tbKey.Text))
                     {
-                        new Custom_Message("Correct Key", "The entered TitleKey is correct!").ShowDialog();
-
+                       cm =  new Custom_Message("Correct Key", "The entered TitleKey is correct!");
+                        cm.Owner = this;
+                        cm.ShowDialog();
                         this.Close();
                     }
                     else
                     {
-                        new Custom_Message("Incorrect Key", "The entered TitleKey is incorrect!").ShowDialog();
-
+                      cm =  new Custom_Message("Incorrect Key", "The entered TitleKey is incorrect!");
+                        cm.Owner = this;
+                        cm.ShowDialog();
                     }
                 }
             }
            
            
+        }
+
+        private void Window_GotFocus(object sender, RoutedEventArgs e)
+        {
+            tbKey.Focus();
+            tbKey.Select(0,0);
         }
     }
 }

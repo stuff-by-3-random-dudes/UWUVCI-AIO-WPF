@@ -261,7 +261,17 @@ namespace UWUVCI_AIO_WPF
         public bool Patch = false;
         public bool toPal = false;
         private string Msg;
-        
+       
+        private string Gc2rom = "";
+
+        public string gc2rom
+        {
+            get { return Gc2rom; }
+            set { Gc2rom = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public string msg
         {
@@ -272,35 +282,48 @@ namespace UWUVCI_AIO_WPF
         }
 
 
+        private bool ckeys;
+
+        public bool Ckeys
+        {
+            get { return ckeys; }
+            set { ckeys = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
         DispatcherTimer timer = new DispatcherTimer();
-        Thread injct;
+        
         public void Update(bool button)
         {
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = fvi.FileVersion;
+            if (CheckForInternetConnection())
+            {
+                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+                string version = fvi.FileVersion;
 
-            AutoUpdater.Start("https://raw.githubusercontent.com/Hotbrawl20/testing/master/update.xml");
-            if (Properties.Settings.Default.UpgradeRequired)
-            {
-                Properties.Settings.Default.Upgrade();
-                Properties.Settings.Default.UpgradeRequired = false;
-                Properties.Settings.Default.Save();
-            }
-            if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
-            {
-                Custom_Message cm = new Custom_Message("No Updates available", "You are currently using the newest version of UWUVCI AIO");
-                try
+                AutoUpdater.Start("https://raw.githubusercontent.com/Hotbrawl20/testing/master/update.xml");
+                if (Properties.Settings.Default.UpgradeRequired)
                 {
-                    cm.Owner = mw;
+                    Properties.Settings.Default.Upgrade();
+                    Properties.Settings.Default.UpgradeRequired = false;
+                    Properties.Settings.Default.Save();
                 }
-                catch (Exception) { }
-                cm.ShowDialog();
+                if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
+                {
+                    Custom_Message cm = new Custom_Message("No Updates available", "You are currently using the newest version of UWUVCI AIO");
+                    try
+                    {
+                        cm.Owner = mw;
+                    }
+                    catch (Exception) { }
+                    cm.ShowDialog();
 
+                }
             }
+            
         }
 
         private int GetNewVersion()
@@ -379,7 +402,7 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
             {
-                new Custom_Message("Issue", "One of your added Paths seems to not exist anymore. Please check the paths in the Path menu!").ShowDialog();
+                new Custom_Message("Issue", "One of your added Paths seems to not exist anymore.\nThe Tool is now using it's default Paths\nPlease check the paths in the Path menu!").ShowDialog();
             }
             UpdatePathSet();
 
@@ -615,6 +638,7 @@ namespace UWUVCI_AIO_WPF
         }
         public void Pack(bool loadiine)
         {
+            ValidatePathsStillExist();
             if (loadiine)
             {
                 Injection.Loadiine(GameConfiguration.GameName);
@@ -636,7 +660,7 @@ namespace UWUVCI_AIO_WPF
                 string extra = "";
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
                 if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them under Settings -> \"Start Nintendont Config Tool\".";
-
+                gc2rom = "";
                 Custom_Message cm = new Custom_Message("Injection Complete", $"Only Install to USB!{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
                 try
                 {
@@ -683,6 +707,7 @@ namespace UWUVCI_AIO_WPF
 
         public void Inject(bool force)
         {
+            ValidatePathsStillExist();
             /* var task = new Task(() => runInjectThread(true));
               task.Start();*/
             Task.Run(() =>
@@ -690,7 +715,12 @@ namespace UWUVCI_AIO_WPF
                 if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
                 else Injected = false;
             });
-            new DownloadWait("Injecting Game - Please Wait", "", this).ShowDialog();
+            DownloadWait dw = new DownloadWait("Injecting Game - Please Wait", "", this);
+            try
+            {
+                dw.Owner = mw;
+            }catch(Exception e) { }
+            dw.ShowDialog();
             Progress = 0;
             if (Injected)
             {
@@ -711,6 +741,51 @@ namespace UWUVCI_AIO_WPF
                 var test = GetMissingVCBs();
                 if (test.Count > 0)
                 {
+                    if (CheckForInternetConnection())
+                    {
+                        Progress = 0;
+                        Task.Run(() =>
+                        {
+                            double stuff = 100 / test.Count;
+                            foreach (string s in test)
+                            {
+                                DownloadBase(s, this);
+                                Progress += Convert.ToInt32(stuff);
+                            }
+                            Progress = 100;
+                        });
+                        DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
+                        try
+                        {
+                            dw.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        dw.ShowDialog();
+
+                        BaseCheck();
+                    }
+                    else
+                    {
+                        Custom_Message dw = new Custom_Message("No Internet connection", "You have files missing, which need to be downloaded but you dont have an Internet Connection.\nThe Program will now terminate");
+                        try
+                        {
+                            dw.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        dw.ShowDialog();
+                        Environment.Exit(1);
+                    }
+
+
+
+                }
+            }
+            else
+            {
+                if (CheckForInternetConnection())
+                {
+                    Directory.CreateDirectory(@"bin\bases");
+                    var test = GetMissingVCBs();
                     Progress = 0;
                     Task.Run(() =>
                     {
@@ -729,77 +804,64 @@ namespace UWUVCI_AIO_WPF
                     }
                     catch (Exception) { }
                     dw.ShowDialog();
-                   
+                    Progress = 0;
                     BaseCheck();
-
-
-
                 }
-            }
-            else
-            {
-
-                Directory.CreateDirectory(@"bin\bases");
-                var test = GetMissingVCBs();
-                Progress = 0;
-                Task.Run(() =>
+                else
                 {
-                    double stuff = 100 / test.Count;
-                    foreach (string s in test)
+                    Custom_Message dw = new Custom_Message("No Internet connection", "You have files missing, which need to be downloaded but you dont have an Internet Connection.\nThe Program will now terminate");
+                    try
                     {
-                        DownloadBase(s, this);
-                        Progress += Convert.ToInt32(stuff);
+                        dw.Owner = mw;
                     }
-                    Progress = 100;
-                });
-                DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "",this);
-                try
-                {
-                    dw.Owner = mw;
+                    catch (Exception) { }
+                    dw.ShowDialog();
+                    Environment.Exit(1);
                 }
-                catch (Exception) { }
-                dw.ShowDialog();
-                Progress = 0;
-                BaseCheck();
+                
 
             }
 
         }
         public void UpdateTools()
         {
-            string[] bases = ToolCheck.ToolNames;
-            Task.Run(() =>
+            if (CheckForInternetConnection())
             {
-                Progress = 0;
-                double l = 100 / bases.Length;
-                foreach (string s in bases)
+                string[] bases = ToolCheck.ToolNames;
+                Task.Run(() =>
                 {
-                    DeleteTool(s);
-                    DownloadTool(s,this);
-                    Progress += Convert.ToInt32(l);
+                    Progress = 0;
+                    double l = 100 / bases.Length;
+                    foreach (string s in bases)
+                    {
+                        DeleteTool(s);
+                        DownloadTool(s, this);
+                        Progress += Convert.ToInt32(l);
+                    }
+                    Progress = 100;
+                });
+
+                DownloadWait dw = new DownloadWait("Updating Tools - Please Wait", "", this);
+                try
+                {
+                    dw.Owner = mw;
                 }
-                Progress = 100;
-            });
+                catch (Exception)
+                {
 
-            DownloadWait dw = new DownloadWait("Updating Tools - Please Wait", "", this);
-            try
-            {
-                dw.Owner = mw;
+                }
+                dw.ShowDialog();
+                Custom_Message cm = new Custom_Message("Finished Update", "Finished Updating Tools! Restarting UWUVCI AIO");
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                Environment.Exit(0);
             }
-            catch (Exception)
-            {
-
-            }
-            dw.ShowDialog();
-            Custom_Message cm = new Custom_Message("Finished Update","Finished Updating Tools! Restarting UWUVCI AIO" );
-            try
-            {
-                cm.Owner = mw;
-            }
-            catch (Exception) { }
-            cm.ShowDialog();
-            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
-            Environment.Exit(0);
+            
         }
         public void ResetTKQuest()
         {
@@ -836,50 +898,53 @@ namespace UWUVCI_AIO_WPF
         }
         public void UpdateBases()
         {
-            
-            string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
-            Task.Run(() => {
-                Progress = 0;
-                double l = 100 / bases.Length;
-                foreach (string s in bases)
+            if (CheckForInternetConnection())
+            {
+                string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
+                Task.Run(() => {
+                    Progress = 0;
+                    double l = 100 / bases.Length;
+                    foreach (string s in bases)
+                    {
+                        DeleteBase(s);
+                        DownloadBase(s, this);
+
+                        GameConsoles g = new GameConsoles();
+                        if (s.Contains("nds")) g = GameConsoles.NDS;
+                        if (s.Contains("nes")) g = GameConsoles.NES;
+                        if (s.Contains("snes")) g = GameConsoles.SNES;
+                        if (s.Contains("n64")) g = GameConsoles.N64;
+                        if (s.Contains("gba")) g = GameConsoles.GBA;
+                        if (s.Contains("tg16")) g = GameConsoles.TG16;
+                        if (s.Contains("msx")) g = GameConsoles.MSX;
+                        if (s.Contains("wii")) g = GameConsoles.WII;
+                        UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bin/bases/{s}"), g);
+                        Progress += Convert.ToInt32(l);
+                    }
+                    Progress = 100;
+                });
+                DownloadWait dw = new DownloadWait("Updating Base Files - Please Wait", "", this);
+                try
                 {
-                    DeleteBase(s);
-                    DownloadBase(s, this);
-
-                    GameConsoles g = new GameConsoles();
-                    if (s.Contains("nds")) g = GameConsoles.NDS;
-                    if (s.Contains("nes")) g = GameConsoles.NES;
-                    if (s.Contains("snes")) g = GameConsoles.SNES;
-                    if (s.Contains("n64")) g = GameConsoles.N64;
-                    if (s.Contains("gba")) g = GameConsoles.GBA;
-                    if (s.Contains("tg16")) g = GameConsoles.TG16;
-                    if (s.Contains("msx")) g = GameConsoles.MSX;
-                    if (s.Contains("wii")) g = GameConsoles.WII;
-                    UpdateKeyFile(VCBTool.ReadBasesFromVCB($@"bin/bases/{s}"), g);
-                    Progress += Convert.ToInt32(l);
+                    dw.Owner = mw;
                 }
-                Progress = 100;
-            });
-            DownloadWait dw = new DownloadWait("Updating Base Files - Please Wait", "", this);
-            try
-            {
-                dw.Owner = mw;
-            }
-            catch (Exception)
-            {
+                catch (Exception)
+                {
 
+                }
+                dw.ShowDialog();
+
+                Custom_Message cm = new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO");
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                Environment.Exit(0);
             }
-            dw.ShowDialog();
             
-            Custom_Message cm = new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO");
-            try
-            {
-                cm.Owner = mw;
-            }
-            catch (Exception) { }
-            cm.ShowDialog();
-            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
-            Environment.Exit(0);
             
         }
         public bool checkSysKey(string key)
@@ -1263,7 +1328,7 @@ namespace UWUVCI_AIO_WPF
             if (Progress == 100)
             {
                 Injectwait.Close();
-                injct.Abort();
+                
                 timer.Stop();
                 
                 Progress = 0;
@@ -1278,12 +1343,27 @@ namespace UWUVCI_AIO_WPF
                 
                 if(missingTools.Count > 0)
                 {
-                    Task.Run(() => ThreadDownload(missingTools));
-                    new DownloadWait("Downloading Tools - Please Wait", "", this).ShowDialog();
-                    Thread.Sleep(200);
-                    //Download Tools
-                    Progress = 0;
+                    if (CheckForInternetConnection())
+                    {
+                        Task.Run(() => ThreadDownload(missingTools));
+                        new DownloadWait("Downloading Tools - Please Wait", "", this).ShowDialog();
+                        Thread.Sleep(200);
+                        //Download Tools
+                        Progress = 0;
                         toolCheck();
+                    }
+                    else
+                    {
+                        Custom_Message dw = new Custom_Message("No Internet connection", "You have files missing, which need to be downloaded but you dont have an Internet Connection.\nThe Program will now terminate");
+                        try
+                        {
+                            dw.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        dw.ShowDialog();
+                        Environment.Exit(1);
+                    }
+                   
                     
                 }
             }
@@ -1322,8 +1402,9 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    Settings.Default.BasePath = string.Empty;
-                    Settings.Default.PathsSet = false;
+                    if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin","BaseGames"))) Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames"));
+                    Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+                    Settings.Default.PathsSet = true;
                     Settings.Default.Save();
                 }
                 if (Directory.Exists(Settings.Default.OutPath))
@@ -1335,8 +1416,9 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    Settings.Default.OutPath = string.Empty;
-                    Settings.Default.PathsSet = false;
+                    if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames"))) Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames"));
+                    Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+                    Settings.Default.PathsSet = true;
                     Settings.Default.Save();
                 }
             }
@@ -1539,6 +1621,10 @@ namespace UWUVCI_AIO_WPF
         public void EnterKey(bool ck)
         {
             EnterKey ek = new EnterKey(ck);
+            try
+            {
+                ek.Owner = mw;
+            }catch(Exception e) { }
             ek.ShowDialog();
         }
         public bool checkcKey(string key)
@@ -1546,20 +1632,24 @@ namespace UWUVCI_AIO_WPF
             if (1274359530 == key.ToLower().GetHashCode())
             {
                 Settings.Default.Ckey = key;
+                ckeys = true;
                 Settings.Default.Save();
                 
                 return true;
             }
+            ckeys = false;
             return false;
         }
         public bool isCkeySet()
         {
             if (Settings.Default.Ckey.GetHashCode() == 487391367)
             {
+                ckeys = true;
                 return true;
             }
             else
             {
+                ckeys = false;
                 return false;
             }
         }
@@ -1657,17 +1747,21 @@ namespace UWUVCI_AIO_WPF
         }
         public void Download()
         {
-            
-            Task.Run(() => { Injection.Download(this); });
-
-            DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
-            try
+            ValidatePathsStillExist();
+            if (CheckForInternetConnection())
             {
-                dw.Owner = mw;
+                Task.Run(() => { Injection.Download(this); });
+
+                DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
+                try
+                {
+                    dw.Owner = mw;
+                }
+                catch (Exception) { }
+                dw.ShowDialog();
+                Progress = 0;
             }
-            catch (Exception) { }
-            dw.ShowDialog();
-            Progress = 0;
+           
             
         }
         public GameConsoles GetConsoleOfBase(GameBases gb)
@@ -1983,6 +2077,44 @@ namespace UWUVCI_AIO_WPF
            
             
             return ret;
+        }
+        public bool CheckForInternetConnection()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (client.OpenRead("http://google.com/generate_204"))
+                    return true;
+            }
+            catch
+            {
+                Custom_Message cm = new Custom_Message("No Internet Connection", "To Download Tools, Bases or required Files you need to be connected to the Internet");
+                try
+                {
+                    cm.Owner = mw;
+                    
+                }
+
+
+                catch (Exception) { }
+                cm.ShowDialog();
+                return false;
+            }
+        }
+        public bool CheckForInternetConnectionWOWarning()
+        {
+            try
+            {
+                using (var client = new WebClient())
+                using (client.OpenRead("http://google.com/generate_204"))
+                    return true;
+            }
+            catch
+            {
+                
+                
+                return false;
+            }
         }
     }
 }

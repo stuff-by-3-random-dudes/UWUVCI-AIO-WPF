@@ -9,23 +9,23 @@
       Title="SettingsFrame">
 
     <Grid Margin="0,2,0,-2">
-        <TextBlock HorizontalAlignment="Left" Margin="325,170,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,217,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" />
+        <TextBlock HorizontalAlignment="Left" Margin="325,228,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
+        <TextBlock HorizontalAlignment="Left" Margin="325,482,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,541,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,257,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" />
-        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,264,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True"/>
-        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,257,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116"/>
-        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,212,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1"/>
-        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,165,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="325,67,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
+        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,74,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True" Visibility="Hidden"/>
+        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,67,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Visibility="Hidden"/>
+        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,478,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1" Visibility="Hidden"/>
+        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,223,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
         <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden"/>
-        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,302,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
-        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,345,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
+        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,266,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
+        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,309,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
         <Button Content="Credits" HorizontalAlignment="Left" Margin="1040,558,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5"/>
-        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,302,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
-        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="597,386,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
+        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,266,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
+        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="597,350,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
         <TextBlock HorizontalAlignment="Left" Margin="1022,10,0,0" TextWrapping="Wrap" Text="v2.1 BETA" VerticalAlignment="Top" FontSize="20" Width="98"/>
-        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,302,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
-        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="325,386,0,0" VerticalAlignment="Top" Width="267" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9"/>
+        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,266,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
+        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="325,350,0,0" VerticalAlignment="Top" Width="267" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9"/>
 
     </Grid>
 </Page>
