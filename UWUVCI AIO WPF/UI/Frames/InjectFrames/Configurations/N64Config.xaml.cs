@@ -175,5 +175,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gn.CaretIndex = gn.Text.Length;
             gn.ScrollToHorizontalOffset(double.MaxValue);
         }
+
+        private void rbRDF_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.GameConfiguration.N64Stuff.DarkFilter = true;
+        }
+
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.GameConfiguration.N64Stuff.DarkFilter = false;
+        }
     }
 }

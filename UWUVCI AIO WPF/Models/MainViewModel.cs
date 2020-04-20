@@ -549,9 +549,26 @@ namespace UWUVCI_AIO_WPF
             {
                 (thing as N64Config).getInfoFromConfig();
             }
+            else if(gameConfiguration.Console == GameConsoles.TG16)
+            {
+                (thing as TurboGrafX).getInfoFromConfig();
+            }else if(gameConfiguration.Console == GameConsoles.WII && test != GameConsoles.GCN)
+            {
+                (thing as WiiConfig).getInfoFromConfig();
+            }else if (test == GameConsoles.GCN)
+            {
+                (thing as GCConfig).getInfoFromConfig();
+            }
             else
             {
-                (thing as OtherConfigs).getInfoFromConfig();
+                try
+                {
+                    (thing as OtherConfigs).getInfoFromConfig();
+                }
+               catch(Exception e)
+                {
+                    (thing as GCConfig).getInfoFromConfig();
+                }
             }
         }
 
@@ -656,6 +673,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 dw.ShowDialog();
+             
                 Progress = 0;
                 string extra = "";
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
@@ -676,7 +694,7 @@ namespace UWUVCI_AIO_WPF
             Injected = false;
             GameConfiguration.CBasePath = null;
             GC = false;
-            Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
+            if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
         }
 
         DownloadWait Injectwait;

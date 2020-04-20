@@ -22,13 +22,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     partial class DownloadWait : Window
     {
         MainViewModel mvm;
-        
+        DispatcherTimer timer = new DispatcherTimer();
         public DownloadWait(string doing, string msg, MainViewModel mvm)
         {
             this.mvm = mvm;
             InitializeComponent();
             Key.Text = doing;
-            DispatcherTimer timer = new DispatcherTimer();
+            
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
@@ -57,6 +57,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             if(mvm.Progress == 100)
             {
+                timer.Stop();
                 Close();
                 
             }

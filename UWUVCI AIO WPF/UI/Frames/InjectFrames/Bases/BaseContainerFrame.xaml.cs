@@ -60,24 +60,31 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             {
                 mvm = FindResource("mvm") as MainViewModel;
                 mvm.removeCBASE();
-                if (cbCombo.SelectedIndex != -1 && cbCombo.SelectedIndex != mvm.OldIndex)
+                if (cbCombo.SelectedIndex != -1)
                 {
-                    if (cbCombo.SelectedIndex == 0)
+                    
+                        if (cbCombo.SelectedIndex == 0)
 
-                    {
-                        id.Visibility = Visibility.Hidden;
-                        idtxt.Visibility = Visibility.Hidden;
-                        fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
-                    }
-                    else
-                    {
-                        id.Visibility = Visibility.Visible;
+                        {
+                            id.Visibility = Visibility.Hidden;
+                            idtxt.Visibility = Visibility.Hidden;
+                            fLoadFrame.Content = new CustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig);
+                        }
+                        else
+                        {
+                            id.Visibility = Visibility.Visible;
+
+                            idtxt.Visibility = Visibility.Visible;
+                            fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig, this);
+                            idtxt.Content = mvm.GameConfiguration.BaseRom.Tid;
+                        }
+                        mvm.OldIndex = cbCombo.SelectedIndex;
+                   
+                           
                         
-                        idtxt.Visibility = Visibility.Visible;
-                        fLoadFrame.Content = new NonCustomBaseFrame(mvm.LBases[cbCombo.SelectedIndex], console, insertedConfig, this);
-                        idtxt.Content = mvm.GameConfiguration.BaseRom.Tid;
-                    }
-                    mvm.OldIndex = cbCombo.SelectedIndex;
+                        
+                    
+                    
                 }
             }
             catch (Exception)

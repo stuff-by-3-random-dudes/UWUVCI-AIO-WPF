@@ -41,12 +41,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             tbMeta.Foreground = new SolidColorBrush(Color.FromRgb(205, 50, 50));
             mvm = (MainViewModel)FindResource("mvm");
             bases = Base;
+            mvm.isCkeySet();
             this.existing = existing;
             this.console = console;
             mvm.SetCBASE(this);
             if (mvm.Ckeys)
             {
                 CK.Visibility = Visibility.Hidden;
+                path.IsEnabled = true;
             }
         }
        
@@ -101,6 +103,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                             gb.Name = "Custom";
                                             gb.Region = Regions.EU;
                                             gb.Path = mvm.GameConfiguration.CBasePath;
+                                            bar.Text = gb.Path;
                                             mvm.GameConfiguration.BaseRom = gb;
                                             tbCode.Text = "Code Folder exists";
                                             tbCode.Foreground = new SolidColorBrush(Color.FromRgb(50, 205, 50));
