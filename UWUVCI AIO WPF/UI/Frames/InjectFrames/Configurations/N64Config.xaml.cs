@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Properties;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
@@ -57,7 +58,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGATv.ImgPath = tv.Text;
             }
-            else
+            else if (!tv.Text.Equals("Added via Config") && !tv.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGATv.ImgPath = null;
             }
@@ -65,7 +66,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = ic.Text;
             }
-            else
+            else if (!ic.Text.Equals("Added via Config") && !ic.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = null;
 
@@ -74,7 +75,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGALog.ImgPath = log.Text;
             }
-            else
+            else if(!log.Text.Equals("Added via Config") && !log.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGALog.ImgPath = null;
             }
@@ -82,7 +83,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = drc.Text;
             }
-            else
+            else if (!drc.Text.Equals("Added via Config") && !drc.Text.Equals("Downloaded from Cucholix Repo"))
+            {
+                mvm.GameConfiguration.TGADrc.ImgPath = null;
+            }
+            if (File.Exists(ini.Text))
+            {
+                mvm.GameConfiguration.N64Stuff.INIPath = ini.Text;
+            }
+            else if (!ini.Text.Equals("Added via Config") && !ini.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
             }
@@ -101,7 +110,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -114,7 +126,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -127,7 +142,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -139,7 +157,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -184,6 +205,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
             mvm.GameConfiguration.N64Stuff.DarkFilter = false;
+        }
+        public void reset()
+        {
+            ini.Text = "";
+            tv.Text = "";
+            drc.Text = "";
+            gn.Text = "";
+            ic.Text = "";
+            log.Text = "";
         }
     }
 }

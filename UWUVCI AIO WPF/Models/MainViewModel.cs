@@ -22,6 +22,7 @@ using AutoUpdaterDotNET;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
+using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -419,15 +420,15 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
 
-            using (var dialog = new FolderBrowserDialog())
+            using (var dialog = new CommonOpenFileDialog())
             {
-
-                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                if (result == DialogResult.OK)
+                dialog.IsFolderPicker = true;
+               CommonFileDialogResult result = dialog.ShowDialog();
+                if (result == CommonFileDialogResult.Ok)
                 {
                     try
                     {
-                        if (DirectoryIsEmpty(dialog.SelectedPath))
+                        if (DirectoryIsEmpty(dialog.FileName))
                         {
                             cm = new Custom_Message("Issue", "The folder is Empty. Please choose another folder");
                             try
@@ -439,7 +440,7 @@ namespace UWUVCI_AIO_WPF
                         }
                         else
                         {
-                            if (Directory.GetDirectories(dialog.SelectedPath).Length > 0)
+                            if (Directory.GetDirectories(dialog.FileName).Length > 0)
                             {
                                 cm = new Custom_Message("Issue", "This folder mustn't contain any subfolders.");
                                 try
@@ -453,9 +454,9 @@ namespace UWUVCI_AIO_WPF
                             else
                             {
                                 //WUP
-                                if (Directory.GetFiles(dialog.SelectedPath, "*.hcd").Length == 1 && Directory.GetFiles(dialog.SelectedPath, "*.ogg").Length > 0 && Directory.GetFiles(dialog.SelectedPath, "*.bin").Length > 0)
+                                if (Directory.GetFiles(dialog.FileName, "*.hcd").Length == 1 && Directory.GetFiles(dialog.FileName, "*.ogg").Length > 0 && Directory.GetFiles(dialog.FileName, "*.bin").Length > 0)
                                 {
-                                    ret = dialog.SelectedPath;
+                                    ret = dialog.FileName;
                                 }
                                 else
                                 {
@@ -513,18 +514,26 @@ namespace UWUVCI_AIO_WPF
             {
                 ReadIniIntoConfig();
             }
+            GameConfig backup = GameConfiguration;
+            if (test == GameConsoles.GCN) backup.Console = GameConsoles.GCN;
+            if(GameConfiguration.TGADrc.ImgBin != null && GameConfiguration.TGADrc.ImgBin.Length > 0) backup.TGADrc.ImgPath = "Added via Config";
+            if (GameConfiguration.TGATv.ImgBin != null && GameConfiguration.TGATv.ImgBin.Length > 0) backup.TGATv.ImgPath = "Added via Config";
+            if (GameConfiguration.TGALog.ImgBin != null && GameConfiguration.TGALog.ImgBin.Length > 0) backup.TGALog.ImgPath = "Added via Config";
+            if (GameConfiguration.TGAIco.ImgBin != null && GameConfiguration.TGAIco.ImgBin.Length > 0) backup.TGAIco.ImgPath = "Added via Config";
+            if (GameConfiguration.N64Stuff.INIBin != null && GameConfiguration.N64Stuff.INIBin.Length > 0) backup.N64Stuff.INIPath = "Added via Config";
+            if (GameConfiguration.GameName == "" || GameConfiguration.GameName == null) backup.GameName = "NoName";
             CheckAndFixConfigFolder();
-            string outputPath = $@"configs\{ GameConfiguration.GameName}.uwuvci";
-            int i = 0;
-            while (Directory.Exists(outputPath))
+            string outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}.uwuvci";
+            int i = 1;
+            while (File.Exists(outputPath))
             {
-                outputPath = $@"configs\{ GameConfiguration.GameName}_{i}.uwuvci";
+                outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}_{i}.uwuvci";
                 i++;
             }
             Stream createConfigStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
             GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
             IFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(compressedStream, GameConfiguration);
+            formatter.Serialize(compressedStream, backup);
             compressedStream.Close();
             createConfigStream.Close();
             Custom_Message cm = new Custom_Message("Export success", "The Config was successfully exported.\nClick the Open Folder Button to open the Location where the Config is stored.", Path.Combine(Directory.GetCurrentDirectory(), outputPath));
@@ -534,6 +543,35 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception) { }
             cm.ShowDialog();
+            GameConfiguration = new GameConfig();
+            gameConfiguration.Console = backup.Console;
+            if (GameConfiguration.Console == GameConsoles.N64)
+            {
+                (thing as N64Config).reset();
+            }
+            else if (gameConfiguration.Console == GameConsoles.TG16)
+            {
+                (thing as TurboGrafX).reset();
+            }
+            else if (gameConfiguration.Console == GameConsoles.WII && test != GameConsoles.GCN)
+            {
+                (thing as WiiConfig).reset();
+            }
+            else if (test == GameConsoles.GCN)
+            {
+                (thing as GCConfig).reset();
+            }
+            else
+            {
+                try
+                {
+                    (thing as OtherConfigs).reset();
+                }
+                catch (Exception e)
+                {
+                    (thing as GCConfig).reset();
+                }
+            }
         }
         public void ImportConfig(string configPath)
         {
@@ -1927,16 +1965,17 @@ namespace UWUVCI_AIO_WPF
        
         public void SetInjectPath()
         {
-            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            using (var dialog = new CommonOpenFileDialog())
             {
-                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                if(result == DialogResult.OK)
+                dialog.IsFolderPicker = true;
+               CommonFileDialogResult result = dialog.ShowDialog();
+                if(result == CommonFileDialogResult.Ok)
                 {
                     try
                     {
-                        if (DirectoryIsEmpty(dialog.SelectedPath))
+                        if (DirectoryIsEmpty(dialog.FileName))
                         {
-                            Settings.Default.OutPath = dialog.SelectedPath;
+                            Settings.Default.OutPath = dialog.FileName;
                             Settings.Default.SetOutOnce = true;
                             Settings.Default.Save();
                             UpdatePathSet();
@@ -1953,7 +1992,7 @@ namespace UWUVCI_AIO_WPF
                             if (choosefolder)
                             {
                                 choosefolder = false;
-                                Settings.Default.OutPath = dialog.SelectedPath;
+                                Settings.Default.OutPath = dialog.FileName;
                                 Settings.Default.SetOutOnce = true;
                                 Settings.Default.Save();
                                 UpdatePathSet();
@@ -1982,41 +2021,42 @@ namespace UWUVCI_AIO_WPF
         }
         public void SetBasePath()
         {
-            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            using (var dialog = new CommonOpenFileDialog())
             {
-                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-                if (result == DialogResult.OK)
+                dialog.IsFolderPicker = true;
+                CommonFileDialogResult result = dialog.ShowDialog();
+                if (result == CommonFileDialogResult.Ok)
                 {
                     try
                     {
-                        if (DirectoryIsEmpty(dialog.SelectedPath))
+                        if (DirectoryIsEmpty(dialog.FileName))
                         {
-                            Settings.Default.BasePath = dialog.SelectedPath;
+                            Settings.Default.BasePath = dialog.FileName;
                             Settings.Default.SetBaseOnce = true;
                             Settings.Default.Save();
                             UpdatePathSet();
                         }
                         else
                         {
-                            Custom_Message cm = new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Base Folder?");
+                            Custom_Message cm = new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Bases Folder?");
                             try
                             {
                                 cm.Owner = mw;
                             }
                             catch (Exception) { }
                             cm.ShowDialog();
-
                             if (choosefolder)
                             {
                                 choosefolder = false;
-                                Settings.Default.BasePath = dialog.SelectedPath;
+                                Settings.Default.BasePath = dialog.FileName;
                                 Settings.Default.SetBaseOnce = true;
                                 Settings.Default.Save();
                                 UpdatePathSet();
+
                             }
                             else
                             {
-                                SetBasePath();
+                                SetInjectPath();
                             }
                         }
                     }

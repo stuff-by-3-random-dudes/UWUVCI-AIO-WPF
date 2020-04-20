@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -67,8 +68,26 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Directory.CreateDirectory(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
             client.DownloadFile(ic, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "iconTex.png"));
             mvm.GameConfiguration.TGAIco.ImgPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "iconTex.png");
+            mvm.GameConfiguration.TGAIco.extension = ".png";
+            if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
+            {
+                (mvm.Thing as GCConfig).ic.Text = "Downloaded from Cucholix Repo";
+            }
+            else if(mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
+            {
+                (mvm.Thing as WiiConfig).ic.Text = "Downloaded from Cucholix Repo";
+            }
             client.DownloadFile(tvs, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png"));
             mvm.GameConfiguration.TGATv.ImgPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png");
+            mvm.GameConfiguration.TGATv.extension = ".png";
+            if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
+            {
+                (mvm.Thing as GCConfig).tv.Text = "Downloaded from Cucholix Repo";
+            }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
+            {
+                (mvm.Thing as WiiConfig).tv.Text = "Downloaded from Cucholix Repo";
+            }
             this.Close();
         }
 

@@ -67,7 +67,10 @@ namespace UWUVCI_AIO_WPF
             mvvm = mvm;
 
 
-            if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
+            if (Directory.Exists(tempPath))
+            {
+                Directory.Delete(tempPath, true);
+            }
             Directory.CreateDirectory(tempPath);
 
             mvm.msg = "Checking Tools...";
@@ -92,6 +95,10 @@ namespace UWUVCI_AIO_WPF
                     {
                         throw new Exception("12G");
                     }
+                }
+                if(Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
+                {
+                    throw new Exception("BASE");
                 }
                 if (Configuration.BaseRom.Name != "Custom")
                 {
@@ -140,6 +147,10 @@ namespace UWUVCI_AIO_WPF
                 else if (e.Message.Contains("retro"))
                 {
                     MessageBox.Show("The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else if (e.Message.Contains("BASE"))
+                {
+                    MessageBox.Show("If you import a config you NEED to reselect a base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (e.Message.Contains("WII"))
                 {
@@ -1381,6 +1392,7 @@ namespace UWUVCI_AIO_WPF
         private static void Images(GameConfig config)
         {
             bool usetemp = false;
+            bool readbin = false;
             try
             {
 
@@ -1407,7 +1419,7 @@ namespace UWUVCI_AIO_WPF
                         if(File.Exists(Path.Combine(toolsPath, "iconTex.tga")))
                         {
                             CopyAndConvertImage(Path.Combine(toolsPath, "iconTex.tga"), Path.Combine(imgPath), false, 128, 128, 32, "iconTex.tga");
-                            usetemp = true;
+                           
                             Images.Add(true);
                         }
                         else
@@ -1437,7 +1449,7 @@ namespace UWUVCI_AIO_WPF
                         if (File.Exists(Path.Combine(toolsPath, "bootTvTex.png")))
                         {
                             CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
-
+                            usetemp = true;
                             Images.Add(true);
                             
                         }
@@ -1453,6 +1465,7 @@ namespace UWUVCI_AIO_WPF
                     CopyAndConvertImage($"bootTvTex.{config.TGATv.extension}", Path.Combine(imgPath), true, 1280, 720, 24, "bootTvTex.tga");
                     config.TGATv.ImgPath = Path.Combine(imgPath, "bootTvTex.tga");
                     Images.Add(true);
+                    readbin = true;
                 }
 
                 //Drc
@@ -1482,13 +1495,34 @@ namespace UWUVCI_AIO_WPF
                                 }
                                 else
                                 {
-                                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
 
-                                    conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
-                                    conv.Start();
-                                    conv.WaitForExit();
+                                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                                    if (!readbin)
+                                    {
+                                        conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
+                                    }
+                                    else
+                                    {
+                                        if (config.TGATv.extension.Contains("tga"))
+                                            {
+                                            ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
+                                            conv.StartInfo.Arguments = $"-i \"bootTvTex.{config.TGATv.extension}\" -o \"{Path.Combine(tempPath)}\"";
+                                        }
+                                        else
+                                        {
+                                            ReadFileFromBin(config.TGATv.ImgBin, Path.Combine(tempPath, "bootTvTex.png"));
+                                        }
+                                       
+                                    }
+                                    if (!readbin || config.TGATv.extension.Contains("tga"))
+                                    {
+                                        conv.Start();
+                                        conv.WaitForExit();
+                                    }
+                                    
                                     File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
-                                    File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
+                                    if(File.Exists(Path.Combine(tempPath, "bootTvTex.png"))) File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
+                                    if (File.Exists($"bootTvTex.{config.TGATv.extension}")) File.Delete($"bootTvTex.{config.TGATv.extension}");
                                 }
                                 
                                 

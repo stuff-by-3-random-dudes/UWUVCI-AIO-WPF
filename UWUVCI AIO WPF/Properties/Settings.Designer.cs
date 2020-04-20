@@ -130,5 +130,17 @@ namespace UWUVCI_AIO_WPF.Properties {
                 this["SysKey1"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool dont {
+            get {
+                return ((bool)(this["dont"]));
+            }
+            set {
+                this["dont"] = value;
+            }
+        }
     }
 }

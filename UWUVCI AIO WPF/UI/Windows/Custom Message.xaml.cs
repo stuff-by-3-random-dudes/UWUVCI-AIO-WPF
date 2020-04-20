@@ -26,9 +26,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public Custom_Message(string title, string message)
         {
             InitializeComponent();
-            
 
 
+            dont.Visibility = Visibility.Hidden;
             Title.Text = title;
             Message.Content = message;
             Folder.Visibility = Visibility.Hidden;
@@ -39,6 +39,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     reset = true;
                 }
+            }
+            if(title.Equals("Image Warning"))
+            {
+                dont.Visibility = Visibility.Visible;
             }
 
         }
@@ -53,6 +57,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if(dont.IsChecked == true)
+            {
+                Properties.Settings.Default.dont = true;
+                Properties.Settings.Default.Save();
+            }
             this.Close();
         }
 
@@ -75,6 +84,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
                 }
                 cm.ShowDialog();
+                if (dont.IsChecked == true)
+                {
+                    Properties.Settings.Default.dont = true;
+                    Properties.Settings.Default.Save();
+                }
                 this.Close();
             }
            
@@ -91,7 +105,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 ((MainViewModel)FindResource("mvm")).choosefolder = true;
             }
-            
+            if (dont.IsChecked == true)
+            {
+                Properties.Settings.Default.dont = true;
+                Properties.Settings.Default.Save();
+            }
             this.Close();
         }
     }

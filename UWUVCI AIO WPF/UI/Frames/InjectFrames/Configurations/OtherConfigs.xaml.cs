@@ -57,7 +57,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGATv.ImgPath = tv.Text;
             }
-            else
+            else if (!tv.Text.Equals("Added via Config") && !tv.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGATv.ImgPath = null;
             }
@@ -65,7 +65,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = ic.Text;
             }
-            else
+            else if (!ic.Text.Equals("Added via Config") && !ic.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = null;
 
@@ -74,7 +74,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGALog.ImgPath = log.Text;
             }
-            else
+            else if (!log.Text.Equals("Added via Config") && !log.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGALog.ImgPath = null;
             }
@@ -82,7 +82,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = drc.Text;
             }
-            else
+            else if (!drc.Text.Equals("Added via Config") && !drc.Text.Equals("Downloaded from Cucholix Repo"))
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
             }
@@ -91,7 +91,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -104,7 +107,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -117,7 +123,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path)) {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
@@ -128,7 +137,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
-            mvm.ImageWarning();
+            if (!Settings.Default.dont)
+            {
+                mvm.ImageWarning();
+            }
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path)) {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
@@ -165,6 +177,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void gn_KeyUp_1(object sender, KeyEventArgs e)
         {
 
+        }
+        public void reset()
+        {
+            
+            tv.Text = "";
+            drc.Text = "";
+            gn.Text = "";
+            ic.Text = "";
+            log.Text = "";
         }
     }
 }
