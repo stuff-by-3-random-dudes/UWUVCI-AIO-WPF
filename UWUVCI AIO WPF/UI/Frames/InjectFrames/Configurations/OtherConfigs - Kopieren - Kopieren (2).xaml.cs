@@ -52,8 +52,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = string.Empty;
-            if (!cd) path = mvm.GetFilePath(true, false);
-            else path = mvm.turbocd();
+            path = mvm.GetFilePath(true, false);
+           
 
             if (!CheckIfNull(path)) {
                 mvm.RomPath = path;
@@ -63,6 +63,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
                     
                 }
+                mvm.getBootIMGGBA(mvm.RomPath);
                     }
             
         }
@@ -246,7 +247,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
              new TDRSHOW(tv.Text).ShowDialog();
         }
-
+        public void imgpath(string icon, string tv)
+        {
+            ic.Text = icon;
+            this.tv.Text = tv;
+            icoIMG.Visibility = Visibility.Visible;
+            this.tv.Visibility = Visibility.Visible;
+        }
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             new TDRSHOW(drc.Text).ShowDialog();

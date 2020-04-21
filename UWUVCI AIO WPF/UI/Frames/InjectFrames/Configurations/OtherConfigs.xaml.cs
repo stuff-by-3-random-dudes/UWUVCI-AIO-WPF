@@ -60,6 +60,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
                     
                 }
+                if(mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS)
+                {
+                    mvm.getBootIMGNDS(mvm.RomPath);
+                }
                     }
             
         }
