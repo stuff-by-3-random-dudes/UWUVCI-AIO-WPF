@@ -10,7 +10,7 @@
       Title="OtherConfigs">
 
     <Grid DataContext="{StaticResource mvm}">
-        <TextBox materialDesign:HintAssist.Hint="ROM PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,378" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"/>
+        <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name="rp" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,378" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"/>
         <TextBox materialDesign:HintAssist.Hint="ICONTEX" Name="ic" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 32 and a Dimension of 128x128" Margin="10,181,157,257" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGAIco.ImgPath}" Cursor="Help"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTDRCTEX (OPTIONAL)" Name="drc" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 24 and a Dimension of 854x480" Margin="10,272,157,166" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGADrc.ImgPath}" Cursor="Help"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTTVTEX" Name="tv" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 24 and a Dimension of 1280x720" Margin="10,227,157,211" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help"/>
@@ -31,6 +31,10 @@
             <CheckBox Content="Force 4:3" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click" ToolTip="If checked Games will run in 4:3 instead of 16:9"/>
             <CheckBox Content="Use GamePad" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click_1" ToolTip="If checked the GamePad will be used as a controller" Name="gp"/>
             </StackPanel>
+        <Image HorizontalAlignment="Left" Height="30" Margin="454,194,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+        <Image HorizontalAlignment="Left" Height="30" Margin="454,240,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+        <Image HorizontalAlignment="Left" Height="30" Margin="453,285,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+        <Image HorizontalAlignment="Left" Height="30" Margin="453,330,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
     </Grid>
     
 </Page>

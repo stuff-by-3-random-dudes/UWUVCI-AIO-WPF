@@ -15,7 +15,7 @@
             <Frame Name="fBaseFrame" Width="403" Margin="20,64,706,130"/>
         </Grid>
         <Button Content="WUP Installable" HorizontalAlignment="Left" Margin="51,533,0,0" VerticalAlignment="Top" Width="137" IsEnabled="{Binding Injected}" Click="Button_Click_3"/>
-        <Button Content="Loadiine" HorizontalAlignment="Left" Margin="270,533,0,0" VerticalAlignment="Top" Width="99" IsEnabled="{Binding Injected}" Click="Button_Click_2"/>
+        <Button Content="Loadiine" HorizontalAlignment="Left" Margin="256,533,0,0" VerticalAlignment="Top" Width="137" IsEnabled="{Binding Injected}" Click="Button_Click_2"/>
 
 
         <Frame Name="fLoadConfig" Width="643" Height="483" Margin="459,70,28,47"/>

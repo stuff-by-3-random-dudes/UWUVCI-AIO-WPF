@@ -49,6 +49,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public Custom_Message(string title, string message, string Path)
         {
             InitializeComponent();
+            dont.Visibility = Visibility.Hidden;
             Title.Text = title;
             Message.Content = message;
             this.path = Path;

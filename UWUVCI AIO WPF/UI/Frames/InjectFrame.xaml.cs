@@ -34,6 +34,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.TurboGrafX();
             }
+            else if (console == GameConsoles.GBA)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.GBA();
+            }
             else if (console == GameConsoles.WII)
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.WiiConfig();
@@ -45,6 +49,38 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             else
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs();
+            }
+
+            fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame(console);
+        }
+        public INJECTFRAME(GameConsoles console, GameConfig c)
+        {
+            mvm = FindResource("mvm") as MainViewModel;
+            InitializeComponent();
+            this.console = console;
+            if (console == GameConsoles.N64)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.N64Config(c);
+            }
+            else if (console == GameConsoles.TG16)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.TurboGrafX(c);
+            }
+            else if (console == GameConsoles.GBA)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.GBA(c);
+            }
+            else if (console == GameConsoles.WII)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.WiiConfig(c);
+            }
+            else if (console == GameConsoles.GCN)
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.GCConfig(c);
+            }
+            else
+            {
+                fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs(c);
             }
 
             fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame(console);

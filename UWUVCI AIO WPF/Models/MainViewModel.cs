@@ -282,6 +282,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public System.Windows.Controls.ListViewItem curr = null;
 
         private bool ckeys;
 
@@ -296,7 +297,7 @@ namespace UWUVCI_AIO_WPF
         public MainWindow mw;
         private CustomBaseFrame cb = null;
         DispatcherTimer timer = new DispatcherTimer();
-        
+        public bool PokePatch = false;
         public void Update(bool button)
         {
             if (CheckForInternetConnection())
@@ -487,6 +488,7 @@ namespace UWUVCI_AIO_WPF
 
             return ret;
         }
+        public GameConfig saveconf = null;
         public void resetCBASE()
         {
             if (cb != null) cb.Reset();
@@ -509,6 +511,17 @@ namespace UWUVCI_AIO_WPF
         }
         public void ExportFile()
         {
+            string drcp = null;
+            string tvcp = null;
+            string iccp = null;
+            string lgcp = null;
+            string incp = null;
+           if(GameConfiguration.TGADrc.ImgPath != null || GameConfiguration.TGADrc.ImgPath == "") drcp = String.Copy(GameConfiguration.TGADrc.ImgPath);
+            if (GameConfiguration.TGATv.ImgPath != null || GameConfiguration.TGATv.ImgPath == "") tvcp = String.Copy(GameConfiguration.TGATv.ImgPath);
+            if (GameConfiguration.TGAIco.ImgPath != null || GameConfiguration.TGAIco.ImgPath == "") iccp = String.Copy(GameConfiguration.TGAIco.ImgPath);
+            if (GameConfiguration.TGALog.ImgPath != null || GameConfiguration.TGALog.ImgPath == "") lgcp = String.Copy(GameConfiguration.TGALog.ImgPath);
+
+            if (GameConfiguration.N64Stuff.INIPath != null || GameConfiguration.N64Stuff.INIPath == "") incp = String.Copy(GameConfiguration.N64Stuff.INIPath);
             ReadImagesIntoConfig();
             if (GameConfiguration.Console == GameConsoles.N64)
             {
@@ -543,9 +556,20 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception) { }
             cm.ShowDialog();
-            GameConfiguration = new GameConfig();
-            gameConfiguration.Console = backup.Console;
-            if (GameConfiguration.Console == GameConsoles.N64)
+            GameConfiguration.TGADrc.ImgPath = drcp;
+            GameConfiguration.TGATv.ImgPath = tvcp;
+            GameConfiguration.TGAIco.ImgPath = iccp;
+            GameConfiguration.TGALog.ImgPath = lgcp;
+            GameConfiguration.TGADrc.ImgBin = null;
+            GameConfiguration.TGATv.ImgBin = null;
+            GameConfiguration.TGAIco.ImgBin = null;
+            GameConfiguration.TGALog.ImgBin = null;
+            if (incp != null)
+            {
+                GameConfiguration.N64Stuff.INIBin = null;
+                GameConfiguration.N64Stuff.INIPath = incp;
+            }
+            /*if (GameConfiguration.Console == GameConsoles.N64)
             {
                 (thing as N64Config).reset();
             }
@@ -571,7 +595,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     (thing as GCConfig).reset();
                 }
-            }
+            }*/
         }
         public void ImportConfig(string configPath)
         {
@@ -596,6 +620,9 @@ namespace UWUVCI_AIO_WPF
             }else if (test == GameConsoles.GCN)
             {
                 (thing as GCConfig).getInfoFromConfig();
+            }else if(gameConfiguration.Console == GameConsoles.GBA)
+            {
+                (thing as GBA).getInfoFromConfig();
             }
             else
             {

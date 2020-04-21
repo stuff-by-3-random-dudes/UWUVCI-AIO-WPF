@@ -7,6 +7,10 @@ namespace UWUVCI_AIO_WPF
     [Serializable]
     public class GameConfig
     {
+        public GameConfig Clone()
+        {
+            return this.MemberwiseClone() as GameConfig;
+        }
         public GameConsoles Console { get; set; }
         public GameBases BaseRom { get; set; }
 

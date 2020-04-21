@@ -128,7 +128,7 @@
                     <!--WIIGCN-->
                     <ListViewItem Height="60" x:Name="WIIGCN" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="/UI/Images/WIIGC.png"></Image>
+                            <materialDesign:PackIcon Foreground="White" Kind="Images" Height="45" Width="45"/>
                             <TextBlock Text="WII/GCN Title Keys" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>

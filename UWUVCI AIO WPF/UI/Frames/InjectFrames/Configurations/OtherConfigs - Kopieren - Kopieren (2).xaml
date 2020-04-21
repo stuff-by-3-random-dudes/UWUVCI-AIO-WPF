@@ -1,4 +1,4 @@
-﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations.OtherConfigs"
+﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations.GBA"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,8 +10,7 @@
       Title="OtherConfigs">
 
     <Grid DataContext="{StaticResource mvm}">
-
-        <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name ="rp"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,378" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"/>
+        <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name="rp" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,378" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"/>
         <TextBox materialDesign:HintAssist.Hint="ICONTEX" Name="ic" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 32 and a Dimension of 128x128" Margin="10,181,157,257" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGAIco.ImgPath}" Cursor="Help"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTDRCTEX (OPTIONAL)" Name="drc" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 24 and a Dimension of 854x480" Margin="10,272,157,166" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGADrc.ImgPath}" Cursor="Help"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTTVTEX" Name="tv" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 24 and a Dimension of 1280x720" Margin="10,227,157,211" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help"/>
@@ -23,9 +22,16 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,284,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
+         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="This may not work with every Game">
+
+            <Label Content="PokePatch:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="102"/>
+            <RadioButton Content="Yes" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="df"  Click="RadioButton_Click"/>
+
+            <RadioButton x:Name="rbRDF" Width="111" Content="No" HorizontalAlignment="Left" Margin="0,5,0,0"  VerticalAlignment="Top" GroupName="df" Click="rbRDF_Click" IsChecked="True"/>
+        </StackPanel>
         <Image HorizontalAlignment="Left" Height="30" Margin="454,194,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="454,240,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="453,285,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="453,330,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+            <Image HorizontalAlignment="Left" Height="30" Margin="454,240,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+            <Image HorizontalAlignment="Left" Height="30" Margin="453,285,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+            <Image HorizontalAlignment="Left" Height="30" Margin="453,330,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
     </Grid>
 </Page>

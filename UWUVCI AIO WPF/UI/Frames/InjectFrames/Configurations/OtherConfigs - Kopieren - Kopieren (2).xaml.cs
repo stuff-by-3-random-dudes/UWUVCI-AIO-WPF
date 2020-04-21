@@ -22,11 +22,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
     /// <summary>
     /// Interaktionslogik für OtherConfigs.xaml
     /// </summary>
-    public partial class TurboGrafX : Page, IDisposable
+    public partial class GBA : Page, IDisposable
     {
         MainViewModel mvm;
         bool cd = false;
-        public TurboGrafX()
+        public GBA()
         {
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
@@ -34,12 +34,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             
         }
-        public TurboGrafX(GameConfig c)
-        {
+        public GBA(GameConfig c)
+        { 
+
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
-            mvm.setThing(this);
             mvm.GameConfiguration = c.Clone(); getInfoFromConfig();
+            mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
 
         }
@@ -102,6 +103,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
             }
             mvm.Inject(false);
+            mvm.PokePatch = false;
+            rbRDF.IsChecked = true;
         }
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
@@ -119,7 +122,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 tv.Text = path;
                 tvIMG.Visibility = Visibility.Visible;
             }
-            
 
         }
 
@@ -137,7 +139,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 drc.Text = path;
                 drcIMG.Visibility = Visibility.Visible;
             }
-            
 
         }
         
@@ -154,8 +155,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ic.Text = path;
                 icoIMG.Visibility = Visibility.Visible;
             }
-           
-            
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
@@ -171,7 +170,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
-            
         }
         public void getInfoFromConfig()
         {
@@ -185,7 +183,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 tvIMG.Visibility = Visibility.Visible;
             }
             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
-            if(ic.Text.Length > 0)
+            if (ic.Text.Length > 0)
             {
                 icoIMG.Visibility = Visibility.Visible;
             }
@@ -211,25 +209,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             return false;
         }
 
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            mvm.RomPath = null;
-            mvm.RomSet = false;
-            mvm.CanInject = false;
-            if (cd)
-            {
-                cd = false;
-                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
-                Injection.Content = "Select File";
-            }
-
-            else 
-            {
-                cd = true;
-                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
-                Injection.Content = "Set Path";
-            }
-        }
+        
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
         {
@@ -248,11 +228,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             log.Text = "";
         }
 
-        private void icoIMG_MouseDown(object sender, MouseButtonEventArgs e)
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
-
+            mvm.PokePatch = true;
         }
 
+        private void rbRDF_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.PokePatch = false;
+        }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Task.Run(() => new ICOSHOW(ic.Text).ShowDialog());

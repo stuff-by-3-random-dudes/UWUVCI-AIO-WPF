@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Properties;
+using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
@@ -28,6 +29,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
+            mvm.setThing(this);
+            Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            List<string> gpEmu = new List<string>();
+            gpEmu.Add("None");
+            gpEmu.Add("Classic Controller");
+            gpEmu.Add("Horizontal WiiMote");
+            gpEmu.Add("Vertical WiiMote");
+            gpEmu.Add("Force Classic Controller");
+            gpEmu.Add("Force No Classic Controller");
+            gamepad.ItemsSource = gpEmu;
+            gamepad.SelectedIndex = 0;
+            mvm.test = GameBaseClassLibrary.GameConsoles.WII;
+        }
+        public WiiConfig(GameConfig c)
+        {
+            InitializeComponent();
+            mvm = FindResource("mvm") as MainViewModel;
+            getInfoFromConfig();
+            mvm.GameConfiguration = c.Clone();
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             List<string> gpEmu = new List<string>();
@@ -134,7 +154,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGATv.ImgPath = path;
                 mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
                 tv.Text = path;
+                tvIMG.Visibility = Visibility.Visible;
             }
+            
 
         }
 
@@ -150,7 +172,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGADrc.ImgPath = path;
                 mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
                 drc.Text = path;
+                drcIMG.Visibility = Visibility.Visible;
             }
+           
 
         }
 
@@ -166,7 +190,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
                 mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
                 ic.Text = path;
+                icoIMG.Visibility = Visibility.Visible;
             }
+            
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
@@ -181,14 +207,36 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
                 log.Text = path;
+                logIMG.Visibility = Visibility.Visible;
             }
+           
         }
         public void getInfoFromConfig()
         {
+            rp.Text = "";
+            mvm.RomPath = "";
+            mvm.RomSet = false;
+            mvm.gc2rom = "";
             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+            if (tv.Text.Length > 0)
+            {
+                tvIMG.Visibility = Visibility.Visible;
+            }
             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+            if (ic.Text.Length > 0)
+            {
+                icoIMG.Visibility = Visibility.Visible;
+            }
             drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
+            if (drc.Text.Length > 0)
+            {
+                drcIMG.Visibility = Visibility.Visible;
+            }
             log.Text = mvm.GameConfiguration.TGALog.ImgPath;
+            if (log.Text.Length > 0)
+            {
+                logIMG.Visibility = Visibility.Visible;
+            }
             gn.Text = mvm.GameConfiguration.GameName;
 
         }
@@ -253,6 +301,27 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             log.Text = "";
             
             
+        }
+        private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+           new ICOSHOW(ic.Text).ShowDialog();
+        }
+
+        private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            new TDRSHOW(tv.Text).ShowDialog();
+        }
+
+        private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TDRSHOW t = new TDRSHOW(drc.Text);
+            t.ShowDialog();
+            
+        }
+
+        private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            new LOGSHOW(log.Text).ShowDialog();
         }
     }
 }

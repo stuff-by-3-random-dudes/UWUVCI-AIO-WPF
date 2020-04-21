@@ -10,12 +10,12 @@
       Title="NonCustomBaseFrame">
 
     <Grid>
-        <TextBlock x:Name="tbDWNL" HorizontalAlignment="Center" Margin="10,32,10,0" TextWrapping="Wrap" Text="Base not downloaded" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
-        <TextBlock  x:Name="tbTK" HorizontalAlignment="Center" Margin="10,67,10,0" TextWrapping="Wrap" Text="TitleKey missing" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
-        <TextBlock x:Name="tbCK" HorizontalAlignment="Center" Margin="10,102,10,0" TextWrapping="Wrap" Text="CommonKey missing" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
-        <Button x:Name="btnDwnlnd" Content="Download" HorizontalAlignment="Left" Margin="272,158,0,0" VerticalAlignment="Top" Width="111" IsEnabled="False" Click="btnDwnlnd_Click"/>
-        <Button x:Name="TK" Content="Enter TKey" HorizontalAlignment="Left" Margin="151,158,0,0" VerticalAlignment="Top" Width="102" Click="btnDwnlnd_Copy_Click" Visibility="Hidden"/>
-        <Button x:Name="CK" Content="Enter CKey" HorizontalAlignment="Left" Margin="44,158,0,0" VerticalAlignment="Top" Width="102" Click="btnDwnlnd_Copy1_Click" Visibility="Hidden" />
+        <TextBlock x:Name="tbDWNL" HorizontalAlignment="Center" Margin="10,58,10,0" TextWrapping="Wrap" Text="Base not downloaded" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
+        <TextBlock  x:Name="tbTK" HorizontalAlignment="Center" Margin="10,93,10,0" TextWrapping="Wrap" Text="TitleKey missing" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
+        <TextBlock x:Name="tbCK" HorizontalAlignment="Center" Margin="10,128,10,0" TextWrapping="Wrap" Text="CommonKey missing" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
+        <Button x:Name="btnDwnlnd" Content="Download" HorizontalAlignment="Left" Margin="272,184,0,0" VerticalAlignment="Top" Width="111" IsEnabled="False" Click="btnDwnlnd_Click"/>
+        <Button x:Name="TK" Content="Enter TKey" HorizontalAlignment="Left" Margin="151,184,0,0" VerticalAlignment="Top" Width="102" Click="btnDwnlnd_Copy_Click" Visibility="Hidden"  />
+        <Button x:Name="CK" Content="Enter CKey" HorizontalAlignment="Left" Margin="44,184,0,0" VerticalAlignment="Top" Width="102" Click="btnDwnlnd_Copy1_Click"  Visibility="Hidden" />
 
     </Grid>
 </Page>

@@ -71,22 +71,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             mvm.GameConfiguration.TGAIco.extension = ".png";
             if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
             {
-                (mvm.Thing as GCConfig).ic.Text = "Downloaded from Cucholix Repo";
+                (mvm.Thing as GCConfig).icoIMG.Visibility = Visibility.Visible;
             }
             else if(mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
             {
-                (mvm.Thing as WiiConfig).ic.Text = "Downloaded from Cucholix Repo";
+                (mvm.Thing as WiiConfig).icoIMG.Visibility = Visibility.Visible;
             }
             client.DownloadFile(tvs, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png"));
             mvm.GameConfiguration.TGATv.ImgPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png");
             mvm.GameConfiguration.TGATv.extension = ".png";
             if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
             {
-                (mvm.Thing as GCConfig).tv.Text = "Downloaded from Cucholix Repo";
+                (mvm.Thing as GCConfig).tvIMG.Visibility = Visibility.Visible;
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
             {
-                (mvm.Thing as WiiConfig).tv.Text = "Downloaded from Cucholix Repo";
+                (mvm.Thing as WiiConfig).tvIMG.Visibility = Visibility.Visible;
             }
             this.Close();
         }
