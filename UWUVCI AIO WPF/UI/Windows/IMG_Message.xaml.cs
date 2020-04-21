@@ -77,6 +77,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 (mvm.Thing as WiiConfig).icoIMG.Visibility = Visibility.Visible;
             }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.N64)
+            {
+                (mvm.Thing as N64Config).icoIMG.Visibility = Visibility.Visible;
+            }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            {
+                (mvm.Thing as OtherConfigs).icoIMG.Visibility = Visibility.Visible;
+            }
             client.DownloadFile(tvs, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png"));
             mvm.GameConfiguration.TGATv.ImgPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png");
             mvm.GameConfiguration.TGATv.extension = ".png";
@@ -87,6 +95,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
             {
                 (mvm.Thing as WiiConfig).tvIMG.Visibility = Visibility.Visible;
+            }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.N64)
+            {
+                (mvm.Thing as N64Config).tvIMG.Visibility = Visibility.Visible;
+                (mvm.Thing as N64Config).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "iconTex.png"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png"));
+            }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            {
+                (mvm.Thing as OtherConfigs).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "iconTex.png"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "bootTvTex.png"));
+
             }
             this.Close();
         }

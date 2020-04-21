@@ -22,14 +22,14 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,284,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
-         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="This may not work with every Game">
+        <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="If checked alows you to inject TurboGrafx-CD ROMs">
 
             <Label Content="ROM Type:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="102"/>
-            <CheckBox Content="TurboGrafxCD" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click" ToolTip="If checked alows you to inject TurboGrafx-CD ROMs"/>
+            <CheckBox Content="TurboGrafxCD" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click" />
         </StackPanel>
-        <Image HorizontalAlignment="Left" Height="30" Margin="454,194,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="454,240,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="453,285,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="453,330,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,193,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden" />
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,239,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden" />
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,283,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown"  Visibility="Hidden"/>
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,328,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
     </Grid>
 </Page>

@@ -63,7 +63,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
                     
                 }
-                string rom = mvm.getInternalName(mvm.RomPath, true);
+                string rom = mvm.getInternalWIIGCNName(mvm.RomPath, true);
                 Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                 gn.Text = reg.Replace(rom, string.Empty);
                 mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
@@ -271,22 +271,71 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new ICOSHOW(ic.Text).ShowDialog());
+            new ICOSHOW(ic.Text).ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new TDRSHOW(tv.Text).ShowDialog());
+            new TDRSHOW(tv.Text).ShowDialog();
         }
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new TDRSHOW(drc.Text).ShowDialog());
+            new TDRSHOW(drc.Text).ShowDialog();
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new LOGSHOW(log.Text).ShowDialog());
+           new LOGSHOW(log.Text).ShowDialog();
+        }
+
+        private void ic_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ic.Text.Length > 0)
+            {
+                icoIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                icoIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void drc_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (drc.Text.Length > 0)
+            {
+                drcIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+
+                drcIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void tv_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (tv.Text.Length > 0)
+            {
+                tvIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                tvIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void log_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (log.Text.Length > 0)
+            {
+                logIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                logIMG.Visibility = Visibility.Hidden;
+            }
         }
     }
 }

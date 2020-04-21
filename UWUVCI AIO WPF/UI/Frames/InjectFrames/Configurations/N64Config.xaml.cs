@@ -44,7 +44,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
 
         }
-
+        public void imgpath(string icon, string tv)
+        {
+            ic.Text = icon;
+            this.tv.Text = tv;
+        }
 
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
@@ -58,6 +62,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
                     
                 }
+                mvm.getBootIMGN64(mvm.RomPath);
             }
         }
 
@@ -109,32 +114,44 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         public void getInfoFromConfig()
         {
-            rp.Text = "";
+            if(rp != null)rp.Text = "";
             mvm.RomPath = "";
             mvm.RomSet = false;
             mvm.gc2rom = "";
-            tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
-            if (tv.Text.Length > 0)
+            if (tv != null)
             {
-                tvIMG.Visibility = Visibility.Visible;
+                tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                if (tv.Text.Length > 0)
+                {
+                    tvIMG.Visibility = Visibility.Visible;
+                }
             }
-            ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
-            if (ic.Text.Length > 0)
+            if (ic != null)
             {
-                icoIMG.Visibility = Visibility.Visible;
+                ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+                if (ic.Text.Length > 0)
+                {
+                    icoIMG.Visibility = Visibility.Visible;
+                }
             }
-            drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
-            if (drc.Text.Length > 0)
+            if (drc != null)
             {
-                drcIMG.Visibility = Visibility.Visible;
+                drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
+                if (drc.Text.Length > 0)
+                {
+                    drcIMG.Visibility = Visibility.Visible;
+                }
             }
-            log.Text = mvm.GameConfiguration.TGALog.ImgPath;
-            if (log.Text.Length > 0)
+            if (log != null)
             {
-                logIMG.Visibility = Visibility.Visible;
+                log.Text = mvm.GameConfiguration.TGALog.ImgPath;
+                if (log.Text.Length > 0)
+                {
+                    logIMG.Visibility = Visibility.Visible;
+                }
             }
-            gn.Text = mvm.GameConfiguration.GameName;
-            ini.Text = mvm.GameConfiguration.N64Stuff.INIPath;
+            if (gn != null) gn.Text = mvm.GameConfiguration.GameName;
+            if (ini != null) ini.Text = mvm.GameConfiguration.N64Stuff.INIPath;
             
         }
         private void Set_TvTex(object sender, RoutedEventArgs e)
@@ -250,22 +267,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new ICOSHOW(ic.Text).ShowDialog());
+            new ICOSHOW(ic.Text).ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new TDRSHOW(tv.Text).ShowDialog());
+            new TDRSHOW(tv.Text).ShowDialog();
         }
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new TDRSHOW(drc.Text).ShowDialog());
+            new TDRSHOW(drc.Text).ShowDialog();
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new LOGSHOW(log.Text).ShowDialog());
+           new LOGSHOW(log.Text).ShowDialog();
         }
     }
 }

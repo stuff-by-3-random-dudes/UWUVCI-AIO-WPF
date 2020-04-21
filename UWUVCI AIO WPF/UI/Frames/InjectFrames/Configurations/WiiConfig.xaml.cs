@@ -78,7 +78,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
 
                 }
-                string rom = mvm.getInternalName(mvm.RomPath, false);
+                string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
                 Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                 gn.Text = reg.Replace(rom, string.Empty);
                 mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
@@ -322,6 +322,55 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             new LOGSHOW(log.Text).ShowDialog();
+        }
+
+        private void ic_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (ic.Text.Length > 0)
+            {
+                icoIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                icoIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void drc_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (drc.Text.Length > 0)
+            {
+                drcIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+
+                drcIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void tv_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (tv.Text.Length > 0)
+            {
+                tvIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                tvIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void log_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (log.Text.Length > 0)
+            {
+                logIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                logIMG.Visibility = Visibility.Hidden;
+            }
         }
     }
 }

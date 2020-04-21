@@ -44,7 +44,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
 
         }
-
+        public void imgpath(string icon, string tv)
+        {
+            ic.Text = icon;
+            this.tv.Text = tv;
+        }
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = mvm.GetFilePath(true, false);
@@ -227,22 +231,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new ICOSHOW(ic.Text).ShowDialog());
+           new ICOSHOW(ic.Text).ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new TDRSHOW(tv.Text).ShowDialog());
+            new TDRSHOW(tv.Text).ShowDialog();
         }
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new TDRSHOW(drc.Text).ShowDialog());
+            new TDRSHOW(drc.Text).ShowDialog();
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => new LOGSHOW(log.Text).ShowDialog());
+            new LOGSHOW(log.Text).ShowDialog();
         }
     }
 }

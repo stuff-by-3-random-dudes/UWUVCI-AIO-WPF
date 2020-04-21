@@ -99,5 +99,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
                 
         }
+
+        private void Button_Click_10(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.dont = false;
+            Properties.Settings.Default.Save();
+        }
     }
 }

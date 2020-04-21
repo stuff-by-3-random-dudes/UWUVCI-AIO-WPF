@@ -63,11 +63,14 @@ namespace UWUVCI_AIO_WPF
         {
             
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            if(mvm.GameConfiguration != new GameConfig() && mvm.GameConfiguration != null && mvm.saveconf == null)
-            {
-                mvm.saveconf = mvm.GameConfiguration.Clone();
-            }
-            if(mvm.curr != null)
+            
+                /*if((sender as ListView).SelectedIndex == 9)
+                {
+                    mvm.saveconf = mvm.GameConfiguration.Clone();
+                }*/
+                
+            
+            if (mvm.curr != null)
             {
                 mvm.curr.Background = null;
             }
@@ -90,131 +93,135 @@ namespace UWUVCI_AIO_WPF
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - NDS VC INJECT";
-                    if(mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.NDS)
+                  /*  if(mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.NDS)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.NDS, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.NDS);
-                        mvm.saveconf = null;
-                    }
-                    
+                      
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 1:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - GBA VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.GBA)
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.GBA)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.GBA, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.GBA);
-                        mvm.saveconf = null;
-                    }
-                    
+                        
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 2:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - N64 VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.N64)
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.N64)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.N64, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         mvm.GameConfiguration.N64Stuff = new Classes.N64Conf();
                         load_frame.Content = new INJECTFRAME(GameConsoles.N64);
-                        mvm.saveconf = null;
-                    }
-                    
+                        
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 4:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - NES VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.NES)
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.NES)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.NES, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.NES);
-                        mvm.saveconf = null;
-                    }
+                        
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 3:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - SNES VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.SNES)
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.SNES)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.SNES, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.SNES);
                         mvm.saveconf = null;
-                    }
+                    //}
                     break;
                 case 5:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.TG16 )
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.TG16 )
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.TG16, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.TG16);
-                        mvm.saveconf = null;
-                    }
+                        
+                   // }
+                    mvm.saveconf = null;
                     break;
                 case 6:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - MSX VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.MSX)
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.MSX)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.MSX, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.MSX);
-                        mvm.saveconf = null;
-                    }
+                       
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 7:
                     DestroyFrame();
                     mvm.GC = false;
                     tbTitleBar.Text = "UWUVCI AIO - Wii VC INJECT";
-                    if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.WII)
+                    /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.WII)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.WII, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.WII);
-                        mvm.saveconf = null;
-                    }
+                        
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 8:
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - GC VC INJECT";
-                    if (mvm.saveconf != null && (mvm.saveconf.Console == GameConsoles.WII || mvm.saveconf.Console == GameConsoles.GCN) && mvm.GC == true)
+                    /*if (mvm.saveconf != null && (mvm.saveconf.Console == GameConsoles.WII || mvm.saveconf.Console == GameConsoles.GCN) && mvm.GC == true)
                     {
                         load_frame.Content = new INJECTFRAME(GameConsoles.GCN, mvm.saveconf);
                     }
                     else
-                    {
+                    {*/
                         load_frame.Content = new INJECTFRAME(GameConsoles.GCN);
-                        mvm.saveconf = null;
-                    }
-                    
+                        
+                    //}
+                    mvm.saveconf = null;
                     break;
                 case 9:
                     DestroyFrame();

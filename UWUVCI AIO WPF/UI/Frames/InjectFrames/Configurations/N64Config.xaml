@@ -24,17 +24,17 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
         <TextBox Name="ini" materialDesign:HintAssist.Hint="INI PATH (LEAVE EMPTY FOR BLANK INI)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,121,157,317" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}" Height="45"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,133,0,0" VerticalAlignment="Top" Width="127" Click="Set_IniPath"/>
-        <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="This may not work with every Game">
+        <StackPanel Margin="10,20,244,436" Orientation="Horizontal" >
             
             <Label Content="DarkFilter:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="102"/>
             <RadioButton Content="Keep" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="True" Click="RadioButton_Click"/>
 
             <RadioButton x:Name="rbRDF" Width="111" Content="Remove" HorizontalAlignment="Left" Margin="0,5,0,0"  VerticalAlignment="Top" GroupName="df" Click="rbRDF_Click"/>
             </StackPanel>
-        <Image HorizontalAlignment="Left" Height="30" Margin="454,194,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="454,240,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="453,285,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-        <Image HorizontalAlignment="Left" Height="30" Margin="453,330,0,0" VerticalAlignment="Top" Width="34" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/image.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
-    </Grid>
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,193,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden" />
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,239,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="tvIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="tvIMG_MouseLeftButtonDown" Visibility="Hidden" />
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,283,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="drcIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="drcIMG_MouseLeftButtonDown"  Visibility="Hidden"/>
+        <Image HorizontalAlignment="Left" Height="32" Margin="446,328,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
+     </Grid>
     
 </Page>
