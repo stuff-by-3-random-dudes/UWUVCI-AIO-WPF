@@ -729,7 +729,8 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                
+                Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+                gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
                 Task.Run(() => { Injection.Packing(GameConfiguration.GameName, this); });
 
                 DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
@@ -1198,12 +1199,12 @@ namespace UWUVCI_AIO_WPF
                                 }
                                 else
                                 {
-                                    dialog.Filter = "Wii ROM (*.iso; *.wbfs) | *.iso; *.wbfs";
+                                    dialog.Filter = "Wii ROM (*.nkit.iso; *.iso; *.wbfs) | *.nkit.iso; *.iso; *.wbfs";
                                 }
                                 
                                 break;
                             case GameConsoles.GCN:
-                                dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
+                                dialog.Filter = "GCN ROM (*.nkit.iso; *.iso; *.gcm) | *.nkit.iso; *.iso; *.gcm";
                                 break;
                         }
                     }

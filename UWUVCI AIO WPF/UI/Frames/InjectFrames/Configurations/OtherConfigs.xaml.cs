@@ -214,10 +214,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
         {
-            Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
-            gn.Text = reg.Replace(gn.Text, string.Empty);
-            gn.CaretIndex = gn.Text.Length;
-            gn.ScrollToHorizontalOffset(double.MaxValue);
+            /*Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+           string backup = string.Copy(gn.Text);
+           gn.Text = reg.Replace(gn.Text, string.Empty);
+           gn.CaretIndex = gn.Text.Length;
+           if (gn.Text != backup)
+           {
+               gn.ScrollToHorizontalOffset(double.MaxValue);
+           }*/
+
+
+
+
         }
 
         private void gn_KeyUp_1(object sender, KeyEventArgs e)

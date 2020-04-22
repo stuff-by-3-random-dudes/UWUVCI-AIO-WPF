@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -161,7 +162,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        neededspace = gamesize * 2 + 7000000000;
+                        neededspace = 15000000000;
                     }
                     if (freeSpaceInBytes < neededspace)
                     {
@@ -230,7 +231,11 @@ namespace UWUVCI_AIO_WPF
                 }
                 else if (e.Message.Contains("12G"))
                 {
-                    MessageBox.Show($"\nPlease make sure to have atleast {FormatBytes(neededspace + 3000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"\nPlease make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }else if (e.Message.Contains("nkit"))
+                {
+                    MessageBox.Show($"\nPlease make sure that you have a genuine NKIT ROM.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+
                 }
                 else
                 {
@@ -297,30 +302,57 @@ namespace UWUVCI_AIO_WPF
         private static void WII(string romPath, MainViewModel mvm)
         {
             string savedir = Directory.GetCurrentDirectory();
-            if (new FileInfo(romPath).Extension.Contains("wbfs"))
+            if (romPath.Contains("nkit.iso"))
             {
-                mvm.msg = "Converting WBFS to ISO...";
                 using (Process toiso = new Process())
                 {
+                    mvm.msg = "Converting NKIT to ISO";
                     if (!mvm.debug)
                     {
-                       toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                       // toiso.StartInfo.CreateNoWindow = true;
+                        toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        // toiso.StartInfo.CreateNoWindow = true;
                     }
-                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
-                    toiso.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\" -t";
-                   
+                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
+                    toiso.StartInfo.Arguments = $"\"{romPath}\"";
+
                     toiso.Start();
                     toiso.WaitForExit();
-                   mvm.Progress = 15;
+                    if(!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                    {
+                        throw new Exception("nkit");
+                    }
+                    File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "pre.iso"));
+                    mvm.Progress = 15;
                 }
             }
-            else if (new FileInfo(romPath).Extension.Contains("iso"))
+            else
             {
-                mvm.msg = "Copying ROM...";
-                File.Copy(romPath, Path.Combine(tempPath, "pre.iso"));
-                mvm.Progress = 15;
+                if (new FileInfo(romPath).Extension.Contains("wbfs"))
+                {
+                    mvm.msg = "Converting WBFS to ISO...";
+                    using (Process toiso = new Process())
+                    {
+                        if (!mvm.debug)
+                        {
+                            toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            // toiso.StartInfo.CreateNoWindow = true;
+                        }
+                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
+                        toiso.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\" -t";
+
+                        toiso.Start();
+                        toiso.WaitForExit();
+                        mvm.Progress = 15;
+                    }
+                }
+                else if (new FileInfo(romPath).Extension.Contains("iso"))
+                {
+                    mvm.msg = "Copying ROM...";
+                    File.Copy(romPath, Path.Combine(tempPath, "pre.iso"));
+                    mvm.Progress = 15;
+                }
             }
+            
             using (Process trimm = new Process())
             {
                 if (!mvm.debug)
@@ -492,8 +524,61 @@ namespace UWUVCI_AIO_WPF
             }
             mvm.Progress = 40;
             mvvm.msg = "Injecting GameCube Game into NintendontBase...";
-            File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-            if (mvm.gc2rom != "" && File.Exists(mvm.gc2rom)) File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+            if (romPath.Contains("nkit.iso"))
+            {
+                using (Process wit = new Process())
+                {
+                    if (!mvm.debug)
+                    {
+
+                        wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    }
+                    wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
+                    wit.StartInfo.Arguments = $"\"{romPath}\"";
+                    wit.Start();
+                    wit.WaitForExit();
+                    if(!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                    {
+                        throw new Exception("nkit");
+                    }
+                    File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+                    
+                }
+            }
+            else
+            {
+                File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+            }
+
+            if (mvm.gc2rom != "" && File.Exists(mvm.gc2rom))
+            {
+                if (mvm.gc2rom.Contains("nkit.iso"))
+                {
+                    using (Process wit = new Process())
+                    {
+                        if (!mvm.debug)
+                        {
+
+                            wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        }
+                        wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
+                        wit.StartInfo.Arguments = $"\"{romPath}\"";
+                        wit.Start();
+                        wit.WaitForExit();
+                        if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                        {
+                            throw new Exception("nkit");
+                        }
+                        File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+
+                    }
+                }
+                else
+                {
+                    File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                }
+                
+            }
             using(Process wit = new Process())
             {
                 if (!mvm.debug)
@@ -843,12 +928,13 @@ namespace UWUVCI_AIO_WPF
         public static void Loadiine(string gameName)
         {
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
+            Regex reg = new Regex("[^a-zA-Z0-9 é -]");
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{gameName}");
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName,"")}");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{gameName}_{i}");
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName, "")}_{i}");
                 i++;
             }
 
@@ -864,14 +950,14 @@ namespace UWUVCI_AIO_WPF
             mvm.InjcttoolCheck();
             mvm.Progress = 20;
             mvm.msg = "Creating Outputfolder...";
-           
+            Regex reg = new Regex("[^a-zA-Z0-9 -]");
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{gameName}");
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"")}");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{gameName}_{i}");
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"")}_{i}");
                 i++;
             }
             mvm.Progress = 40;
@@ -1064,9 +1150,10 @@ namespace UWUVCI_AIO_WPF
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
-        private static void EditXML(string gameName, int index, string code)
+        private static void EditXML(string gameNameOr, int index, string code)
         {
-            
+            Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+            string gameName = reg.Replace(String.Copy(gameNameOr),"");
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();

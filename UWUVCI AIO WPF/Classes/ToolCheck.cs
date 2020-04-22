@@ -43,7 +43,11 @@ namespace UWUVCI_AIO_WPF.Classes
             "tga2png.exe",
             "iconTex.tga",
             "wii-vmc.exe",
-            "bootTvTex.png"
+            "bootTvTex.png",
+            "ConvertToISO.exe",
+            "NKit.dll",
+            "SharpCompress.dll",
+            "NKit.dll.config"
         };
 
         public static bool DoesToolsFolderExist()

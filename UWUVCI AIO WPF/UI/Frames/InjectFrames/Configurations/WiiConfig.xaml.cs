@@ -25,6 +25,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
     public partial class WiiConfig : Page, IDisposable
     {
         MainViewModel mvm;
+        bool dont = true;
         public WiiConfig()
         {
             InitializeComponent();
@@ -251,10 +252,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
         {
-            Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³]");
-            gn.Text = reg.Replace(gn.Text, string.Empty);
-            gn.CaretIndex = gn.Text.Length;
-            gn.ScrollToHorizontalOffset(double.MaxValue);
+
+            /*Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+       string backup = string.Copy(gn.Text);
+       gn.Text = reg.Replace(gn.Text, string.Empty);
+       gn.CaretIndex = gn.Text.Length;
+       if (gn.Text != backup)
+       {
+           gn.ScrollToHorizontalOffset(double.MaxValue);
+       }*/
+
+
+
+
         }
 
         private void gn_KeyUp_1(object sender, KeyEventArgs e)
@@ -372,5 +382,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 logIMG.Visibility = Visibility.Hidden;
             }
         }
+
+        private void gn_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.Up) || Keyboard.IsKeyDown(Key.Down)|| Keyboard.IsKeyDown(Key.Left) || Keyboard.IsKeyDown(Key.Right))
+            {
+                dont = false;
+            }
+            }
     }
 }
