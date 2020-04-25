@@ -31,6 +31,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm = FindResource("mvm") as MainViewModel;
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            sound.ToolTip += "\nWill be cut to 6 seconds of Length";
         }
         public OtherConfigs(GameConfig c)
         {
@@ -39,6 +40,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.GameConfiguration = c.Clone(); getInfoFromConfig();
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            sound.ToolTip += "\nWill be cut to 6 seconds of Length";
         }
         public void Dispose()
         {
@@ -259,6 +261,40 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             new LOGSHOW(log.Text).ShowDialog();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string path = mvm.GetFilePath(true, true);
+            if (!CheckIfNull(path))
+            {
+                if(new FileInfo(path).Extension.Contains("wav"))
+                {
+                    if (mvm.ConfirmRiffWave(path))
+                    {
+                        mvm.BootSound = path;
+                    }
+                    else
+                    {
+                        Custom_Message cm = new Custom_Message("Incompatible WAV file", "Your WAV file needs to be a RIFF WAVE file which is 16 bit stereo and also 48000khz");
+                        try
+                        {
+                            cm.Owner = mvm.mw;
+                        }catch(Exception)
+                        {
+
+                        }
+                        cm.ShowDialog();
+                    }
+                }
+                else
+                {
+
+                    mvm.BootSound = path;
+                }
+                
+                
+            }
         }
     }
 }

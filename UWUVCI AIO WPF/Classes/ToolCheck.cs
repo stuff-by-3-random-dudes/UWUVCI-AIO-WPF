@@ -47,7 +47,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "ConvertToISO.exe",
             "NKit.dll",
             "SharpCompress.dll",
-            "NKit.dll.config"
+            "NKit.dll.config",
+            "IKVMW.zip",
+            "SOX.zip"
         };
 
         public static bool DoesToolsFolderExist()

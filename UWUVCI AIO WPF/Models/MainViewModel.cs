@@ -24,6 +24,7 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text.RegularExpressions;
+using MaterialDesignThemes.Wpf;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -282,6 +283,15 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
+        private string bootsound;
+
+        public string BootSound
+        {
+            get { return bootsound; }
+            set { bootsound = value;
+                OnPropertyChanged();
+            }
+        }
 
         public System.Windows.Controls.ListViewItem curr = null;
 
@@ -358,6 +368,25 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public bool ConfirmRiffWave(string path)
+        {
+            using (var reader = new BinaryReader(File.OpenRead(path)))
+            {
+                reader.BaseStream.Position = 0x00;
+                long WAVHeader1 = reader.ReadInt32();
+                reader.BaseStream.Position = 0x08;
+                long WAVHeader2 = reader.ReadInt32();
+                if (WAVHeader1 == 1179011410 & WAVHeader2 == 1163280727)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public void OpenDialog(string title, string msg)
         {
 
@@ -413,8 +442,10 @@ namespace UWUVCI_AIO_WPF
         }
         public string turbocd()
         {
+           
+            
             string ret = string.Empty;
-            Custom_Message cm = new Custom_Message("Information", "Please put a TurboGraf CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
+            Custom_Message cm = new Custom_Message("Information", "Please put a TurboGrafX CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
             try
             {
                 cm.Owner = mw;
@@ -510,6 +541,7 @@ namespace UWUVCI_AIO_WPF
         {
             mw = mwi;
         }
+
         public void ExportFile()
         {
             string drcp = null;
@@ -761,6 +793,7 @@ namespace UWUVCI_AIO_WPF
             Injected = false;
             GameConfiguration.CBasePath = null;
             GC = false;
+            bootsound = "";
             if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
         }
 
@@ -1132,7 +1165,7 @@ namespace UWUVCI_AIO_WPF
         {
             Custom_Message cm;
             string ret = string.Empty;
-            if (ROM)
+            if (ROM && !INI)
             {
                 switch (GameConfiguration.Console)
                 {
@@ -1163,7 +1196,11 @@ namespace UWUVCI_AIO_WPF
             {
                 if (ROM)
                 {
-                    if (GC)
+                    if (INI)
+                    { 
+                        dialog.Filter = "BootSound Files (*.mp3; *.wav; *.btsnd) | *.mp3;*.wav;*.btsnd";
+                    }
+                    else if (GC)
                     {
                         dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
                     }
@@ -1213,9 +1250,10 @@ namespace UWUVCI_AIO_WPF
                 }
                 else if(!INI)
                 {
+                    
                     dialog.Filter = "BootImages (*.png; *.tga) | *.png;*.tga";
                 }
-                else
+                else if(INI)
                 {
                     dialog.Filter = "N64 VC Configuration (*.ini) | *.ini";
                 }

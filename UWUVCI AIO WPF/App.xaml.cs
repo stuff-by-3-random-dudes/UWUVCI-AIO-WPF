@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -22,11 +23,20 @@ namespace UWUVCI_AIO_WPF
 				MessageBox.Show("Your screen resolution is not supported, please use a resolution of atleast 1152x864", "Resolution not supported", MessageBoxButton.OK, MessageBoxImage.Error);
 				Environment.Exit(1);
 			}
+			if (Environment.Is64BitOperatingSystem)
+			{
+				
+			}
+			else
+			{
+				Custom_Message cm = new Custom_Message("Incompatible Operating System", "Your Operating System is not a 64Bit OS.\nThe Injector will run, but most likley many (if not all) features will not work.");
+				cm.ShowDialog();
+			}
 			MainWindow wnd = new MainWindow();
 			// The OpenFile() method is just an example of what you could do with the
 			// parameter. The method should be declared on your MainWindow class, where
 			// you could use a range of methods to process the passed file path
-			if(e.Args.Length == 1 && e.Args[0] == "--debug")
+			if (e.Args.Length == 1 && e.Args[0] == "--debug")
 			{
 				wnd.setDebug();
 			}

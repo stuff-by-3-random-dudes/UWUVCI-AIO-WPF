@@ -71,26 +71,65 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             string path = mvm.GetFilePath(true, false);
             if (!CheckIfNull(path))
-            {
-                mvm.RomPath = path;
-                mvm.RomSet = true;
-                if (mvm.BaseDownloaded)
-                {
-                    mvm.CanInject = true;
 
-                }
-                string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
-                Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
-                gn.Text = reg.Replace(rom, string.Empty);
-                mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
-                if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
+            {
+                int TitleIDInt = 0;
+                bool isok = false;
+                using (var reader = new BinaryReader(File.OpenRead(path)))
                 {
-                    ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+                    reader.BaseStream.Position = 0x00;
+                    TitleIDInt = reader.ReadInt32();
+                    if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
+                    { isok = true; }
+                    else if (TitleIDInt != 65536)
+                    {
+                        long GameType = 0;
+                        reader.BaseStream.Position = 0x18;
+                        GameType = reader.ReadInt64();
+                        if (GameType == 2745048157)
+                        {
+                            isok = true;
+                        }
+
+                    }
+                    reader.Close();
                 }
-                if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
+                if (isok)
                 {
-                    tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                    mvm.RomPath = path;
+                    mvm.RomSet = true;
+                    if (mvm.BaseDownloaded)
+                    {
+                        mvm.CanInject = true;
+
+                    }
+                    string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
+                    Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
+                    gn.Text = reg.Replace(rom, string.Empty);
+                    mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
+                    if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
+                    {
+                        ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+                    }
+                    if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
+                    {
+                        tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                    }
                 }
+                else
+                {
+                    Custom_Message cm = new Custom_Message("Wrong ROM", "The chosen ROM is not a supported WII Game");
+                    try
+                    {
+                        cm.Owner = mvm.mw;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    cm.ShowDialog();
+                }
+
             }
 
 
@@ -132,7 +171,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
             }
             mvm.Index = gamepad.SelectedIndex;
-            if(LR.IsChecked == true)
+            if (LR.IsChecked == true)
             {
                 mvm.LR = true;
             }
@@ -157,7 +196,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 tv.Text = path;
                 tvIMG.Visibility = Visibility.Visible;
             }
-            
+
 
         }
 
@@ -175,7 +214,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 drc.Text = path;
                 drcIMG.Visibility = Visibility.Visible;
             }
-           
+
 
         }
 
@@ -193,7 +232,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ic.Text = path;
                 icoIMG.Visibility = Visibility.Visible;
             }
-            
+
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
@@ -210,7 +249,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
-           
+
         }
         public void getInfoFromConfig()
         {
@@ -274,7 +313,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void gamepad_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
+            if (gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
             {
                 LR.IsEnabled = true;
             }
@@ -309,12 +348,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gn.Text = "";
             ic.Text = "";
             log.Text = "";
-            
-            
+
+
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           new ICOSHOW(ic.Text).ShowDialog();
+            new ICOSHOW(ic.Text).ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -326,7 +365,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             TDRSHOW t = new TDRSHOW(drc.Text);
             t.ShowDialog();
-            
+
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -385,10 +424,43 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void gn_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.Up) || Keyboard.IsKeyDown(Key.Down)|| Keyboard.IsKeyDown(Key.Left) || Keyboard.IsKeyDown(Key.Right))
+            if (Keyboard.IsKeyDown(Key.Up) || Keyboard.IsKeyDown(Key.Down) || Keyboard.IsKeyDown(Key.Left) || Keyboard.IsKeyDown(Key.Right))
             {
                 dont = false;
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string path = mvm.GetFilePath(true, true);
+            if (!CheckIfNull(path))
+            {
+                if (new FileInfo(path).Extension.Contains("wav"))
+                {
+                    if (mvm.ConfirmRiffWave(path))
+                    {
+                        mvm.BootSound = path;
+                    }
+                    else
+                    {
+                        Custom_Message cm = new Custom_Message("Incompatible WAV file", "Your WAV file needs to be a RIFF WAVE file which is 16 bit stereo and also 48000khz");
+                        try
+                        {
+                            cm.Owner = mvm.mw;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        cm.ShowDialog();
+                    }
+                }
+                else
+                {
+
+                    mvm.BootSound = path;
+                }
             }
+        }
     }
 }

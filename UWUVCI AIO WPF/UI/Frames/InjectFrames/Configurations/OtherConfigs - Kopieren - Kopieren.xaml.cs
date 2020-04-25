@@ -53,31 +53,65 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             string path = string.Empty;
             path = mvm.GetFilePath(true, false);
-            
+            int TitleIDInt = 0;
+            bool isok = false;
+            if (!CheckIfNull(path))
+            {
+                using (var reader = new BinaryReader(File.OpenRead(path)))
+                {
+                    reader.BaseStream.Position = 0x00;
+                    TitleIDInt = reader.ReadInt32();
+                    if (TitleIDInt != 65536 && TitleIDInt != 1397113431)
+                    {
+                        reader.BaseStream.Position = 0x18;
+                        long GameType = reader.ReadInt64();
+                        if (GameType == 4440324665927270400)
+                        {
+                            isok = true;
+                        }
+                    }
+                    reader.Close();
+                }
+                if (isok)
+                {
+                    mvm.RomPath = path;
+                    mvm.RomSet = true;
+                    if (mvm.BaseDownloaded)
+                    {
+                        mvm.CanInject = true;
 
-            if (!CheckIfNull(path)) {
-                mvm.RomPath = path;
-                mvm.RomSet = true;
-                if (mvm.BaseDownloaded)
-                {
-                    mvm.CanInject = true;
-                    
+                    }
+                    string rom = mvm.getInternalWIIGCNName(mvm.RomPath, true);
+                    Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
+                    gn.Text = reg.Replace(rom, string.Empty);
+                    mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
+                    mvm.gc2rom = "";
+                    if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
+                    {
+                        ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+                    }
+                    if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
+                    {
+                        tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                    }
                 }
-                string rom = mvm.getInternalWIIGCNName(mvm.RomPath, true);
-                Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
-                gn.Text = reg.Replace(rom, string.Empty);
-                mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
-                mvm.gc2rom = "";
-                if(mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
+                else
                 {
-                    ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+
+                    Custom_Message cm = new Custom_Message("Wrong ROM", "The chosen ROM is not a supported GameCube Game");
+                    try
+                    {
+                        cm.Owner = mvm.mw;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    cm.ShowDialog();
                 }
-                if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
-                {
-                    tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
-                }
+
             }
-            
+
 
         }
 
@@ -155,7 +189,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
 
         }
-        
+
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
             if (!Settings.Default.dont)
@@ -163,7 +197,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.ImageWarning();
             }
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) {
+            if (!CheckIfNull(path))
+            {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
                 mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
                 ic.Text = path;
@@ -178,7 +213,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.ImageWarning();
             }
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) {
+            if (!CheckIfNull(path))
+            {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
                 log.Text = path;
@@ -217,7 +253,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private bool CheckIfNull(string s)
         {
-            if(s == null || s.Equals(string.Empty))
+            if (s == null || s.Equals(string.Empty))
             {
                 return true;
             }
@@ -248,7 +284,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void CheckBox_Click_1(object sender, RoutedEventArgs e)
         {
-            if(mvm.Index == 1)
+            if (mvm.Index == 1)
             {
                 mvm.Index = -1;
             }
@@ -268,7 +304,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.gc2rom = path;
             }
-         }
+        }
         public void reset()
         {
             gc2.Text = "";
@@ -295,7 +331,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           new LOGSHOW(log.Text).ShowDialog();
+            new LOGSHOW(log.Text).ShowDialog();
         }
 
         private void ic_TextChanged(object sender, TextChangedEventArgs e)
@@ -344,6 +380,39 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             else
             {
                 logIMG.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            string path = mvm.GetFilePath(true, true);
+            if (!CheckIfNull(path))
+            {
+                if (new FileInfo(path).Extension.Contains("wav"))
+                {
+                    if (mvm.ConfirmRiffWave(path))
+                    {
+                        mvm.BootSound = path;
+                    }
+                    else
+                    {
+                        Custom_Message cm = new Custom_Message("Incompatible WAV file", "Your WAV file needs to be a RIFF WAVE file which is 16 bit stereo and also 48000khz");
+                        try
+                        {
+                            cm.Owner = mvm.mw;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        cm.ShowDialog();
+                    }
+                }
+                else
+                {
+
+                    mvm.BootSound = path;
+                }
             }
         }
     }

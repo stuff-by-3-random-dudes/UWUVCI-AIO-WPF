@@ -227,6 +227,7 @@ namespace UWUVCI_AIO_WPF
                     DestroyFrame();
                     tbTitleBar.Text = "UWUVCI AIO - SETTINGS";
                     load_frame.Content = new SettingsFrame(this);
+                    
                     break;
             }
            

@@ -32,10 +32,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm = FindResource("mvm") as MainViewModel;
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
-            
+
         }
         public GBA(GameConfig c)
-        { 
+        {
 
             InitializeComponent();
             mvm = FindResource("mvm") as MainViewModel;
@@ -53,19 +53,20 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             string path = string.Empty;
             path = mvm.GetFilePath(true, false);
-           
 
-            if (!CheckIfNull(path)) {
+
+            if (!CheckIfNull(path))
+            {
                 mvm.RomPath = path;
                 mvm.RomSet = true;
                 if (mvm.BaseDownloaded)
                 {
                     mvm.CanInject = true;
-                    
+
                 }
                 mvm.getBootIMGGBA(mvm.RomPath);
-                    }
-            
+            }
+
         }
 
         private void InjectGame(object sender, RoutedEventArgs e)
@@ -114,7 +115,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.ImageWarning();
             }
-            
+
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -142,7 +143,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
 
         }
-        
+
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
             if (!Settings.Default.dont)
@@ -150,7 +151,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.ImageWarning();
             }
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) {
+            if (!CheckIfNull(path))
+            {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
                 mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
                 ic.Text = path;
@@ -165,7 +167,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.ImageWarning();
             }
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path)) {
+            if (!CheckIfNull(path))
+            {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
                 log.Text = path;
@@ -203,7 +206,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private bool CheckIfNull(string s)
         {
-            if(s == null || s.Equals(string.Empty))
+            if (s == null || s.Equals(string.Empty))
             {
                 return true;
             }
@@ -230,7 +233,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         public void reset()
         {
-            
+
             tv.Text = "";
             drc.Text = "";
             gn.Text = "";
@@ -254,7 +257,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-             new TDRSHOW(tv.Text).ShowDialog();
+            new TDRSHOW(tv.Text).ShowDialog();
         }
         public void imgpath(string icon, string tv)
         {
@@ -270,7 +273,41 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           new LOGSHOW(log.Text).ShowDialog();
+            new LOGSHOW(log.Text).ShowDialog();
         }
-    }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string path = mvm.GetFilePath(true, true);
+            if (!CheckIfNull(path))
+            {
+                if (new FileInfo(path).Extension.Contains("wav"))
+                {
+                    if (mvm.ConfirmRiffWave(path))
+                    {
+                        mvm.BootSound = path;
+                    }
+                    else
+                    {
+                        Custom_Message cm = new Custom_Message("Incompatible WAV file", "Your WAV file needs to be a RIFF WAVE file which is 16 bit stereo and also 48000khz");
+                        try
+                        {
+                            cm.Owner = mvm.mw;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        cm.ShowDialog();
+                    }
+                }
+                else
+                {
+
+                    mvm.BootSound = path;
+                }
+            }
+        }
+    } 
 }
+

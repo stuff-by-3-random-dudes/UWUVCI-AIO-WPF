@@ -1,4 +1,5 @@
 ﻿using GameBaseClassLibrary;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -198,6 +199,14 @@ namespace UWUVCI_AIO_WPF
                 mvm.Progress = 90;
                 mvm.msg = "Changing Images...";
                 Images(Configuration);
+                if (File.Exists(mvm.BootSound))
+                {
+                    mvm.Progress = 95;
+                    mvm.msg = "Adding BootSound...";
+                    bootsound(mvm.BootSound);
+                }
+                
+                
                 mvm.Progress = 100;
                
                 
@@ -255,6 +264,91 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
+
+        static void bootsound(string sound)
+        {
+            FileInfo soundFile = new FileInfo(sound);
+            if(soundFile.Extension.Contains("mp3") || soundFile.Extension.Contains("wav"))
+            {
+                //Do Bootsound stuff
+                if (soundFile.Extension.Contains("mp3"))
+                {
+                    using (Mp3FileReader mp3 = new Mp3FileReader(sound))
+                    {
+                        using (WaveStream pcm = WaveFormatConversionStream.CreatePcmStream(mp3))
+                        {
+                            WaveFileWriter.CreateWaveFile(Path.Combine(tempPath, "in.wav"), pcm);
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    File.Copy(sound, Path.Combine(tempPath, "in.wav"));
+                }
+                sound = Path.Combine(tempPath, "in.wav");
+                //extract SOX.zip
+                using(Process zip = new Process())
+                {
+                    if (Directory.Exists(Path.Combine(toolsPath, "SOX"))) { Directory.Delete(Path.Combine(toolsPath, "SOX"), true); }
+                    if (!mvvm.debug)
+                    {
+                        zip.StartInfo.UseShellExecute = false;
+                        zip.StartInfo.CreateNoWindow = true;
+                    }
+
+                    zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
+                    zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "SOX.zip")}\" -o\"{Path.Combine(toolsPath, "SOX")}\"";
+                    zip.Start();
+                    zip.WaitForExit();
+                }
+                //Convert stuff
+                using (Process p = new Process())
+                {
+                    p.StartInfo.FileName = Path.Combine(toolsPath, "SOX", "sox.exe");
+                    p.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "in.wav")}\" -b 16 \"{Path.Combine(tempPath, "converted.wav")}\" channels 2 rate 48k trim 0 6";
+                    p.Start();
+                    p.WaitForExit();
+                    File.Delete("in.wav");
+                    
+                }
+                //Delete SOX Folder
+                Directory.Delete(Path.Combine(toolsPath, "SOX"), true);
+                //extract IKVM.zip
+                using (Process zip = new Process())
+                {
+                    if (Directory.Exists(Path.Combine(toolsPath, "IKVMW"))) { Directory.Delete(Path.Combine(toolsPath, "IKVMW"), true); }
+                    if (!mvvm.debug)
+                    {
+                        zip.StartInfo.UseShellExecute = false;
+                        zip.StartInfo.CreateNoWindow = true;
+                    }
+
+                    zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
+                    zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "IKVMW.zip")}\" -o\"{Path.Combine(toolsPath, "IKVMW")}\"";
+                    zip.Start();
+                    zip.WaitForExit();
+                }
+                //convert to btsnd
+                using (Process wav2btsnd = new Process())
+                {
+                    wav2btsnd.StartInfo.FileName = Path.Combine(toolsPath, "IKVMW", "wav2btsnd.exe");
+                    wav2btsnd.StartInfo.Arguments = $"-in \"{Path.Combine(tempPath, "converted.wav")}\" -out \"{Path.Combine(tempPath, "sound.btsnd")}\"";
+                    wav2btsnd.Start();
+                    wav2btsnd.WaitForExit();
+                    sound = Path.Combine(tempPath, "sound.btsnd");
+                }
+
+                //Delete IKVM.zip
+                Directory.Delete(Path.Combine(toolsPath, "IKVMW"), true);
+            }
+            //Copy BootSound to location
+            File.Delete(Path.Combine(baseRomPath, "meta", "bootSound.btsnd"));
+            File.Copy(sound, Path.Combine(baseRomPath, "meta", "bootSound.btsnd"));
+
+
+        }
+
         static void timer_Tick(object sender, EventArgs e)
         {
             if(mvvm.Progress < 50)
@@ -1152,8 +1246,15 @@ namespace UWUVCI_AIO_WPF
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
         private static void EditXML(string gameNameOr, int index, string code)
         {
-            Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-            string gameName = reg.Replace(String.Copy(gameNameOr),"");
+            string gameName = string.Empty;
+            if(gameNameOr != string.Empty && gameNameOr != null)
+            {
+                Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+            gameName= reg.Replace(gameNameOr, "");
+
+            }
+
+            
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();
