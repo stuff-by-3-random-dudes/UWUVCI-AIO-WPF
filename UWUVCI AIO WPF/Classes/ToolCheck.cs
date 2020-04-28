@@ -10,7 +10,7 @@ namespace UWUVCI_AIO_WPF.Classes
     class ToolCheck
     {
         static string FolderName = "bin\\Tools";
-        public static string[] ToolNames = 
+        public static string[] ToolNames =
         {
             "CDecrypt.exe",
             "CNUSPACKER.exe",
@@ -49,7 +49,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "SharpCompress.dll",
             "NKit.dll.config",
             "IKVMW.zip",
-            "SOX.zip"
+            "SOX.zip",
+            "jpg2tga.exe",
+            "bmp2tga.exe"
         };
 
         public static bool DoesToolsFolderExist()

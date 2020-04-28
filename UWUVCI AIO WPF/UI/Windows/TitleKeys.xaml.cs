@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,22 +23,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// </summary>
     public partial class TitleKeys : Window
     {
-        public TitleKeys()
+        public TitleKeys(string url)
         {
             InitializeComponent();
-            tb.Text = "To enter a TitleKey, first select the console on your left\nand then double click on a Title you want to enter the Key for.";
-        }
-        private void ButtonCloseMenu_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonOpenMenu.Visibility = Visibility.Visible;
-            ButtonCloseMenu.Visibility = Visibility.Collapsed;
-        }
+            wb.Source = new Uri(url, UriKind.Absolute);
+            /*dynamic activeX = this.wb.GetType().InvokeMember("ActiveXInstance",
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, this.wb, new object[] { });
 
-        private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
-        {
-            ButtonOpenMenu.Visibility = Visibility.Collapsed;
-            ButtonCloseMenu.Visibility = Visibility.Visible;
+            activeX.Silent = true;*/
+            clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
+
         }
+       
         private void MoveWindow(object sender, MouseButtonEventArgs e)
         {
             try
@@ -50,59 +48,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             }
         }
-        private void DestroyFrame()
-        {
-            //(load_frame.Content as IDisposable).Dispose();
-            load_frame.Content = null;
-            load_frame.NavigationService.RemoveBackEntry();
-        }
-        private void ListView_Click(object sender, MouseButtonEventArgs e)
-        {
-            tb.Visibility = Visibility.Hidden;
-            switch ((sender as ListView).SelectedIndex)
-            {
-                case 0:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - NDS TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.NDS);
-                    break;
-                case 1:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - GBA TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.GBA);
-                    break;
-                case 2:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - N64 TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.N64);
-                    break;
-                case 4:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - NES TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.NES);
-                    break;
-                case 3:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - SNES TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.SNES);
-                    break;
-                case 5:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.TG16);
-                    break;
-                case 6:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - MSX TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.MSX);
-                    break;
-                case 7:
-                    DestroyFrame();
-                    tbTitleBar.Text = "UWUVCI AIO - WII/GCN TKeys";
-                    load_frame.Content = new TKFrame(GameConsoles.WII);
-                    break;
-            }
-        }
+
+
         private void Window_Close(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -112,5 +59,38 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             this.WindowState = WindowState.Minimized;
         }
+    }
+    public static class clsWebbrowser_Errors
+
+    {
+
+        //*set wpf webbrowser Control to silent
+
+        //*code source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/4f686de1-8884-4a8d-8ec5-ae4eff8ce6db
+
+
+
+        public static void SuppressscriptErrors(this WebBrowser webBrowser, bool hide)
+
+        {
+
+            FieldInfo fiComWebBrowser = typeof(WebBrowser).GetField("_axIWebBrowser2", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (fiComWebBrowser == null)
+
+                return;
+
+            object objComWebBrowser = fiComWebBrowser.GetValue(webBrowser);
+
+            if (objComWebBrowser == null)
+
+                return;
+
+
+
+            objComWebBrowser.GetType().InvokeMember("Silent", BindingFlags.SetProperty, null, objComWebBrowser, new object[] { hide });
+
+        }
+
     }
 }

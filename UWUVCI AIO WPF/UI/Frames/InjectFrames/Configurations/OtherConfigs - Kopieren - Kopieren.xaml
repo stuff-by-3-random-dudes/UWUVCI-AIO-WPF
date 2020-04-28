@@ -16,7 +16,7 @@
         <TextBox materialDesign:HintAssist.Hint="BOOTTVTEX" Name="tv" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  ToolTip="Needs a BitDepth of 24 and a Dimension of 1280x720" Margin="10,227,157,238" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTLOGOTEX (OPTIONAL)" ToolTip="Needs a BitDepth of 32 and a Dimension of 170x42" Name="log"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,317,157,149" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" Text="{Binding GameConfiguration.TGALog.ImgPath}"/>
         <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,413,157,52" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" Name="gn" KeyUp="gn_KeyUp" MaxLength="250"/>
-        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,457,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame"/>
+        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,329,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,239,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,284,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
@@ -37,6 +37,8 @@
         <Image HorizontalAlignment="Left" Height="32" Margin="446,328,0,0" VerticalAlignment="Top" Width="40" OpacityMask="LightGray" Name="logIMG" Source="/UWUVCI AIO WPF;component/UI/Images/camera3.png" Cursor="Hand" MouseLeftButtonDown="logIMG_MouseLeftButtonDown" Visibility="Hidden"/>
         <TextBox materialDesign:HintAssist.Hint="BOOTSOUND (OPTIONAL)" ToolTip="Needs to be a RIFF WAVE file 48000khz and 16bit stereo." x:Name="sound" Text="{Binding BootSound}"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,365,157,101" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,377,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click_1"/>
+        <Image HorizontalAlignment="Left" Height="36" Margin="599,10,0,0" VerticalAlignment="Top" Width="36" Cursor="Hand" Source="/UWUVCI AIO WPF;component/UI/Images/help.png" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+        <Label Content="Use | for 2 lines" HorizontalAlignment="Left" Margin="506,428,0,0" VerticalAlignment="Top" Width="127" HorizontalContentAlignment="Center" ToolTip="e.g. Wii|Sports"/>
     </Grid>
 
 </Page>

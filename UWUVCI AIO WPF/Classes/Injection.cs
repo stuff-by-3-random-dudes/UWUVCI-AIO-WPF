@@ -1249,9 +1249,13 @@ namespace UWUVCI_AIO_WPF
             string gameName = string.Empty;
             if(gameNameOr != string.Empty && gameNameOr != null)
             {
-                Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-            gameName= reg.Replace(gameNameOr, "");
-
+                Regex reg = new Regex("[^a-zA-Z0-9 é - |]");
+                gameName= reg.Replace(gameNameOr, "");
+                if (gameName.Contains('|'))
+                {
+                    var split = gameName.Split('|');
+                    gameName = split[0] + ", " + split[1];
+                }
             }
 
             
@@ -1266,18 +1270,18 @@ namespace UWUVCI_AIO_WPF
                     doc.Load(metaXml);
                     if (gameName != null && gameName != string.Empty)
                     {
-                        doc.SelectSingleNode("menu/longname_ja").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_en").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_fr").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_de").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_it").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_es").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_ko").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_nl").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_pt").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_ru").InnerText = gameName;
-                        doc.SelectSingleNode("menu/longname_zht").InnerText = gameName;
+                        doc.SelectSingleNode("menu/longname_ja").InnerText = gameName.Replace(",", "" );
+                        doc.SelectSingleNode("menu/longname_en").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_fr").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_de").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_it").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_es").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_ko").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_nl").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_pt").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_ru").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_zht").InnerText = gameName.Replace(",", "");
                     }
 
                     if(code != null)
@@ -1296,18 +1300,18 @@ namespace UWUVCI_AIO_WPF
                     doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID}";
                     if (gameName != null && gameName != string.Empty)
                     {
-                        doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_de").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_en").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_it").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_es").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName;
-                        doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName;
+                        doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_de").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_en").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_it").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_es").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName.Split(',')[0];
+                        doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName.Split(',')[0];
                     }
 
                     doc.Save(metaXml);
@@ -1922,7 +1926,17 @@ namespace UWUVCI_AIO_WPF
                 {
                     png2tga.StartInfo.UseShellExecute = false;
                     png2tga.StartInfo.CreateNoWindow = true;
-                    png2tga.StartInfo.FileName = Path.Combine(toolsPath, "png2tga.exe");
+                    if(new FileInfo(inputPath).Extension.Contains("png"))
+                    {
+                        png2tga.StartInfo.FileName = Path.Combine(toolsPath, "png2tga.exe");
+                    }else if (new FileInfo(inputPath).Extension.Contains("jpg"))
+                    {
+                        png2tga.StartInfo.FileName = Path.Combine(toolsPath, "jpg2tga.exe");
+                    }else if (new FileInfo(inputPath).Extension.Contains("bmp"))
+                    {
+                        png2tga.StartInfo.FileName = Path.Combine(toolsPath, "bmp2tga.exe");
+                    }
+                    
                     png2tga.StartInfo.Arguments = $"-i \"{inputPath}\" -o \"{outputPath}\" --width={widht} --height={height} --tga-bpp={bit} --tga-compression=none";
 
                     png2tga.Start();

@@ -84,8 +84,8 @@ namespace UWUVCI_AIO_WPF
             mvm.RomPath = null;
             mvm.Injected = false;
             mvm.CBasePath = null;
-            
-            
+            mvm.bcf = null;
+            mvm.BootSound = null;
             mvm.setThing(null);
             switch ((sender as ListView).SelectedIndex)
             {

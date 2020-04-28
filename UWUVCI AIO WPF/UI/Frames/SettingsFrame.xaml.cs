@@ -28,7 +28,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             InitializeComponent();
             parent = mw;
-            wb.Navigate("https://google.com");
+            
         }
         public void Dispose()
         {
@@ -37,8 +37,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            TitleKeys tk = new TitleKeys();
-            tk.ShowDialog();
+           /* TitleKeys tk = new TitleKeys();
+            tk.ShowDialog();*/
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)

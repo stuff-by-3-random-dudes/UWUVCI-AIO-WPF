@@ -23,6 +23,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     {
         string path;
         bool reset = false;
+        bool add = false;
         public Custom_Message(string title, string message)
         {
             InitializeComponent();
@@ -32,12 +33,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Title.Text = title;
             Message.Content = message;
             Folder.Visibility = Visibility.Hidden;
-            if (title.Contains("Resetting") || message.Contains("NUS format") || message.Contains("Folder contains Files or Subfolders, do you really want to use this") || message.Contains("If using Custom Bases"))
+            if (title.Contains("Resetting") || message.Contains("NUS format") || message.Contains("Folder contains Files or Subfolders, do you really want to use this") || message.Contains("If using Custom Bases") || title.Contains("Found additional Files"))
             {
                 Reset.Visibility = Visibility.Visible;
                 if (title.Contains("Resetting"))
                 {
                     reset = true;
+                }
+                if(title.Contains("Found additional Files"))
+                {
+                    add = true;
+                    Reset.Content = "Yes";
+                    
                 }
             }
             if(title.Equals("Image Warning"))
@@ -101,6 +108,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 this.Close();
                 ((MainViewModel)FindResource("mvm")).ResetTitleKeys();
+            }
+            else if (add)
+            {
+                ((MainViewModel)FindResource("mvm")).addi = true;
             }
             else
             {

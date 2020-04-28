@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -257,7 +258,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(tv.Text).ShowDialog();
+            new TDRSHOW(tv.Text,false).ShowDialog();
         }
         public void imgpath(string icon, string tv)
         {
@@ -268,7 +269,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(drc.Text).ShowDialog();
+            new TDRSHOW(drc.Text,true).ShowDialog();
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -306,6 +307,38 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                     mvm.BootSound = path;
                 }
+            }
+        }
+
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                string url = mvm.GetURL("gba");
+                if (url == null || url == "") throw new Exception();
+                TitleKeys webbrowser = new TitleKeys(url);
+                try
+                {
+                    webbrowser.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                webbrowser.ShowDialog();
+            }
+            catch (Exception)
+            {
+                Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for GBA is not implemented yet");
+                try
+                {
+                    cm.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                cm.Show();
             }
         }
     } 

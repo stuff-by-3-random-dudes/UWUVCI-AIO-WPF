@@ -38,6 +38,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             if (console == GameConsoles.GCN) this.console = GameConsoles.WII;
             else this.console = console;
             mvm.GetBases(this.console);
+            mvm.bcf = this;
             if (console == GameConsoles.NES)
             {
                 cbCombo.ToolTip = "We recommend Metal Slader Glory for NES Injection!";

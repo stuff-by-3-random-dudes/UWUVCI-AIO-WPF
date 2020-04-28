@@ -16,16 +16,18 @@
             <RowDefinition Height="18*"/>
         </Grid.RowDefinitions>
         <TextBlock HorizontalAlignment="Left" Margin="7,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="463" FontSize="15" Foreground="Black" Name="Title" Grid.Row="0" FontWeight="Bold" Text="Do you want to use these BootImages?" Grid.RowSpan="2"/>
-        <Image Margin="352,15,10,8" Grid.Row="1" Source="/UWUVCI AIO WPF;component/UI/Images/iconborder.png" />
+        <Image Margin="352,15,10,8" Grid.Row="1" Source="/UWUVCI AIO WPF;component/UI/Images/iconborder.png" Name="icb"/>
         <Image Name="icon" Margin="354,17,12,10" Grid.Row="1" />
 
-        <Image  Grid.Column="0" Margin="9,17,155,2" Grid.Row="1" Grid.RowSpan="2" Source="/UWUVCI AIO WPF;component/UI/Images/tvborder.png"/>
+        <Image  Grid.Column="0" Margin="9,17,155,2" Grid.Row="1" Grid.RowSpan="2" Source="/UWUVCI AIO WPF;component/UI/Images/tvborder.png" Name="tvb"/>
         <Image Name="tv" Grid.Column="0" Margin="15,18,160,3" Grid.Row="1" Grid.RowSpan="2"/>
 
         <Button Content="Yes" HorizontalAlignment="Left" Margin="354,14,0,0" VerticalAlignment="Top" Width="53" Click="Yes_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2"/>
         <Button Content="No" HorizontalAlignment="Left" Margin="423,14,0,0" VerticalAlignment="Top" Width="53" Click="Canc_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2"/>
-        <Label Content="bootTvTex" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Height="24" Width="62"/>
-        <Label Content="iconTex" HorizontalAlignment="Left" Margin="354,26,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Height="24" Width="47"/>
+        <Label Content="bootTvTex" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Height="24" Width="62" Name="tvl"/>
+        <Label Content="iconTex" HorizontalAlignment="Left" Margin="354,26,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Height="24" Width="47" Name="icl"/>
+        <TextBlock HorizontalAlignment="Left" Margin="145,81,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="196" FontSize="15" Foreground="Black"  Grid.Row="1" FontWeight="Bold" Text="Cannot display TGA Images" Name="tgtv" Visibility="Hidden"/>
+        <TextBlock HorizontalAlignment="Left" Margin="369,65,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="92" FontSize="11" Foreground="Black" Grid.Row="1" FontWeight="Bold" Text="Cannot display TGA Images" Name="tgic" Visibility="Hidden"/>
 
     </Grid>
 </Window>

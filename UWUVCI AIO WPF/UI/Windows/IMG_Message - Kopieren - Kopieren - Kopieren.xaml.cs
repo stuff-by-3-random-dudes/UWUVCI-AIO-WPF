@@ -31,11 +31,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public LOGSHOW(string path)
         {
 
-            pat = path;
+            pat = String.Copy(path);
             InitializeComponent();
             if (Directory.Exists(System.IO.Path.Combine(tempPath, "image"))) Directory.Delete(System.IO.Path.Combine(tempPath, "image"), true);
             Directory.CreateDirectory(System.IO.Path.Combine(tempPath, "image"));
-            if (new FileInfo(path).Extension.Contains("tga"))
+            if (path == "Added via Config")
+            {
+                File.WriteAllBytes(System.IO.Path.Combine(tempPath, "image", "log." + (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.extension), (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.ImgBin);
+                pat = System.IO.Path.Combine(tempPath, "image", "log." + (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.extension);
+            }
+            if (new FileInfo(pat).Extension.Contains("tga"))
             {
                 using (Process conv = new Process())
                 {
@@ -45,7 +50,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
 
                     conv.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "tga2png.exe");
-                    conv.StartInfo.Arguments = $"-i \"{path}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
+                    conv.StartInfo.Arguments = $"-i \"{pat}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
 
                     conv.Start();
                     conv.WaitForExit();
@@ -58,16 +63,21 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else
             {
-                copy = path;
+                copy = pat;
             }
 
 
             BitmapImage image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = new Uri(copy);
+            image.UriSource = new Uri(copy, UriKind.Absolute);
             image.EndInit();
+            image.Freeze();
             img.Source = image;
+            if(path == "Added via Config")
+            {
+                File.Delete(pat);
+            }
 
 
         }

@@ -33,7 +33,7 @@ namespace UWUVCI_AIO_WPF
         //public GameConfig GameConfiguration { get; set; }
         private GameConfig gameConfiguration = new GameConfig();
 
-
+        public bool addi = false;
         public GameConfig GameConfiguration
         {
             get { return gameConfiguration; }
@@ -155,7 +155,7 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
-
+        public BaseContainerFrame bcf = null;
         #region TKLIST
         private List<GameBases> lNDS = new List<GameBases>();
 
@@ -761,8 +761,12 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-                gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
+                if(gameConfiguration.GameName != null)
+                {
+                    Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+                    gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
+                }
+                
                 Task.Run(() => { Injection.Packing(GameConfiguration.GameName, this); });
 
                 DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
@@ -778,7 +782,7 @@ namespace UWUVCI_AIO_WPF
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
                 if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them under Settings -> \"Start Nintendont Config Tool\".";
                 gc2rom = "";
-                Custom_Message cm = new Custom_Message("Injection Complete", $"Only Install to USB!{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
+                Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
                 try
                 {
                     cm.Owner = mw;
@@ -1251,7 +1255,7 @@ namespace UWUVCI_AIO_WPF
                 else if(!INI)
                 {
                     
-                    dialog.Filter = "BootImages (*.png; *.tga) | *.png;*.tga";
+                    dialog.Filter = "BootImages (*.png; *.jpg; *.bmp; *.tga) | *.png;*.jpg;*.bmp;*.tga";
                 }
                 else if(INI)
                 {
@@ -1776,7 +1780,7 @@ namespace UWUVCI_AIO_WPF
         {
             if (1274359530 == key.ToLower().GetHashCode())
             {
-                Settings.Default.Ckey = key;
+                Settings.Default.Ckey = key.ToLower();
                 ckeys = true;
                 Settings.Default.Save();
                 
@@ -1787,7 +1791,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool isCkeySet()
         {
-            if (Settings.Default.Ckey.GetHashCode() == 487391367)
+            if (Settings.Default.Ckey.ToLower().GetHashCode() == 1274359530)
             {
                 ckeys = true;
                 return true;
@@ -2196,51 +2200,61 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
+            string[] ext = { "png", "jpg", "tga", "bmp" };
             if (CheckForInternetConnectionWOWarning())
             {
-                if (RemoteFileExists(linkbase + SystemType + repoid + "/iconTex.png") == true)
+                foreach(var e in ext)
                 {
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog();
+                        break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "E";
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        repoid = repoid.Substring(0, 3) + "E";
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog();
+                        break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "P";
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        repoid = repoid.Substring(0, 3) + "P";
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}g", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog();
+                        break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "J";
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        repoid = repoid.Substring(0, 3) + "J";
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog();
+                        break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
                 }
+                
+               
 
 
 
@@ -2269,52 +2283,55 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
+            string[] ext = { "png", "jpg", "tga", "bmp" };
             if (CheckForInternetConnectionWOWarning())
             {
-                if (RemoteFileExists(linkbase + SystemType + repoid + "/iconTex.png") == true)
+                foreach (var e in ext)
                 {
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "E";
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + $"/iconTex.png") == true)
                     {
-                        img.Owner = mw;
+                        repoid = repoid.Substring(0, 3) + "E";
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "P";
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        repoid = repoid.Substring(0, 3) + "P";
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + "/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "J";
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
+                        repoid = repoid.Substring(0, 3) + "J";
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
                     }
-                    catch (Exception) { }
-                    img.ShowDialog();
                 }
-                
 
 
             }
@@ -2341,96 +2358,109 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
+            bool found = false;
+            string[] ext = { "png", "jpg", "tga", "bmp" };
             if (CheckForInternetConnectionWOWarning())
             {
-                if (RemoteFileExists(linkbase + SystemType + repoid + "/iconTex.png") == true)
+                foreach (var e in ext)
                 {
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
+
+
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                     {
-                        img.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "E" ;
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
-                    {
-                        img.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "P" ;
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
-                    {
-                        img.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + "/iconTex.png") == true)
-                {
-                    repoid = repoid.Substring(0, 3) + "J" ;
-                    img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
-                    try
-                    {
-                        img.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    img.ShowDialog();
-                }
-                else
-                {
-                    repoid = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] });
-                    if (RemoteFileExists(linkbase + SystemType + repoid + "/iconTex.png") == true)
-                    {
-                        img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
                         try
                         {
                             img.Owner = mw;
                         }
                         catch (Exception) { }
-                        img.ShowDialog();
+                        found = true;
+                        img.ShowDialog(); break;
                     }
-                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + "/iconTex.png") == true)
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + $"/iconTex.png") == true)
                     {
                         repoid = repoid.Substring(0, 3) + "E";
-                        img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
                         try
                         {
                             img.Owner = mw;
                         }
                         catch (Exception) { }
-                        img.ShowDialog();
+                        found = true;
+                        img.ShowDialog(); break;
                     }
-                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + "/iconTex.png") == true)
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + $"/iconTex.{e}") == true)
                     {
                         repoid = repoid.Substring(0, 3) + "P";
-                        img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
                         try
                         {
                             img.Owner = mw;
                         }
                         catch (Exception) { }
-                        img.ShowDialog();
+                        found = true;
+                        img.ShowDialog(); break;
                     }
-                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + "/iconTex.png") == true)
+                    else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + $"/iconTex.{e}") == true)
                     {
                         repoid = repoid.Substring(0, 3) + "J";
-                        img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType + repoid + "/bootTvTex.png");
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
                         try
                         {
                             img.Owner = mw;
                         }
                         catch (Exception) { }
-                        img.ShowDialog();
+                        found = true;
+                        img.ShowDialog(); break;
+                    }
+                    else
+                    {
+                        repoid = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] });
+                        if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                        {
+                            img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                            try
+                            {
+                                img.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            img.ShowDialog(); break;
+                        }
+                        else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + $"/iconTex.png") == true)
+                        {
+                            repoid = repoid.Substring(0, 3) + "E";
+                            img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                            try
+                            {
+                                img.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            found = true;
+                            img.ShowDialog(); break;
+                        }
+                        else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + $"/iconTex.png") == true)
+                        {
+                            repoid = repoid.Substring(0, 3) + "P";
+                            img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.png", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                            try
+                            {
+                                img.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            img.ShowDialog(); break;
+                        }
+                        else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + "/iconTex.png") == true)
+                        {
+                            repoid = repoid.Substring(0, 3) + "J";
+                            img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                            try
+                            {
+                                img.Owner = mw;
+                            }
+                            catch (Exception) { }
+                            found = true;
+                            img.ShowDialog(); break;
+                        }
                     }
                 }
                 
@@ -2462,6 +2492,7 @@ namespace UWUVCI_AIO_WPF
                     reader.BaseStream.Position = 0x00;
                     char TempChar;
                     //WBFS Check
+                    string[] ext = { "tga", "jpg", "png", "bmp" };
                     if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
                     {
 
@@ -2478,49 +2509,53 @@ namespace UWUVCI_AIO_WPF
                         
                         if (CheckForInternetConnectionWOWarning())
                         {
-                            if (RemoteFileExists(linkbase + SystemType  + repoid + "/iconTex.png") == true)
+                            foreach(var e in ext)
                             {
-                                img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase  + SystemType + repoid + "/bootTvTex.png");
-                                try
+                                if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
-                            }
-                            else if (RemoteFileExists(linkbase + SystemType  + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + "/iconTex.png") == true)
-                            {
-                                repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
-                                img = new IMG_Message(linkbase  + SystemType  + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
-                            }
-                            else if (RemoteFileExists(linkbase + SystemType  + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + "/iconTex.png") == true)
-                            {
-                                repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
-                                img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
-                            }
-                            else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + "/iconTex.png") == true)
-                            {
-                                repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
-                                img = new IMG_Message(linkbase  + SystemType  + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
                             }
+                            
                         }
                     }
                     else
@@ -2539,48 +2574,51 @@ namespace UWUVCI_AIO_WPF
                         
                         if (CheckForInternetConnectionWOWarning())
                         {
-                            if (RemoteFileExists(linkbase + SystemType  + repoid + "/iconTex.png") == true)
+                            foreach (var e in ext)
                             {
-                                img = new IMG_Message(linkbase + SystemType  + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
-                            }
-                            else if (RemoteFileExists(linkbase + SystemType  + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + "/iconTex.png") == true)
-                            {
-                                repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
-                                img = new IMG_Message(linkbase + SystemType  + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
-                            }
-                            else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + "/iconTex.png") == true)
-                            {
-                                repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
-                                img = new IMG_Message(linkbase + SystemType  + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
-                            }
-                            else if (RemoteFileExists(linkbase + SystemType  + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + "/iconTex.png") == true)
-                            {
-                                repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
-                                img = new IMG_Message(linkbase + SystemType + repoid + "/iconTex.png", linkbase + SystemType  + repoid + "/bootTvTex.png");
-                                try
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
                                 {
-                                    img.Owner = mw;
+                                    repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
                                 }
-                                catch (Exception) { }
-                                img.ShowDialog();
                             }
                         }
 
@@ -2637,6 +2675,26 @@ namespace UWUVCI_AIO_WPF
                 
                 
                 return false;
+            }
+        }
+        public string GetURL(string console)
+        {
+            WebRequest request;
+            //get download link from uwuvciapi
+            
+                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetURL?cns=" + console.ToLower());
+            
+           
+
+            var response = request.GetResponse();
+            using (Stream dataStream = response.GetResponseStream())
+            {
+                // Open the stream using a StreamReader for easy access.  
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.  
+                string responseFromServer = reader.ReadToEnd();
+                // Display the content.  
+                return responseFromServer;
             }
         }
     }

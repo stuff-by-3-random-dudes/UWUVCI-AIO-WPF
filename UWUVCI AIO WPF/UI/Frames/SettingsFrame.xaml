@@ -27,7 +27,6 @@
         <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,254,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
         <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="325,342,0,0" VerticalAlignment="Top" Width="267" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9"/>
         <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="410,387,0,0" VerticalAlignment="Top" Width="266" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10"/>
-        <WebBrowser HorizontalAlignment="Left" Height="181" Margin="38,387,0,0" VerticalAlignment="Top" Width="262" Name="wb"/>
 
     </Grid>
 </Page>
