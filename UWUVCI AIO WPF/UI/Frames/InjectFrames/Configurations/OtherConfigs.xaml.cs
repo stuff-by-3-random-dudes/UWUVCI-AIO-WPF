@@ -304,7 +304,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 string url = mvm.GetURL(mvm.GameConfiguration.Console.ToString().ToLower());
                 if (url == null || url == "") throw new Exception();
-                TitleKeys webbrowser = new TitleKeys(url);
+                TitleKeys webbrowser = new TitleKeys(url, $"UWUVCIO AIO - {mvm.GameConfiguration.Console.ToString()} Help");
                 try
                 {
                     webbrowser.Owner = mvm.mw;

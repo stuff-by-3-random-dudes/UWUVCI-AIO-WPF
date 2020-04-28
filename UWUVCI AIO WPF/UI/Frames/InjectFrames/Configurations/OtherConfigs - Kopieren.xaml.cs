@@ -327,7 +327,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
                     string url = mvm.GetURL("tgcd");
                     if (url == null || url == "") throw new Exception();
-                    TitleKeys webbrowser = new TitleKeys(url);
+                    TitleKeys webbrowser = new TitleKeys(url, "UWUVCIO AIO - TGxCD Help");
                     try
                     {
                         webbrowser.Owner = mvm.mw;
@@ -358,7 +358,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
                     string url = mvm.GetURL("tg16");
                     if (url == null || url == "") throw new Exception();
-                    TitleKeys webbrowser = new TitleKeys(url);
+                    TitleKeys webbrowser = new TitleKeys(url, "UWUVCI AIO - TGx16 Help");
                     try
                     {
                         webbrowser.Owner = mvm.mw;

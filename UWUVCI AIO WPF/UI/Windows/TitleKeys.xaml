@@ -6,23 +6,17 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="550" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize" Icon="/a.ico" BorderBrush="#FF2196F3" BorderThickness="2,2,2,2" ShowInTaskbar="False">
+        Title="MAIN" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize" Height="670" ShowInTaskbar="False">
 
 
 
-    <Window.Resources>
-        <Storyboard x:Key="MenuOpen"/>
-        <Storyboard x:Key="MenuClose"/>
-    </Window.Resources>
 
     <Grid DataContext="{StaticResource mvm}">
         <Grid Margin="0,70,0,0">
-            <Grid.RowDefinitions>
 
-            </Grid.RowDefinitions>
 
             <TextBlock x:Name="tb" Margin="572,174,563,70" TextWrapping="Wrap" FontSize="20" Height="142" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="Black" />
-            <WebBrowser HorizontalAlignment="Left" Height="476" VerticalAlignment="Top" Width="1191" Name="wb"/>
+            <WebBrowser HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="1190" Name="wb" Margin="5,0,0,0"/>
         </Grid>
         <Grid Height="70" VerticalAlignment="Top">
             <Grid.Background>

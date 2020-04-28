@@ -423,7 +423,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 string url = mvm.GetURL("gcn");
                 if (url == null || url == "") throw new Exception();
-                TitleKeys webbrowser = new TitleKeys(url);
+                TitleKeys webbrowser = new TitleKeys(url, "UWUVCI AIO - GCN Help");
                 try
                 {
                     webbrowser.Owner = mvm.mw;

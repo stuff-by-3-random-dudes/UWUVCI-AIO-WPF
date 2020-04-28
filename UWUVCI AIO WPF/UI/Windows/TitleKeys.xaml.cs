@@ -35,7 +35,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
 
         }
-       
+        public TitleKeys(string url, string title)
+        {
+            InitializeComponent();
+            wb.Source = new Uri(url, UriKind.Absolute);
+            /*dynamic activeX = this.wb.GetType().InvokeMember("ActiveXInstance",
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, this.wb, new object[] { });
+
+            activeX.Silent = true;*/
+            clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
+            tbTitleBar.Text = title;
+        }
         private void MoveWindow(object sender, MouseButtonEventArgs e)
         {
             try
