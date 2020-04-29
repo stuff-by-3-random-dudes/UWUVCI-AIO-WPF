@@ -36,7 +36,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if ((FindResource("mvm") as MainViewModel).GbTemp.Tid != "")
                 {
-                    ID.Text = $"({(FindResource("mvm") as MainViewModel).GbTemp.Tid})";
+                  
                 }
             }
         }

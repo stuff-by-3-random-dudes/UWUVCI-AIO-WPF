@@ -6,22 +6,23 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="160.656" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" GotFocus="Window_GotFocus">
+        Title="MAIN" Height="151.156" Width="493.5" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" GotFocus="Window_GotFocus">
     <Grid DataContext="{StaticResource mvm}">
-        <Button Content="Check" HorizontalAlignment="Left" Margin="315,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
-        <Button Content="Cancel" HorizontalAlignment="Left" Margin="405,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <StackPanel Margin="10,10,10,126" Orientation="Horizontal">
+        <Button Content="Check" HorizontalAlignment="Left" Margin="308,103,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Margin="400,103,0,0" VerticalAlignment="Top" Width="76" Click="Button_Click"/>
+        <StackPanel Margin="10,10,10,107" Orientation="Horizontal">
 
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding GbTemp.Region}" VerticalAlignment="Top" Height="25" Width="Auto" FontSize="18" Foreground="Black" x:Name="region"/>
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Height="25" Width="Auto" FontSize="18" Foreground="Black"/>
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{Binding GbTemp.Name}" VerticalAlignment="Top" Height="25" Width="Auto" FontSize="18" Foreground="Black" x:Name="Key"/>
             <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text=" " VerticalAlignment="Top" Height="25" Width="Auto" FontSize="18" Foreground="Black"/>
-            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="25" Width="Auto" FontSize="18" Foreground="Black" x:Name="ID"/>
-        </StackPanel>
-        <StackPanel FocusManager.FocusedElement="{Binding ElementName=tbKey }">
-            <TextBox Name="tbKey" materialDesign:HintAssist.Hint="ENTER KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,35,20,78" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18"/>
 
         </StackPanel>
-        
+        <StackPanel FocusManager.FocusedElement="{Binding ElementName=tbKey }">
+            <TextBox x:Name="tbKey" materialDesign:HintAssist.Hint="ENTER KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,40,15,90" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18"/>
+        </StackPanel>
+
+
+
     </Grid>
 </Window>
