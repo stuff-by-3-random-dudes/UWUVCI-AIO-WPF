@@ -24,6 +24,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         Custom_Message cm;
         public EnterKey(bool ckey)
         {
+            try
+            {
+                if (this.Owner.GetType() != typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             InitializeComponent();
             this.ckey = ckey;
            
@@ -43,6 +54,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public EnterKey(int i)
         {
+            if (this.Owner.GetType() != typeof(MainWindow))
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             InitializeComponent();
             region.Visibility = Visibility.Hidden;
             

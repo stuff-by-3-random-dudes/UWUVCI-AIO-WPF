@@ -87,6 +87,9 @@ namespace UWUVCI_AIO_WPF
             mvm.bcf = null;
             mvm.BootSound = null;
             mvm.setThing(null);
+            mvm.gc2rom = null;
+            mvm.Index = -1;
+            mvm.isDoneMW();
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:

@@ -30,7 +30,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         BitmapImage bitmap = new BitmapImage();
         public TDRSHOW(string path, bool drc)
         {
-
+            try
+            {
+                if (this.Owner.GetType() != typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             pat = String.Copy(path);
             InitializeComponent();
             if (Directory.Exists(System.IO.Path.Combine(tempPath, "image"))) Directory.Delete(System.IO.Path.Combine(tempPath, "image"),true);

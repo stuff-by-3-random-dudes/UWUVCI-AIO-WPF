@@ -31,9 +31,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         string tvback = "";
         public IMG_Message(string icon, string tv, string repoid)
         {
-            
-            
-                InitializeComponent();
+            try
+            {
+                if (this.Owner.GetType() != typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
+
+            InitializeComponent();
             
                 ic = icon;
                 tvs = tv;

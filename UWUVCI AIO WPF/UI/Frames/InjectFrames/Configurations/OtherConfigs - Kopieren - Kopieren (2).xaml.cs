@@ -35,6 +35,34 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
 
         }
+        private void SoundImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            mvm.PlaySound();
+        }
+
+        private void sound_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (File.Exists(mvm.BootSound))
+                {
+                    if (!new FileInfo(mvm.BootSound).Extension.Contains("btsnd"))
+                    {
+                        SoundImg.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        SoundImg.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+        }
         public GBA(GameConfig c)
         {
 
@@ -253,12 +281,59 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new ICOSHOW(ic.Text).ShowDialog();
+            ICOSHOW ics = new ICOSHOW(ic.Text);
+            try
+            {
+                ics.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            ics.ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(tv.Text,false).ShowDialog();
+            TDRSHOW t = new TDRSHOW(tv.Text, true);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
+        }
+
+        private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TDRSHOW t = new TDRSHOW(drc.Text, true);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
+
+        }
+
+        private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            LOGSHOW t = new LOGSHOW(log.Text);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
         }
         public void imgpath(string icon, string tv)
         {
@@ -267,15 +342,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             icoIMG.Visibility = Visibility.Visible;
             this.tv.Visibility = Visibility.Visible;
         }
-        private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            new TDRSHOW(drc.Text,true).ShowDialog();
-        }
 
-        private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            new LOGSHOW(log.Text).ShowDialog();
-        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -314,9 +381,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                string url = mvm.GetURL("gba");
-                if (url == null || url == "") throw new Exception();
-                TitleKeys webbrowser = new TitleKeys(url, "UWUVCI AIO - GBA Help");
+
+                TitleKeys webbrowser = new TitleKeys("gba", "UWUVCI AIO - GBA Help");
                 try
                 {
                     webbrowser.Owner = mvm.mw;
@@ -325,7 +391,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
 
                 }
-                webbrowser.ShowDialog();
+                webbrowser.Show();
+                mvm.mw.Hide();
             }
             catch (Exception)
             {

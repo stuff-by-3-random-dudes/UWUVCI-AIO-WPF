@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="250" Width="340" MinHeight="250" MinWidth="340" MaxHeight="250" MaxWidth="340"  WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" SizeToContent="WidthAndHeight">
+        Title="MAIN" Height="250" Width="340" MinHeight="250" MinWidth="340" MaxHeight="250" MaxWidth="340"  WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" SizeToContent="WidthAndHeight">
 
     <Grid Margin="0,0,-4,0">
         <Grid.RowDefinitions>

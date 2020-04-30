@@ -35,6 +35,35 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             mvm.test = GameConsoles.GCN;
+            mvm.Index = 1;
+        }
+        private void SoundImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            mvm.PlaySound();
+        }
+
+        private void sound_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (File.Exists(mvm.BootSound))
+                {
+                    if (!new FileInfo(mvm.BootSound).Extension.Contains("btsnd"))
+                    {
+                        SoundImg.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        SoundImg.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+
         }
         public GCConfig(GameConfig c)
         {
@@ -44,6 +73,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             mvm.test = GameConsoles.GCN;
+            mvm.Index = 1;
         }
         public void Dispose()
         {
@@ -153,7 +183,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             mvm.GC = true;
             mvm.Inject(cd);
-            mvm.Index = -1;
+            mvm.Index = 1;
             gp.IsChecked = false;
         }
 
@@ -285,13 +315,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void CheckBox_Click_1(object sender, RoutedEventArgs e)
         {
-            if (mvm.Index == 1)
+            if (mvm.Index == -1)
             {
-                mvm.Index = -1;
+                mvm.Index = 1;
             }
             else
             {
-                mvm.Index = 1;
+                mvm.Index = -1;
             }
         }
 
@@ -317,22 +347,59 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new ICOSHOW(ic.Text).ShowDialog();
+            ICOSHOW ics = new ICOSHOW(ic.Text);
+            try
+            {
+                ics.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            ics.ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(tv.Text,false).ShowDialog();
+            TDRSHOW t = new TDRSHOW(tv.Text, true);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
         }
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(drc.Text,true).ShowDialog();
+            TDRSHOW t = new TDRSHOW(drc.Text, true);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
+
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new LOGSHOW(log.Text).ShowDialog();
+            LOGSHOW t = new LOGSHOW(log.Text);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
         }
 
         private void ic_TextChanged(object sender, TextChangedEventArgs e)
@@ -421,9 +488,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                string url = mvm.GetURL("gcn");
-                if (url == null || url == "") throw new Exception();
-                TitleKeys webbrowser = new TitleKeys(url, "UWUVCI AIO - GCN Help");
+
+                TitleKeys webbrowser = new TitleKeys("gcn", "UWUVCI AIO - GCN Help");
                 try
                 {
                     webbrowser.Owner = mvm.mw;
@@ -432,7 +498,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
 
                 }
-                webbrowser.ShowDialog();
+                
+                webbrowser.Show();
+                mvm.mw.Hide();
             }
             catch (Exception)
             {

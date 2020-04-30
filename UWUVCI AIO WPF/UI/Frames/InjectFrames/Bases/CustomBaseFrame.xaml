@@ -6,14 +6,14 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases"
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DesignWidth="383"
-      Title="CustomBaseFrame" Height="239">
+      Title="CustomBaseFrame" Height="290">
 
     <Grid DataContext="{StaticResource mvm}">
-        <TextBox materialDesign:HintAssist.Hint="BASE PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,5,108,191" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding CBasePath}" IsReadOnly="True" Focusable="False" Name="bar" />
+        <TextBox materialDesign:HintAssist.Hint="BASE PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,5,108,243" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding CBasePath}" IsReadOnly="True" Focusable="False" Name="bar" />
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="280,21,0,0" VerticalAlignment="Top" Width="103" Height="26" Click="Button_Click" IsEnabled="{Binding Ckeys}" Name="path"/>
         <TextBlock x:Name="tbCode" HorizontalAlignment="Center" Margin="10,67,10,0" TextWrapping="Wrap" Text="Code folder not found" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
         <TextBlock  x:Name="tbContent" HorizontalAlignment="Center" Margin="10,102,10,0" TextWrapping="Wrap" Text="Content folder not found" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
         <TextBlock x:Name="tbMeta" HorizontalAlignment="Center" Margin="10,137,10,0" TextWrapping="Wrap" Text="Meta folder not found" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>
-        <Button x:Name="CK" Content="Enter CKey" HorizontalAlignment="Left" Margin="280,178,0,0" VerticalAlignment="Top" Width="102" Click="CK_Click" />
+        <Button x:Name="CK" Content="Enter CKey" HorizontalAlignment="Left" Margin="280,252,0,0" VerticalAlignment="Top" Width="102" Click="CK_Click" />
     </Grid>
 </Page>

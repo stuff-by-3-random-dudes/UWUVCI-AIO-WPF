@@ -26,6 +26,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         bool add = false;
         public Custom_Message(string title, string message)
         {
+            try
+            {
+                if (this.Owner.GetType() != typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             InitializeComponent();
 
 
@@ -55,6 +66,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         public Custom_Message(string title, string message, string Path)
         {
+            try
+            {
+                if (this.Owner.GetType() != typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             InitializeComponent();
             dont.Visibility = Visibility.Hidden;
             Title.Text = title;

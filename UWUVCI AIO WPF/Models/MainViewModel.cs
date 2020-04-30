@@ -25,6 +25,9 @@ using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text.RegularExpressions;
 using MaterialDesignThemes.Wpf;
+using NAudio.Wave;
+using System.Timers;
+using NAudio.Utils;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -772,7 +775,7 @@ namespace UWUVCI_AIO_WPF
                 DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
                 try
                 {
-                    dw.Owner = mw;
+                    dw.changeOwner(mw);
                 }
                 catch (Exception) { }
                 dw.ShowDialog();
@@ -814,7 +817,7 @@ namespace UWUVCI_AIO_WPF
 
                 try
                 {
-                    Injectwait.Owner = mw;
+                    Injectwait.changeOwner(mw);
                 }
                 catch (Exception) { }
                 Injectwait.Topmost = true;
@@ -841,8 +844,9 @@ namespace UWUVCI_AIO_WPF
             DownloadWait dw = new DownloadWait("Injecting Game - Please Wait", "", this);
             try
             {
-                dw.Owner = mw;
-            }catch(Exception e) { }
+                dw.changeOwner(mw);
+            }
+            catch(Exception e) { }
             dw.ShowDialog();
             Progress = 0;
             if (Injected)
@@ -880,7 +884,7 @@ namespace UWUVCI_AIO_WPF
                         DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                         try
                         {
-                            dw.Owner = mw;
+                            dw.changeOwner(mw);
                         }
                         catch (Exception) { }
                         dw.ShowDialog();
@@ -923,7 +927,7 @@ namespace UWUVCI_AIO_WPF
                     DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                     try
                     {
-                        dw.Owner = mw;
+                        dw.changeOwner(mw);
                     }
                     catch (Exception) { }
                     dw.ShowDialog();
@@ -967,7 +971,7 @@ namespace UWUVCI_AIO_WPF
                 DownloadWait dw = new DownloadWait("Updating Tools - Please Wait", "", this);
                 try
                 {
-                    dw.Owner = mw;
+                    dw.changeOwner(mw);
                 }
                 catch (Exception)
                 {
@@ -1051,7 +1055,7 @@ namespace UWUVCI_AIO_WPF
                 DownloadWait dw = new DownloadWait("Updating Base Files - Please Wait", "", this);
                 try
                 {
-                    dw.Owner = mw;
+                    dw.changeOwner(mw);
                 }
                 catch (Exception)
                 {
@@ -1119,6 +1123,7 @@ namespace UWUVCI_AIO_WPF
             string ret = string.Empty;
             using (var dialog = new System.Windows.Forms.OpenFileDialog())
             {
+                dialog.InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "configs");
                 dialog.Filter = "UWUVCI Config (*.uwuvci) | *.uwuvci";
                 DialogResult res = dialog.ShowDialog();
                 if (res == DialogResult.OK)
@@ -1495,7 +1500,16 @@ namespace UWUVCI_AIO_WPF
                     if (CheckForInternetConnection())
                     {
                         Task.Run(() => ThreadDownload(missingTools));
-                        new DownloadWait("Downloading Tools - Please Wait", "", this).ShowDialog();
+                        DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
+                        try
+                        {
+                            dw.changeOwner(mw);
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        dw.ShowDialog();
                         Thread.Sleep(200);
                         //Download Tools
                         Progress = 0;
@@ -1904,7 +1918,7 @@ namespace UWUVCI_AIO_WPF
                 DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
                 try
                 {
-                    dw.Owner = mw;
+                    dw.changeOwner(mw);
                 }
                 catch (Exception) { }
                 dw.ShowDialog();
@@ -2696,6 +2710,82 @@ namespace UWUVCI_AIO_WPF
                 // Display the content.  
                 return responseFromServer;
             }
+        }
+         WaveOutEvent waveOutEvent = new WaveOutEvent();
+        AudioFileReader audioFileReader;
+        public System.Timers.Timer t;
+        public void PlaySound()
+        {
+            
+            Task ts = new Task(() =>
+            {
+                try
+                {
+                    t = new System.Timers.Timer(200);
+                    t.Elapsed += isDone;
+
+
+
+
+                    audioFileReader = new AudioFileReader(BootSound);
+
+                    waveOutEvent.Init(audioFileReader);
+                    t.Start();
+                    Console.WriteLine("Playing file..");
+                    waveOutEvent.Play();
+                }
+                catch (Exception)
+                {
+
+                }
+               
+            });
+            ts.Start();
+        }
+        public void isDoneMW()
+        {
+            try
+            {
+                if(waveOutEvent != null && audioFileReader != null)
+                {
+                    waveOutEvent.Stop();
+                    waveOutEvent.Dispose();
+                    audioFileReader.Dispose();
+                    t.Stop();
+                }
+                   
+                
+                
+            }
+            catch (Exception)
+            {
+
+            }
+
+        }
+        public void isDone(Object source, ElapsedEventArgs e)
+        {
+            try
+            {
+                if(waveOutEvent.PlaybackState == PlaybackState.Stopped)
+                {
+                    waveOutEvent.Dispose();
+                    audioFileReader.Dispose();
+                    t.Stop();
+                }
+                if (waveOutEvent.GetPositionTimeSpan() > TimeSpan.FromSeconds(6))
+                {
+                    waveOutEvent.Stop();
+                    waveOutEvent.Dispose();
+                    audioFileReader.Dispose();
+                    t.Stop();
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
         }
     }
 }

@@ -25,16 +25,38 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         DispatcherTimer timer = new DispatcherTimer();
         public DownloadWait(string doing, string msg, MainViewModel mvm)
         {
+            try
+            {
+                if (this.Owner.GetType() == typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             this.mvm = mvm;
             InitializeComponent();
             Key.Text = doing;
-            
+           
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
         }
         public DownloadWait(string doing, string msg, MainViewModel mvm, bool t)
         {
+            try
+            {
+                if (this.Owner.GetType() != typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
             this.mvm = mvm;
             InitializeComponent();
             Key.Text = doing;
@@ -62,7 +84,21 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 
             }
         }
-
+        public void changeOwner(MainWindow ow)
+        {
+            this.Owner = ow;
+            try
+            {
+                if (this.Owner.GetType() == typeof(MainWindow))
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+            }
+            catch (Exception)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
+        }
     
     }
 }

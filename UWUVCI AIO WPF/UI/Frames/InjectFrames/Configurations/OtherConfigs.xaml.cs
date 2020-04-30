@@ -70,7 +70,34 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
             
         }
+        private void SoundImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            mvm.PlaySound();
+        }
 
+        private void sound_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (File.Exists(mvm.BootSound))
+                {
+                    if (!new FileInfo(mvm.BootSound).Extension.Contains("btsnd"))
+                    {
+                        SoundImg.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        SoundImg.Visibility = Visibility.Hidden;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+
+
+        }
         private void InjectGame(object sender, RoutedEventArgs e)
         {
             if (File.Exists(tv.Text))
@@ -246,22 +273,59 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           new ICOSHOW(ic.Text).ShowDialog();
+            ICOSHOW ics = new ICOSHOW(ic.Text);
+            try
+            {
+                ics.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            ics.ShowDialog();
         }
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(tv.Text,false).ShowDialog();
+            TDRSHOW t = new TDRSHOW(tv.Text, true);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
         }
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new TDRSHOW(drc.Text,true).ShowDialog();
+            TDRSHOW t = new TDRSHOW(drc.Text, true);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
+
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            new LOGSHOW(log.Text).ShowDialog();
+            LOGSHOW t = new LOGSHOW(log.Text);
+            try
+            {
+                t.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            t.ShowDialog();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -302,9 +366,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                string url = mvm.GetURL(mvm.GameConfiguration.Console.ToString().ToLower());
-                if (url == null || url == "") throw new Exception();
-                TitleKeys webbrowser = new TitleKeys(url, $"UWUVCIO AIO - {mvm.GameConfiguration.Console.ToString()} Help");
+
+                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLower(), $"UWUVCIO AIO - {mvm.GameConfiguration.Console.ToString()} Help");
                 try
                 {
                     webbrowser.Owner = mvm.mw;
@@ -313,7 +376,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
 
                 }
-                webbrowser.ShowDialog();
+                webbrowser.Show();
+                mvm.mw.Hide();
             }
             catch (Exception)
             {
