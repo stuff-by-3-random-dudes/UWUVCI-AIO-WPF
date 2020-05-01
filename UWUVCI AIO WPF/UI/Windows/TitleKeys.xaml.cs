@@ -24,6 +24,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// </summary>
     public partial class TitleKeys : Window
     {
+        string url = "";
         public TitleKeys(string url)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
@@ -38,15 +39,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-            
-            InitializeComponent();
-            
-           
             string fullurl = "";
             try
             {
                 fullurl = mvm.GetURL(url);
-                if(fullurl == "" || fullurl == null)
+                if (fullurl == "" || fullurl == null)
                 {
                     throw new Exception();
                 }
@@ -66,19 +63,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 this.Close();
                 mvm.mw.Show();
             }
-            load.Visibility = Visibility.Hidden;
+            
             wb.Source = new Uri(fullurl, UriKind.Absolute);
             wb.Refresh(true);
-           
+
             clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
+            InitializeComponent();
+
+            this.url = url;
+           
 
         }
         public TitleKeys(string url, string title)
         {
             InitializeComponent();
-            
+            wb.Visibility = Visibility.Hidden;
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            string fullurl = "";
+           string fullurl = "";
             try
             {
                 fullurl = mvm.GetURL(url);
@@ -103,7 +104,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 mvm.mw.Show();
             }
             
-            load.Visibility = Visibility.Hidden;
+            
             wb.Source = new Uri(fullurl, UriKind.Absolute);
             /*dynamic activeX = this.wb.GetType().InvokeMember("ActiveXInstance",
                     BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
@@ -112,6 +113,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             activeX.Silent = true;*/
             clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
             tbTitleBar.Text = title;
+           
         }
         private void MoveWindow(object sender, MouseButtonEventArgs e)
         {
@@ -147,7 +149,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             this.WindowState = WindowState.Minimized;
         }
-        
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void wb_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            load.Visibility = Visibility.Hidden;
+            wb.Visibility = Visibility.Visible;
+        }
     }
     public static class clsWebbrowser_Errors
 

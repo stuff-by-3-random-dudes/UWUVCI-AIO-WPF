@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" MouseDown="MoveWindow" ResizeMode="NoResize" Height="670" ShowInTaskbar="False">
+        Title="MAIN" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" MouseDown="MoveWindow" ResizeMode="NoResize" Height="670"  Loaded="Window_Loaded" Icon="/UWUVCI AIO WPF;component/a.ico">
 
 
 
@@ -17,7 +17,7 @@
 
             <TextBlock x:Name="tb" Margin="572,174,563,70" TextWrapping="Wrap" FontSize="20" Height="142" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="Black" />
             
-            <WebBrowser HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="1190" Name="wb" Margin="5,0,0,0"/>
+            <WebBrowser HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="1190" Name="wb" Margin="5,0,0,0" LoadCompleted="wb_LoadCompleted"/>
             <Label Content="Loading Help... Please Wait" HorizontalAlignment="Left" Margin="430,281,0,0" VerticalAlignment="Top" FontSize="25" FontWeight="Bold" Name="load"/>
 
         </Grid>

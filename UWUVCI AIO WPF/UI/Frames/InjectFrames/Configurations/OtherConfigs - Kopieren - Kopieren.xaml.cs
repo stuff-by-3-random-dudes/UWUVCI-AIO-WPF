@@ -486,6 +486,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            /*
             try
             {
 
@@ -498,7 +499,40 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
 
                 }
+                mvm.mw.Hide();
+                webbrowser.ShowDialog();
                 
+            }
+            catch (Exception)
+            {
+                Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for GCN is not implemented yet");
+                try
+                {
+                    cm.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                cm.Show();
+            }
+            */
+            // 
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TitleKeys webbrowser = new TitleKeys("gcn", "UWUVCI AIO - GCN Help");
+                try
+                {
+                    webbrowser.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
                 webbrowser.Show();
                 mvm.mw.Hide();
             }
@@ -515,8 +549,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
                 cm.Show();
             }
-
-            // 
         }
     }
 }

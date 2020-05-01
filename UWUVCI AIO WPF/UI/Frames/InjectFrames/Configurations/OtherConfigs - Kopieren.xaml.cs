@@ -385,70 +385,76 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {/*
+            try
+            {
+                TitleKeys webbrowser = new TitleKeys("n64", "UWUVCI AIO - N64 Help");
+                try
+                {
+                    webbrowser.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                webbrowser.Show();
+                mvm.mw.Hide();
+            }
+            catch (Exception)
+            {
+                Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for N64 is not implemented yet");
+                try
+                {
+                    cm.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                cm.Show();
+            }*/
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            if (cd)
+            try
             {
+                TitleKeys webbrowser = null;
+                if (cd)
+                {
+                    webbrowser =  new TitleKeys("tgcd", "UWUVCI AIO - TGxCD Help");
+                }
+                else
+                {
+                    webbrowser = new TitleKeys("tg16", "UWUVCI AIO - TGx16 Help");
+                }
+                
                 try
                 {
-
-                    TitleKeys webbrowser = new TitleKeys("tgcd", "UWUVCIO AIO - TGxCD Help");
-                    try
-                    {
-                        webbrowser.Owner = mvm.mw;
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-                    webbrowser.Show();
-                    mvm.mw.Hide();
+                    webbrowser.Owner = mvm.mw;
                 }
                 catch (Exception)
                 {
-                    Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for TGxCD is not implemented yet");
-                    try
-                    {
-                        cm.Owner = mvm.mw;
-                    }
-                    catch (Exception)
-                    {
 
-                    }
-                    cm.Show();
                 }
+                webbrowser.Show();
+                mvm.mw.Hide();
             }
-            else
+            catch (Exception)
             {
+                string cns = "TGx16";
+                if(cd) cns = "TGxCD";
+                Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for {cns} is not implemented yet");
                 try
                 {
-
-                    TitleKeys webbrowser = new TitleKeys("tg16", "UWUVCI AIO - TGx16 Help");
-                    try
-                    {
-                        webbrowser.Owner = mvm.mw;
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-                    webbrowser.Show();
-                    mvm.mw.Hide();
+                    cm.Owner = mvm.mw;
                 }
                 catch (Exception)
                 {
-                    Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for TGx16 is not implemented yet");
-                    try
-                    {
-                        cm.Owner = mvm.mw;
-                    }
-                    catch (Exception)
-                    {
 
-                    }
-                    cm.Show();
                 }
+                cm.Show();
             }
-            
         }
     }
 }
