@@ -446,89 +446,185 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 15;
                 }
             }
+            if (!mvm.donttrim)
+            {
+                using (Process trimm = new Process())
+                {
+                    if (!mvm.debug)
+                    {
+
+                        trimm.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    }
+                    mvm.msg = "Trimming ROM...";
+                    trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
+                    trimm.Start();
+                    trimm.WaitForExit();
+                    mvm.Progress = 30;
+                }
+                if (mvm.Index == 4)
+                {
+                    mvvm.msg = "Patching ROM (Force CC)...";
+                    Console.WriteLine("Patching the ROM to force Classic Controller input");
+                    using (Process tik = new Process())
+                    {
+                        tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                        tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "sys", "main.dol")}\" -nc";
+                        tik.StartInfo.UseShellExecute = false;
+                        tik.StartInfo.CreateNoWindow = true;
+                        tik.StartInfo.RedirectStandardOutput = true;
+                        tik.StartInfo.RedirectStandardInput = true;
+                        tik.Start();
+                        Thread.Sleep(2000);
+                        tik.StandardInput.WriteLine();
+                        tik.WaitForExit();
+                        mvm.Progress = 35;
+                    }
+
+                }
+                if (mvm.Patch)
+                {
+                    mvm.msg = "Video Patching ROM...";
+                    using (Process vmc = new Process())
+                    {
+
+                        File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
+
+                        Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
+                        vmc.StartInfo.FileName = "wii-vmc.exe";
+                        vmc.StartInfo.Arguments = "main.dol";
+                        vmc.StartInfo.UseShellExecute = false;
+                        vmc.StartInfo.CreateNoWindow = true;
+                        vmc.StartInfo.RedirectStandardOutput = true;
+                        vmc.StartInfo.RedirectStandardInput = true;
+
+                        vmc.Start();
+                        Thread.Sleep(1000);
+                        vmc.StandardInput.WriteLine("a");
+                        Thread.Sleep(2000);
+                        if (mvm.toPal) vmc.StandardInput.WriteLine("1");
+                        else vmc.StandardInput.WriteLine("2");
+                        Thread.Sleep(2000);
+                        vmc.StandardInput.WriteLine();
+                        vmc.WaitForExit();
+                        File.Delete("wii-vmc.exe");
+
+
+                        Directory.SetCurrentDirectory(savedir);
+                        mvm.Progress = 40;
+                    }
+
+                }
+                mvm.msg = "Creating ISO from trimmed ROM...";
+                using (Process repack = new Process())
+                {
+                    if (!mvm.debug)
+                    {
+
+                        repack.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    }
+                    repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                    repack.Start();
+                    repack.WaitForExit();
+                    Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
+                    File.Delete(Path.Combine(tempPath, "pre.iso"));
+                }
+            }
+            else
+            {
+             /* if(mvm.Index == 4 || mvm.Patch)
+                {
+                    using (Process trimm = new Process())
+                    {
+                        if (!mvm.debug)
+                        {
+
+                            trimm.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        }
+                        mvm.msg = "Trimming ROM...";
+                        trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
+                        trimm.Start();
+                        trimm.WaitForExit();
+                        mvm.Progress = 30;
+                    }
+                    if (mvm.Index == 4)
+                    {
+                        mvvm.msg = "Patching ROM (Force CC)...";
+                        Console.WriteLine("Patching the ROM to force Classic Controller input");
+                        using (Process tik = new Process())
+                        {
+                            tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                            tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP","DATA", "sys", "main.dol")}\" -nc";
+                            tik.StartInfo.UseShellExecute = false;
+                            tik.StartInfo.CreateNoWindow = true;
+                            tik.StartInfo.RedirectStandardOutput = true;
+                            tik.StartInfo.RedirectStandardInput = true;
+                            tik.Start();
+                            Thread.Sleep(2000);
+                            tik.StandardInput.WriteLine();
+                            tik.WaitForExit();
+                            mvm.Progress = 35;
+                        }
+
+                    }
+                    if (mvm.Patch)
+                    {
+                        mvm.msg = "Video Patching ROM...";
+                        using (Process vmc = new Process())
+                        {
+
+                            File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "DATA", "sys", "wii-vmc.exe"));
+
+                            Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "DATA", "sys"));
+                            vmc.StartInfo.FileName = "wii-vmc.exe";
+                            vmc.StartInfo.Arguments = "main.dol";
+                            vmc.StartInfo.UseShellExecute = false;
+                            vmc.StartInfo.CreateNoWindow = true;
+                            vmc.StartInfo.RedirectStandardOutput = true;
+                            vmc.StartInfo.RedirectStandardInput = true;
+
+                            vmc.Start();
+                            Thread.Sleep(1000);
+                            vmc.StandardInput.WriteLine("a");
+                            Thread.Sleep(2000);
+                            if (mvm.toPal) vmc.StandardInput.WriteLine("1");
+                            else vmc.StandardInput.WriteLine("2");
+                            Thread.Sleep(2000);
+                            vmc.StandardInput.WriteLine();
+                            vmc.WaitForExit();
+                            File.Delete("wii-vmc.exe");
+
+
+                            Directory.SetCurrentDirectory(savedir);
+                            mvm.Progress = 40;
+                        }
+
+                    }
+                    mvm.msg = "Creating ISO from patched ROM...";
+                    using (Process repack = new Process())
+                    {
+                        if (!mvm.debug)
+                        {
+
+                            repack.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        }
+                        repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
+                        repack.Start();
+                        repack.WaitForExit();
+                        Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
+                        File.Delete(Path.Combine(tempPath, "pre.iso"));
+                    }
+                }
+                else
+                {*/
+                    File.Move(Path.Combine(tempPath, "pre.iso"), Path.Combine(tempPath, "game.iso"));
+              // }
+               
+            }
             
-            using (Process trimm = new Process())
-            {
-                if (!mvm.debug)
-                {
-                    
-                    trimm.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                mvm.msg = "Trimming ROM...";
-                trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
-                trimm.Start();
-                trimm.WaitForExit();
-                mvm.Progress = 30;
-            }
-            if (mvm.Index == 4)
-            {
-                mvvm.msg = "Patching ROM (Force CC)...";
-                Console.WriteLine("Patching the ROM to force Classic Controller input");
-                using(Process tik = new Process())
-                {
-                    tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                    tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "sys", "main.dol")}\" -nc";
-                    tik.StartInfo.UseShellExecute = false;
-                    tik.StartInfo.CreateNoWindow = true;
-                    tik.StartInfo.RedirectStandardOutput = true;
-                    tik.StartInfo.RedirectStandardInput = true;
-                    tik.Start();
-                    Thread.Sleep(2000);
-                    tik.StandardInput.WriteLine();
-                    tik.WaitForExit();
-                    mvm.Progress = 35;
-                }
-                
-            }
-            if (mvm.Patch)
-            {
-                mvm.msg = "Video Patching ROM...";
-                using (Process vmc = new Process())
-                {
-                   
-                    File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
-
-                    Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
-                    vmc.StartInfo.FileName = "wii-vmc.exe";
-                    vmc.StartInfo.Arguments = "main.dol";
-                    vmc.StartInfo.UseShellExecute = false;
-                    vmc.StartInfo.CreateNoWindow = true;
-                    vmc.StartInfo.RedirectStandardOutput = true;
-                    vmc.StartInfo.RedirectStandardInput = true;
-
-                    vmc.Start();
-                    Thread.Sleep(1000);
-                    vmc.StandardInput.WriteLine("a");
-                    Thread.Sleep(2000);
-                    if (mvm.toPal) vmc.StandardInput.WriteLine("1");
-                    else vmc.StandardInput.WriteLine("2");
-                    Thread.Sleep(2000);
-                    vmc.StandardInput.WriteLine();
-                    vmc.WaitForExit();
-                    File.Delete("wii-vmc.exe");
-                    
-                    
-                    Directory.SetCurrentDirectory(savedir);
-                    mvm.Progress = 40;
-                }
-
-            }
-            mvm.msg = "Creating ISO from trimmed ROM...";
-            using (Process repack = new Process())
-            {
-                if (!mvm.debug)
-                {
-                  
-                    repack.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
-                repack.Start();
-                repack.WaitForExit();
-                Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
-                File.Delete(Path.Combine(tempPath, "pre.iso"));
-            }
             mvm.Progress = 50;
             mvm.msg = "Replacing TIK and TMD...";
             using (Process extract = new Process())
@@ -618,35 +714,9 @@ namespace UWUVCI_AIO_WPF
             }
             mvm.Progress = 40;
             mvvm.msg = "Injecting GameCube Game into NintendontBase...";
-            if (romPath.Contains("nkit.iso"))
+            if (mvm.donttrim)
             {
-                using (Process wit = new Process())
-                {
-                    if (!mvm.debug)
-                    {
-
-                        wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    }
-                    wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
-                    wit.StartInfo.Arguments = $"\"{romPath}\"";
-                    wit.Start();
-                    wit.WaitForExit();
-                    if(!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                    {
-                        throw new Exception("nkit");
-                    }
-                    File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-                    
-                }
-            }
-            else
-            {
-                File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-            }
-
-            if (mvm.gc2rom != "" && File.Exists(mvm.gc2rom))
-            {
-                if (mvm.gc2rom.Contains("nkit.iso"))
+                if (romPath.ToLower().Contains("nkit.iso"))
                 {
                     using (Process wit = new Process())
                     {
@@ -663,14 +733,108 @@ namespace UWUVCI_AIO_WPF
                         {
                             throw new Exception("nkit");
                         }
-                        File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                        File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
 
                     }
                 }
                 else
                 {
-                    File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                    File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
                 }
+            }
+            else
+            {
+                if (romPath.ToLower().Contains("iso") || romPath.ToLower().Contains("gcm"))
+                {
+                    //convert to nkit
+                    using (Process wit = new Process())
+                    {
+                        if (!mvm.debug)
+                        {
+
+                            wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        }
+                        wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
+                        wit.StartInfo.Arguments = $"\"{romPath}\"";
+                        wit.Start();
+                        wit.WaitForExit();
+                        if (!File.Exists(Path.Combine(toolsPath, "out.nkit.iso")))
+                        {
+                            throw new Exception("nkit");
+                        }
+                        File.Move(Path.Combine(toolsPath, "out.nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+
+                    }
+                    
+                }
+                else
+                {
+                    File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+                }
+
+            }
+
+            if (mvm.gc2rom != "" && File.Exists(mvm.gc2rom))
+            {
+                if (mvm.donttrim)
+                {
+                    if (mvm.gc2rom.Contains("nkit.iso"))
+                     {
+                         using (Process wit = new Process())
+                         {
+                             if (!mvm.debug)
+                             {
+
+                                 wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                             }
+                             wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
+                             wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
+                             wit.Start();
+                             wit.WaitForExit();
+                             if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                             {
+                                 throw new Exception("nkit");
+                             }
+                             File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+
+                         }
+                     }
+                     else
+                     {
+                        File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                    }
+                }
+                else{
+                    if (mvm.gc2rom.ToLower().Contains("iso") || mvm.gc2rom.ToLower().Contains("gcm"))
+                    {
+                        //convert to nkit
+                        using (Process wit = new Process())
+                        {
+                            if (!mvm.debug)
+                            {
+
+                                wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            }
+                            wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
+                            wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
+                            wit.Start();
+                            wit.WaitForExit();
+                            if (!File.Exists(Path.Combine(toolsPath, "out.nkit.iso")))
+                            {
+                                throw new Exception("nkit");
+                            }
+                            File.Move(Path.Combine(toolsPath, "out.nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+
+                        }
+                    }
+                    else
+                    {
+                        File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                    }
+                    
+                }
+               
+                
                 
             }
             using(Process wit = new Process())

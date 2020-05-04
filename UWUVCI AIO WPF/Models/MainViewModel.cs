@@ -747,6 +747,7 @@ namespace UWUVCI_AIO_WPF
             
 
         }
+        public bool donttrim = false;
         private static void CheckAndFixConfigFolder()
         {
             if (!Directory.Exists(@"configs"))
@@ -783,7 +784,7 @@ namespace UWUVCI_AIO_WPF
                 Progress = 0;
                 string extra = "";
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
-                if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them under Settings -> \"Start Nintendont Config Tool\".";
+                if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them by pressing the \"Nintendon't Config\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
                 gc2rom = "";
                 Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
                 try
@@ -2214,7 +2215,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
-            string[] ext = { "png", "jpg", "tga", "bmp" };
+            string[] ext = { "png"};
             if (CheckForInternetConnectionWOWarning())
             {
                 foreach(var e in ext)
@@ -2297,7 +2298,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
-            string[] ext = { "png", "jpg", "tga", "bmp" };
+            string[] ext = { "png" };
             if (CheckForInternetConnectionWOWarning())
             {
                 foreach (var e in ext)
@@ -2373,7 +2374,7 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
             bool found = false;
-            string[] ext = { "png", "jpg", "tga", "bmp" };
+            string[] ext = { "png" };
             if (CheckForInternetConnectionWOWarning())
             {
                 foreach (var e in ext)
@@ -2506,7 +2507,7 @@ namespace UWUVCI_AIO_WPF
                     reader.BaseStream.Position = 0x00;
                     char TempChar;
                     //WBFS Check
-                    string[] ext = { "tga", "jpg", "png", "bmp" };
+                    string[] ext = { "png" };
                     if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
                     {
 

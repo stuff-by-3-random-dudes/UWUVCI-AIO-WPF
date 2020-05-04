@@ -19,6 +19,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für Custom_Message.xaml
     /// </summary>
+    /// 
+
     public partial class Custom_Message : Window
     {
         string path;
@@ -28,6 +30,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             
             InitializeComponent();
+            nc.Visibility = Visibility.Hidden;
             try
             {
                 if(this.Owner != null)
@@ -36,6 +39,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     {
                         this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
+                    else
+                    {
+                        this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    }
+                }
+                else
+                {
+                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
                
             }
@@ -44,7 +55,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
-            dont.Visibility = Visibility.Hidden;
+           dont.Visibility = Visibility.Hidden;
             Title.Text = title;
             Message.Content = message;
             Folder.Visibility = Visibility.Hidden;
@@ -66,10 +77,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 dont.Visibility = Visibility.Visible;
             }
-
+            
         }
         public Custom_Message(string title, string message, string Path)
         {
+           
             try
             {
                 if (this.Owner.GetType() != typeof(MainWindow))
@@ -81,13 +93,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
+
             InitializeComponent();
+            if (!message.Contains("Nintendont"))
+            {
+                nc.Visibility = Visibility.Hidden;
+            }
             dont.Visibility = Visibility.Hidden;
             Title.Text = title;
             Message.Content = message;
             this.path = Path;
             Folder.Visibility = Visibility.Visible;
-           
+            
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -149,6 +166,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 Properties.Settings.Default.Save();
             }
             this.Close();
+        }
+
+        private void nc_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

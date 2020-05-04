@@ -413,7 +413,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                TitleKeys webbrowser = new TitleKeys("gba", "UWUVCI AIO - GBA Help");
+                TitleKeys webbrowser = new TitleKeys("gba", "GameBoy Advance Inject Guide");
                 try
                 {
                     webbrowser.Owner = mvm.mw;

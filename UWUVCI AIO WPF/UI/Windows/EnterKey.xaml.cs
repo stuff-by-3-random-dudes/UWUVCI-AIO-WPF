@@ -104,7 +104,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     MainViewModel mvm = (MainViewModel)FindResource("mvm");
                     if (mvm.checkcKey(tbKey.Text))
                     {
-                        
+                        this.Visibility = Visibility.Hidden;
                         cm = new Custom_Message("Correct Key", "The entered CommonKey is correct!");
                         cm.Owner = this;
                         cm.ShowDialog();
@@ -124,7 +124,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     MainViewModel mvm = (MainViewModel)FindResource("mvm");
                     if (mvm.checkKey(tbKey.Text))
                     {
-                       cm =  new Custom_Message("Correct Key", "The entered TitleKey is correct!");
+                        this.Visibility = Visibility.Hidden;
+                        cm =  new Custom_Message("Correct Key", "The entered TitleKey is correct!");
                         cm.Owner = this;
                         cm.ShowDialog();
                         this.Close();

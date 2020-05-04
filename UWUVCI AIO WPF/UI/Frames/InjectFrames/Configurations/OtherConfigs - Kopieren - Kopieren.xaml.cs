@@ -524,7 +524,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                TitleKeys webbrowser = new TitleKeys("gcn", "UWUVCI AIO - GCN Help");
+                TitleKeys webbrowser = new TitleKeys("gcn", "GameCube Inject Guide");
                 try
                 {
                     webbrowser.Owner = mvm.mw;
@@ -538,7 +538,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             catch (Exception)
             {
-                Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for GCN is not implemented yet");
+                Custom_Message cm = new Custom_Message("Not Implemented", "The Helppage for GameCube is not implemented yet");
                 try
                 {
                     cm.Owner = mvm.mw;
@@ -549,6 +549,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
                 cm.Show();
             }
+        }
+
+        private void trimn_Click(object sender, RoutedEventArgs e)
+        {
+            if (mvm.donttrim)
+            {
+                mvm.donttrim =false;
+            }
+            else
+            {
+                mvm.donttrim = true;
+            }
+           
         }
     }
 }

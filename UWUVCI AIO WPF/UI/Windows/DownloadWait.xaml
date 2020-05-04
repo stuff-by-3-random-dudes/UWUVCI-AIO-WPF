@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="93.662" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False">
+        Title="MAIN" Height="93.662" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5">
     <Grid>
 
         <TextBlock HorizontalAlignment="Left" Margin="10,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="480" FontSize="18" Foreground="Black" Name="Key" TextAlignment="Center"/>
@@ -14,6 +14,7 @@
 
        
         <ProgressBar HorizontalAlignment="Left" Height="11" Margin="31,59,0,0" VerticalAlignment="Top" Width="443" Name="pb"/>
+       
     </Grid>
 </Window>
 

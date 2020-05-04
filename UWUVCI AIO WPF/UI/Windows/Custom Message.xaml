@@ -6,11 +6,11 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="223.859" Width="717.416" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False">
+        Title="Message" Height="223.859" MinWidth="365" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False">
     <Grid Name="grid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="496*"/>
-            <ColumnDefinition Width="132"/>
+            <ColumnDefinition Width="164"/>
+            <ColumnDefinition Width="132*"/>
             <ColumnDefinition Width="90"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -19,12 +19,13 @@
             <RowDefinition Height="48"/>
         </Grid.RowDefinitions>
 
-        <TextBlock HorizontalAlignment="Left" Margin="7,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="32" Width="618" FontSize="15" Foreground="Black" Name="Title" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="5,4,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="Auto" Width="260" FontSize="15" Foreground="Black" Name="Title" Grid.Row="0" FontWeight="Bold" Text=" " Grid.ColumnSpan="2"/>
         <Label HorizontalAlignment="Left" Margin="2,10,0,0" VerticalAlignment="Top" Height="Auto" Width="Auto" FontSize="15" Foreground="Black" x:Name="Message" HorizontalContentAlignment="Left" Content="" VerticalContentAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3"/>
-        <Button Content="Close" HorizontalAlignment="Left" Margin="7,8,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Grid.Column="2"/>
-        <Button Content="Open Folder" HorizontalAlignment="Left" Margin="5,8,0,0" VerticalAlignment="Top" Width="121" Name="Folder" Click="Folder_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1"/>
-        <Button Content="Continue" HorizontalAlignment="Left" Margin="5,8,0,0" VerticalAlignment="Top" Width="121" x:Name="Reset" Click="Reset_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1" Visibility="Hidden"/>
-        <CheckBox Content="Don't show this again" HorizontalAlignment="Left" Margin="2,14,0,0" Grid.Row="2" VerticalAlignment="Top" Width="139" Foreground="Black" Name="dont"/>
+        <Button Content="Close" Margin="7,8,8,9" Click="Button_Click" RenderTransformOrigin="0.5,0.5" Grid.Row="2" Grid.Column="2" Height="Auto"/>
+        <Button Content="Open Folder" Margin="0,8,0,9" Name="Folder" Click="Folder_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1" Height="Auto" HorizontalAlignment="Right"  Visibility="Hidden"/>
+        <Button Content="Continue" Margin="0,8,5,9" x:Name="Reset" Click="Reset_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1" Height="Auto" HorizontalAlignment="Right" Visibility="Hidden" />
+        <CheckBox Content="Don't show this again" HorizontalAlignment="Left" Margin="5,13,0,0" Grid.Row="2" VerticalAlignment="Top" Width="139" Foreground="Black" Name="dont" Height="18"/>
+        <Button Content="Nintendon't Config" Margin="8,8,0,0" x:Name="nc" Click="nc_Click" RenderTransformOrigin="1,1" Grid.Row="2" Height="32" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 
     </Grid>

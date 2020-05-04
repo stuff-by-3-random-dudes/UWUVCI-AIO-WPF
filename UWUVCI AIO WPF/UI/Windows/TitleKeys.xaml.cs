@@ -1,6 +1,7 @@
 ﻿using GameBaseClassLibrary;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -78,41 +79,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
             wb.Visibility = Visibility.Hidden;
-            MainViewModel mvm = FindResource("mvm") as MainViewModel;
-           string fullurl = "";
-            try
-            {
-                fullurl = mvm.GetURL(url);
-                if (fullurl == "" || fullurl == null)
-                {
-                    throw new Exception();
-                }
-            }
-            catch (Exception)
-            {
-                Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for {url.ToUpper()} is not implemented yet");
-                try
-                {
-                    cm.Owner = mvm.mw;
-                }
-                catch (Exception)
-                {
-
-                }
-                cm.Show();
-                this.Close();
-                mvm.mw.Show();
-            }
-            
-            
-            wb.Source = new Uri(fullurl, UriKind.Absolute);
-            /*dynamic activeX = this.wb.GetType().InvokeMember("ActiveXInstance",
-                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-                    null, this.wb, new object[] { });
-
-            activeX.Silent = true;*/
-            clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
-            tbTitleBar.Text = title;
+            Thread t = new Thread(() => DoStuff(url));
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            tbTitleBar.Text = title.Replace(" Inject "," ");
            
         }
         private void MoveWindow(object sender, MouseButtonEventArgs e)
@@ -136,6 +106,47 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
         }
 
+        public void DoStuff(string url)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            string fullurl = "";
+            try
+            {
+                fullurl = mvm.GetURL(url);
+                if (fullurl == "" || fullurl == null)
+                {
+                    throw new Exception();
+                }
+            }
+            catch (Exception)
+            {
+                Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for {url.ToUpper()} is not implemented yet");
+                try
+                {
+                    cm.Owner = mvm.mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                cm.Show();
+                this.Close();
+                mvm.mw.Show();
+            }
+
+            this.Dispatcher.Invoke(() =>
+            {
+                wb.Source = new Uri(fullurl, UriKind.Absolute);
+                clsWebbrowser_Errors.SuppressscriptErrors(wb, true);
+            });
+            
+            /*dynamic activeX = this.wb.GetType().InvokeMember("ActiveXInstance",
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, this.wb, new object[] { });
+
+            activeX.Silent = true;*/
+           
+        }
 
         private void Window_Close(object sender, RoutedEventArgs e)
         {
@@ -159,6 +170,34 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             load.Visibility = Visibility.Hidden;
             wb.Visibility = Visibility.Visible;
+        }
+        private bool bCancel = false;
+
+      
+        private void wb_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
+        {
+            
+                if (!e.Uri.ToString().Contains("flumpster"))
+                {
+                    e.Cancel = true;
+
+                    var startInfo = new ProcessStartInfo
+                    {
+                        FileName = e.Uri.ToString()
+                    };
+
+                    Process.Start(startInfo);
+                }
+            
+           
+
+            // cancel navigation to the clicked link in the webBrowser control
+           
+        }
+
+        private void wb_LoadCompleted_1(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+
         }
     }
     public static class clsWebbrowser_Errors

@@ -428,7 +428,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                TitleKeys webbrowser = new TitleKeys("n64", "UWUVCI AIO - N64 Help");
+                TitleKeys webbrowser = new TitleKeys("n64", "Nintendo 64 Inject Guide");
                 try
                 {
                     webbrowser.Owner = mvm.mw;

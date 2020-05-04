@@ -397,7 +397,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLower(),$"UWUVCI AIO - {mvm.GameConfiguration.Console.ToString()} Help");
+                string title = "";
+                if(mvm.GameConfiguration.Console.ToString().ToLower() == "nds")
+                {
+                    title = $"Nintendo DS Inject Guide";
+                }
+                else
+                {
+                    title = $"{mvm.GameConfiguration.Console.ToString()} Inject Guide";
+                }
+                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLower(),title);
                 try
                 {
                     webbrowser.Owner = mvm.mw;

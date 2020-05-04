@@ -16,9 +16,9 @@
 
 
             <TextBlock x:Name="tb" Margin="572,174,563,70" TextWrapping="Wrap" FontSize="20" Height="142" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Foreground="Black" />
-            
-            <WebBrowser HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="1190" Name="wb" Margin="5,0,0,0" LoadCompleted="wb_LoadCompleted"/>
-            <Label Content="Loading Help... Please Wait" HorizontalAlignment="Left" Margin="430,281,0,0" VerticalAlignment="Top" FontSize="25" FontWeight="Bold" Name="load"/>
+
+            <WebBrowser HorizontalAlignment="Left" Height="600" VerticalAlignment="Top" Width="1190" Name="wb" Margin="5,0,0,0" LoadCompleted="wb_LoadCompleted" Navigating="wb_Navigating"/>
+            <Label Content="Loading Help... Please Wait" HorizontalAlignment="Left" Margin="430,281,0,0" VerticalAlignment="Top" FontSize="25" FontWeight="Bold" Name="load" Visibility="Hidden"/>
 
         </Grid>
         <Grid Height="70" VerticalAlignment="Top">
@@ -32,7 +32,7 @@
 
 
             </Grid.Background>
-            <TextBlock Name="tbTitleBar" HorizontalAlignment="Left" Margin="61,19,0,0" TextWrapping="Wrap" Text="UWUVCI AIO - Help" VerticalAlignment="Top" FontSize="25" Width="1075" TextAlignment="Center"/>
+            <TextBlock Name="tbTitleBar" HorizontalAlignment="Left" Margin="0,19,0,0" TextWrapping="Wrap" Text="UWUVCI AIO - Help" VerticalAlignment="Top" FontSize="25" Width="1166" TextAlignment="Center"/>
         </Grid>
 
 

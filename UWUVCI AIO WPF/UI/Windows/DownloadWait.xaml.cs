@@ -65,7 +65,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             timer.Tick += timer_Tick;
             
         }
-
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+           
+        }
+        private void min_MouseLeave(object sender, MouseEventArgs e)
+        {
+         
+        }
+        private void Window_Minimize(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
         private void timer_Tick(object sender, EventArgs e)
         {
             msgT.Text = mvm.msg;
@@ -92,6 +103,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if (this.Owner.GetType() == typeof(MainWindow))
                 {
                     this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    this.ShowInTaskbar = false;
                 }
             }
             catch (Exception)

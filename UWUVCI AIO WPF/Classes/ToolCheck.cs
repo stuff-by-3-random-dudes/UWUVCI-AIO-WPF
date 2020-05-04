@@ -51,7 +51,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "IKVMW.zip",
             "SOX.zip",
             "jpg2tga.exe",
-            "bmp2tga.exe"
+            "bmp2tga.exe",
+            "ConvertToNKit.exe"
         };
 
         public static bool DoesToolsFolderExist()

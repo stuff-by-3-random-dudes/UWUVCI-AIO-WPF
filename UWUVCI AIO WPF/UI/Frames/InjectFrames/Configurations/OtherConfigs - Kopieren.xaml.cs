@@ -422,11 +422,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 TitleKeys webbrowser = null;
                 if (cd)
                 {
-                    webbrowser =  new TitleKeys("tgcd", "UWUVCI AIO - TGxCD Help");
+                    webbrowser =  new TitleKeys("tgcd", "TurboGrafX Inject Guide");
                 }
                 else
                 {
-                    webbrowser = new TitleKeys("tg16", "UWUVCI AIO - TGx16 Help");
+                    webbrowser = new TitleKeys("tg16", "TurboGrafX Inject Guide");
                 }
                 
                 try
@@ -444,7 +444,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 string cns = "TGx16";
                 if(cd) cns = "TGxCD";
-                Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for {cns} is not implemented yet");
+                Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for TurboGrafX is not implemented yet");
                 try
                 {
                     cm.Owner = mvm.mw;

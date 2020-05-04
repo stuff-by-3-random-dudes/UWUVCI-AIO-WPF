@@ -97,6 +97,21 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
                 if (isok)
                 {
+                    trimn.Visibility = Visibility.Hidden;
+                    trimn.IsChecked = false;
+                    vmcsmoll.IsEnabled = true;
+                    pal.IsEnabled = true;
+                    ntsc.IsEnabled = true;
+                    mvm.donttrim = false;
+                    List<string> gpEmu = new List<string>();
+                    gpEmu.Add("None");
+                    gpEmu.Add("Classic Controller");
+                    gpEmu.Add("Horizontal WiiMote");
+                    gpEmu.Add("Vertical WiiMote");
+                    gpEmu.Add("Force Classic Controller");
+                    gpEmu.Add("Force No Classic Controller");
+                    gamepad.ItemsSource = gpEmu;
+                    gamepad.ItemsSource = gpEmu;
                     mvm.RomPath = path;
                     mvm.RomSet = true;
                     if (mvm.BaseDownloaded)
@@ -115,6 +130,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
                     {
                         tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                    }
+                    if (path.ToLower().Contains("iso"))
+                    {
+                        if (!path.ToLower().Contains("nkit"))
+                        {
+                            trimn.Visibility = Visibility.Visible;
+                        }
                     }
                 }
                 else
@@ -539,7 +561,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             try
             {
-                TitleKeys webbrowser = new TitleKeys("wii", "UWUVCI AIO - Wii Help");
+                TitleKeys webbrowser = new TitleKeys("wii", "Wii Inject Guide");
                 try
                 {
                     webbrowser.Owner = mvm.mw;
@@ -564,6 +586,45 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
                 cm.Show();
             }
+        }
+
+        private void trimn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!mvm.donttrim)
+            {
+                mvm.toPal = false;
+                mvm.Patch = false;
+                vmcsmoll.IsChecked = true;
+                vmcsmoll.IsEnabled = false;
+                pal.IsEnabled = false;
+                ntsc.IsEnabled = false;
+                mvm.donttrim = true;
+                List<string> gpEmu = new List<string>();
+                gpEmu.Add("None");
+                gpEmu.Add("Classic Controller");
+                gpEmu.Add("Horizontal WiiMote");
+                gpEmu.Add("Vertical WiiMote");
+                gpEmu.Add("[NEEDS TRIMMING] Force Classic Controller");
+                gpEmu.Add("Force No Classic Controller");
+                gamepad.ItemsSource = gpEmu;
+            }
+            else
+            {
+               vmcsmoll.IsEnabled = true;
+                pal.IsEnabled = true;
+                ntsc.IsEnabled = true;
+                mvm.donttrim = false;
+               List<string> gpEmu = new List<string>();
+                gpEmu.Add("None");
+                gpEmu.Add("Classic Controller");
+                gpEmu.Add("Horizontal WiiMote");
+                gpEmu.Add("Vertical WiiMote");
+                gpEmu.Add("Force Classic Controller");
+                gpEmu.Add("Force No Classic Controller");
+                gamepad.ItemsSource = gpEmu;
+                gamepad.ItemsSource = gpEmu;
+            }
+            
         }
     }
 }
