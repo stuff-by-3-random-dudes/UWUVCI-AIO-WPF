@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="93.662" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5">
+        Title="MAIN" Height="93.662" Width="500" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" Closing="wind_Closing" Closed="wind_Closed">
     <Grid>
 
         <TextBlock HorizontalAlignment="Left" Margin="10,11,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="25" Width="480" FontSize="18" Foreground="Black" Name="Key" TextAlignment="Center"/>

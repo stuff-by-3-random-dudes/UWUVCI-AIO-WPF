@@ -197,6 +197,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 tv.Text = path;
                 tvIMG.Visibility = Visibility.Visible;
             }
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGATv.ImgPath = null;
+                    tv.Text = "";
+                    tvIMG.Visibility = Visibility.Hidden;
+                }
+            }
 
         }
 
@@ -213,6 +222,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
                 drc.Text = path;
                 drcIMG.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGADrc.ImgPath = null;
+                    drc.Text = "";
+                    drcIMG.Visibility = Visibility.Hidden;
+                }
             }
 
         }
@@ -231,6 +249,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ic.Text = path;
                 icoIMG.Visibility = Visibility.Visible;
             }
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGAIco.ImgPath = null;
+                    ic.Text = "";
+                    icoIMG.Visibility = Visibility.Hidden;
+                }
+            }
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
@@ -247,6 +274,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGALog.ImgPath = null;
+                    log.Text = "";
+                    logIMG.Visibility = Visibility.Hidden;
+                }
+            }
+
+
         }
 
         private bool CheckIfNull(string s)
@@ -389,6 +427,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
 
                     mvm.BootSound = path;
+                }
+            }
+            else
+            {
+                if (path == "")
+                {
+                    mvm.BootSound = null;
+                    sound.Text = "";
+
                 }
             }
         }

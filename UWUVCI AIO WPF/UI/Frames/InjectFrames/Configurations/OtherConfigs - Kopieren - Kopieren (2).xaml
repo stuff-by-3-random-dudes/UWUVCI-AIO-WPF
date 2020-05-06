@@ -37,6 +37,6 @@
         <Image HorizontalAlignment="Left" Height="35" Margin="452,373,0,0" VerticalAlignment="Top" Width="38" OpacityMask="LightGray" Name="SoundImg" Source="/UWUVCI AIO WPF;component/UI/Images/newspeaker2.png" Cursor="Hand" MouseLeftButtonDown="SoundImg_MouseLeftButtonDown" Visibility="Hidden"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,376,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click"/>
         <Label Content="Use | for 2 lines" HorizontalAlignment="Left" Margin="506,428,0,0" VerticalAlignment="Top" Width="127" HorizontalContentAlignment="Center" ToolTip="e.g. Wii|Sports"/>
-        <Button Content="?" HorizontalAlignment="Left" Margin="599,17,0,0" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_1" FontSize="22" Padding="0" Height="35" />
+        <Button Content="?" HorizontalAlignment="Left" Margin="600,19,0,0" Height="32" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_1" FontSize="22" Padding="0"  />
     </Grid>
 </Page>

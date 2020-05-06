@@ -90,6 +90,7 @@ namespace UWUVCI_AIO_WPF
             mvm.gc2rom = null;
             mvm.Index = -1;
             mvm.donttrim = false;
+            mvm.NKITFLAG = false;
             mvm.isDoneMW();
             switch ((sender as ListView).SelectedIndex)
             {

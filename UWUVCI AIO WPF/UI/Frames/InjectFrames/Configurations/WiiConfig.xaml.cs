@@ -76,28 +76,38 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 int TitleIDInt = 0;
                 bool isok = false;
-                using (var reader = new BinaryReader(File.OpenRead(path)))
+                if (path.ToLower().Contains(".gcz"))
                 {
-                    reader.BaseStream.Position = 0x00;
-                    TitleIDInt = reader.ReadInt32();
-                    if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
-                    { isok = true; }
-                    else if (TitleIDInt != 65536)
-                    {
-                        long GameType = 0;
-                        reader.BaseStream.Position = 0x18;
-                        GameType = reader.ReadInt64();
-                        if (GameType == 2745048157)
-                        {
-                            isok = true;
-                        }
-
-                    }
-                    reader.Close();
+                    isok = true;
                 }
+                else
+                {
+                    using (var reader = new BinaryReader(File.OpenRead(path)))
+                    {
+                        reader.BaseStream.Position = 0x00;
+                        TitleIDInt = reader.ReadInt32();
+                        if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
+                        { isok = true; }
+                        else if (TitleIDInt != 65536)
+                        {
+                            long GameType = 0;
+                            reader.BaseStream.Position = 0x18;
+                            GameType = reader.ReadInt64();
+                            if (GameType == 2745048157)
+                            {
+                                isok = true;
+                            }
+
+                        }
+                        reader.Close();
+                    }
+                }
+                
+                
                 if (isok)
                 {
-                    trimn.Visibility = Visibility.Hidden;
+                    mvm.NKITFLAG = false;
+                    trimn.IsEnabled = false;
                     trimn.IsChecked = false;
                     vmcsmoll.IsEnabled = true;
                     pal.IsEnabled = true;
@@ -119,25 +129,33 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.CanInject = true;
 
                     }
-                    string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
-                    Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
-                    gn.Text = reg.Replace(rom, string.Empty);
-                    mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
-                    if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
+                    if (!path.ToLower().Contains(".gcz"))
                     {
-                        ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
-                    }
-                    if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
-                    {
-                        tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
-                    }
-                    if (path.ToLower().Contains("iso"))
-                    {
-                        if (!path.ToLower().Contains("nkit"))
+                        string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
+                        Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
+                        gn.Text = reg.Replace(rom, string.Empty);
+                        mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
+                        if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
                         {
-                            trimn.Visibility = Visibility.Visible;
+                            ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
+                        }
+                        if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
+                        {
+                            tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+                        }
+                        if (path.ToLower().Contains("iso"))
+                        {
+
+                            trimn.IsEnabled = true;
+                            mvm.IsIsoNkit();
                         }
                     }
+                    else
+                    {
+                        trimn.IsEnabled = true;
+                    }
+                       
+                   
                 }
                 else
                 {
@@ -219,7 +237,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 tv.Text = path;
                 tvIMG.Visibility = Visibility.Visible;
             }
-
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGATv.ImgPath = null;
+                    tv.Text = "";
+                    tvIMG.Visibility = Visibility.Hidden;
+                }
+            }
 
         }
 
@@ -237,7 +263,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 drc.Text = path;
                 drcIMG.Visibility = Visibility.Visible;
             }
-
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGADrc.ImgPath = null;
+                    drc.Text = "";
+                    drcIMG.Visibility = Visibility.Hidden;
+                }
+            }
 
         }
 
@@ -255,7 +289,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ic.Text = path;
                 icoIMG.Visibility = Visibility.Visible;
             }
-
+            else
+            {
+                if (path == "")
+                {
+                    mvm.GameConfiguration.TGAIco.ImgPath = null;
+                    ic.Text = "";
+                    icoIMG.Visibility = Visibility.Hidden;
+                }
+            }
         }
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
@@ -265,13 +307,23 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.ImageWarning();
             }
             string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path))
+            if (!CheckIfNull(path) )
             {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
                 log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
+            else
+            {
+                if(path == "")
+                {
+                    mvm.GameConfiguration.TGALog.ImgPath = null;
+                    log.Text = "";
+                    logIMG.Visibility = Visibility.Hidden;
+                }
+            }
+
 
         }
         public void getInfoFromConfig()
@@ -517,6 +569,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
 
                     mvm.BootSound = path;
+                }
+            }
+            else
+            {
+                if (path == "")
+                {
+                    mvm.BootSound = null;
+                    sound.Text = "";
+                   
                 }
             }
         }

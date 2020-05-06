@@ -89,15 +89,32 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                         {
                             if (mvm.DirectoryIsEmpty(dialog.FileName))
                             {
-                                new Custom_Message("Issue", "The Folder is Empty. Please choose another Folder.").ShowDialog();
+                                Custom_Message cm1 =   new Custom_Message("Issue", "The Folder is Empty. Please choose another Folder.");
+                                try
+                                {
+                                    cm.Owner = mvm.mw;
+                                }
+                                catch (Exception e2)
+                                {
+
+                                }
+                                cm1.ShowDialog();
                                 
                             }
                             else
                             { 
                                if(Directory.GetDirectories(dialog.FileName).Length > 3)
                                 {
-                                    new Custom_Message("Issue", "This Folder has too many subfolders. Please choose another folder").ShowDialog();
-                                   
+                                    Custom_Message cm1 =  new Custom_Message("Issue", "This Folder has too many subfolders. Please choose another folder");
+                                    try
+                                    {
+                                        cm.Owner = mvm.mw;
+                                    }
+                                    catch (Exception e2)
+                                    {
+
+                                    }
+                                    cm1.ShowDialog();
                                 }
                                 else
                                 {
@@ -125,7 +142,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                         }
                                         else
                                         {
-                                            new Custom_Message("Issue", "This folder is not in the \"loadiine\" format").ShowDialog();
+                                           Custom_Message cm1 = new Custom_Message("Issue", "This folder is not in the \"loadiine\" format");
+                                            try
+                                            {
+                                                cm.Owner = mvm.mw;
+                                            }
+                                            catch (Exception e2)
+                                            {
+
+                                            }
+                                            cm1.ShowDialog();
                                         }
                                     }
                                     else
@@ -157,7 +183,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                         }
                                         else
                                         {
-                                            new Custom_Message("Issue", "This Folder does not contain needed NUS files").ShowDialog();
+                                           Custom_Message cm1 = new Custom_Message("Issue", "This Folder does not contain needed NUS files");
+                                            try
+                                            {
+                                                cm.Owner = mvm.mw;
+                                            }
+                                            catch (Exception e2)
+                                            {
+
+                                            }
+                                            cm1.ShowDialog();
                                         }
                                     }
                                 }

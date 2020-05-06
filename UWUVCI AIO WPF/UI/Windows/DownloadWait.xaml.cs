@@ -111,6 +111,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
         }
-    
+        private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+        }
+
+        private void wind_Closed(object sender, EventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+        }
     }
 }

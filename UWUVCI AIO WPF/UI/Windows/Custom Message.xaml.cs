@@ -44,10 +44,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                         this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     }
                 }
-                else
-                {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                }
+               
                
             }
             catch (Exception)
@@ -170,7 +167,24 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void nc_Click(object sender, RoutedEventArgs e)
         {
+            if (File.Exists(@"bin\Tools\sdsetup.exe"))
+            {
+                Process.Start(@"bin\Tools\sdsetup.exe");
+            }
+            else
+            {
+                Process.Start(@"bin\Tools\NintendontConfig.exe");
+            }
+        }
 
+        private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+        }
+
+        private void wind_Closed(object sender, EventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = false;
         }
     }
 }

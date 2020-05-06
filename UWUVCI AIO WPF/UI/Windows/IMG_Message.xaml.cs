@@ -41,10 +41,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     }
                     
                 }
-                else
-                {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                }
+                
                
             }
             catch (Exception s)
@@ -152,14 +149,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 (mvm.Thing as OtherConfigs).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
 
             }
-            if(mvm.test == GameConsoles.GCN)
+           /* if(mvm.test == GameConsoles.GCN)
             {
                 checkForAdditionalFiles(GameConsoles.GCN);
             }
             else
             {
                 checkForAdditionalFiles(mvm.GameConfiguration.Console);
-            }
+            }*/
             
             this.Close();
         }
@@ -355,6 +352,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 return false;
             }
+        }
+        private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+        }
+
+        private void wind_Closed(object sender, EventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = false;
         }
     }
 }

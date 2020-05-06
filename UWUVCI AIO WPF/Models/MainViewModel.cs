@@ -220,6 +220,29 @@ namespace UWUVCI_AIO_WPF
         }
         private List<GameBases> lWii = new List<GameBases>();
 
+        public void IsIsoNkit()
+        {
+            using (var fs = new FileStream(RomPath,
+                                FileMode.Open,
+                                FileAccess.ReadWrite))
+            {
+                byte[] procode = new byte[4];
+                fs.Seek(0x200, SeekOrigin.Begin);
+                fs.Read(procode, 0, 4);
+                var s = ByteArrayToString(procode);
+              
+                fs.Close();
+                if (s.ToLower().Contains("nkit"))
+                {
+                    NKITFLAG = true;
+                }
+                else
+                {
+                    NKITFLAG = false;
+                }
+            }
+        }
+
         public List<GameBases> LWII
         {
             get { return lWii; }
@@ -307,6 +330,8 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
+
+        public bool NKITFLAG { get; set; } = false;
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
@@ -437,7 +462,15 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
             {
-                new Custom_Message("Issue", "One of your added Paths seems to not exist anymore.\nThe Tool is now using it's default Paths\nPlease check the paths in the Path menu!").ShowDialog();
+                Custom_Message cm = new Custom_Message("Issue", "One of your added Paths seems to not exist anymore.\nThe Tool is now using it's default Paths\nPlease check the paths in the Path menu!");
+                try
+                {
+                    cm.Owner = mw;
+                }catch(Exception e)
+                {
+
+                }
+                cm.ShowDialog();
             }
             UpdatePathSet();
 
@@ -802,6 +835,7 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration.CBasePath = null;
             GC = false;
             bootsound = "";
+            NKITFLAG = false;
             if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
         }
 
@@ -1246,12 +1280,12 @@ namespace UWUVCI_AIO_WPF
                                 }
                                 else
                                 {
-                                    dialog.Filter = "Wii ROM (*.nkit.iso; *.iso; *.wbfs) | *.nkit.iso; *.iso; *.wbfs";
+                                    dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.iso; *.nkit.gcz) | *.iso; *.wbfs; *.nkit.iso; *.nkit.gcz";
                                 }
                                 
                                 break;
                             case GameConsoles.GCN:
-                                dialog.Filter = "GCN ROM (*.nkit.iso; *.iso; *.gcm) | *.nkit.iso; *.iso; *.gcm";
+                                dialog.Filter = "GCN ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 break;
                         }
                     }
@@ -1275,7 +1309,26 @@ namespace UWUVCI_AIO_WPF
                 DialogResult res = dialog.ShowDialog();
                 if(res == DialogResult.OK)
                 {
+                    if (dialog.FileName.ToLower().Contains(".gcz"))
+                    {
+                        Custom_Message cm1 = new Custom_Message("Information", "Using a GameCube GCZ Nkit for a Wii Inject or vice versa will break things.\nYou will not be able to grab the BootImages or GameName using this type of ROM. ");
+                        try
+                        {
+                            cm1.Owner = mw;
+                        }catch(Exception e)
+                        {
+
+                        }
+                        cm1.ShowDialog();
+                    }
                     ret = dialog.FileName;
+                }
+                else
+                {
+                    if (dialog.Filter.Contains("BootImages") || dialog.Filter.Contains("BootSound"))
+                    {
+                        ret = "";
+                    }
                 }
             }
             return ret;
@@ -2215,10 +2268,15 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
+            List<string> repoids = new List<string>();
             string[] ext = { "png"};
             if (CheckForInternetConnectionWOWarning())
             {
-                foreach(var e in ext)
+                repoids.Add(SystemType + repoid);
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
+                foreach (var e in ext)
                 {
                     if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                     {
@@ -2268,9 +2326,9 @@ namespace UWUVCI_AIO_WPF
                         break;
                     }
                 }
-                
-               
 
+
+                checkForAdditionalFiles(GameConsoles.GBA, repoids);
 
 
             }
@@ -2299,8 +2357,13 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
             string[] ext = { "png" };
+            List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
+                repoids.Add(SystemType + repoid);
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
                 foreach (var e in ext)
                 {
                     if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
@@ -2347,7 +2410,7 @@ namespace UWUVCI_AIO_WPF
                         img.ShowDialog(); break;
                     }
                 }
-
+                checkForAdditionalFiles(GameConsoles.NDS, repoids);
 
             }
 
@@ -2358,6 +2421,7 @@ namespace UWUVCI_AIO_WPF
             string repoid = "";
             string SystemType = "n64/";
             IMG_Message img = null;
+            List<string> repoids = new List<string>();
             using (var fs = new FileStream(rom,
                                  FileMode.Open,
                                  FileAccess.Read))
@@ -2377,6 +2441,8 @@ namespace UWUVCI_AIO_WPF
             string[] ext = { "png" };
             if (CheckForInternetConnectionWOWarning())
             {
+                repoids.Add(SystemType + repoid);
+                repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
                 foreach (var e in ext)
                 {
 
@@ -2478,8 +2544,11 @@ namespace UWUVCI_AIO_WPF
                         }
                     }
                 }
+
+
+                checkForAdditionalFiles(GameConsoles.N64, repoids);
                 
-                
+
             }
 
         }
@@ -2508,6 +2577,7 @@ namespace UWUVCI_AIO_WPF
                     char TempChar;
                     //WBFS Check
                     string[] ext = { "png" };
+                    List<string> repoids = new List<string>();
                     if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
                     {
 
@@ -2524,71 +2594,10 @@ namespace UWUVCI_AIO_WPF
                         
                         if (CheckForInternetConnectionWOWarning())
                         {
-                            foreach(var e in ext)
-                            {
-                                if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
-                                {
-                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
-                                    try
-                                    {
-                                        img.Owner = mw;
-                                    }
-                                    catch (Exception) { }
-                                    img.ShowDialog(); break;
-                                }
-                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
-                                {
-                                    repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
-                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
-                                    try
-                                    {
-                                        img.Owner = mw;
-                                    }
-                                    catch (Exception) { }
-                                    img.ShowDialog(); break;
-                                }
-                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
-                                {
-                                    repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
-                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
-                                    try
-                                    {
-                                        img.Owner = mw;
-                                    }
-                                    catch (Exception) { }
-                                    img.ShowDialog(); break;
-                                }
-                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
-                                {
-                                    repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
-                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
-                                    try
-                                    {
-                                        img.Owner = mw;
-                                    }
-                                    catch (Exception) { }
-                                    img.ShowDialog(); break;
-                                }
-                            }
-                            
-                        }
-                    }
-                    else
-                    {
-
-
-                        string repoid = "";
-                        reader.BaseStream.Position = 0x18;
-
-                        reader.BaseStream.Position = 0x20;
-                        while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
-                        reader.BaseStream.Position = 0x00;
-                            while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
-                            repoid = TempString;
-                        
-                        
-                        if (CheckForInternetConnectionWOWarning())
-                        {
+                            repoids.Add(SystemType + repoid);
+                            repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
+                            repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
+                            repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
                             foreach (var e in ext)
                             {
                                 if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
@@ -2635,6 +2644,93 @@ namespace UWUVCI_AIO_WPF
                                     img.ShowDialog(); break;
                                 }
                             }
+                            if (test == GameConsoles.GCN)
+                            {
+                                checkForAdditionalFiles(GameConsoles.GCN, repoids);
+                            }
+                            else
+                            {
+                                checkForAdditionalFiles(GameConsoles.WII, repoids);
+                            }
+                        }
+                    }
+                    else
+                    {
+                       
+
+                        string repoid = "";
+                        reader.BaseStream.Position = 0x18;
+
+                        reader.BaseStream.Position = 0x20;
+                        while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
+                        reader.BaseStream.Position = 0x00;
+                            while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
+                            repoid = TempString;
+                        
+                        
+                        if (CheckForInternetConnectionWOWarning())
+                        {
+                            repoids.Add(SystemType + repoid);
+                            repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
+                            repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
+                            repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
+                            foreach (var e in ext)
+                            {
+                               
+
+                                if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                                {
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
+                                }
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
+                                {
+                                    repoid = repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
+                                }
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
+                                {
+                                    repoid = repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
+                                }
+                                else if (RemoteFileExists(linkbase + SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2) + $"/iconTex.{e}") == true)
+                                {
+                                    repoid = repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2);
+                                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                                    try
+                                    {
+                                        img.Owner = mw;
+                                    }
+                                    catch (Exception) { }
+                                    img.ShowDialog(); break;
+                                }
+                            }
+                            if(test == GameConsoles.GCN)
+                            {
+                                checkForAdditionalFiles(GameConsoles.GCN, repoids);
+                            }
+                            else
+                            {
+                                checkForAdditionalFiles(GameConsoles.WII, repoids);
+                            }
+                            
                         }
 
                     }
@@ -2648,7 +2744,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
-                ret = "";
+                
             }
            
             
@@ -2690,6 +2786,109 @@ namespace UWUVCI_AIO_WPF
                 
                 
                 return false;
+            }
+        }
+        private void checkForAdditionalFiles(GameConsoles console, List<string> repoids)
+        {
+            if (!Directory.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
+            {
+                Directory.CreateDirectory(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
+            }
+            bool ini = false;
+            bool btsnd = false;
+            string inip = "";
+            string btsndp = "";
+            string exten = "";
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            if (console == GameConsoles.N64)
+            {
+                foreach(string repoid in repoids)
+                {
+                    if (RemoteFileExists(linkbase + repoid + "/game.ini"))
+                    {
+                        ini = true;
+                        inip = linkbase + repoid + "/game.ini";
+                        break;
+                    }
+
+                }
+               
+            }
+            string[] ext = { "btsnd" };
+            foreach (var e in ext)
+            {   foreach(string repoid in repoids)
+                {
+                    if (RemoteFileExists(linkbase + repoid + "/BootSound." + e))
+                    {
+                        btsnd = true;
+                        btsndp = linkbase + repoid + "/BootSound." + e;
+                        exten = e;
+                        break;
+                    }
+                    if (btsnd)
+                    {
+                        break;
+                    }
+                    
+                }
+               
+            }
+            if (ini || btsnd)
+            {
+                string extra = "There are more additional files found. Do you want to download those?";
+                if (ini && !btsnd) { extra = "There is an additional INI file available for download. Do you want to download it?"; }
+                if (!ini && btsnd) { extra = "There is an additional BootSound file available for download. Do you want to download it?"; }
+                if (ini && btsnd) { extra = "There is an adittional INI and BootSound file available for download. Do you want to download those?"; }
+              
+                Custom_Message cm = new Custom_Message("Found additional Files", extra);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception)
+                {
+
+                }
+                cm.ShowDialog();
+                if (addi)
+                {
+                    var client = new WebClient();
+                    if (ini)
+                    {
+                        client.DownloadFile(inip, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
+                        (Thing as N64Config).ini.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        GameConfiguration.N64Stuff.INIPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                    }
+                    if (btsnd)
+                    {
+                        client.DownloadFile(btsndp, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
+                        BootSound = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                        switch (console)
+                        {
+                            case GameConsoles.NDS:
+                                (Thing as OtherConfigs).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                break;
+                            case GameConsoles.GBA:
+                                (Thing as GBA).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                break;
+                            case GameConsoles.N64:
+                                (Thing as N64Config).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                break;
+                            case GameConsoles.WII:
+                                if (test == GameConsoles.GCN)
+                                {
+                                    (Thing as GCConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                }
+                                else
+                                {
+                                    (Thing as WiiConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                }
+                                break;
+
+                        }
+                    }
+                    addi = false;
+                }
             }
         }
         public string GetURL(string console)

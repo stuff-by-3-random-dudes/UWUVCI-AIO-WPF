@@ -147,5 +147,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             tbKey.Focus();
             tbKey.Select(0,0);
         }
+        private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+        }
+
+        private void wind_Closed(object sender, EventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+        }
     }
 }
