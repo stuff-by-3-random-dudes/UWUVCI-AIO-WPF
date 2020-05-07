@@ -142,5 +142,41 @@ namespace UWUVCI_AIO_WPF.Properties {
                 this["dont"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ndsw {
+            get {
+                return ((bool)(this["ndsw"]));
+            }
+            set {
+                this["ndsw"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool snesw {
+            get {
+                return ((bool)(this["snesw"]));
+            }
+            set {
+                this["snesw"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool gczw {
+            get {
+                return ((bool)(this["gczw"]));
+            }
+            set {
+                this["gczw"] = value;
+            }
+        }
     }
 }

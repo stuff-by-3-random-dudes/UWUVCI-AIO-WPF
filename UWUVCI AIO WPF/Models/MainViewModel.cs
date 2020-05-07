@@ -836,6 +836,7 @@ namespace UWUVCI_AIO_WPF
             GC = false;
             bootsound = "";
             NKITFLAG = false;
+            CBasePath = null;
             if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
         }
 
@@ -1214,23 +1215,30 @@ namespace UWUVCI_AIO_WPF
                 switch (GameConfiguration.Console)
                 {
                     case GameConsoles.NDS:
-                        cm = new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection");
+                        cm = new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection. ");
                         try
                         {
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        cm.ShowDialog();
+                        if (!Properties.Settings.Default.ndsw)
+                        {
+                            cm.ShowDialog();
+                        }
+                       
 
                         break;
                     case GameConsoles.SNES:
-                        cm = new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection");
+                        cm = new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection. ");
                         try
                         {
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        cm.ShowDialog();
+                        if (!Properties.Settings.Default.snesw)
+                        {
+                            cm.ShowDialog();
+                        }
 
                         break;
                 }
@@ -1319,7 +1327,10 @@ namespace UWUVCI_AIO_WPF
                         {
 
                         }
-                        cm1.ShowDialog();
+                        if (!Properties.Settings.Default.gczw)
+                        {
+                            cm1.ShowDialog();
+                        }
                     }
                     ret = dialog.FileName;
                 }

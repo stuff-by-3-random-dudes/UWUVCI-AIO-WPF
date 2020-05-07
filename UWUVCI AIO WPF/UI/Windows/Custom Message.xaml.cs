@@ -70,7 +70,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     
                 }
             }
-            if(title.Equals("Image Warning"))
+            if(title.Equals("Image Warning") || message.ToLower().Contains("dsi") ||message.ToLower().Contains("gcz") || message.ToLower().Contains("co-processor"))
             {
                 dont.Visibility = Visibility.Visible;
             }
@@ -107,7 +107,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if(dont.IsChecked == true)
             {
-                Properties.Settings.Default.dont = true;
+                if (Message.Content.ToString().ToLower().Contains("gcz"))
+                {
+                    Properties.Settings.Default.gczw = true;
+                }
+                else if (Message.Content.ToString().ToLower().Contains("dsi"))
+                {
+                    Properties.Settings.Default.ndsw = true;
+                }
+                else if (Message.Content.ToString().ToLower().Contains("co-processor"))
+                {
+                    Properties.Settings.Default.snesw = true;
+                }
+                else if (Message.Content.ToString().ToLower().Contains("images"))
+                {
+                    Properties.Settings.Default.dont = true;
+                }
+
                 Properties.Settings.Default.Save();
             }
             this.Close();
@@ -134,7 +150,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 cm.ShowDialog();
                 if (dont.IsChecked == true)
                 {
-                    Properties.Settings.Default.dont = true;
+                    if (Message.Content.ToString().ToLower().Contains("gcz"))
+                    {
+                        Properties.Settings.Default.gczw = true;
+                    }
+                    else if (Message.Content.ToString().ToLower().Contains("dsi"))
+                    {
+                        Properties.Settings.Default.ndsw = true;
+                    }
+                    else if (Message.Content.ToString().ToLower().Contains("co-processor"))
+                    {
+                        Properties.Settings.Default.snesw = true;
+                    }
+                    else if (Message.Content.ToString().ToLower().Contains("images"))
+                    {
+                        Properties.Settings.Default.dont = true;
+                    }
                     Properties.Settings.Default.Save();
                 }
                 this.Close();
@@ -159,7 +190,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             if (dont.IsChecked == true)
             {
-                Properties.Settings.Default.dont = true;
+                if (Message.Content.ToString().ToLower().Contains("gcz"))
+                {
+                    Properties.Settings.Default.gczw = true;
+                }
+                else if (Message.Content.ToString().ToLower().Contains("dsi"))
+                {
+                    Properties.Settings.Default.ndsw = true;
+                }
+                else if (Message.Content.ToString().ToLower().Contains("co-processor"))
+                {
+                    Properties.Settings.Default.snesw = true;
+                }
+                else if (Message.Content.ToString().ToLower().Contains("images"))
+                {
+                    Properties.Settings.Default.dont = true;
+                }
                 Properties.Settings.Default.Save();
             }
             this.Close();
