@@ -1293,7 +1293,7 @@ namespace UWUVCI_AIO_WPF
                                 
                                 break;
                             case GameConsoles.GCN:
-                                dialog.Filter = "GCN ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
+                                dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 break;
                         }
                     }

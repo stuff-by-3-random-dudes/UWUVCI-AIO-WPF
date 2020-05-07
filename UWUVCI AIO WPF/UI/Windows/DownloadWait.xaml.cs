@@ -113,12 +113,24 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+           
+            
+            
         }
 
         private void wind_Closed(object sender, EventArgs e)
         {
-            (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+            try
+            {
+                if ((FindResource("mvm") as MainViewModel).mw != null)
+                {
+                    (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+                }
+            }
+            catch (Exception s)
+            {
+
+            }
         }
     }
 }

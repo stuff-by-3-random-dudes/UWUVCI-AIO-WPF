@@ -830,7 +830,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (mvm.donttrim)
                 {
-                    if (mvm.gc2rom.Contains("nkit.iso"))
+                    if (mvm.gc2rom.Contains("nkit"))
                      {
                          using (Process wit = new Process())
                          {
@@ -843,42 +843,20 @@ namespace UWUVCI_AIO_WPF
                              wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
                              wit.Start();
                              wit.WaitForExit();
-                             if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                             if (!File.Exists(Path.Combine(toolsPath, "out(Disc 1).iso")))
                              {
                                  throw new Exception("nkit");
                              }
-                             File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                             File.Move(Path.Combine(toolsPath, "out(Disc 1).iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
 
                          }
                      }
                      else
                      {
-                        if (romPath.ToLower().Contains("gcz"))
-                        {
-                            //Convert to nkit.iso
-                            using (Process wit = new Process())
-                            {
-                                if (!mvm.debug)
-                                {
-
-                                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                                }
-                                wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
-                                wit.StartInfo.Arguments = $"\"{romPath}\"";
-                                wit.Start();
-                                wit.WaitForExit();
-                                if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                                {
-                                    throw new Exception("nkit");
-                                }
-                                File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-
-                            }
-                        }
-                        else
-                        {
+                        
+                        
                             File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-                        }
+                        
                         
                     }
                 }
@@ -897,11 +875,11 @@ namespace UWUVCI_AIO_WPF
                             wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
                             wit.Start();
                             wit.WaitForExit();
-                            if (!File.Exists(Path.Combine(toolsPath, "out.nkit.iso")))
+                            if (!File.Exists(Path.Combine(toolsPath, "out(Disc 1).nkit.iso")))
                             {
                                 throw new Exception("nkit");
                             }
-                            File.Move(Path.Combine(toolsPath, "out.nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                            File.Move(Path.Combine(toolsPath, "out(Disc 1).nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
 
                         }
                     }
@@ -921,11 +899,11 @@ namespace UWUVCI_AIO_WPF
                                 wit.StartInfo.Arguments = $"\"{romPath}\"";
                                 wit.Start();
                                 wit.WaitForExit();
-                                if (!File.Exists(Path.Combine(toolsPath, "out.nkit.iso")))
+                                if (!File.Exists(Path.Combine(toolsPath, "out(Disc 1).nkit.iso")))
                                 {
                                     throw new Exception("nkit");
                                 }
-                                File.Move(Path.Combine(toolsPath, "out.nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                                File.Move(Path.Combine(toolsPath, "out(Disc 1).nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
 
                             }
                         }
