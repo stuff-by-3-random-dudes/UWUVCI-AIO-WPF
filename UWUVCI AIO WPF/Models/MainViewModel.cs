@@ -604,6 +604,7 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.TGAIco.ImgBin != null && GameConfiguration.TGAIco.ImgBin.Length > 0) backup.TGAIco.ImgPath = "Added via Config";
             if (GameConfiguration.N64Stuff.INIBin != null && GameConfiguration.N64Stuff.INIBin.Length > 0) backup.N64Stuff.INIPath = "Added via Config";
             if (GameConfiguration.GameName == "" || GameConfiguration.GameName == null) backup.GameName = "NoName";
+            GameConfiguration.Index = Index;
             CheckAndFixConfigFolder();
             string outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}.uwuvci";
             int i = 1;

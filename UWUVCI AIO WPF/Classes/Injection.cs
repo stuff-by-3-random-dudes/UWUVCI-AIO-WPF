@@ -1515,9 +1515,10 @@ namespace UWUVCI_AIO_WPF
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();
-            string ID = $"{random.Next(0x3000, 0x10000):X4}";
-            
-                XmlDocument doc = new XmlDocument();
+            string ID = $"{random.Next(0x3000, 0x10000):X4}{random.Next(0x3000, 0x10000):X4}";
+            string ID2 = $"{random.Next(0x3000, 0x10000):X4}";
+
+            XmlDocument doc = new XmlDocument();
                 try
                 {
                     doc.Load(metaXml);
@@ -1543,14 +1544,14 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID}";
+                        doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID2}";
                     }
                      if (index > 0)
                     {
                     doc.SelectSingleNode("menu/drc_use").InnerText = "65537";
                     }
-                doc.SelectSingleNode("menu/title_id").InnerText = $"0005000060{ID}00";
-                    doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID}";
+                doc.SelectSingleNode("menu/title_id").InnerText = $"00050002{ID}";
+                    doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID2}";
                     if (gameName != null && gameName != string.Empty)
                     {
                         doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName.Split(',')[0];
@@ -1577,8 +1578,10 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     doc.Load(appXml);
-                    doc.SelectSingleNode("app/title_id").InnerText = $"0005000060{ID}00";
-                    doc.SelectSingleNode("app/group_id").InnerText = $"0000{ID}";
+                doc.SelectSingleNode("app/title_id").InnerText = $"00050002{ID}";
+                //doc.SelectSingleNode("app/title_id").InnerText = $"0005000247414645";
+                
+                    doc.SelectSingleNode("app/group_id").InnerText = $"0000{ID2}";
                     doc.Save(appXml);
                 }
                 catch (NullReferenceException)

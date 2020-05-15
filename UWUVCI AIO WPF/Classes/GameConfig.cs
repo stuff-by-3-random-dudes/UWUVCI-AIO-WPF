@@ -24,14 +24,16 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-       
 
+        public int Index;
 
 
         public string GameName { get; set; }
 
 
         public PNGTGA TGAIco { get; set; } = new PNGTGA();
+
+
 
         public PNGTGA TGADrc { get; set; } = new PNGTGA();
         public PNGTGA TGATv { get; set; } = new PNGTGA();

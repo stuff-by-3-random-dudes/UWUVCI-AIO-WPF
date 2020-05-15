@@ -353,7 +353,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 logIMG.Visibility = Visibility.Visible;
             }
             gn.Text = mvm.GameConfiguration.GameName;
-
+            mvm.Index = mvm.GameConfiguration.Index;
+            gamepad.SelectedIndex = mvm.GameConfiguration.Index;
         }
         private bool CheckIfNull(string s)
         {
@@ -388,6 +389,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void gamepad_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            mvm.Index = gamepad.SelectedIndex;
             if (gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
             {
                 LR.IsEnabled = true;
