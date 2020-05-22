@@ -1269,11 +1269,11 @@ namespace UWUVCI_AIO_WPF
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
             Regex reg = new Regex("[^a-zA-Z0-9 é -]");
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName,"")}");
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName,"")} [{mvvm.prodcode}]");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName, "")}_{i}");
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
                 i++;
             }
 
@@ -1516,8 +1516,9 @@ namespace UWUVCI_AIO_WPF
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();
             string ID = $"{random.Next(0x3000, 0x10000):X4}{random.Next(0x3000, 0x10000):X4}";
-            string ID2 = $"{random.Next(0x3000, 0x10000):X4}";
 
+            string ID2 = $"{random.Next(0x3000, 0x10000):X4}";
+            mvvm.prodcode = ID2;
             XmlDocument doc = new XmlDocument();
                 try
                 {

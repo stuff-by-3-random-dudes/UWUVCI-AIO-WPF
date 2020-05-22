@@ -91,7 +91,9 @@ namespace UWUVCI_AIO_WPF
             mvm.Index = -1;
             mvm.donttrim = false;
             mvm.NKITFLAG = false;
+            mvm.prodcode = "";
             mvm.isDoneMW();
+
             switch ((sender as ListView).SelectedIndex)
             {
                 case 0:

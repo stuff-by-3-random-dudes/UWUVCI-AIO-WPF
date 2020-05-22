@@ -50,6 +50,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                   
                 }
             }
+
         }
 
         public EnterKey(int i)
@@ -70,7 +71,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Key.Text += "1";
             }
-           
+            or.Visibility = Visibility.Hidden;
+            otp.Visibility = Visibility.Hidden;
         }
 
 
@@ -155,6 +157,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void wind_Closed(object sender, EventArgs e)
         {
             (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            tbKey.Text = (FindResource("mvm") as MainViewModel).ReadCkeyFromOtp();
         }
     }
 }

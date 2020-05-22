@@ -33,6 +33,7 @@ namespace UWUVCI_AIO_WPF
 {
     public class MainViewModel : BaseModel
     {
+        public string prodcode = "";
         //public GameConfig GameConfiguration { get; set; }
         private GameConfig gameConfiguration = new GameConfig();
 
@@ -203,7 +204,33 @@ namespace UWUVCI_AIO_WPF
 
         private List<GameBases> lTG16 = new List<GameBases>();
 
+        public string ReadCkeyFromOtp()
+        {   string ret = "";
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                dialog.Filter = "OTP.bin | otp.bin";
+                DialogResult res = dialog.ShowDialog();
+                if (res == DialogResult.OK)
+                {
+                    var filepath = dialog.FileName;
+                    using (var fs = new FileStream(filepath,
+                                 FileMode.Open,
+                                 FileAccess.Read))
+                    {
+                        byte[] test = new byte[16];
+                        fs.Seek(0xE0, SeekOrigin.Begin);
 
+                        fs.Read(test, 0, 16);
+                        fs.Close();
+                        foreach(var b in test)
+                        {
+                            ret += string.Format("{0:X2}", b);
+                        }
+                    }
+                }
+                }
+            return ret;
+            }
 
         public List<GameBases> LTG16
         {
@@ -838,6 +865,7 @@ namespace UWUVCI_AIO_WPF
             bootsound = "";
             NKITFLAG = false;
             CBasePath = null;
+            prodcode = "";
             if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
         }
 
