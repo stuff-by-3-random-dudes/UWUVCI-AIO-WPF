@@ -444,7 +444,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TDRSHOW t = new TDRSHOW(tv.Text, true);
+            TDRSHOW t = new TDRSHOW(tv.Text, false);
             try
             {
                 t.Owner = mvm.mw;
