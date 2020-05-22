@@ -23,10 +23,10 @@ namespace UWUVCI_AIO_WPF
 			Process[] pname = Process.GetProcessesByName("UWUVCI AIO");
 			if (pname.Length > 1)
 			{
-				
 				t.Elapsed += KillProg;
 				t.Start();
-				Custom_Message cm = new Custom_Message("Another Instance Running", "You already got another instance of UWUVCI AIO running.\nThis instance of UWUVCI will terminate in 5 seconds.");
+				Custom_Message cm = new Custom_Message("Another Instance Running", "You already got another instance of UWUVCI AIO running.\nThis instance will terminate in 5 seconds.");
+
 				cm.ShowDialog();
 				KillProg(null, null);
 			}
@@ -37,7 +37,8 @@ namespace UWUVCI_AIO_WPF
 				if (witdh < 1150 || height < 700)
 				{
 					t.Elapsed += KillProg;
-					t.Start(); Custom_Message cm = new Custom_Message("Resolution not supported", "Your screen resolution is not supported, please use a resolution of atleast 1152x864\nUWUVCI will terminate in 5 seconds.");
+					t.Start();
+					Custom_Message cm = new Custom_Message("Resolution not supported", "Your screen resolution is not supported, please use a resolution of atleast 1152x864\nThis instance will terminate in 5 seconds.");
 					cm.ShowDialog();
 					KillProg(null, null);
 				}

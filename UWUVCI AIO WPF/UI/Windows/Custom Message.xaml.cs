@@ -74,7 +74,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 dont.Visibility = Visibility.Visible;
             }
-            
+            if (title.ToLower().Contains("instance"))
+            {
+               
+            }
+        }
+
+        public void CloseProgram(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(1);
         }
         public Custom_Message(string title, string message, string Path)
         {
@@ -225,12 +233,30 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+
+            try
+            {
+                if((FindResource("mvm") as MainViewModel).mw != null)
+                (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+            }
+            catch (Exception s) 
+            { 
+            }
+
+            
         }
 
         private void wind_Closed(object sender, EventArgs e)
         {
-            (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+            try
+            {
+                if ((FindResource("mvm") as MainViewModel).mw != null)
+                    (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+            }
+            catch (Exception s)
+            {
+            }
+
         }
     }
 }
