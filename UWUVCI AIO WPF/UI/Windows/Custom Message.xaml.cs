@@ -67,7 +67,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     add = true;
                     Reset.Content = "Yes";
-                    
+                    btnClose.Content = "No";
                 }
             }
             if(title.Equals("Image Warning") || message.ToLower().Contains("dsi") ||message.ToLower().Contains("gcz") || message.ToLower().Contains("co-processor"))
