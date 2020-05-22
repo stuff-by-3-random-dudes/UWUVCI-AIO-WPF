@@ -1043,14 +1043,14 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 dw.ShowDialog();
-                Custom_Message cm = new Custom_Message("Finished Update", "Finished Updating Tools! Restarting UWUVCI AIO");
+                Custom_Message cm = new Custom_Message("Finished Update", "Finished Updating Tools! Restarting UWUVCI AIO.");
                 try
                 {
                     cm.Owner = mw;
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
-                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                System.Windows.Forms.Application.Restart();
                 Environment.Exit(0);
             }
             
@@ -1085,10 +1085,7 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
             mw.Close();
-            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
-            Environment.Exit(0);
-
-
+            System.Windows.Forms.Application.Restart();
         }
         public void UpdateBases()
         {
@@ -1128,14 +1125,14 @@ namespace UWUVCI_AIO_WPF
                 }
                 dw.ShowDialog();
 
-                Custom_Message cm = new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO");
+                Custom_Message cm = new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO.");
                 try
                 {
                     cm.Owner = mw;
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
-                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                System.Windows.Forms.Application.Restart();
                 Environment.Exit(0);
             }
             
