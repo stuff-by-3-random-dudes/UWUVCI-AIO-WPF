@@ -2800,7 +2800,7 @@ namespace UWUVCI_AIO_WPF
             }
             catch
             {
-                Custom_Message cm = new Custom_Message("No Internet Connection", "To Download Tools, Bases or required Files you need to be connected to the Internet");
+                Custom_Message cm = new Custom_Message("No Internet Connection", "To Download Tools, Bases or required Files you need to be connected to the Internet. The Program will now terminate.");
                 try
                 {
                     cm.Owner = mw;
@@ -2810,6 +2810,7 @@ namespace UWUVCI_AIO_WPF
 
                 catch (Exception) { }
                 cm.ShowDialog();
+                Environment.Exit(1);
                 return false;
             }
         }

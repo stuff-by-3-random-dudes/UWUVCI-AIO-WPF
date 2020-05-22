@@ -24,6 +24,7 @@ namespace UWUVCI_AIO_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        public bool move = true;
         public MainWindow()
         {
             InitializeComponent();
@@ -45,7 +46,7 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                if (e.ChangedButton == MouseButton.Left)
+                if (e.ChangedButton == MouseButton.Left && move)
                     this.DragMove();
             }
             catch (Exception)

@@ -108,8 +108,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     {
                         this.Visibility = Visibility.Hidden;
                         cm = new Custom_Message("Correct Key", "The entered CommonKey is correct!");
-                        cm.Owner = this;
+                        cm.Owner = this.Owner;
+                        (this.Owner as MainWindow).move = false;
                         cm.ShowDialog();
+                        (this.Owner as MainWindow).move = true;
                         this.Close();
                         mvm.ArePathsSet();
                     }
@@ -128,8 +130,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     {
                         this.Visibility = Visibility.Hidden;
                         cm =  new Custom_Message("Correct Key", "The entered TitleKey is correct!");
-                        cm.Owner = this;
+                        cm.Owner = this.Owner;
+                        (this.Owner as MainWindow).move = false;
                         cm.ShowDialog();
+                        (this.Owner as MainWindow).move = true;
                         this.Close();
                     }
                     else
