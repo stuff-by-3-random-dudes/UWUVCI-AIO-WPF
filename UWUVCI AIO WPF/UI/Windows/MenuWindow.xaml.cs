@@ -93,6 +93,7 @@ namespace UWUVCI_AIO_WPF
             mvm.donttrim = false;
             mvm.NKITFLAG = false;
             mvm.prodcode = "";
+            mvm.foldername = "";
             mvm.isDoneMW();
 
             switch ((sender as ListView).SelectedIndex)

@@ -88,6 +88,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -136,6 +137,9 @@
     </Compile>
     <Compile Include="UI\Windows\Custom Message.xaml.cs">
       <DependentUpon>Custom Message.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\DownloadWait - Kopieren.xaml.cs">
+      <DependentUpon>DownloadWait - Kopieren.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\DownloadWait.xaml.cs">
       <DependentUpon>DownloadWait.xaml</DependentUpon>
@@ -228,6 +232,10 @@
     <Page Include="UI\Windows\Custom Message.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\DownloadWait - Kopieren.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\DownloadWait.xaml">
       <SubType>Designer</SubType>

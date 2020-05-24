@@ -1270,13 +1270,15 @@ namespace UWUVCI_AIO_WPF
             Regex reg = new Regex("[^a-zA-Z0-9 é -]");
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
             string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName,"")} [{mvvm.prodcode}]");
+            mvvm.foldername = $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
                 outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
+                mvvm.foldername = $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
                 i++;
             }
-
+            
             DirectoryCopy(baseRomPath,outputPath, true);
 
             Custom_Message cm = new Custom_Message("Injection Complete", $"Config will stay filled, choose a Console again to clear it.\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
@@ -1301,12 +1303,15 @@ namespace UWUVCI_AIO_WPF
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
             string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"")}");
+            mvvm.foldername = $"[WUP]{reg.Replace(gameName, "")}";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
                 outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"")}_{i}");
+                mvvm.foldername = $"[WUP]{reg.Replace(gameName, "")}_{i}";
                 i++;
             }
+            
             mvm.Progress = 40;
             mvm.msg = "Packing...";
             using (Process cnuspacker = new Process())

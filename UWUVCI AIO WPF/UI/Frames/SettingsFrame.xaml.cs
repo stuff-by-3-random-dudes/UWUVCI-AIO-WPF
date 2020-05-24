@@ -118,5 +118,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             Properties.Settings.Default.gczw = false;
             Properties.Settings.Default.Save();
         }
+
+        private void Button_Click_11(object sender, RoutedEventArgs e)
+        {
+            new SDSetup().Show();
+        }
     }
 }

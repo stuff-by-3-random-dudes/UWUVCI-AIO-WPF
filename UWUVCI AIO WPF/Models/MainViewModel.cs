@@ -328,6 +328,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public string foldername = "";
 
         public string msg
         {
@@ -867,6 +868,7 @@ namespace UWUVCI_AIO_WPF
             CBasePath = null;
             prodcode = "";
             if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
+            foldername = "";
         }
 
         DownloadWait Injectwait;
