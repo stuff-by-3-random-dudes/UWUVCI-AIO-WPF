@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Management;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,7 +32,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         string driveletter = "";
         public SDSetup()
         {
-
+            gc = true;
+            path = @"F:\stuffby3randomdudes\UWUVCI AIO WPF\UWUVCI AIO WPF\bin\Debug\InjectedGames\[WUP]AnimalCrossing_10";
             InitializeComponent();
             Task.Run(() => checkfornewinput());
             Task.Run(() => checkfornewoutput());
@@ -185,15 +188,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 SetupNintendont();
             }
             CopyInject();
+            status.Content = "Done with Setup!";
         }
 
         private void SetupNintendont()
         {
-
+            status.Content = "Downloading Nintendon't...";
+            //https://dl.dropboxusercontent.com/cd/0/get/A4ZX24rC4DlmPAYDrj7mz9WIlmmnIu9YKh1IabTXG-l0Ftq4Ib-fyG8QYspNdv6lCOcu920AbyIdo8l2dNtoW2xydD3ycH2_B06pxATB-ROj27wDdJ0nls9gtSYmjSxMmq4/file?_download_id=8358710324855012068395852250129613778887389747613992530573453088&_notify_domain=www.dropbox.com&dl=1
+            if (Directory.Exists(@"bin\tempsd"))
+            {
+                Directory.Delete(@"bin\tempsd", true);
+            }
+            Directory.CreateDirectory(@"bin\tempsd");
+            var client = new WebClient();
+            client.DownloadFile("https://dl.dropboxusercontent.com/cd/0/get/A4ZX24rC4DlmPAYDrj7mz9WIlmmnIu9YKh1IabTXG-l0Ftq4Ib-fyG8QYspNdv6lCOcu920AbyIdo8l2dNtoW2xydD3ycH2_B06pxATB-ROj27wDdJ0nls9gtSYmjSxMmq4/file?_download_id=8358710324855012068395852250129613778887389747613992530573453088&_notify_domain=www.dropbox.com&dl=1", @"bin\tempsd\nintendont.zip");
+            using(FileStream s = new FileStream(@"bin\tempsd\nintendont.zip", FileMode.Open, FileAccess.ReadWrite))
+            {
+                ZipArchive z = new ZipArchive(s);
+                z.ExtractToDirectory(@"bin\tempsd\nintendont");
+                s.Close();
+            }
+            status.Content = "Setting up Nintendon't...";
+            if (!File.Exists(driveletter+ "\\nincfg.bin"))
+            {
+                File.Copy(@"bin\tempsd\nintendont\nincfg.bin", driveletter + @"\nincfg.bin");
+            }
+            DirectoryCopy(@"bin\tempsd\nintendont\apps", driveletter + "\\apps", true);
+            DirectoryCopy(@"bin\tempsd\nintendont\games", driveletter + "\\games", true);
+            DirectoryCopy(@"bin\tempsd\nintendont\codes", driveletter + "\\codes", true);
+            Directory.Delete(@"bin\tempsd", true);
         }
 
         private void CopyInject()
         {
+            status.Content = "Copying Injected Game...";
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             if(path.Contains("[LOADIINE]") && !path.Contains("[WUP]"))
             {
@@ -226,7 +254,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             // Get the files in the directory and copy them to the new location.
             foreach (FileInfo file in dir.EnumerateFiles())
             {
-                file.CopyTo(System.IO.Path.Combine(destDirName, file.Name), false);
+                file.CopyTo(System.IO.Path.Combine(destDirName, file.Name), true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.

@@ -26,7 +26,10 @@
         <ComboBox HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Width="313" Name="sd" Foreground="Black" SelectionChanged="sd_SelectionChanged"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,61,0,0" TextWrapping="Wrap" Text="Choose your SD Card:" VerticalAlignment="Top" Foreground="Black" />
         <Button Content="Setup SD Card" HorizontalAlignment="Left" Margin="199,129,0,0" VerticalAlignment="Top" Width="124" Height="28" IsEnabled="False" Name="setup" Click="setup_Click"/>
-        <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="175" VerticalAlignment="Top" Width="337"/>
+        <Label Content="" Margin="10,131,263,-131" Name="status"/>
+        <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="175" VerticalAlignment="Top" Width="337">
+
+        </Border>
 
     </Grid>
 </Window>
