@@ -16,6 +16,8 @@ using UWUVCI_AIO_WPF.UI.Frames;
 
 using GameBaseClassLibrary;
 using UWUVCI_AIO_WPF.UI.Frames.Path;
+using System.IO;
+using NAudio.Wave;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -24,6 +26,113 @@ namespace UWUVCI_AIO_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly List<Key> _konamiCode = new List<Key>
+    {
+        Key.Up, Key.Up,
+        Key.Down, Key.Down,
+        Key.Left, Key.Right,
+        Key.Left, Key.Right,
+        Key.B, Key.A,
+        Key.Enter
+    };
+
+        public static byte[] StreamToBytes(System.IO.Stream stream)
+        {
+            long originalPosition = 0;
+
+            if (stream.CanSeek)
+            {
+                originalPosition = stream.Position;
+                stream.Position = 0;
+            }
+
+            try
+            {
+                byte[] readBuffer = new byte[4096];
+
+                int totalBytesRead = 0;
+                int bytesRead;
+
+                while ((bytesRead = stream.Read(readBuffer, totalBytesRead, readBuffer.Length - totalBytesRead)) > 0)
+                {
+                    totalBytesRead += bytesRead;
+
+                    if (totalBytesRead == readBuffer.Length)
+                    {
+                        int nextByte = stream.ReadByte();
+                        if (nextByte != -1)
+                        {
+                            byte[] temp = new byte[readBuffer.Length * 2];
+                            Buffer.BlockCopy(readBuffer, 0, temp, 0, readBuffer.Length);
+                            Buffer.SetByte(temp, totalBytesRead, (byte)nextByte);
+                            readBuffer = temp;
+                            totalBytesRead++;
+                        }
+                    }
+                }
+
+                byte[] buffer = readBuffer;
+                if (readBuffer.Length != totalBytesRead)
+                {
+                    buffer = new byte[totalBytesRead];
+                    Buffer.BlockCopy(readBuffer, 0, buffer, 0, totalBytesRead);
+                }
+                return buffer;
+            }
+            finally
+            {
+                if (stream.CanSeek)
+                {
+                    stream.Position = originalPosition;
+                }
+            }
+        }
+        static MemoryStream sound = new MemoryStream(Properties.Resources.sound);
+        private int _match;
+        static MemoryStream ms = new MemoryStream(StreamToBytes(sound));
+
+        static WaveStream ws = new Mp3FileReader(ms);
+
+        static WaveOutEvent output = new WaveOutEvent();
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == _konamiCode[_match])
+            {
+                if (++_match >= _konamiCode.Count)
+                {
+                    _match = 0;
+
+
+                    output.PlaybackStopped += new EventHandler<StoppedEventArgs>(Media_Ended);
+                    output.Init(ws);
+                    output.Play();
+                }
+            }
+            else if (_match > 0 && e.Key != _konamiCode[_match])
+            {
+                _match = 0;
+            }
+        }
+        public static void Media_Ended(object sender, EventArgs e)
+        {
+            if (output.PlaybackState == PlaybackState.Stopped)
+            {
+                if (ms != null)
+                {
+                    ms.Close();
+                    ms.Flush();
+                }
+                if (ws != null)
+                {
+                    ws.Close();
+                }
+                if (output != null)
+                {
+                    output.Dispose();
+                }
+            }
+        }
+
         public bool move = true;
         public MainWindow()
         {

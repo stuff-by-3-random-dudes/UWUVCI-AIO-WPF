@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="UWUVCI AIO" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize" Height="670">
+        Title="UWUVCI AIO" Width="1194.525" WindowStyle="None" WindowStartupLocation="CenterScreen" Foreground="White" MouseDown="MoveWindow" Background="LightGray" ResizeMode="NoResize" Height="670" KeyUp="Window_KeyUp">
 
 
 

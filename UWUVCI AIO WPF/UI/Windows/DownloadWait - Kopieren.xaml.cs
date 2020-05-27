@@ -32,8 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         string driveletter = "";
         public SDSetup()
         {
-            gc = true;
-            path = @"F:\stuffby3randomdudes\UWUVCI AIO WPF\UWUVCI AIO WPF\bin\Debug\InjectedGames\[WUP]AnimalCrossing_10";
+          
             InitializeComponent();
             Task.Run(() => checkfornewinput());
             Task.Run(() => checkfornewoutput());
