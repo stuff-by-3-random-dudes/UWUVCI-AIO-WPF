@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
@@ -19,7 +20,42 @@ namespace UWUVCI_AIO_WPF
 		Timer t = new Timer(5000);
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-			
+
+			if (Directory.Exists(@"custom"))
+			{
+				if (File.Exists(@"custom\main.dol"))
+				{
+					if (File.Exists(@"bin\Tools\nintendont.dol"))
+					{
+						File.Delete(@"bin\Tools\nintendont.dol");
+						File.Copy(@"custom\main.dol", @"bin\Tools\nintendont.dol");
+					}
+					else
+					{
+						if(!Directory.Exists(@"bin"))
+						{
+							Directory.CreateDirectory(@"bin");
+						}
+						else if(!Directory.Exists(@"bin\Tools"))
+						{
+							Directory.CreateDirectory(@"bin\Tools");
+						}
+						File.Copy(@"custom\main.dol", @"bin\Tools\nintendont.dol");
+					}
+
+					if (File.Exists(@"bin\Tools\nintendont_force.dol"))
+					{
+						File.Delete(@"bin\Tools\nintendont_force.dol");
+						File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol");
+					}
+					else
+					{
+						File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol");
+					}
+				}
+			}
+
+
 			Process[] pname = Process.GetProcessesByName("UWUVCI AIO");
 			if (pname.Length > 1)
 			{

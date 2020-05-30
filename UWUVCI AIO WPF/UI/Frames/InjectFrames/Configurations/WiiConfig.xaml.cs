@@ -662,6 +662,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 pal.IsEnabled = false;
                 ntsc.IsEnabled = false;
                 mvm.donttrim = true;
+                mvm.jppatch = false;
                 List<string> gpEmu = new List<string>();
                 gpEmu.Add("None");
                 gpEmu.Add("Classic Controller");
@@ -670,6 +671,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 gpEmu.Add("[NEEDS TRIMMING] Force Classic Controller");
                 gpEmu.Add("Force No Classic Controller");
                 gamepad.ItemsSource = gpEmu;
+                jppatch.IsEnabled = false;
             }
             else
             {
@@ -677,7 +679,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 pal.IsEnabled = true;
                 ntsc.IsEnabled = true;
                 mvm.donttrim = false;
-               List<string> gpEmu = new List<string>();
+                jppatch.IsEnabled = true;
+                List<string> gpEmu = new List<string>();
                 gpEmu.Add("None");
                 gpEmu.Add("Classic Controller");
                 gpEmu.Add("Horizontal WiiMote");
@@ -688,6 +691,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 gamepad.ItemsSource = gpEmu;
             }
             
+        }
+
+        private void jppatch_Click(object sender, RoutedEventArgs e)
+        {
+            if (mvm.jppatch)
+            {
+                mvm.jppatch = false;
+            }
+            else
+            {
+                mvm.jppatch = true;
+            }
         }
     }
 }

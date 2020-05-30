@@ -57,6 +57,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public bool jppatch = false;
         
 
         private GameBases gbTemp;

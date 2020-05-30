@@ -7,24 +7,40 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
+using MessageBox = System.Windows.MessageBox;
 
 namespace UWUVCI_AIO_WPF
 {
-    
+   
     internal static class Injection
     {
-      
-
+        [DllImport("User32.dll")]
+        static extern int SetForegroundWindow(IntPtr point);
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(
+    int hWnd,     // handle to destination window
+    uint Msg,      // message
+    long wParam,   // first message parameter
+    long lParam    // second message parameter
+  );
+        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool PostMessage(IntPtr hWnd, int Msg, System.Windows.Forms.Keys wParam, int lParam);
+        private static Int32 WM_KEYDOWN = 0x100; private static Int32 WM_KEYUP = 0x101;
         private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "temp");
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
         private static readonly string imgPath = Path.Combine(tempPath, "img");
@@ -132,6 +148,7 @@ namespace UWUVCI_AIO_WPF
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
+            
             Clean();
             long gamesize = new FileInfo(RomPath).Length;
             var drive = new DriveInfo(tempPath);
@@ -218,7 +235,7 @@ namespace UWUVCI_AIO_WPF
                 
                 code = null;
                 if (e.Message.Contains("Images")){
-                   
+
                     MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (e.Message.Contains("Size"))
@@ -264,7 +281,10 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-
+        public static void SendKey(IntPtr hWnd, System.Windows.Forms.Keys key)
+        {
+            PostMessage(hWnd, WM_KEYUP, key, 0);
+        }
         static void bootsound(string sound)
         {
             FileInfo soundFile = new FileInfo(sound);
@@ -393,6 +413,7 @@ namespace UWUVCI_AIO_WPF
                     break;
             }
         }
+        
         private static void WII(string romPath, MainViewModel mvm)
         {
             string savedir = Directory.GetCurrentDirectory();
@@ -482,8 +503,25 @@ namespace UWUVCI_AIO_WPF
                     }
 
                 }
+                if (mvm.jppatch)
+                {
+                    
+                    mvm.msg = "Language Patching ROM...";
+                    using (BinaryWriter writer = new BinaryWriter(new FileStream(Path.Combine(tempPath, "TEMP", "sys", "main.dol"), FileMode.Open)))
+                    {
+                        byte[] stuff = new byte[] { 0x38, 0x60};
+                        writer.Seek(0x4CBDAC, SeekOrigin.Begin);
+                        writer.Write(stuff);
+                        writer.Seek(0x4CBDAF, SeekOrigin.Begin);
+                        stuff = new byte[] { 0x00 };
+                        writer.Write(stuff);
+                        writer.Close();
+                    }
+                    mvm.Progress = 37;
+                }
                 if (mvm.Patch)
                 {
+                   
                     mvm.msg = "Video Patching ROM...";
                     using (Process vmc = new Process())
                     {
