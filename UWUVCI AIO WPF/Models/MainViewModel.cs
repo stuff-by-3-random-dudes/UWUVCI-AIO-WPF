@@ -246,6 +246,15 @@ namespace UWUVCI_AIO_WPF
             get { return lMSX; }
             set { lMSX = value; OnPropertyChanged(); }
         }
+
+        public void RemoveCreatedIMG()
+        {
+            if (Directory.Exists(@"bin\createdIMG"))
+            {
+                Directory.Delete(@"bin\createdIMG", true);
+            }
+        }
+
         private List<GameBases> lWii = new List<GameBases>();
 
         public void IsIsoNkit()
@@ -268,6 +277,26 @@ namespace UWUVCI_AIO_WPF
                 {
                     NKITFLAG = false;
                 }
+            }
+        }
+
+        public bool CheckTime(DateTime creationTime)
+        {
+            DateTime curr = DateTime.Now;
+            if(creationTime.Hour == curr.Hour || creationTime.Hour == curr.Hour - 1)
+            {
+                if(creationTime.Minute == curr.Minute || creationTime.Minute == curr.Minute - 2)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 

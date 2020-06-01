@@ -136,12 +136,48 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
-            if (!Settings.Default.dont)
+            /* if (!Settings.Default.dont)
+             {
+                 mvm.ImageWarning();
+             }
+             string path = mvm.GetFilePath(false, false);
+             if (!CheckIfNull(path))
+             {
+                 mvm.GameConfiguration.TGATv.ImgPath = path;
+                 mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
+                 tv.Text = path;
+                 tvIMG.Visibility = Visibility.Visible;
+             }
+             else
+             {
+                 if (path == "")
+                 {
+                     mvm.GameConfiguration.TGATv.ImgPath = null;
+                     tv.Text = "";
+                     tvIMG.Visibility = Visibility.Hidden;
+                 }
+             }*/
+            string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootTvTex.png");
+            ImageCreator ic;
+            
+                
+                    ic = new ImageCreator(cd, GameBaseClassLibrary.GameConsoles.TG16, "bootTvTex");
+                
+                
+               
+            
+
+
+            try
             {
-                mvm.ImageWarning();
+                ic.Owner = mvm.mw;
             }
-            string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path))
+            catch (Exception)
+            {
+
+            }
+            ic.ShowDialog();
+            if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
             {
                 mvm.GameConfiguration.TGATv.ImgPath = path;
                 mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
@@ -150,14 +186,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             else
             {
-                if (path == "")
-                {
-                    mvm.GameConfiguration.TGATv.ImgPath = null;
-                    tv.Text = "";
-                    tvIMG.Visibility = Visibility.Hidden;
-                }
+                mvm.GameConfiguration.TGATv.ImgPath = null;
+                tv.Text = "";
+                tvIMG.Visibility = Visibility.Hidden;
             }
-
         }
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)

@@ -138,7 +138,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
-            if (!Settings.Default.dont)
+            /*if (!Settings.Default.dont)
             {
                 mvm.ImageWarning();
             }
@@ -158,8 +158,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     tv.Text = "";
                     tvIMG.Visibility = Visibility.Hidden;
                 }
+            }*/
+            string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootTvTex.png");
+            ImageCreator ic = new ImageCreator(mvm.GameConfiguration.Console, "bootTvTex");
+            try
+            {
+                ic.Owner = mvm.mw;
             }
+            catch (Exception)
+            {
 
+            }
+            ic.ShowDialog();
+            if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
+            {
+                mvm.GameConfiguration.TGATv.ImgPath = path;
+                mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
+                tv.Text = path;
+                tvIMG.Visibility = Visibility.Visible;
+            }
         }
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)

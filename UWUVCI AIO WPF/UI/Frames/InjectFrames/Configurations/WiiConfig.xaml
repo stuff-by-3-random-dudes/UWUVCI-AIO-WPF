@@ -25,12 +25,8 @@
         <Label Content="Use GamePad as:" HorizontalAlignment="Left" Margin="6,113,0,0" VerticalAlignment="Top" FontSize="14"/>
         <CheckBox Content="Swap L/R and ZL/ZR" HorizontalAlignment="Left" Margin="506,142,0,0" VerticalAlignment="Top" Width="137" x:Name="LR" IsEnabled="False" IsChecked="False"/>
         <StackPanel Margin="10,20,34,436" Orientation="Horizontal">
-            <Label Content="Video Patch:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="90"/>
-            <RadioButton Name="vmcsmoll" Content="None" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" IsChecked="True" Click="RadioButton_Click_2" Width="77"/>
-            <RadioButton Name="ntsc" Content="NTSC To PAL" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click" Width="111" ToolTip="May not work with every Game"/>
-            <RadioButton Name="pal" Content="PAL To NTSC" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click_1" Width="110" ToolTip="May not work with every Game"/>
-            <CheckBox Content="JP Patch" Margin="0,5,0,31" Name="jppatch" Width="84" ToolTip="Allows playing JP Wii Games on non JP Consoles" Click="jppatch_Click"/>
-            <CheckBox Content="Disable Trim" Margin="0,5,0,31" x:Name="trimn" Click="trimn_Click" IsEnabled="False"/>
+            <ComboBox VerticalAlignment="Stretch" Width="120" Margin="0,0,0,25" Name="selectionDB" SelectionChanged="selectionDB_SelectionChanged"/>
+            <Label Content="    " HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" />
         </StackPanel>
         <TextBox materialDesign:HintAssist.Hint="BOOTSOUND (OPTIONAL)" ToolTip="Needs to be a RIFF WAVE file 48000khz and 16bit stereo." x:Name="sound" Text="{Binding BootSound}"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,365,157,101" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" TextChanged="sound_TextChanged"/>
         <Image HorizontalAlignment="Left" Height="35" Margin="452,191,0,0" VerticalAlignment="Top" Width="38" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/newcamera2.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden" />
@@ -41,5 +37,21 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,376,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click"/>
         <Label Content="Use | for 2 lines" HorizontalAlignment="Left" Margin="506,428,0,0" VerticalAlignment="Top" Width="127" HorizontalContentAlignment="Center" ToolTip="e.g. Wii|Sports"/>
         <Button Content="?" HorizontalAlignment="Left" Margin="600,19,0,0" Height="32" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_1" FontSize="22" Padding="0" />
+        <StackPanel Height="30" Margin="150,20,314,460" Orientation="Horizontal" Name="Extra" Visibility="Hidden">
+            <CheckBox Content="JP Patch" x:Name="jppatch" ToolTip="Allows playing JP Wii Games on non JP Consoles" Click="jppatch_Click" RenderTransformOrigin="-1.389,-3.87" Margin="0,6,16,6" Height="18" Width="72"/>
+            <CheckBox Content="Disable Trim" Margin="0,7,0,5" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="87"/>
+        </StackPanel>
+
+        <StackPanel Height="30" Margin="150,19,213,461" Orientation="Horizontal" Name="VideoMode" Visibility="Hidden">
+            <RadioButton x:Name="vmcsmoll" Content="None" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" IsChecked="True" Click="RadioButton_Click_2" Width="77" Margin="0,6,0,0"/>
+            <RadioButton x:Name="ntsc" Content="NTSC To PAL" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click" Width="111" ToolTip="May not work with every Game" Margin="0,6,0,0"/>
+            <RadioButton x:Name="pal" Content="PAL To NTSC" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click_1" Width="110" ToolTip="May not work with every Game" Margin="0,6,0,0"/>
+        </StackPanel>
+        <StackPanel Height="30" Margin="150,20,186,460" Orientation="Horizontal" x:Name="RegionFrii" Visibility="Hidden">
+            <RadioButton x:Name="RF_n" Content="None" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" IsChecked="True"  Width="77" Margin="0,6,0,0" ToolTip="Keep Original Game Region"/>
+            <RadioButton x:Name="RF_tp" Content="To PAL" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="82" ToolTip="Change Game Region to PAL" Margin="0,6,0,0"/>
+            <RadioButton x:Name="RF_tn" Content="To NTSC" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="85" ToolTip="Change Game Region to NTSC" Margin="0,6,0,0"/>
+            <RadioButton x:Name="RF_tj" Content="To JPN" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="82" ToolTip="Change Game Region to JPN" Margin="0,6,0,0"/>
+        </StackPanel>
     </Grid>
 </Page>

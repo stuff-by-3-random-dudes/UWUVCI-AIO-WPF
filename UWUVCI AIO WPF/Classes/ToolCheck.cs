@@ -52,7 +52,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "SOX.zip",
             "jpg2tga.exe",
             "bmp2tga.exe",
-            "ConvertToNKit.exe"
+            "ConvertToNKit.exe",
+            "wglp.exe",
+            "font.otf"
         };
 
         public static bool DoesToolsFolderExist()

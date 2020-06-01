@@ -121,7 +121,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            new SDSetup().Show();
+            ImageCreator ic = new ImageCreator(GameBaseClassLibrary.GameConsoles.SNES, "bootTvTex");
+            try
+            {
+                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            ic.ShowDialog();
         }
+
+        
     }
 }

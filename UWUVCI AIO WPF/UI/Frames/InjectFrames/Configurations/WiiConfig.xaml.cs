@@ -43,6 +43,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gamepad.ItemsSource = gpEmu;
             gamepad.SelectedIndex = 0;
             mvm.test = GameBaseClassLibrary.GameConsoles.WII;
+            List<string> selection = new List<string>();
+            selection.Add("Video Patches");
+            selection.Add("Region Patches");
+            selection.Add("Extras");
+            selectionDB.ItemsSource = selection;
+            selectionDB.SelectedIndex = 2;
         }
         public WiiConfig(GameConfig c)
         {
@@ -62,6 +68,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gamepad.ItemsSource = gpEmu;
             gamepad.SelectedIndex = 0;
             mvm.test = GameBaseClassLibrary.GameConsoles.WII;
+            List<string> selection = new List<string>();
+            selection.Add("Video Patches");
+            selection.Add("Region Patches");
+            selection.Add("Extras");
+            selectionDB.ItemsSource = selection;
+            selectionDB.SelectedIndex = 2;
         }
         public void Dispose()
         {
@@ -702,6 +714,28 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             else
             {
                 mvm.jppatch = true;
+            }
+        }
+
+        private void selectionDB_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (selectionDB.SelectedIndex)
+            {
+                case 0:
+                    VideoMode.Visibility = Visibility.Visible;
+                    RegionFrii.Visibility = Visibility.Hidden;
+                    Extra.Visibility = Visibility.Hidden;
+                    break;
+                case 1:
+                    VideoMode.Visibility = Visibility.Hidden;
+                    RegionFrii.Visibility = Visibility.Visible;
+                    Extra.Visibility = Visibility.Hidden;
+                    break;
+                case 2:
+                    VideoMode.Visibility = Visibility.Hidden;
+                    RegionFrii.Visibility = Visibility.Hidden;
+                    Extra.Visibility = Visibility.Visible;
+                    break;
             }
         }
     }

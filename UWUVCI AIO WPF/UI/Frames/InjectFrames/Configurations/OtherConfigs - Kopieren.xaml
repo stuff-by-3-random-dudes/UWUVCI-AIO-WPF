@@ -18,7 +18,7 @@
         <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,413,157,52" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" Name="gn" KeyUp="gn_KeyUp" MaxLength="250"/>
         <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,327,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
-        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,238,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,238,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,283,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>

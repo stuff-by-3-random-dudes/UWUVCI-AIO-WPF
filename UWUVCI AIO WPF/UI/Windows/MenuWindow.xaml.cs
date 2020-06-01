@@ -204,6 +204,7 @@ namespace UWUVCI_AIO_WPF
             mvm.prodcode = "";
             mvm.foldername = "";
             mvm.jppatch = false;
+            mvm.RemoveCreatedIMG();
             mvm.isDoneMW();
 
             switch ((sender as ListView).SelectedIndex)
