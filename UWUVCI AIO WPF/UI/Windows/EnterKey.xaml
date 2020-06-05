@@ -22,7 +22,7 @@
 
             <TextBox x:Name="tbKey" materialDesign:HintAssist.Hint="ENTER KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,40,15,90" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18"/>
         </StackPanel>
-        <Button Content="Read from otp.bin" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="152" Click="Button_Click_2" Name="otp"/>
+        <Button Content="Read from otp.bin" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="152" Click="Button_Click_2" Name="otp" Visibility="Hidden"/>
         <Label  HorizontalAlignment="Left" Height="100" Margin="7,92,0,-45" VerticalAlignment="Top" Name="or" FontSize="15"/>
 
 

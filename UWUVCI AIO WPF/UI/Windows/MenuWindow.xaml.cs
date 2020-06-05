@@ -204,6 +204,7 @@ namespace UWUVCI_AIO_WPF
             mvm.prodcode = "";
             mvm.foldername = "";
             mvm.jppatch = false;
+            mvm.GC = false;
             mvm.RemoveCreatedIMG();
             mvm.isDoneMW();
 

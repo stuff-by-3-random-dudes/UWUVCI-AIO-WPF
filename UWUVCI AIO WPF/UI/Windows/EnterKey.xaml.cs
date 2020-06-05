@@ -42,6 +42,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Key.Text = "CommonKey";
                 region.Text = "WIIU";
+                otp.Visibility = Visibility.Visible;
             }
             else
             {

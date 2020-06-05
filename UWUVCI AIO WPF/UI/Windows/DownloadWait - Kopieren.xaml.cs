@@ -179,49 +179,78 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             }
         }
-
+        DispatcherTimer dp = new DispatcherTimer();
+        
         private void setup_Click(object sender, RoutedEventArgs e)
         {
-            if (gc)
+            dp.Tick += Dp_Tick;
+            dp.Interval = TimeSpan.FromSeconds(1);
+            dp.Start();
+            Task.Run(() =>
+                 {
+
+                     if (gc)
+                     {
+                         SetupNintendont();
+                     }
+                     CopyInject();
+                 });
+            setup.IsEnabled = false;
+
+         
+            
+           
+            
+        }
+
+        private void Dp_Tick(object sender, EventArgs e)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            status.Content = mvm.msg;
+            if(mvm.msg == "Done with Setup!")
             {
-                SetupNintendont();
+                mvm.msg = "";
+                dp.Stop();
+                setup.IsEnabled = true;
+                setup.Click -= setup_Click;
+                setup.Click += Window_Close;
+                setup.Content = "Close";
             }
-            CopyInject();
-            status.Content = "Done with Setup!";
         }
 
         private void SetupNintendont()
         {
-            status.Content = "Downloading Nintendon't...";
-            //https://dl.dropboxusercontent.com/cd/0/get/A4ZX24rC4DlmPAYDrj7mz9WIlmmnIu9YKh1IabTXG-l0Ftq4Ib-fyG8QYspNdv6lCOcu920AbyIdo8l2dNtoW2xydD3ycH2_B06pxATB-ROj27wDdJ0nls9gtSYmjSxMmq4/file?_download_id=8358710324855012068395852250129613778887389747613992530573453088&_notify_domain=www.dropbox.com&dl=1
+           
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.msg = "";
+            mvm.msg = "Downloading Nintendont...";
             if (Directory.Exists(@"bin\tempsd"))
             {
                 Directory.Delete(@"bin\tempsd", true);
             }
             Directory.CreateDirectory(@"bin\tempsd");
             var client = new WebClient();
-            client.DownloadFile("https://dl.dropbox.com/s/wvgdn8j4d1725aj/Nintendont%26Forwarder.zip?dl=1", @"bin\tempsd\nintendont.zip");
+            client.DownloadFile("https://dl.dropbox.com/s/3swnsatmautzlk4/Nintendont.zip?dl=1", @"bin\tempsd\nintendont.zip");
             using(FileStream s = new FileStream(@"bin\tempsd\nintendont.zip", FileMode.Open, FileAccess.ReadWrite))
             {
                 ZipArchive z = new ZipArchive(s);
                 z.ExtractToDirectory(@"bin\tempsd\nintendont");
                 s.Close();
             }
-            status.Content = "Setting up Nintendon't...";
+           mvm.msg = "Setting up Nintendon't...";
             if (!File.Exists(driveletter+ "\\nincfg.bin"))
             {
                 File.Copy(@"bin\tempsd\nintendont\nincfg.bin", driveletter + @"\nincfg.bin");
             }
             DirectoryCopy(@"bin\tempsd\nintendont\apps", driveletter + "\\apps", true);
-            DirectoryCopy(@"bin\tempsd\nintendont\games", driveletter + "\\games", true);
             DirectoryCopy(@"bin\tempsd\nintendont\codes", driveletter + "\\codes", true);
             Directory.Delete(@"bin\tempsd", true);
         }
 
         private void CopyInject()
         {
-            status.Content = "Copying Injected Game...";
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.msg = "Copying Injected Game...";
             if(path.Contains("[LOADIINE]") && !path.Contains("[WUP]"))
             {
                 DirectoryCopy(System.IO.Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
@@ -232,6 +261,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             
             mvm.foldername = "";
+            mvm.msg = "Done with Setup!";
+            
         }
 
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
