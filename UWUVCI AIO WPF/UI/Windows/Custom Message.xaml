@@ -25,7 +25,7 @@
         <Button Content="Open Folder" Margin="0,8,0,9" Name="Folder" Click="Folder_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1" Height="Auto" HorizontalAlignment="Right"  Visibility="Hidden"/>
         <Button Content="Continue" Margin="0,8,5,9" x:Name="Reset" Click="Reset_Click" RenderTransformOrigin="1,1" Grid.Row="2" Grid.Column="1" Height="Auto" HorizontalAlignment="Right" Visibility="Hidden" />
         <CheckBox Content="Don't show this again" HorizontalAlignment="Left" Margin="5,13,0,0" Grid.Row="2" VerticalAlignment="Top" Width="139" Foreground="Black" Name="dont" Height="18"/>
-        <Button Content="Nintendon't Config" Margin="8,8,0,0" x:Name="nc" Click="nc_Click" RenderTransformOrigin="1,1" Grid.Row="2" Height="32" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Button Content="SD Setup" Margin="8,8,0,0" x:Name="nc" Click="nc_Click" RenderTransformOrigin="1,1" Grid.Row="2" Height="32" Width="154" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 
     </Grid>

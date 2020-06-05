@@ -406,14 +406,125 @@ namespace UWUVCI_AIO_WPF
                     MSX(RomPath);
                     break;
                 case GameConsoles.WII:
-                    WII(RomPath, mvm);
+                    if (RomPath.ToLower().EndsWith(".dol"))
+                    {
+                        WiiHomebrew(RomPath, mvm);
+                    }
+                    else
+                    {
+                        WII(RomPath, mvm);
+                    }
+                    
                     break;
                 case GameConsoles.GCN:
                     GC(RomPath, mvm, force);
                     break;
             }
         }
+
+        private static void WiiHomebrew(string romPath, MainViewModel mvm)
+        {
+            string savedir = Directory.GetCurrentDirectory();
+            mvvm.msg = "Extracting Homebrew Base...";
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
+            using (Process zip = new Process())
+            {
+                if (!mvm.debug)
+                {
+
+                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
+                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
+                zip.Start();
+                zip.WaitForExit();
+            }
+
+            DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
+            mvvm.Progress = 20;
+            mvvm.msg = "Injecting DOL...";
+
+            File.Copy(romPath, Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
+            mvm.Progress = 30;
+            mvvm.msg = "Creating Injectable file...";
+            using (Process wit = new Process())
+            {
+                if (!mvm.debug)
+                {
+
+                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                wit.Start();
+                wit.WaitForExit();
+            }
+
+            Thread.Sleep(6000);
+            if (!File.Exists(Path.Combine(tempPath, "game.iso")))
+            {
+                Console.Clear();
+
+                throw new Exception("WIIAn error occured while Creating the ISO");
+            }
+            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+            romPath = Path.Combine(tempPath, "game.iso");
+            mvvm.Progress = 50;
+
+            mvm.msg = "Replacing TIK and TMD...";
+            using (Process extract = new Process())
+            {
+                if (!mvm.debug)
+                {
+                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
+                extract.Start();
+                extract.WaitForExit();
+                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
+                {
+                    File.Delete(sFile);
+                }
+                File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
+                File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
+                Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
+            }
+            mvm.Progress = 60;
+            mvm.msg = "Injecting ROM...";
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
+            {
+                File.Delete(sFile);
+            }
+            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
+            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
+            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+            using (Process iso2nfs = new Process())
+            {
+                if (!mvm.debug)
+                {
+
+                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                string pass = "-passthrough ";
+                if(mvm.passtrough != true)
+                {
+                    pass = "";
+                }
+                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {pass}-iso game.iso";
+                iso2nfs.Start();
+                iso2nfs.WaitForExit();
+                File.Delete("nfs2iso2nfs.exe");
+                File.Delete("game.iso");
+            }
+            Directory.SetCurrentDirectory(savedir);
+            mvm.Progress = 80;
+
         
+    }
+
         private static void WII(string romPath, MainViewModel mvm)
         {
             string savedir = Directory.GetCurrentDirectory();
@@ -1319,7 +1430,7 @@ namespace UWUVCI_AIO_WPF
             
             DirectoryCopy(baseRomPath,outputPath, true);
 
-            Custom_Message cm = new Custom_Message("Injection Complete", $"Config will stay filled, choose a Console again to clear it.\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
+            Custom_Message cm = new Custom_Message("Injection Complete", $"Config will stay filled, choose a Console again to clear it.\nTo Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);
             try
             {
                 cm.Owner = mvvm.mw;

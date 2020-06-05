@@ -34,7 +34,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             List<string> gpEmu = new List<string>();
-            gpEmu.Add("None");
+            gpEmu.Add("Do not use; WiiMotes only");
             gpEmu.Add("Classic Controller");
             gpEmu.Add("Horizontal WiiMote");
             gpEmu.Add("Vertical WiiMote");
@@ -59,7 +59,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             List<string> gpEmu = new List<string>();
-            gpEmu.Add("None");
+            gpEmu.Add("Do not use; WiiMotes only");
             gpEmu.Add("Classic Controller");
             gpEmu.Add("Horizontal WiiMote");
             gpEmu.Add("Vertical WiiMote");
@@ -88,7 +88,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 int TitleIDInt = 0;
                 bool isok = false;
-                if (path.ToLower().Contains(".gcz"))
+                if (path.ToLower().Contains(".gcz") || path.ToLower().Contains(".dol"))
                 {
                     isok = true;
                 }
@@ -118,6 +118,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 
                 if (isok)
                 {
+                    motepass.Visibility = Visibility.Hidden;
+                    motepass.IsChecked = false;
                     mvm.NKITFLAG = false;
                     trimn.IsEnabled = false;
                     trimn.IsChecked = false;
@@ -125,8 +127,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     pal.IsEnabled = true;
                     ntsc.IsEnabled = true;
                     mvm.donttrim = false;
+                    jppatch.IsEnabled = true;
+                    motepass.IsEnabled = false;
                     List<string> gpEmu = new List<string>();
-                    gpEmu.Add("None");
+                    gpEmu.Add("Do not use; WiiMotes only");
                     gpEmu.Add("Classic Controller");
                     gpEmu.Add("Horizontal WiiMote");
                     gpEmu.Add("Vertical WiiMote");
@@ -141,7 +145,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.CanInject = true;
 
                     }
-                    if (!path.ToLower().Contains(".gcz"))
+                    if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol"))
                     {
                         string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
@@ -162,8 +166,27 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             mvm.IsIsoNkit();
                         }
                     }
+                    else if (path.ToLower().Contains(".dol"))
+                    {
+                        mvm.NKITFLAG = false;
+                        trimn.IsEnabled = false;
+                        trimn.IsChecked = false;
+                        vmcsmoll.IsEnabled = false;
+                        pal.IsEnabled = false;
+                        ntsc.IsEnabled = false;
+                        RF_n.IsEnabled = false;
+                        RF_tj.IsEnabled = false;
+                        RF_tn.IsEnabled = false;
+                        RF_tp.IsEnabled = false;
+                        jppatch.IsEnabled = false;
+                        motepass.Visibility = Visibility.Visible;
+                        motepass.IsChecked = false;
+                        motepass.IsEnabled = true;
+                        mvm.donttrim = false;
+                    }
                     else
                     {
+
                         trimn.IsEnabled = true;
                     }
                        
@@ -675,25 +698,28 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ntsc.IsEnabled = false;
                 mvm.donttrim = true;
                 mvm.jppatch = false;
+                int last = gamepad.SelectedIndex;
                 List<string> gpEmu = new List<string>();
-                gpEmu.Add("None");
+                gpEmu.Add("Do not use; WiiMotes only");
                 gpEmu.Add("Classic Controller");
                 gpEmu.Add("Horizontal WiiMote");
                 gpEmu.Add("Vertical WiiMote");
                 gpEmu.Add("[NEEDS TRIMMING] Force Classic Controller");
                 gpEmu.Add("Force No Classic Controller");
                 gamepad.ItemsSource = gpEmu;
+                gamepad.SelectedIndex = last;
                 jppatch.IsEnabled = false;
             }
             else
             {
-               vmcsmoll.IsEnabled = true;
+                int last = gamepad.SelectedIndex;
+                vmcsmoll.IsEnabled = true;
                 pal.IsEnabled = true;
                 ntsc.IsEnabled = true;
                 mvm.donttrim = false;
                 jppatch.IsEnabled = true;
                 List<string> gpEmu = new List<string>();
-                gpEmu.Add("None");
+                gpEmu.Add("Do not use; WiiMotes only");
                 gpEmu.Add("Classic Controller");
                 gpEmu.Add("Horizontal WiiMote");
                 gpEmu.Add("Vertical WiiMote");
@@ -701,6 +727,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 gpEmu.Add("Force No Classic Controller");
                 gamepad.ItemsSource = gpEmu;
                 gamepad.ItemsSource = gpEmu;
+                gamepad.SelectedIndex = last;
             }
             
         }
@@ -737,6 +764,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     Extra.Visibility = Visibility.Visible;
                     break;
             }
+        }
+
+        private void motepass_Checked(object sender, RoutedEventArgs e)
+        {
+            mvm.passtrough = false;
+        }
+
+        private void motepass_Unchecked(object sender, RoutedEventArgs e)
+        {
+            mvm.passtrough = true;
         }
     }
 }

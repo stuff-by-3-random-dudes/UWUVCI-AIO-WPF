@@ -35,11 +35,11 @@
         <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,56,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click"/>
         <TextBox materialDesign:HintAssist.Hint="GAME NAME LINE 2"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,120,17,221" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" Name="GameName2" TextChanged="Players_TextChanged"/>
         <Label Content="Players:" Grid.Column="1" HorizontalAlignment="Left" Margin="14,243,0,0" VerticalAlignment="Top" Name="PlayerLabel"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLEn" IsChecked="True"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLDi"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLEn" IsChecked="True" Click="PLDi_Click"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLDi" Click="PLDi_Click"/>
         <Label Content="Release Year:" Grid.Column="1" HorizontalAlignment="Left" Margin="14,165,0,0" VerticalAlignment="Top" Name="ReleaseYearLabel"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLEn" IsChecked="True"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLDi"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLEn" IsChecked="True" Click="RLEn_Click"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLDi" Click="RLEn_Click"/>
         <TextBox materialDesign:HintAssist.Hint="RELEASE YEAR" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,191,17,149" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting" Name="ReleaseYear" TextChanged="Players_TextChanged"/>
         <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="160,327,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
         <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="19,327,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click"/>

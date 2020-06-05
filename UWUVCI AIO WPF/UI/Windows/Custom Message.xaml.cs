@@ -56,6 +56,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Title.Text = title;
             Message.Content = message;
             Folder.Visibility = Visibility.Hidden;
+           
             if (title.Contains("Resetting") || message.Contains("NUS format") || message.Contains("Folder contains Files or Subfolders, do you really want to use this") || message.Contains("If using Custom Bases") || title.Contains("Found additional Files"))
             {
                 Reset.Visibility = Visibility.Visible;
@@ -103,6 +104,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (!message.Contains("Nintendont"))
             {
                 nc.Visibility = Visibility.Hidden;
+            }
+            if (message.Contains("Config will stay filled, choose a Console again to clear it"))
+            {
+                nc.Visibility = Visibility.Visible;
             }
             dont.Visibility = Visibility.Hidden;
             Title.Text = title;
@@ -221,13 +226,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void nc_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(@"bin\Tools\sdsetup.exe"))
+            this.Close();
+            if (Message.Content.ToString().ToLower().Contains("nintendont"))
             {
-                Process.Start(@"bin\Tools\sdsetup.exe");
+               SDSetup sd = new SDSetup(true, path);
+               sd.ShowDialog();
             }
             else
             {
-                Process.Start(@"bin\Tools\NintendontConfig.exe");
+                SDSetup sd = new SDSetup(false, path);
+                sd.ShowDialog();
             }
         }
 

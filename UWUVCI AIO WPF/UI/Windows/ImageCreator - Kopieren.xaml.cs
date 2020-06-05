@@ -28,102 +28,26 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// Interaktionslogik für ImageCreator.xaml
     /// </summary>  
     
-    public partial class ImageCreator : Window, IDisposable
+    public partial class IconCreator : Window, IDisposable
     {
         private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
         private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
-        BootImage bi = new BootImage();
+        MenuIconImage bi = new MenuIconImage();
         Bitmap b;
         string console = "other";
         bool drc = false;
 
-        public ImageCreator(string name)
+        public IconCreator()
         {
             InitializeComponent();
-            imageName.Content = name;
-            if (name.ToLower().Contains("drc"))
-            {
-                drc = true;
-            }
+            imageName.Content = "iconTex";
+            SetTemplate();
         }
-        public ImageCreator(GameConsoles console, string name) : this(name)
-        {
-            InitializeComponent();
-            SetTemplate(console);
-        }
-        public ImageCreator(bool other, GameConsoles consoles, string name) : this(name)
-        {
-            InitializeComponent();
-            Bitmap bit;
-            if(consoles == GameConsoles.TG16)
-            {
-                if (other)
-                {
-                    bit = new Bitmap(Properties.Resources.TGCD);
-                }
-                else
-                {
-                    bit = new Bitmap(Properties.Resources.TG16);
-                }
-            }
-            else
-            {
-                this.console = "GBC";
-                if (other)
-                {
-                    bit = new Bitmap(Properties.Resources.GBC);
-                }
-                else
-                {
-                    bit = new Bitmap(Properties.Resources.newgameboy);
+       
 
-                }
-            }
-            bi.Frame = bit;
-        }
-
-        private void SetTemplate(GameConsoles console)
+        private void SetTemplate()
         {
-            Bitmap bit;
-            switch (console){
-                case GameConsoles.NDS:
-                    bit = new Bitmap(Properties.Resources.NDS);
-                   
-                    this.console = "NDS";
-                    break;
-                case GameConsoles.N64:
-                    bit = new Bitmap(Properties.Resources.N64);
-                  
-                    break;
-                case GameConsoles.NES:
-                    bit = new Bitmap(Properties.Resources.NES);
-
-                    break;
-                case GameConsoles.GBA:
-                    bit = new Bitmap(Properties.Resources.GBA);
-                    this.console = "GBA";
-                    break;
-                case GameConsoles.GCN:
-                    bit = new Bitmap(Properties.Resources.GCN);
-                    break;
-                case GameConsoles.MSX:
-                    bit = new Bitmap(Properties.Resources.MSX);
-                    break;
-                case GameConsoles.SNES:
-                    bit = new Bitmap(Properties.Resources.SNES_PAL);
-                    snesonly.Visibility = Visibility.Visible;
-                    List<string> styles = new List<string>();
-                    styles.Add("SNES - PAL");
-                    styles.Add("SNES - NTSC");
-                    styles.Add("Super Famicom");
-                    combo.ItemsSource = styles;
-                    combo.SelectedIndex = 0;
-                    break;
-                default:
-                    bit = null;
-                    break;
-            }
-            bi.Frame = bit;
+          bi.Frame = new Bitmap(Properties.Resources.Icon);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -248,46 +172,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
         }
 
-        void EnableOrDisbale(bool en)
-        {
-            GameName1.IsEnabled = en;
-            GameName2.IsEnabled = en;
-            ReleaseYearLabel.IsEnabled = en;
-            RLDi.IsEnabled = en;
-            RLEn.IsEnabled = en;
-            ReleaseYear.IsEnabled = en;
-            if(en && RLDi.IsChecked == true)
-            {
-                ReleaseYear.IsEnabled = false;
-            }
-            PLDi.IsEnabled = en;
-            PLEn.IsEnabled = en;
-            Players.IsEnabled = en;
-            if (en && PLDi.IsChecked == true)
-            {
-                Players.IsEnabled = false;
-            }
-            PlayerLabel.IsEnabled = en;
-            if(snesonly.IsVisible == true)
-            {
-                snesonly.IsEnabled = en;
-            }
-        }
+        
 
         private void enOv_Click(object sender, RoutedEventArgs e)
         {
             if(enOv.IsChecked == true)
             {
-                EnableOrDisbale(true);
+               
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
             }
             else
             {
-                EnableOrDisbale(false);
+                
                 if(bi.TitleScreen != null)
                 {
-                    b = ResizeImage(bi.TitleScreen, 1280, 720); Image.Source = BitmapToImageSource(b);
+                    b = ResizeImage(bi.TitleScreen, 128, 128); Image.Source = BitmapToImageSource(b);
                 }
                 else
                 {
@@ -295,7 +195,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     using (Graphics gfx = Graphics.FromImage(b))
                     using (SolidBrush brush = new SolidBrush(System.Drawing.Color.FromArgb(0, 0, 0)))
                     {
-                        gfx.FillRectangle(brush, 0, 0, 1280, 720);
+                        gfx.FillRectangle(brush, 0, 0, 128, 128);
                     }
                     Image.Source = BitmapToImageSource(b);
                 }
@@ -328,37 +228,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         void DrawImage()
         {
-
-            
-           
-            bi.NameLine1 = GameName1.Text;
-            bi.NameLine2 = GameName2.Text;
-            if (!string.IsNullOrWhiteSpace(GameName2.Text))
-            {
-                bi.Longname = true;
-            }
-            else
-            {
-                bi.Longname = false;
-            }
-    
-            if(PLEn.IsChecked == true && !String.IsNullOrWhiteSpace(Players.Text))
-            {
-                bi.Players = Convert.ToInt32(Players.Text);
-            }
-            else
-            {
-                bi.Players = 0;
-            }
-            if (RLEn.IsChecked == true && !String.IsNullOrWhiteSpace(ReleaseYear.Text))
-            {
-                bi.Released = Convert.ToInt32(ReleaseYear.Text);
-            }
-            else
-            {
-                bi.Released = 0;
-            }
-
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }
@@ -421,27 +290,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void PLDi_Click(object sender, RoutedEventArgs e)
         {
-            if (PLEn.IsChecked != true)
-            {
-                Players.IsEnabled = false;
-            }
-            else
-            {
-                Players.IsEnabled = true;
-            }
+
             DrawImage();
         }
 
         private void RLEn_Click(object sender, RoutedEventArgs e)
         {
-            if (RLEn.IsChecked != true)
-            {
-                ReleaseYear.IsEnabled = false;
-            }
-            else
-            {
-                ReleaseYear.IsEnabled = true;
-            }
+           
             DrawImage();
         }
     }

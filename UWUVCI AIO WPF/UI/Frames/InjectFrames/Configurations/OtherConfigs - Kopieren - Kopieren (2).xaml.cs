@@ -206,43 +206,77 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 tv.Text = path;
                 tvIMG.Visibility = Visibility.Visible;
             }
-            else
-            {
-                mvm.GameConfiguration.TGATv.ImgPath = null;
-                tv.Text = "";
-                tvIMG.Visibility = Visibility.Hidden;
-            }
+           
         }
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)
         {
-            if (!Settings.Default.dont)
+            /* if (!Settings.Default.dont)
+             {
+                 mvm.ImageWarning();
+             }
+             string path = mvm.GetFilePath(false, false);
+             if (!CheckIfNull(path))
+             {
+                 mvm.GameConfiguration.TGADrc.ImgPath = path;
+                 mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
+                 drc.Text = path;
+                 drcIMG.Visibility = Visibility.Visible;
+             }
+             else
+             {
+                 if (path == "")
+                 {
+                     mvm.GameConfiguration.TGADrc.ImgPath = null;
+                     drc.Text = "";
+                     drcIMG.Visibility = Visibility.Hidden;
+                 }
+             }*/
+            string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootDrcTex.png");
+
+            ImageCreator ic;
+            if (!string.IsNullOrEmpty(mvm.RomPath))
             {
-                mvm.ImageWarning();
-            }
-            string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path))
-            {
-                mvm.GameConfiguration.TGADrc.ImgPath = path;
-                mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
-                drc.Text = path;
-                drcIMG.Visibility = Visibility.Visible;
+                if (new FileInfo(mvm.RomPath).Extension.ToLower() == ".gb")
+                {
+                    ic = new ImageCreator(false, GameBaseClassLibrary.GameConsoles.GBA, "bootDrcTex");
+                }
+                else if (new FileInfo(mvm.RomPath).Extension.ToLower() == ".gbc")
+                {
+                    ic = new ImageCreator(true, GameBaseClassLibrary.GameConsoles.GBA, "bootDrcTex");
+                }
+                else
+                {
+                    ic = new ImageCreator(GameBaseClassLibrary.GameConsoles.GBA, "bootDrcTex");
+                }
             }
             else
             {
-                if (path == "")
-                {
-                    mvm.GameConfiguration.TGADrc.ImgPath = null;
-                    drc.Text = "";
-                    drcIMG.Visibility = Visibility.Hidden;
-                }
+                ic = new ImageCreator(GameBaseClassLibrary.GameConsoles.GBA, "bootDrcTex");
             }
 
+
+            try
+            {
+                ic.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            ic.ShowDialog();
+            if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
+            {
+                mvm.GameConfiguration.TGATv.ImgPath = path;
+                mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
+                tv.Text = path;
+                tvIMG.Visibility = Visibility.Visible;
+            }
         }
 
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
-            if (!Settings.Default.dont)
+            /*if (!Settings.Default.dont)
             {
                 mvm.ImageWarning();
             }
@@ -262,6 +296,24 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     ic.Text = "";
                     icoIMG.Visibility = Visibility.Hidden;
                 }
+            }*/
+            string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "iconTex.png");
+            IconCreator ic = new IconCreator();
+            try
+            {
+                ic.Owner = mvm.mw;
+            }
+            catch (Exception)
+            {
+
+            }
+            ic.ShowDialog();
+            if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
+            {
+                mvm.GameConfiguration.TGAIco.ImgPath = path;
+                mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
+                this.ic.Text = path;
+                icoIMG.Visibility = Visibility.Visible;
             }
         }
 

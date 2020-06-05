@@ -28,6 +28,7 @@ using MaterialDesignThemes.Wpf;
 using NAudio.Wave;
 using System.Timers;
 using NAudio.Utils;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -876,9 +877,9 @@ namespace UWUVCI_AIO_WPF
                 Progress = 0;
                 string extra = "";
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
-                if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them by pressing the \"Nintendon't Config\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
+                if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
                 gc2rom = "";
-                Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.", Settings.Default.OutPath);
+                Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);
                 try
                 {
                     cm.Owner = mw;
@@ -1349,7 +1350,7 @@ namespace UWUVCI_AIO_WPF
                                 }
                                 else
                                 {
-                                    dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.iso; *.nkit.gcz) | *.iso; *.wbfs; *.nkit.iso; *.nkit.gcz";
+                                    dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.iso; *.nkit.gcz) | *.iso; *.wbfs; *.nkit.iso; *.nkit.gcz |Wii Homebrew (*.dol) | *.dol";
                                 }
                                 
                                 break;
@@ -1491,9 +1492,16 @@ namespace UWUVCI_AIO_WPF
             try
             {
                
-
-                string basePath = $@"bin\Tools\";
-                Directory.SetCurrentDirectory(basePath);
+                if(Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
+                {
+                    olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
+                }
+                else
+                {
+                    string basePath = $@"bin\Tools\";
+                    Directory.SetCurrentDirectory(basePath);
+                }
+                
                 using (var client = new WebClient())
                 {
                     client.DownloadFile(getDownloadLink(name, true), name);
@@ -1545,7 +1553,15 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception)
             {
-                return null;
+                if (tool)
+                {
+                    return $"{ToolCheck.backupulr}{toolname}";
+                }
+                else
+                {
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/"+toolname;
+                }
+                
             }
         }
         public void InjcttoolCheck()
@@ -1616,7 +1632,7 @@ namespace UWUVCI_AIO_WPF
         }
         private void toolCheck()
         {
-            if (ToolCheck.DoesToolsFolderExist())
+            if (ToolCheck.DoesToolsFolderExist() )
             {
                 List<MissingTool> missingTools = new List<MissingTool>();
                 missingTools = ToolCheck.CheckForMissingTools();
@@ -1658,9 +1674,16 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                
+                if (Directory.GetCurrentDirectory().Contains("bin/tools"))
+                {
+
+                }
+                else
+                {
                     Directory.CreateDirectory("bin/Tools");
-                    toolCheck();
+                }
+                    
+                toolCheck();
                
                 
             }
@@ -2968,26 +2991,88 @@ namespace UWUVCI_AIO_WPF
         {
             WebRequest request;
             //get download link from uwuvciapi
-            
-                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetURL?cns=" + console.ToLower());
-            
-           
-
-            
-            var response = request.GetResponse();
-            using (Stream dataStream = response.GetResponseStream())
+            try
             {
-                // Open the stream using a StreamReader for easy access.  
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.  
-                string responseFromServer = reader.ReadToEnd();
-                // Display the content.  
-                return responseFromServer;
+                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetURL?cns=" + console.ToLower());
+
+
+
+
+                var response = request.GetResponse();
+                using (Stream dataStream = response.GetResponseStream())
+                {
+                    // Open the stream using a StreamReader for easy access.  
+                    StreamReader reader = new StreamReader(dataStream);
+                    // Read the content.  
+                    string responseFromServer = reader.ReadToEnd();
+                    // Display the content.  
+                    return responseFromServer;
+                }
             }
+            catch (Exception)
+            {
+                string url = "";
+                switch (console.ToLower())
+                {
+                    case "nds":
+                        url = @"https://flumpster.github.io/instructions/nds/nds.html";
+                        break;
+                    case "n64":
+                        
+                        url = @"https://flumpster.github.io/instructions/n64/n64.html";
+                        break;
+                    case "nes":
+                        url = @"https://flumpster.github.io/instructions/nes/nes.html";
+                        break;
+                    case "snes":
+                        url = @"https://flumpster.github.io/instructions/snes/snes.html";
+                        break;
+                    case "gba":
+                        url = @"https://flumpster.github.io/instructions/gba/gba.html";
+                        break;
+                    case "tg16":
+                        url = @"https://flumpster.github.io/instructions/tgfx/tgfx.html";
+                        break;
+                    case "tgcd":
+                        url = @"https://flumpster.github.io/instructions/tgfx/tgfx.html";
+                        break;
+                    case "msx":
+                        url = @"https://flumpster.github.io/instructions/msx/msx.html";
+                        break;
+                    case "wii":
+                        url = @"https://flumpster.github.io/instructions/wii/wii.html";
+                        break;
+                    case "gcn":
+                         url = @"https://flumpster.github.io/instructions/gcn/gcn.html";
+                        break;
+                    default:
+                    
+                        url = null;
+                        break;
+                }
+                request = WebRequest.Create(url + console.ToLower());
+
+
+
+
+                var response = request.GetResponse();
+                using (Stream dataStream = response.GetResponseStream())
+                {
+                    // Open the stream using a StreamReader for easy access.  
+                    StreamReader reader = new StreamReader(dataStream);
+                    // Read the content.  
+                    string responseFromServer = reader.ReadToEnd();
+                    // Display the content.  
+                    return responseFromServer;
+                }
+            }
+                
         }
          WaveOutEvent waveOutEvent = new WaveOutEvent();
         AudioFileReader audioFileReader;
         public System.Timers.Timer t;
+        public bool passtrough = true;
+
         public void PlaySound()
         {
             

@@ -37,9 +37,10 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,376,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click"/>
         <Label Content="Use | for 2 lines" HorizontalAlignment="Left" Margin="506,428,0,0" VerticalAlignment="Top" Width="127" HorizontalContentAlignment="Center" ToolTip="e.g. Wii|Sports"/>
         <Button Content="?" HorizontalAlignment="Left" Margin="600,19,0,0" Height="32" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_1" FontSize="22" Padding="0" />
-        <StackPanel Height="30" Margin="150,20,314,460" Orientation="Horizontal" Name="Extra" Visibility="Hidden">
+        <StackPanel Height="30" Margin="150,20,97,460" Orientation="Horizontal" Name="Extra" Visibility="Hidden">
             <CheckBox Content="JP Patch" x:Name="jppatch" ToolTip="Allows playing JP Wii Games on non JP Consoles" Click="jppatch_Click" RenderTransformOrigin="-1.389,-3.87" Margin="0,6,16,6" Height="18" Width="72"/>
-            <CheckBox Content="Disable Trim" Margin="0,7,0,5" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="87"/>
+            <CheckBox Content="Disable Trim" Margin="0,7,0,5" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="107"/>
+            <CheckBox Content="Disable WiiMote Passthrough" Margin="0,7,0,5" x:Name="motepass" IsEnabled="False" Width="182" Visibility="Hidden" Checked="motepass_Checked" Unchecked="motepass_Unchecked"/>
         </StackPanel>
 
         <StackPanel Height="30" Margin="150,19,213,461" Orientation="Horizontal" Name="VideoMode" Visibility="Hidden">

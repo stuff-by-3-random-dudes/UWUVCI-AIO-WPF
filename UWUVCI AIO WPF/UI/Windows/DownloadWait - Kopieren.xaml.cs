@@ -200,7 +200,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             Directory.CreateDirectory(@"bin\tempsd");
             var client = new WebClient();
-            client.DownloadFile("https://dl.dropboxusercontent.com/cd/0/get/A4ZX24rC4DlmPAYDrj7mz9WIlmmnIu9YKh1IabTXG-l0Ftq4Ib-fyG8QYspNdv6lCOcu920AbyIdo8l2dNtoW2xydD3ycH2_B06pxATB-ROj27wDdJ0nls9gtSYmjSxMmq4/file?_download_id=8358710324855012068395852250129613778887389747613992530573453088&_notify_domain=www.dropbox.com&dl=1", @"bin\tempsd\nintendont.zip");
+            client.DownloadFile("https://dl.dropbox.com/s/wvgdn8j4d1725aj/Nintendont%26Forwarder.zip?dl=1", @"bin\tempsd\nintendont.zip");
             using(FileStream s = new FileStream(@"bin\tempsd\nintendont.zip", FileMode.Open, FileAccess.ReadWrite))
             {
                 ZipArchive z = new ZipArchive(s);
@@ -224,11 +224,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             if(path.Contains("[LOADIINE]") && !path.Contains("[WUP]"))
             {
-                DirectoryCopy(path, driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
+                DirectoryCopy(System.IO.Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
             }
             else
             {
-                DirectoryCopy(path, driveletter + "\\install\\" + mvm.foldername, true);
+                DirectoryCopy(System.IO.Path.Combine(path,mvm.foldername), driveletter + "\\install\\" + mvm.foldername, true);
             }
             
             mvm.foldername = "";

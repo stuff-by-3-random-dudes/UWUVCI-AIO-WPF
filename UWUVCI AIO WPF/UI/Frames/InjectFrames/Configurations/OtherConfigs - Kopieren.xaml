@@ -19,8 +19,8 @@
         <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,327,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex"/>
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,238,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex"/>
-        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,283,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
-        <Button Content="Select File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,283,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection"/>
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="If checked alows you to inject TurboGrafx-CD ROMs">
 
