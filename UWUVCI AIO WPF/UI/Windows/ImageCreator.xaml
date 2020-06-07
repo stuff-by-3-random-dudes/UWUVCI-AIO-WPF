@@ -30,31 +30,34 @@
 
         </StackPanel>
         <Button Content="Select File" Grid.Column="1" HorizontalAlignment="Left" Margin="160,10,0,0" VerticalAlignment="Top" Width="99" Name="FileSelect" Click="FileSelect_Click" />
-        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,52,0,0" VerticalAlignment="Top"/>
+        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,52,0,0" VerticalAlignment="Top" Name="ovl"/>
         <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,56,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Name="enOv" Click="enOv_Click" IsChecked="True"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,56,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click"/>
-        <TextBox materialDesign:HintAssist.Hint="GAME NAME LINE 2"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,120,17,221" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" Name="GameName2" TextChanged="Players_TextChanged"/>
-        <Label Content="Players:" Grid.Column="1" HorizontalAlignment="Left" Margin="14,243,0,0" VerticalAlignment="Top" Name="PlayerLabel"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLEn" IsChecked="True" Click="PLDi_Click"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLDi" Click="PLDi_Click"/>
-        <Label Content="Release Year:" Grid.Column="1" HorizontalAlignment="Left" Margin="14,165,0,0" VerticalAlignment="Top" Name="ReleaseYearLabel"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLEn" IsChecked="True" Click="RLEn_Click"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLDi" Click="RLEn_Click"/>
-        <TextBox materialDesign:HintAssist.Hint="RELEASE YEAR" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,191,17,149" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting" Name="ReleaseYear" TextChanged="Players_TextChanged"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,56,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" Name="disOv"/>
+        <TextBox materialDesign:HintAssist.Hint="GAME NAME LINE 2"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,148,17,193" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" Name="GameName2" TextChanged="Players_TextChanged"/>
+        <Label Content="Players:" Grid.Column="1" HorizontalAlignment="Left" Margin="14,243,0,0" VerticalAlignment="Top" Name="PlayerLabel" Visibility="Hidden"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLEn" IsChecked="True" Click="PLDi_Click" Visibility="Hidden"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,247,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="pl" Name="PLDi" Click="PLDi_Click" Visibility="Hidden"/>
+        <Label Content="Release Year:" Grid.Column="1" HorizontalAlignment="Left" Margin="14,165,0,0" VerticalAlignment="Top" Name="ReleaseYearLabel" Visibility="Hidden"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLEn" IsChecked="True" Click="RLEn_Click" Visibility="Hidden"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,169,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="rl" Name="RLDi" Click="RLEn_Click" Visibility="Hidden"/>
+        <TextBox materialDesign:HintAssist.Hint="RELEASE YEAR" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,198,17,142" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting" Name="ReleaseYear" TextChanged="Players_TextChanged"/>
         <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="160,327,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
         <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="19,327,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click"/>
         <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="272" VerticalAlignment="Top" Width="484" Margin="14,48,0,0">
 
         </Border>
-        <TextBox materialDesign:HintAssist.Hint="GAME NAME"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,79,17,262" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" Name="GameName1" TextChanged="Players_TextChanged"/>
-        <TextBox materialDesign:HintAssist.Hint="PLAYERS" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,269,17,71" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1"  PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting" Name="Players" TextChanged="Players_TextChanged"/>
+        <TextBox materialDesign:HintAssist.Hint="GAME NAME"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,98,17,243" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1" Name="GameName1" TextChanged="Players_TextChanged"/>
+        <TextBox materialDesign:HintAssist.Hint="PLAYERS" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="19,248,17,92" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12"   Grid.Column="1"  PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting" Name="Players" TextChanged="Players_TextChanged"/>
         <StackPanel HorizontalAlignment="Left" Height="32" Margin="14,327,0,0" VerticalAlignment="Top" Width="481" Orientation="Horizontal" Name="snesonly" Visibility="Hidden">
             <Label Content="Style:" Width="50" Margin="0,4,0,-4"></Label>
-            
+
             <RadioButton Content="SNES - PAL" GroupName="snes" Name="pal" IsChecked="True" Click="pal_Click" Foreground="Black" Width="100" Margin="0,6,0,-6"/>
             <RadioButton Content="SNES - NTSC" GroupName="snes" Click="pal_Click" Foreground="Black" Margin="0,6,0,-6" Width="107" />
             <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
+        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,171,0,0" VerticalAlignment="Top" Name="oll2" Visibility="Hidden"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,175,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov2" x:Name="enOv2" Click="enOv_Click" IsChecked="True" Visibility="Hidden"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,175,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov2" Click="enOv_Click" Name="disOv2" Visibility="Hidden"/>
     </Grid>
 </Window>

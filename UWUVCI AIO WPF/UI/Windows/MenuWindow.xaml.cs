@@ -205,6 +205,7 @@ namespace UWUVCI_AIO_WPF
             mvm.foldername = "";
             mvm.jppatch = false;
             mvm.GC = false;
+            mvm.test = GameConsoles.WII;
             mvm.RemoveCreatedIMG();
             mvm.isDoneMW();
 

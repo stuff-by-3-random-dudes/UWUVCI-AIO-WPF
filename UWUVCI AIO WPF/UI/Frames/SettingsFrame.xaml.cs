@@ -121,7 +121,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            IconCreator ic = new IconCreator();
+            ImageCreator ic = new ImageCreator(GameBaseClassLibrary.GameConsoles.WII,"bootTvTex") ;
             try
             {
                 ic.Owner = (FindResource("mvm") as MainViewModel).mw;
