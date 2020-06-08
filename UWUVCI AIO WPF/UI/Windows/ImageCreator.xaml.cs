@@ -112,17 +112,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     RLDi.Visibility = Visibility.Hidden;
                     RLEn.Visibility = Visibility.Hidden;
                     ReleaseYear.Visibility = Visibility.Hidden;
-                    ovl.Visibility = Visibility.Hidden;
+                   
                     PLDi.Visibility = Visibility.Hidden;
                     PLEn.Visibility = Visibility.Hidden;
                     Players.Visibility = Visibility.Hidden;
-                    enOv.Visibility = Visibility.Hidden;
-                    disOv.Visibility = Visibility.Hidden;
+                    
 
                     PlayerLabel.Visibility = Visibility.Hidden;
-                    oll2.Visibility = Visibility.Visible;
-                    enOv2.Visibility = Visibility.Visible;
-                    disOv2.Visibility = Visibility.Visible;
+                   
                     break;
                 case GameConsoles.GCN:
                     bit = new Bitmap(Properties.Resources.GCN);
@@ -297,7 +294,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void enOv_Click(object sender, RoutedEventArgs e)
         {
-            if((ovl.IsVisible == true && enOv.IsChecked == true) || (oll2.IsVisible == true && enOv2.IsChecked == true))
+            if((ovl.IsVisible == true && enOv.IsChecked == true))
             {
                 EnableOrDisbale(true);
                 b = bi.Create(console);

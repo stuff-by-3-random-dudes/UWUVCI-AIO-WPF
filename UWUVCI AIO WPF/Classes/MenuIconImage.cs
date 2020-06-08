@@ -83,7 +83,7 @@ namespace UWUVCI_AIO_WPF.Classes
 
             Rectangle rectangleGBA = new Rectangle(3, 17, 122, 81);
             Rectangle rectangleH4V3 = new Rectangle(3, 9, 122, 92);
-
+            Rectangle rectangleWii = new Rectangle(0, 23, 128, 94);
             if (console == "GBA")
             {
                 if (TitleScreen != null)
@@ -110,6 +110,13 @@ namespace UWUVCI_AIO_WPF.Classes
                 }
                 else
                     g.FillRectangle(new SolidBrush(Color.Black), rectangleH4V3);
+            }
+            else if(console == "WII")
+            {
+                if (TitleScreen != null)
+                    g.DrawImage(TitleScreen, rectangleWii);
+                else
+                    g.FillRectangle(new SolidBrush(Color.Black), rectangleWii);
             }
             else
             {

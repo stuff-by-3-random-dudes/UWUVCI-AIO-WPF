@@ -56,8 +56,5 @@
             <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
-        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,171,0,0" VerticalAlignment="Top" Name="oll2" Visibility="Hidden"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,175,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov2" x:Name="enOv2" Click="enOv_Click" IsChecked="True" Visibility="Hidden"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="191,175,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov2" Click="enOv_Click" Name="disOv2" Visibility="Hidden"/>
-    </Grid>
+        </Grid>
 </Window>

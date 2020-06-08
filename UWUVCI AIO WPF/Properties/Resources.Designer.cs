@@ -121,6 +121,16 @@ namespace UWUVCI_AIO_WPF.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
+        /// </summary>
+        internal static byte[] mario {
+            get {
+                object obj = ResourceManager.GetObject("mario", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap MSX {
@@ -201,16 +211,6 @@ namespace UWUVCI_AIO_WPF.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
-        /// </summary>
-        internal static byte[] sound {
-            get {
-                object obj = ResourceManager.GetObject("sound", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap TG16 {
@@ -236,6 +236,16 @@ namespace UWUVCI_AIO_WPF.Properties {
         internal static System.Drawing.Bitmap WII {
             get {
                 object obj = ResourceManager.GetObject("WII", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap WiiIcon {
+            get {
+                object obj = ResourceManager.GetObject("WiiIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -43,11 +43,25 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             imageName.Content = "iconTex";
             SetTemplate();
         }
-       
+        public IconCreator(string name) 
+        {
+            InitializeComponent();
+            console = name;
+            imageName.Content = "iconTex";
+            SetTemplate();
+        }
 
         private void SetTemplate()
         {
-          bi.Frame = new Bitmap(Properties.Resources.Icon);
+            if(console == "WII")
+            {
+                bi.Frame = new Bitmap(Properties.Resources.WiiIcon);
+            }
+            else
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+            }
+         
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

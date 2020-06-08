@@ -87,7 +87,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
         }
-        static MemoryStream sound = new MemoryStream(Properties.Resources.sound);
+        static MemoryStream sound = new MemoryStream(Properties.Resources.mario);
         private int _match;
         static MemoryStream ms = new MemoryStream(StreamToBytes(sound));
 
