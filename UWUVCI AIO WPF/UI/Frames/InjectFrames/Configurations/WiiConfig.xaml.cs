@@ -48,7 +48,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             selection.Add("Region Patches");
             selection.Add("Extras");
             selectionDB.ItemsSource = selection;
-            selectionDB.SelectedIndex = 2;
+            selectionDB.SelectedIndex = 0;
         }
         public WiiConfig(GameConfig c)
         {
@@ -73,7 +73,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             selection.Add("Region Patches");
             selection.Add("Extras");
             selectionDB.ItemsSource = selection;
-            selectionDB.SelectedIndex = 2;
+            selectionDB.SelectedIndex = 0;
         }
         public void Dispose()
         {
@@ -118,7 +118,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 
                 if (isok)
                 {
-                    motepass.Visibility = Visibility.Hidden;
+                    motepass.IsEnabled = false;
                     motepass.IsChecked = false;
                     mvm.NKITFLAG = false;
                     trimn.IsEnabled = false;
@@ -179,13 +179,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         RF_tn.IsEnabled = false;
                         RF_tp.IsEnabled = false;
                         jppatch.IsEnabled = false;
-                        motepass.Visibility = Visibility.Visible;
                         motepass.IsChecked = false;
                         motepass.IsEnabled = true;
                         mvm.donttrim = false;
                     }
                     else
                     {
+                        motepass.IsChecked = false;
+                        motepass.IsEnabled = false;
 
                         trimn.IsEnabled = true;
                     }

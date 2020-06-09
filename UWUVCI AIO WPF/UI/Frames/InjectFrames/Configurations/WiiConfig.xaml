@@ -39,11 +39,11 @@
         <Button Content="?" HorizontalAlignment="Left" Margin="600,19,0,0" Height="32" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_1" FontSize="22" Padding="0" />
         <StackPanel Height="30" Margin="150,20,97,460" Orientation="Horizontal" Name="Extra" Visibility="Hidden">
             <CheckBox Content="JP Patch" x:Name="jppatch" ToolTip="Allows playing JP Wii Games on non JP Consoles" Click="jppatch_Click" RenderTransformOrigin="-1.389,-3.87" Margin="0,6,16,6" Height="18" Width="72"/>
-            <CheckBox Content="Disable Trim" Margin="0,7,0,5" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="107"/>
-            <CheckBox Content="Disable WiiMote Passthrough" Margin="0,7,0,5" x:Name="motepass" IsEnabled="False" Width="182" Visibility="Hidden" Checked="motepass_Checked" Unchecked="motepass_Unchecked"/>
+            
+            <CheckBox Content="Disable WiiMote Passthrough" Margin="0,7,0,5" x:Name="motepass" IsEnabled="False" Width="182"  Checked="motepass_Checked" Unchecked="motepass_Unchecked"/>
         </StackPanel>
-
-        <StackPanel Height="30" Margin="150,19,213,461" Orientation="Horizontal" Name="VideoMode" Visibility="Hidden">
+        <CheckBox Content="Disable Trim" Margin="505,22,31,464" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="107"/>
+        <StackPanel Height="30" Margin="150,19,213,461" Orientation="Horizontal" Name="VideoMode" >
             <RadioButton x:Name="vmcsmoll" Content="None" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" IsChecked="True" Click="RadioButton_Click_2" Width="77" Margin="0,6,0,0"/>
             <RadioButton x:Name="ntsc" Content="NTSC To PAL" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click" Width="111" ToolTip="May not work with every Game" Margin="0,6,0,0"/>
             <RadioButton x:Name="pal" Content="PAL To NTSC" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click_1" Width="110" ToolTip="May not work with every Game" Margin="0,6,0,0"/>

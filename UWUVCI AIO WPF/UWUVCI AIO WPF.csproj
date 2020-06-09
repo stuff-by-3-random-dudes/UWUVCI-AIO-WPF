@@ -150,6 +150,9 @@
     <Compile Include="UI\Windows\EnterKey.xaml.cs">
       <DependentUpon>EnterKey.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml.cs">
+      <DependentUpon>ImageCreator - Kopieren - Kopieren %282%29.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\ImageCreator - Kopieren.xaml.cs">
       <DependentUpon>ImageCreator - Kopieren.xaml</DependentUpon>
     </Compile>
@@ -253,6 +256,10 @@
     <Page Include="UI\Windows\EnterKey.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\ImageCreator - Kopieren.xaml">
       <Generator>MSBuild:Compile</Generator>

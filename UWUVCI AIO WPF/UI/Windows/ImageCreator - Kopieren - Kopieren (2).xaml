@@ -1,0 +1,46 @@
+﻿<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.asd"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
+       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="ImageCreator" Height="200" Width="435" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="160"/>
+            <ColumnDefinition Width="275"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Margin="0,0,353,0"></Label>
+        <Label Height="9" Margin="0,0,353,0"></Label>
+        <Label Margin="0,0,353,0"></Label>
+
+
+
+
+        <Image HorizontalAlignment="Left" Height="128"  VerticalAlignment="Top" Width="128" Name="Image" Margin="18,49,0,0"/>
+
+
+
+        <Button Content="Select File" Grid.Column="1" HorizontalAlignment="Left" Margin="160,19,0,0" VerticalAlignment="Top" Width="99" Name="FileSelect" Click="FileSelect_Click" TabIndex="1" />
+        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,83,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,87,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Name="enOv" Click="enOv_Click" IsChecked="True" TabIndex="2"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="189,87,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" TabIndex="3"/>
+        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="160,145,0,0" Width="99" Click="Button_Click" Height="32" VerticalAlignment="Top" TabIndex="5"/>
+        <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="15,145,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click" TabIndex="4"/>
+        <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="129" VerticalAlignment="Top" Width="129" Margin="18,48,0,0">
+
+        </Border>
+        <StackPanel HorizontalAlignment="Left" Height="32" Margin="14,327,0,0" VerticalAlignment="Top" Width="481" Orientation="Horizontal" Name="snesonly" Visibility="Hidden">
+            <Label Content="Style:" Width="50" Margin="0,4,0,-4"></Label>
+
+            <RadioButton Content="SNES - PAL" GroupName="snes" Name="pal" IsChecked="True" Click="pal_Click" Foreground="Black" Width="100" Margin="0,6,0,-6"/>
+            <RadioButton Content="SNES - NTSC" GroupName="snes" Click="pal_Click" Foreground="Black" Margin="0,6,0,-6" Width="107" />
+            <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
+            <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
+        </StackPanel>
+        <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,148"/>
+    </Grid>
+</Window>
