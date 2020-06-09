@@ -1470,7 +1470,7 @@ namespace UWUVCI_AIO_WPF
                 else if(!INI)
                 {
                     
-                    dialog.Filter = "BootImages (*.png; *.jpg; *.bmp; *.tga) | *.png;*.jpg;*.bmp;*.tga";
+                    dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga) | *.png;*.jpg;*.bmp;*.tga";
                 }
                 else if(INI)
                 {

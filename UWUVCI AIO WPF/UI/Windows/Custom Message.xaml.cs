@@ -230,11 +230,29 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (Message.Content.ToString().ToLower().Contains("nintendont"))
             {
                SDSetup sd = new SDSetup(true, path);
+                try
+                {
+                    sd.Owner = (FindResource("mvm") as MainViewModel).mw;
+                    sd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+                catch (Exception)
+                {
+
+                }
                sd.ShowDialog();
             }
             else
             {
                 SDSetup sd = new SDSetup(false, path);
+                try
+                {
+                    sd.Owner = (FindResource("mvm") as MainViewModel).mw;
+                    sd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+                catch (Exception)
+                {
+
+                }
                 sd.ShowDialog();
             }
         }
