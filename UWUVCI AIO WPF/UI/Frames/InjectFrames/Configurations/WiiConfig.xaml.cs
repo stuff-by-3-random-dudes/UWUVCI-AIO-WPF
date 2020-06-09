@@ -34,7 +34,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             List<string> gpEmu = new List<string>();
-            gpEmu.Add("Do not use; WiiMotes only");
+            gpEmu.Add("Do not use. WiiMotes only");
             gpEmu.Add("Classic Controller");
             gpEmu.Add("Horizontal WiiMote");
             gpEmu.Add("Vertical WiiMote");
@@ -59,7 +59,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             List<string> gpEmu = new List<string>();
-            gpEmu.Add("Do not use; WiiMotes only");
+            gpEmu.Add("Do not use. WiiMotes only");
             gpEmu.Add("Classic Controller");
             gpEmu.Add("Horizontal WiiMote");
             gpEmu.Add("Vertical WiiMote");
@@ -130,7 +130,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     jppatch.IsEnabled = true;
                     motepass.IsEnabled = false;
                     List<string> gpEmu = new List<string>();
-                    gpEmu.Add("Do not use; WiiMotes only");
+                    gpEmu.Add("Do not use. WiiMotes only");
                     gpEmu.Add("Classic Controller");
                     gpEmu.Add("Horizontal WiiMote");
                     gpEmu.Add("Vertical WiiMote");
@@ -752,7 +752,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.jppatch = false;
                 int last = gamepad.SelectedIndex;
                 List<string> gpEmu = new List<string>();
-                gpEmu.Add("Do not use; WiiMotes only");
+                gpEmu.Add("Do not use. WiiMotes only");
                 gpEmu.Add("Classic Controller");
                 gpEmu.Add("Horizontal WiiMote");
                 gpEmu.Add("Vertical WiiMote");
@@ -771,7 +771,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.donttrim = false;
                 jppatch.IsEnabled = true;
                 List<string> gpEmu = new List<string>();
-                gpEmu.Add("Do not use; WiiMotes only");
+                gpEmu.Add("Do not use. WiiMotes only");
                 gpEmu.Add("Classic Controller");
                 gpEmu.Add("Horizontal WiiMote");
                 gpEmu.Add("Vertical WiiMote");

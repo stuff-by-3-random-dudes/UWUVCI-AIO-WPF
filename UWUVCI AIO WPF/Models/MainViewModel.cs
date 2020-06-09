@@ -898,8 +898,83 @@ namespace UWUVCI_AIO_WPF
             NKITFLAG = false;
             CBasePath = null;
             prodcode = "";
-            if(Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"))) Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
+            ClearImage();
             foldername = "";
+        }
+
+        private void ClearImage()
+        {
+            switch (GameConfiguration.Console)
+            {
+                case GameConsoles.NDS:
+                    (thing as OtherConfigs).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).Injection.IsEnabled = false;
+                   
+                    break;
+                case GameConsoles.GBA:
+                    (thing as GBA).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as GBA).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as GBA).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as GBA).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as GBA).Injection.IsEnabled = false;
+                    break;
+                case GameConsoles.N64:
+                    (thing as N64Config).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as N64Config).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as N64Config).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as N64Config).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as N64Config).Injection.IsEnabled = false;
+                    break;
+                case GameConsoles.NES:
+                    (thing as OtherConfigs).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).Injection.IsEnabled = false;
+                    break;
+                case GameConsoles.SNES:
+                    (thing as OtherConfigs).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).Injection.IsEnabled = false;
+                    break;
+                case GameConsoles.TG16:
+                    (thing as TurboGrafX).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as TurboGrafX).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as TurboGrafX).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as TurboGrafX).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as TurboGrafX).Injection.IsEnabled = false;
+                    break;
+                case GameConsoles.MSX:
+                    (thing as OtherConfigs).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                    (thing as OtherConfigs).Injection.IsEnabled = false;
+                    break;
+                case GameConsoles.WII:
+                    if(test == GameConsoles.GCN)
+                    {
+                        (thing as GCConfig).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as GCConfig).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as GCConfig).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as GCConfig).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as GCConfig).Injection.IsEnabled = false;
+                    }
+                    else
+                    {
+                        (thing as WiiConfig).icoIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as WiiConfig).tvIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as WiiConfig).drcIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as WiiConfig).logIMG.Visibility = System.Windows.Visibility.Hidden;
+                        (thing as WiiConfig).Injection.IsEnabled = false;
+                    }
+                    break;
+            }
         }
 
         DownloadWait Injectwait;
@@ -1083,7 +1158,17 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
-                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                Process p = new Process();
+                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+                if (debug)
+                {
+                    p.StartInfo.Arguments = "--debug --skip";
+                }
+                else
+                {
+                    p.StartInfo.Arguments = "--skip";
+                }
+                p.Start();
                 Environment.Exit(0);
             }
             
@@ -1118,7 +1203,17 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
             mw.Close();
-            System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+            Process p = new Process();
+            p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+            if (debug)
+            {
+                p.StartInfo.Arguments = "--debug --skip";
+            }
+            else
+            {
+                p.StartInfo.Arguments = "--skip";
+            }
+            p.Start();
             Environment.Exit(0);
 
 
@@ -1168,7 +1263,17 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
-                System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+                Process p = new Process();
+                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+                if (debug)
+                {
+                    p.StartInfo.Arguments = "--debug --skip";
+                }
+                else
+                {
+                    p.StartInfo.Arguments = "--skip";
+                }
+                p.Start();
                 Environment.Exit(0);
             }
             

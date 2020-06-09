@@ -54,10 +54,20 @@ namespace UWUVCI_AIO_WPF
 					}
 				}
 			}
-
-
+			bool check = true;
+			if (e.Args.Length >= 1)
+			{
+				foreach(var s in e.Args)
+				{
+					if(s == "--skip")
+					{
+						check = false;
+					}
+				}
+			}
+			
 			Process[] pname = Process.GetProcessesByName("UWUVCI AIO");
-			if (pname.Length > 1)
+			if (pname.Length > 1 && check)
 			{
 				t.Elapsed += KillProg;
 				t.Start();
@@ -91,7 +101,7 @@ namespace UWUVCI_AIO_WPF
 				// The OpenFile() method is just an example of what you could do with the
 				// parameter. The method should be declared on your MainWindow class, where
 				// you could use a range of methods to process the passed file path
-				if (e.Args.Length == 1 && e.Args[0] == "--debug")
+				if (e.Args.Length >= 1 && e.Args[0] == "--debug")
 				{
 					wnd.setDebug();
 				}

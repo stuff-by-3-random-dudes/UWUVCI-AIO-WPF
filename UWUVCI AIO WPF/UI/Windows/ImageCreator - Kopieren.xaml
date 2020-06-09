@@ -24,12 +24,12 @@
 
 
 
-        <Button Content="Select File" Grid.Column="1" HorizontalAlignment="Left" Margin="160,10,0,0" VerticalAlignment="Top" Width="99" Name="FileSelect" Click="FileSelect_Click" />
-        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,78,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,82,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Name="enOv" Click="enOv_Click" IsChecked="True"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="189,82,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click"/>
-        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="160,145,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click"/>
-        <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="15,145,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click"/>
+        <Button Content="Select File" Grid.Column="1" HorizontalAlignment="Left" Margin="160,19,0,0" VerticalAlignment="Top" Width="99" Name="FileSelect" Click="FileSelect_Click" TabIndex="1" />
+        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,83,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,87,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Name="enOv" Click="enOv_Click" IsChecked="True" TabIndex="2"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="189,87,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" TabIndex="3"/>
+        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="160,145,0,0" Width="99" Click="Button_Click" Height="32" VerticalAlignment="Top" TabIndex="5"/>
+        <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="15,145,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click" TabIndex="4"/>
         <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="129" VerticalAlignment="Top" Width="129" Margin="18,48,0,0">
 
         </Border>
