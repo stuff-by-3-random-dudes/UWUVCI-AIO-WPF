@@ -457,7 +457,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else
             {
-                bi.Frame = Properties.Resources.WII;
+                bi.Frame = Properties.Resources.homebrew2;
             }
             
             b = bi.Create(console);

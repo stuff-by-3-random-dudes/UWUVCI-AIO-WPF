@@ -25,6 +25,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         public INJECTFRAME(GameConsoles console)
         {
             mvm = FindResource("mvm") as MainViewModel;
+            mvm.GameConfiguration.Console = console;
+            
             InitializeComponent();
             this.console = console;
             if(console == GameConsoles.N64)
@@ -50,12 +52,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs();
             }
-
+            
+            Console.WriteLine("GameConfig : " + mvm.GameConfiguration.Console.ToString());
             fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame(console);
         }
         public INJECTFRAME(GameConsoles console, GameConfig c)
         {
             mvm = FindResource("mvm") as MainViewModel;
+            mvm.GameConfiguration.Console = console;
+           
             InitializeComponent();
             this.console = console;
             if (console == GameConsoles.N64)
@@ -82,7 +87,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs(c);
             }
-
+            
             fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame(console);
         }
         public void Dispose()

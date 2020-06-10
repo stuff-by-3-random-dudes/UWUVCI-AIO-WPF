@@ -33,6 +33,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             sound.ToolTip += "\nWill be cut to 6 seconds of Length";
+            if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            {
+                snesnes.Visibility = Visibility.Visible;
+            }
         }
         public OtherConfigs(GameConfig c)
         {
@@ -42,6 +46,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             sound.ToolTip += "\nWill be cut to 6 seconds of Length";
+            if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            {
+                snesnes.Visibility = Visibility.Visible;
+            }
         }
         public void Dispose()
         {
