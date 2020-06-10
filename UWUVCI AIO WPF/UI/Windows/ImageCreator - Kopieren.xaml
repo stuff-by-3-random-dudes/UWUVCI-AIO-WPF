@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ImageCreator" Height="200" Width="435" Foreground="White" Background="LightGray" ResizeMode="NoResize" materialDesign:ShadowAssist.CacheMode="{x:Null}" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200">
+        Title="ImageCreator" Height="200" Width="467" Foreground="White" Background="LightGray" ResizeMode="NoResize" materialDesign:ShadowAssist.CacheMode="{x:Null}" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200" MinWidth="467">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>
@@ -24,11 +24,11 @@
 
 
 
-        <Button Content="Select File" Grid.Column="1" HorizontalAlignment="Left" Margin="160,19,0,0" VerticalAlignment="Top" Width="99" Name="FileSelect" Click="FileSelect_Click" TabIndex="1" />
-        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,59,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="100,63,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Name="enOv" Click="enOv_Click" IsChecked="True" TabIndex="2"/>
-        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="189,63,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" TabIndex="3"/>
-        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="160,145,0,0" Width="99" Click="Button_Click" Height="32" VerticalAlignment="Top" TabIndex="5"/>
+        <Button Content="Select File" Grid.Column="1" HorizontalAlignment="Left" Margin="185,19,-8,0" VerticalAlignment="Top" Width="99" Name="FileSelect" Click="FileSelect_Click" TabIndex="1" />
+        <Label Content="Overlay:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,61,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="Enabled" Grid.Column="1" HorizontalAlignment="Left" Margin="115,65,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Name="enOv" Click="enOv_Click" IsChecked="True" TabIndex="2" Width="73"/>
+        <RadioButton Content="Disabled" Grid.Column="1" HorizontalAlignment="Left" Margin="202,65,-15,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" TabIndex="3" Width="89"/>
+        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="185,145,-8,0" Width="99" Click="Button_Click" Height="32" VerticalAlignment="Top" TabIndex="5"/>
         <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="15,145,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click" TabIndex="4"/>
         <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="129" VerticalAlignment="Top" Width="129" Margin="18,48,0,0">
 
@@ -41,6 +41,10 @@
             <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
-        <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,148"/>
+        <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,148" />
+        <Label Content="Style:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,87,0,0" VerticalAlignment="Top" Name="ws" Visibility="Hidden"/>
+        <RadioButton Content="WiiWare" Grid.Column="1" HorizontalAlignment="Left" Margin="115,90,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis"  IsChecked="True" TabIndex="2" Width="73" Name="ww" Visibility="Hidden" Click="ww_Click"/>
+        <RadioButton Content="Homebrew" Grid.Column="1" HorizontalAlignment="Left" Margin="202,90,-7,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis"  TabIndex="3" Width="81" Name="hb" Visibility="Hidden"  Click="ww_Click"/>
+        <RadioButton Content="Wii" Grid.Column="1" HorizontalAlignment="Left" Margin="56,90,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis" IsChecked="True" TabIndex="3" Width="45" Name="wii" Visibility="Hidden"  Click="ww_Click"/>
     </Grid>
 </Window>

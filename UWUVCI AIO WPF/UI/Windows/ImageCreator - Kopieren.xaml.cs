@@ -55,7 +55,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if(console == "WII")
             {
-                bi.Frame = new Bitmap(Properties.Resources.WiiIcon);
+                bi.Frame = new Bitmap(Properties.Resources.Wii2);
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
             }
             else
             {
@@ -195,9 +199,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
+                ww.IsEnabled = true;
+                wii.IsEnabled = true;
+                hb.IsEnabled = true;
+                ws.IsEnabled = true;
             }
             else
             {
+                ww.IsEnabled = false;
+                wii.IsEnabled = false;
+                hb.IsEnabled = false;
+                ws.IsEnabled = false;
                 
                 if(bi.TitleScreen != null)
                 {
@@ -205,7 +217,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 else
                 {
-                    b = new Bitmap(1280, 720);
+                    b = new Bitmap(128, 128);
                     using (Graphics gfx = Graphics.FromImage(b))
                     using (SolidBrush brush = new SolidBrush(System.Drawing.Color.FromArgb(0, 0, 0)))
                     {
@@ -311,6 +323,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void RLEn_Click(object sender, RoutedEventArgs e)
         {
            
+            DrawImage();
+        }
+
+        private void ww_Click(object sender, RoutedEventArgs e)
+        {
+            if(ww.IsChecked == true)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.WiiIcon);
+            }
+            else if(wii.IsChecked == true)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Wii2);
+            }
+            else if(hb.IsChecked == true)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Wii2);
+            }
             DrawImage();
         }
     }

@@ -52,8 +52,8 @@
             <Label Content="Style:" Width="50" Margin="0,4,0,-4"></Label>
 
             <RadioButton Content="SNES - PAL" GroupName="snes" Name="pal" IsChecked="True" Click="pal_Click" Foreground="Black" Width="100" Margin="0,6,0,-6"/>
-            <RadioButton Content="SNES - NTSC" GroupName="snes" Click="pal_Click" Foreground="Black" Margin="0,6,0,-6" Width="107" />
-            <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
+            <RadioButton Content="SNES - NTSC" GroupName="snes" Click="pal_Click" Foreground="Black" Margin="0,6,0,-6" Width="107" Name="sntsc"/>
+            <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6" Name="sfc"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
         <CheckBox Content="Use ALT font" HorizontalAlignment="Left" Height="18" Margin="407,333,0,0" VerticalAlignment="Top" Foreground="Black" Click="CheckBox_Click" Name="alt" Visibility="Hidden"/>

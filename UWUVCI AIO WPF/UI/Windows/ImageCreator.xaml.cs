@@ -119,7 +119,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     alt.Visibility = Visibility.Hidden;
 
                     PlayerLabel.Visibility = Visibility.Hidden;
-                   
+                    snesonly.Visibility = Visibility.Visible;
+                    pal.Content = "Wii";
+                    sntsc.Content = "WiiWare";
+                    sfc.Content = "Homebrew";
                     break;
                 case GameConsoles.GCN:
                     bit = new Bitmap(Properties.Resources.GCN);
@@ -417,22 +420,46 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void pal_Click(object sender, RoutedEventArgs e)
         {
-            if(pal.IsChecked == true)
+            if(console != "WII")
             {
-                bi.Frame = Properties.Resources.SNES_PAL;
+                if (pal.IsChecked == true)
+                {
+                    bi.Frame = Properties.Resources.SNES_PAL;
 
+                }
+                else
+                {
+                    bi.Frame = Properties.Resources.SNES_USA;
+                }
             }
             else
             {
-                bi.Frame = Properties.Resources.SNES_USA;
+                if (pal.IsChecked == true)
+                {
+                    bi.Frame = Properties.Resources.WII;
+
+                }
+                else
+                {
+                    bi.Frame = Properties.Resources.WIIWARE;
+                }
             }
+            
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }
 
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
-            bi.Frame = Properties.Resources.SFAM;
+            if(console != "WII")
+            {
+                bi.Frame = Properties.Resources.SFAM;
+            }
+            else
+            {
+                bi.Frame = Properties.Resources.WII;
+            }
+            
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }
