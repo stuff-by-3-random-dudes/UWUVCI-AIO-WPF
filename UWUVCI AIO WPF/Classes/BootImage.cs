@@ -10,7 +10,7 @@ namespace UWUVCI_AIO_WPF.Classes
 
         private Bitmap _frame;
         private Bitmap _titleScreen;
-
+        private Font font;
         public Bitmap Frame
         {
             set
@@ -36,6 +36,7 @@ namespace UWUVCI_AIO_WPF.Classes
         public int Released;
         public int Players;
         public bool Longname;
+        private bool bf = false;
 
         public BootImage()
         {
@@ -92,7 +93,14 @@ namespace UWUVCI_AIO_WPF.Classes
             g.Clear(Color.White);
             System.Drawing.Text.PrivateFontCollection privateFonts = new System.Drawing.Text.PrivateFontCollection();
             privateFonts.AddFontFile(@"bin\Tools\font.otf");
-            Font font = new Font(privateFonts.Families[0], 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+            if (bf)
+            {
+                font = new Font("Trebuchet MS", 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+            }
+            else
+            {
+                font = new Font(privateFonts.Families[0], 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+            }
 
             SolidBrush brush = new SolidBrush(Color.FromArgb(32, 32, 32));
             Pen outline = new Pen(Color.FromArgb(222, 222, 222), 4.0F);
@@ -206,6 +214,17 @@ namespace UWUVCI_AIO_WPF.Classes
             }
 
             return img;
+        }
+        public void changefont(bool t)
+        {
+            if (t)
+            {
+                bf = true;
+            }
+            else
+            {
+                bf = false;
+            }
         }
     }
 }

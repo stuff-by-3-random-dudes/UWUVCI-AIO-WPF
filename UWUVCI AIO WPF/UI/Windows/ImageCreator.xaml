@@ -56,5 +56,6 @@
             <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
+        <CheckBox Content="Use ALT font" HorizontalAlignment="Left" Height="100" Margin="416,299,0,-22" VerticalAlignment="Top" Foreground="Black" Click="CheckBox_Click" Name="alt"/>
     </Grid>
 </Window>
