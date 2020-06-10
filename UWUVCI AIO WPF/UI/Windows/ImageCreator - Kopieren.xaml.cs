@@ -338,7 +338,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else if(hb.IsChecked == true)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Wii2);
+                bi.Frame = new Bitmap(Properties.Resources.HBICON);
             }
             DrawImage();
         }

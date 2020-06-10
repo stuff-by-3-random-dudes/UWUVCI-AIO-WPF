@@ -36,6 +36,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         Bitmap b;
         string console = "other";
         bool drc = false;
+        private string backupcons;
 
         public ImageCreator(string name)
         {
@@ -123,6 +124,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     pal.Content = "Wii";
                     sntsc.Content = "WiiWare";
                     sfc.Content = "Homebrew";
+                    altwii.Visibility = Visibility.Visible;
+                    backupcons = "WII";
                     break;
                 case GameConsoles.GCN:
                     bit = new Bitmap(Properties.Resources.GCN);
@@ -420,7 +423,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void pal_Click(object sender, RoutedEventArgs e)
         {
-            if(console != "WII")
+            if(console != "WII" && backupcons != "WII")
             {
                 if (pal.IsChecked == true)
                 {
@@ -434,6 +437,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else
             {
+
+                console = "WII";
+                switchs(Visibility.Hidden);
                 if (pal.IsChecked == true)
                 {
                     bi.Frame = Properties.Resources.WII;
@@ -451,13 +457,27 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
-            if(console != "WII")
+            if(console != "WII" && backupcons != "WII")
             {
+                backupcons = console;
                 bi.Frame = Properties.Resources.SFAM;
             }
             else
             {
-                bi.Frame = Properties.Resources.homebrew3;
+                backupcons = "WII";
+                if(altwii.IsChecked == false)
+                {
+                    console = "WII";
+                    switchs(Visibility.Hidden);
+                    bi.Frame = Properties.Resources.homebrew3;
+                }
+                else
+                {
+                    switchs(Visibility.Visible);
+                    console = "other";
+                    bi.Frame = Properties.Resources.NDS;
+                }
+                
             }
             
             b = bi.Create(console);
@@ -501,6 +521,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 bi.changefont(false);
             }
             DrawImage();
+        }
+        private void switchs(Visibility v)
+        {
+            GameName1.Visibility = v;
+            GameName2.Visibility = v;
+
+
+            ReleaseYear.Visibility = v;
+
+
+            Players.Visibility = v;
+            
+            if(v == Visibility.Hidden)
+            {
+                bi.NameLine1 = "";
+                bi.NameLine2 = "";
+                bi.Released = 0;
+                bi.Players = 0;
+            }
+            else
+            {
+                bi.NameLine1 = GameName1.Text;
+                bi.NameLine2 = GameName2.Text;
+                if (!String.IsNullOrEmpty(ReleaseYear.Text))
+                {
+                    bi.Released = Convert.ToInt32(ReleaseYear.Text);
+                }
+                if (!String.IsNullOrEmpty(Players.Text))
+                {
+                    bi.Players = Convert.ToInt32(Players.Text);
+                }
+               
+            }
+    
         }
     }
 }
