@@ -200,7 +200,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 }
             }
 
-            if (Released > 1951)
+            if (Released > 0)
             {
                 GraphicsPath r = new GraphicsPath();
                 r.AddString("Released: " + Released.ToString(), font.FontFamily,
@@ -215,9 +215,12 @@ namespace UWUVCI_AIO_WPF.Classes
             {
                 string pStr = Players >= 4 ? "1-4" : Players == 3 ? "1-3" : Players == 2 ? "1-2" : "1";
                 GraphicsPath p = new GraphicsPath();
-                p.AddString("Players: " + pStr, font.FontFamily,
+                
+                    p.AddString("Players: " + pStr, font.FontFamily,
                     (int)(FontStyle.Regular),
                     g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 400, 40), format);
+                
+                
                g.DrawPath(shadow, p);
                 g.DrawPath(outline, p);
                 g.FillPath(brush, p);

@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
       d:DesignHeight="290" d:DesignWidth="383"
-      Title="NonCustomBaseFrame">
+      Title="NonCustomBaseFrame" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid>
         <TextBlock x:Name="tbDWNL" HorizontalAlignment="Center" Margin="10,58,10,0" TextWrapping="Wrap" Text="Base not downloaded" VerticalAlignment="Top" TextAlignment="Center" Width="363" FontSize="20" Foreground="DarkRed"/>

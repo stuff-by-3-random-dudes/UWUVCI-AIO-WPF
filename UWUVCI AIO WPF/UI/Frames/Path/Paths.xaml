@@ -7,7 +7,7 @@
        mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
      d:DesignHeight="600" d:DesignWidth="1130"
-      Title="Paths">
+      Title="Paths" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid DataContext="{StaticResource mvm}">
         <TextBox materialDesign:HintAssist.Hint="PATH TO STORE DOWNLOADED BASES" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="234,215,420,340" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding BaseStore}"/>

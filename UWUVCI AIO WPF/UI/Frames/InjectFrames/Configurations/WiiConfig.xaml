@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations"
        mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DesignWidth="643"
-      Title="N64Config" Height="510">
+      Title="N64Config" Height="510" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid DataContext="{StaticResource mvm}">
         <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name="rp" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,406" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"/>

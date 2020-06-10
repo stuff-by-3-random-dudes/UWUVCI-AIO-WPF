@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="1135"
-      Title="SettingsFrame">
+      Title="SettingsFrame" >
 
     <Grid Margin="0,2,0,-2">
         <TextBlock HorizontalAlignment="Left" Margin="325,216,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />

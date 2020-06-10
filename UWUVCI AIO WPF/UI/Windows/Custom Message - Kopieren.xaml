@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Custom_Message___Kopieren" Height="450" Width="800">
     <Grid>
-        <Expander Header="Expander" HorizontalAlignment="Left" Height="100" Margin="10,10,0,0" VerticalAlignment="Top" Width="239">
+        <Expander Header="Expander" HorizontalAlignment="Left" Height="100" Margin="10,10,0,0" materialDesign:ShadowAssist.CacheMode="{x:Null}" VerticalAlignment="Top" Width="239">
             <Grid Background="#FFE5E5E5"/>
         </Expander>
 

@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases"
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DesignWidth="383"
-      Title="CustomBaseFrame" Height="290">
+      Title="CustomBaseFrame" Height="290" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid DataContext="{StaticResource mvm}">
         <TextBox materialDesign:HintAssist.Hint="BASE PATH" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0,5,108,243" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding CBasePath}" IsReadOnly="True" Focusable="False" Name="bar" />

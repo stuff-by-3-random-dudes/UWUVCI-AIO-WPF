@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="250" Width="490" MinHeight="250" MinWidth="490" MaxHeight="250" MaxWidth="490" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" Closing="wind_Closing" Closed="wind_Closed">
+        Title="MAIN" Height="250" Width="490" MinHeight="250" MinWidth="490" MaxHeight="250" materialDesign:ShadowAssist.CacheMode="{x:Null}" MaxWidth="490" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" Closing="wind_Closing" Closed="wind_Closed">
 
     <Grid>
         <Grid.RowDefinitions>

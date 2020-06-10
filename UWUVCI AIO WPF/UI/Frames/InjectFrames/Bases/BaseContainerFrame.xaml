@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases"
       mc:Ignorable="d" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DesignWidth="403"
-      Title="BaseContainerFrame" Height="406">
+      Title="BaseContainerFrame" Height="406" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid DataContext="{StaticResource mvm}">
         <TextBlock Text="Choose a Base from the dropdown menu" Margin="10,5,10,381" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="15" Width="383"></TextBlock>

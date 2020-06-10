@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ImageCreator" Height="381" Width="786" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner">
+        Title="ImageCreator" Height="381" Width="786" Foreground="White" Background="LightGray" materialDesign:ShadowAssist.CacheMode="{x:Null}" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -56,6 +56,6 @@
             <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
-        <CheckBox Content="Use ALT font" HorizontalAlignment="Left" Height="18" Margin="407,333,0,0" VerticalAlignment="Top" Foreground="Black" Click="CheckBox_Click" Name="alt"/>
+        <CheckBox Content="Use ALT font" HorizontalAlignment="Left" Height="18" Margin="407,333,0,0" VerticalAlignment="Top" Foreground="Black" Click="CheckBox_Click" Name="alt" Visibility="Hidden"/>
     </Grid>
 </Window>

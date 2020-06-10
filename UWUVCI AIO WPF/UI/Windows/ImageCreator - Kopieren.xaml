@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ImageCreator" Height="200" Width="435" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200">
+        Title="ImageCreator" Height="200" Width="435" Foreground="White" Background="LightGray" ResizeMode="NoResize" materialDesign:ShadowAssist.CacheMode="{x:Null}" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>

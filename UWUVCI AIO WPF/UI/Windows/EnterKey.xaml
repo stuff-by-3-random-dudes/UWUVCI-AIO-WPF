@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Enter Key" Height="151.156" Width="493.5" WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" GotFocus="Window_GotFocus" Closing="wind_Closing" Closed="wind_Closed">
+        Title="Enter Key" Height="151.156" Width="493.5" WindowStyle="None" WindowStartupLocation="CenterOwner" materialDesign:ShadowAssist.CacheMode="{x:Null}" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" GotFocus="Window_GotFocus" Closing="wind_Closing" Closed="wind_Closed">
     <Grid DataContext="{StaticResource mvm}">
         <Button Content="Check" HorizontalAlignment="Left" Margin="308,103,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1"/>
         <Button Content="Cancel" HorizontalAlignment="Left" Margin="400,103,0,0" VerticalAlignment="Top" Width="76" Click="Button_Click"/>

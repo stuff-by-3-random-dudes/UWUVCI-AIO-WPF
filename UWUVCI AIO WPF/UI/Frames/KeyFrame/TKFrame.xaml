@@ -7,7 +7,7 @@
       mc:Ignorable="d" 
      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       d:DesignHeight="480" d:DesignWidth="1130"
-      Title="NDSFrame">
+      Title="NDSFrame" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid DataContext="{StaticResource mvm}">
         <DataGrid Background="Transparent" AutoGenerateColumns="False" ItemsSource="{Binding Ltemp}" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" CanUserReorderColumns="False" SelectedItem="{Binding GbTemp}" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Name="Grid" SelectionMode = "Single">
