@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Windows;
+using System.Windows.Media;
+using Color = System.Drawing.Color;
+using FontFamily = System.Drawing.FontFamily;
+using FontStyle = System.Drawing.FontStyle;
+using Pen = System.Drawing.Pen;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -95,15 +101,19 @@ namespace UWUVCI_AIO_WPF.Classes
             privateFonts.AddFontFile(@"bin\Tools\font.otf");
             if (bf)
             {
-                font = new Font("Trebuchet MS", 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+                font = new Font("Trebuchet MS", 10.0F, System.Drawing.FontStyle.Bold, GraphicsUnit.Point);
             }
             else
             {
                 font = new Font(privateFonts.Families[0], 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+                
+
+
+
             }
 
             SolidBrush brush = new SolidBrush(Color.FromArgb(32, 32, 32));
-            Pen outline = new Pen(Color.FromArgb(222, 222, 222), 4.0F);
+            Pen outline = new Pen(System.Drawing.Color.FromArgb(222, 222, 222), 4.0F);
             Pen shadow = new Pen(Color.FromArgb(190, 190, 190), 6.0F);
             StringFormat format = new StringFormat();
             Rectangle rectangleGBA = new Rectangle(132, 260, 399, 266);
