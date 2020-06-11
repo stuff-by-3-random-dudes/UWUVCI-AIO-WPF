@@ -1813,6 +1813,25 @@ namespace UWUVCI_AIO_WPF
             mvvm.msg = "Decompressing RPX...";
             RPXdecomp(rpxFile); //Decompresses the RPX to be able to write the game into it
             mvvm.Progress = 20;
+            if (mvvm.pixelperfect)
+            {
+                using (Process retroinject = new Process())
+                {
+                    mvvm.msg = "Applying Pixel Perfect Patches...";
+                    retroinject.StartInfo.UseShellExecute = false;
+                    retroinject.StartInfo.CreateNoWindow = true;
+                    retroinject.StartInfo.RedirectStandardOutput = true;
+                    retroinject.StartInfo.RedirectStandardError = true;
+                    retroinject.StartInfo.FileName = Path.Combine(toolsPath, "ChangeAspectRatio.exe");
+                    retroinject.StartInfo.Arguments = $"\"{rpxFile}\"";
+
+                    retroinject.Start();
+                    retroinject.WaitForExit();
+                    mvvm.Progress = 30;
+                    
+
+                }
+            }
             using (Process retroinject = new Process())
             {
                 mvvm.msg = "Injecting ROM...";
