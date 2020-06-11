@@ -105,7 +105,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 nc.Visibility = Visibility.Hidden;
             }
-            if (message.Contains("Config will stay filled, choose a Console again to clear it"))
+            if (message.Contains("If you want the inject to be put on your SD now"))
             {
                 nc.Visibility = Visibility.Visible;
             }
@@ -265,7 +265,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if((FindResource("mvm") as MainViewModel).mw != null)
                 (FindResource("mvm") as MainViewModel).mw.Topmost = true;
             }
-            catch (Exception s) 
+            catch (Exception ) 
             { 
             }
 
@@ -279,7 +279,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if ((FindResource("mvm") as MainViewModel).mw != null)
                     (FindResource("mvm") as MainViewModel).mw.Topmost = false;
             }
-            catch (Exception s)
+            catch (Exception)
             {
             }
 

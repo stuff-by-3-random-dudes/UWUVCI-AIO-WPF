@@ -171,7 +171,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             load.Visibility = Visibility.Hidden;
             wb.Visibility = Visibility.Visible;
         }
-        private bool bCancel = false;
+
 
       
         private void wb_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)

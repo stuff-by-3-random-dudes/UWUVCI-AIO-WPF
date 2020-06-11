@@ -44,7 +44,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 
                
             }
-            catch (Exception s)
+            catch (Exception )
             {
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }

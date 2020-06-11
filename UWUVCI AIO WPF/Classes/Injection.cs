@@ -40,7 +40,7 @@ namespace UWUVCI_AIO_WPF
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true)]
         static extern bool PostMessage(IntPtr hWnd, int Msg, System.Windows.Forms.Keys wParam, int lParam);
-        private static Int32 WM_KEYDOWN = 0x100; private static Int32 WM_KEYUP = 0x101;
+        private static Int32 WM_KEYUP = 0x101;
         private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "temp");
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
         private static readonly string imgPath = Path.Combine(tempPath, "img");
@@ -124,7 +124,7 @@ namespace UWUVCI_AIO_WPF
 
                     }
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
 
                 }
@@ -1430,11 +1430,11 @@ namespace UWUVCI_AIO_WPF
             
             DirectoryCopy(baseRomPath,outputPath, true);
 
-            Custom_Message cm = new Custom_Message("Injection Complete", $"Config will stay filled, choose a Console again to clear it.\nTo Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);
+            Custom_Message cm = new Custom_Message("Injection Complete", $"To Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);
             try
             {
                 cm.Owner = mvvm.mw;
-            }catch(Exception e)
+            }catch(Exception )
             {
 
             }

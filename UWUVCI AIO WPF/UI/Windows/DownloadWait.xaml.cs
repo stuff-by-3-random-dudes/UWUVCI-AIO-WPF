@@ -127,7 +127,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     (FindResource("mvm") as MainViewModel).mw.Topmost = false;
                 }
             }
-            catch (Exception s)
+            catch (Exception )
             {
 
             }

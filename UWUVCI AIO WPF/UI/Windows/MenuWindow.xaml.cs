@@ -169,7 +169,7 @@ namespace UWUVCI_AIO_WPF
             load_frame.Content = null;
             load_frame.NavigationService.RemoveBackEntry();
         }
-        private void ListView_Click(object sender, MouseButtonEventArgs e)
+        public void ListView_Click(object sender, MouseButtonEventArgs e)
         {
             
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
@@ -206,6 +206,7 @@ namespace UWUVCI_AIO_WPF
             mvm.jppatch = false;
             mvm.GC = false;
             mvm.test = GameConsoles.WII;
+            mvm.pixelperfect = false;
             mvm.RemoveCreatedIMG();
             mvm.isDoneMW();
 

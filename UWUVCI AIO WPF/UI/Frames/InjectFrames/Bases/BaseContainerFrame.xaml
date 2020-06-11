@@ -10,10 +10,10 @@
 
     <Grid DataContext="{StaticResource mvm}">
         <TextBlock Text="Choose a Base from the dropdown menu" Margin="10,5,10,381" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" FontSize="15" Width="383"></TextBlock>
-        <ComboBox x:Name="cbCombo" Margin="7,32,13,0" VerticalAlignment="Top" Background="#FFCFCFCF" BorderBrush="#FF008BFF" ItemsSource="{Binding LGameBasesString}" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding SelectedBaseAsString}"/>
-        <Frame Name="fLoadFrame" HorizontalAlignment="Left" Height="290" Margin="10,116,0,0" VerticalAlignment="Top" Width="383"/>
-        <Button Content="Copy ID" HorizontalAlignment="Left" Margin="298,69,0,0" VerticalAlignment="Top" Width="94" Height="31" Name="id" Click="id_Click"  Visibility="Hidden"/>
-        <Label Content="" HorizontalAlignment="Left" Margin="179,72,0,0" VerticalAlignment="Top" Width="114" Name="idtxt"  Foreground="Black" Visibility="Hidden"/>
+        <ComboBox x:Name="cbCombo" Margin="7,32,13,0" VerticalAlignment="Top" Background="#FFCFCFCF" BorderBrush="#FF008BFF" ItemsSource="{Binding LGameBasesString}" IsTabStop="False" SelectionChanged="ComboBox_SelectionChanged" SelectedItem="{Binding SelectedBaseAsString}"/>
+        <Frame Name="fLoadFrame" HorizontalAlignment="Left" Height="290" Margin="10,116,0,0" VerticalAlignment="Top" Width="383" IsTabStop="False"/>
+        <Button Content="Copy ID" HorizontalAlignment="Left" Margin="298,69,0,0" VerticalAlignment="Top" Width="94" Height="31" Name="id" Click="id_Click"  Visibility="Hidden" IsTabStop="False"/>
+        <Label Content="" HorizontalAlignment="Left" Margin="179,72,0,0" VerticalAlignment="Top" Width="114" Name="idtxt"  Foreground="Black" Visibility="Hidden" IsTabStop="False"/>
 
     </Grid>
 </Page>

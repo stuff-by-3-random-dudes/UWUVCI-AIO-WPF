@@ -9,25 +9,44 @@
       Title="SettingsFrame" >
 
     <Grid Margin="0,2,0,-2">
-        <TextBlock HorizontalAlignment="Left" Margin="325,216,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="558" Margin="12,34,0,0" VerticalAlignment="Top" Width="1108" CornerRadius="5" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleY="0.145"/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="0.998"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+        </Border>
+        <TextBlock HorizontalAlignment="Left" Margin="337,188,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
         <TextBlock HorizontalAlignment="Left" Margin="325,482,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,541,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,67,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
-        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,74,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True" Visibility="Hidden"/>
-        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,67,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Visibility="Hidden"/>
-        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,478,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1" Visibility="Hidden"/>
-        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="605,211,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2"/>
-        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden"/>
-        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="605,254,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3"/>
-        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="325,297,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4"/>
-        <Button Content="Credits" HorizontalAlignment="Left" Margin="1040,558,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5"/>
-        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="483,254,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7"/>
-        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="597,342,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1022,10,0,0" TextWrapping="Wrap" Text="v2.1 BETA" VerticalAlignment="Top" FontSize="20" Width="98"/>
-        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="325,254,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8"/>
-        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="325,342,0,0" VerticalAlignment="Top" Width="267" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9"/>
-        <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="410,387,0,0" VerticalAlignment="Top" Width="266" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="325,451,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_11" />
+        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,74,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True" Visibility="Hidden" IsTabStop="False"/>
+        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,67,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Visibility="Hidden" IsTabStop="False"/>
+        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,478,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1" Visibility="Hidden" IsTabStop="False"/>
+        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="617,182,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2" IsTabStop="False"/>
+        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden" IsTabStop="False"/>
+        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="617,226,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3" IsTabStop="False"/>
+        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="337,268,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4" IsTabStop="False"/>
+        <Button Content="Credits" HorizontalAlignment="Left" Margin="1022,548,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5" IsTabStop="False"/>
+        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="495,226,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7" IsTabStop="False"/>
+        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="609,314,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6" IsTabStop="False"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1022,10,0,0" TextWrapping="Wrap" Text="v2.1 BETA" VerticalAlignment="Top" FontSize="20" Width="98" Visibility="Hidden"/>
+        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="337,226,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8" IsTabStop="False"/>
+        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="337,314,0,0" VerticalAlignment="Top" Width="267" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9" IsTabStop="False"/>
+        <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="422,358,0,0" VerticalAlignment="Top" Width="266" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10" IsTabStop="False"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="337,422,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_11"  IsTabStop="False"/>
+        <Grid Margin="0,0,5,0"/>
+        <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="12,7,0,0" VerticalAlignment="Top" Width="1108"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="1103,6,0,0" VerticalAlignment="Top" Width="17"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="12,17,0,0" VerticalAlignment="Top" Width="1108"/>
+        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="21,7,0,0" VerticalAlignment="Top" Width="1082"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,7,0,0" VerticalAlignment="Top" Width="17"/>
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,7,0,0" VerticalAlignment="Top" Width="17"/>
+        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="12,6,0,0" VerticalAlignment="Top" Width="1108" CornerRadius="5" Background="#FF2196F3"/>
+        <Label Content="v3.0 BETA" HorizontalAlignment="Left" Margin="1048,10,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF" Width="72" Height="24"/>
 
     </Grid>
 </Page>

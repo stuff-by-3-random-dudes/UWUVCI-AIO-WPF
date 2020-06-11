@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -121,16 +122,21 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            IconCreator ic = new IconCreator("WII") ;
-            try
-            {
-                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
-            }
-            catch (Exception)
-            {
+            /*IconCreator ic = new IconCreator("WII") ;
+             try
+             {
+                 ic.Owner = (FindResource("mvm") as MainViewModel).mw;
+             }
+             catch (Exception)
+             {
 
+             }
+             ic.ShowDialog();*/
+            var listitem = (FindResource("mvm") as MainViewModel).mw.listCONS.Items;
+            foreach(var item in listitem)
+            {
+                Console.WriteLine((item as System.Windows.Controls.ListViewItem).Name);
             }
-            ic.ShowDialog();
         }
 
         

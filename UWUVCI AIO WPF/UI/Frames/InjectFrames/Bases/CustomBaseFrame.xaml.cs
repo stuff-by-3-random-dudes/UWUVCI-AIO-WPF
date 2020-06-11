@@ -94,7 +94,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                 {
                                     cm.Owner = mvm.mw;
                                 }
-                                catch (Exception e2)
+                                catch (Exception )
                                 {
 
                                 }
@@ -110,7 +110,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                     {
                                         cm.Owner = mvm.mw;
                                     }
-                                    catch (Exception e2)
+                                    catch (Exception )
                                     {
 
                                     }
@@ -147,7 +147,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                             {
                                                 cm.Owner = mvm.mw;
                                             }
-                                            catch (Exception e2)
+                                            catch (Exception )
                                             {
 
                                             }
@@ -188,7 +188,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                                             {
                                                 cm.Owner = mvm.mw;
                                             }
-                                            catch (Exception e2)
+                                            catch (Exception )
                                             {
 
                                             }

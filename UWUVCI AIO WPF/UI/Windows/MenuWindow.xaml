@@ -69,7 +69,7 @@
                         <materialDesign:PackIcon Foreground="White" Kind="HamburgerMenu" Height="25" Width="25"/>
                     </Button>
                 </Grid>
-                <ListView  Foreground="White"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseLeftButtonUp="ListView_Click" >
+                <ListView  Foreground="White"  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewMouseLeftButtonUp="ListView_Click" Name="listCONS">
                     
                     <!--NDS-->
                     <ListViewItem Height="60" x:Name="NDS" IsEnabled="{Binding PathsSet}" Cursor="Hand">

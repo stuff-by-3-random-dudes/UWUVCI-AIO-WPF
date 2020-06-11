@@ -12,13 +12,13 @@
     <Grid DataContext="{StaticResource mvm}">
 
         <Grid>
-            <Frame Name="fBaseFrame" Width="403" Margin="20,64,706,130"/>
+            <Frame Name="fBaseFrame" Width="403" Margin="20,64,706,130"  IsTabStop="False"/>
         </Grid>
-        <Button Content="WUP Installable" HorizontalAlignment="Left" Margin="51,533,0,0" VerticalAlignment="Top" Width="137" IsEnabled="{Binding Injected}" Click="Button_Click_3"/>
-        <Button Content="Loadiine" HorizontalAlignment="Left" Margin="256,533,0,0" VerticalAlignment="Top" Width="137" IsEnabled="{Binding Injected}" Click="Button_Click_2"/>
+        <Button Content="WUP Installable" HorizontalAlignment="Left" Margin="51,533,0,0" VerticalAlignment="Top" Width="137" IsEnabled="{Binding Injected}" Click="Button_Click_3"  IsTabStop="False"/>
+        <Button Content="Loadiine" HorizontalAlignment="Left" Margin="256,533,0,0" VerticalAlignment="Top" Width="137" IsEnabled="{Binding Injected}" Click="Button_Click_2"  IsTabStop="False"/>
 
 
-        <Frame Name="fLoadConfig" Width="643" Margin="459,55,28,35"/>
+        <Frame Name="fLoadConfig" Width="643" Margin="459,55,28,35"  IsTabStop="False"/>
 
 
 
@@ -30,7 +30,8 @@
         <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="416,18,0,0" VerticalAlignment="Top" Width="17"/>
         <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="12,28,0,0" VerticalAlignment="Top" Width="421"/>
         <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="21,18,0,0" VerticalAlignment="Top" Width="403"/>
-
+        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,18,0,0" VerticalAlignment="Top" Width="17"/>
+        
         <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="450,18,0,0" VerticalAlignment="Top" Width="661"/>
         <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="450,28,0,0" VerticalAlignment="Top" Width="661"/>
         <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="32" Margin="459,18,0,0" VerticalAlignment="Top" Width="644"/>
@@ -45,8 +46,8 @@
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="538" Margin="450,44,0,0" VerticalAlignment="Top" Width="661" CornerRadius="5"/>
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="450,17,0,0" VerticalAlignment="Top" Width="661" CornerRadius="5" Background="#FF2196F3"/>
         <Label Content="3. Packing" HorizontalAlignment="Left" Margin="27,491,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
-        <Button Content="Import Config" HorizontalAlignment="Left" Margin="841,18,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click" Background="{x:Null}" BorderBrush="{x:Null}"/>
-        <Button Content="Export Config" HorizontalAlignment="Left" Margin="976,18,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}" Click="Button_Click_1"/>
+        <Button Content="Import Config" HorizontalAlignment="Left" Margin="841,18,0,0" VerticalAlignment="Top" Width="128" Click="Button_Click" Background="{x:Null}" BorderBrush="{x:Null}" IsTabStop="False"/>
+        <Button Content="Export Config" HorizontalAlignment="Left" Margin="976,18,0,0" VerticalAlignment="Top" Width="127" Background="{x:Null}" BorderBrush="{x:Null}" Click="Button_Click_1" IsTabStop="False"/>
         <Label Content="2. Configuration" HorizontalAlignment="Left" Margin="467,22,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF"/>
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="433" Margin="12,45,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5"/>
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="12,17,0,0" VerticalAlignment="Top" Width="421" CornerRadius="5" Background="#FF2196F3"/>

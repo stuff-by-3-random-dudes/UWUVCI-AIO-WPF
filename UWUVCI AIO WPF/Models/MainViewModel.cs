@@ -59,7 +59,7 @@ namespace UWUVCI_AIO_WPF
         }
 
         public bool jppatch = false;
-        
+        public bool pixelperfect = false;
 
         private GameBases gbTemp;
 
@@ -525,7 +525,7 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     cm.Owner = mw;
-                }catch(Exception e)
+                }catch(Exception )
                 {
 
                 }
@@ -759,7 +759,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     (thing as OtherConfigs).getInfoFromConfig();
                 }
-               catch(Exception e)
+               catch(Exception )
                 {
                     (thing as GCConfig).getInfoFromConfig();
                 }
@@ -879,8 +879,7 @@ namespace UWUVCI_AIO_WPF
                 if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
                 if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
                 gc2rom = "";
-                Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nConfig will stay filled, choose a Console again to clear it!\nTo Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);
-                try
+                Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nTo Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);                try
                 {
                     cm.Owner = mw;
                 }
@@ -900,6 +899,7 @@ namespace UWUVCI_AIO_WPF
             prodcode = "";
             ClearImage();
             foldername = "";
+            mw.ListView_Click(mw.listCONS, null);
         }
 
         private void ClearImage()
@@ -1019,7 +1019,7 @@ namespace UWUVCI_AIO_WPF
             {
                 dw.changeOwner(mw);
             }
-            catch(Exception e) { }
+            catch(Exception ) { }
             dw.ShowDialog();
             Progress = 0;
             if (Injected)
@@ -1490,7 +1490,7 @@ namespace UWUVCI_AIO_WPF
                         try
                         {
                             cm1.Owner = mw;
-                        }catch(Exception e)
+                        }catch(Exception )
                         {
 
                         }
@@ -1633,27 +1633,65 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                WebRequest request;
-                //get download link from uwuvciapi
-                if (tool)
+                bool ok = false;
+                try
                 {
-                     request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?tool=" + toolname);
+                    System.Net.WebClient client = new System.Net.WebClient();
+                    string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
+                    ok = true;
+                }
+                catch (System.Net.WebException ex)
+                {
+                    
+
+                }
+                if (ok)
+                {
+                    WebRequest request;
+                    //get download link from uwuvciapi
+                    if (tool)
+                    {
+                        request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?tool=" + toolname);
+                    }
+                    else
+                    {
+                        request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVcbLink?vcb=" + toolname);
+                    }
+
+                    var response = request.GetResponse();
+                    using (Stream dataStream = response.GetResponseStream())
+                    {
+                        // Open the stream using a StreamReader for easy access.  
+                        StreamReader reader = new StreamReader(dataStream);
+                        // Read the content.  
+                        string responseFromServer = reader.ReadToEnd();
+                        // Display the content.  
+                        if(responseFromServer == "")
+                        {
+                            if (tool)
+                            {
+                                return $"{ToolCheck.backupulr}{toolname}";
+                            }
+                            else
+                            {
+                                return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
+                            }
+                        }
+                        return responseFromServer;
+                    }
                 }
                 else
                 {
-                    request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVcbLink?vcb=" + toolname);
+                    if (tool)
+                    {
+                        return $"{ToolCheck.backupulr}{toolname}";
+                    }
+                    else
+                    {
+                        return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
+                    }
                 }
-                
-                var response = request.GetResponse();
-                using (Stream dataStream = response.GetResponseStream())
-                {
-                    // Open the stream using a StreamReader for easy access.  
-                    StreamReader reader = new StreamReader(dataStream);
-                    // Read the content.  
-                    string responseFromServer = reader.ReadToEnd();
-                    // Display the content.  
-                    return responseFromServer;
-                }
+               
                
             }
             catch (Exception)
@@ -1664,9 +1702,9 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/"+toolname;
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
                 }
-                
+
             }
         }
         public void InjcttoolCheck()
@@ -2041,7 +2079,7 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 ek.Owner = mw;
-            }catch(Exception e) { }
+            }catch(Exception ) { }
             ek.ShowDialog();
         }
         public bool checkcKey(string key)
@@ -2637,7 +2675,6 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
-            bool found = false;
             string[] ext = { "png" };
             if (CheckForInternetConnectionWOWarning())
             {
@@ -2645,7 +2682,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
                 foreach (var e in ext)
                 {
-
+                    bool found = false;
 
                     if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
                     {
@@ -2742,10 +2779,12 @@ namespace UWUVCI_AIO_WPF
                             found = true;
                             img.ShowDialog(); break;
                         }
+                        Console.WriteLine(found);
                     }
+                    
                 }
 
-
+               
                 checkForAdditionalFiles(GameConsoles.N64, repoids);
                 
 
@@ -2935,7 +2974,7 @@ namespace UWUVCI_AIO_WPF
 
                     }
                 }
-            }catch(Exception e)
+            }catch(Exception )
             {
                 Custom_Message cm = new Custom_Message("Unknown ROM", "It seems that you inserted an unknown ROM as a Wii or GameCube game.\nIt is not recommended continuing with said ROM!");
                 try

@@ -55,7 +55,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "bmp2tga.exe",
             "ConvertToNKit.exe",
             "wglp.exe",
-            "font.otf"
+            "font.otf",
+            "ChangeAspectRatio.exe"
         };
 
         public static bool DoesToolsFolderExist()

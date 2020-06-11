@@ -142,7 +142,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             }
         }
-        private async void Window_Close(object sender, RoutedEventArgs e)
+        private void Window_Close(object sender, RoutedEventArgs e)
         {
             /*Task t = new Task(() => watcher.Stop());
             t.Start();
@@ -174,7 +174,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     (FindResource("mvm") as MainViewModel).mw.Topmost = false;
                 }
             }
-            catch (Exception s)
+            catch (Exception )
             {
 
             }

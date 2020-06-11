@@ -560,8 +560,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             catch (Exception)
             {
-                string cns = "TGx16";
-                if(cd) cns = "TGxCD";
+                
+                
                 Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for TurboGrafX is not implemented yet");
                 try
                 {

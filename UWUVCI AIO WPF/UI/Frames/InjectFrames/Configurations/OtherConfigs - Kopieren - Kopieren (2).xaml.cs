@@ -26,7 +26,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
     public partial class GBA : Page, IDisposable
     {
         MainViewModel mvm;
-        bool cd = false;
+
         public GBA()
         {
             InitializeComponent();
