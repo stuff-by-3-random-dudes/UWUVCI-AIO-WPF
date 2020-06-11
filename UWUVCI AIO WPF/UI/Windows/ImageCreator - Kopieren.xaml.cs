@@ -65,9 +65,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
                 hb.IsChecked = true;
-                ww.Content = "Alt 2";
-                hb.Content = "Default";
-                wii.Content = "Alt 1";
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "GCN";
                 ww.Visibility = Visibility.Visible;
                 ws.Visibility = Visibility.Visible;
                 hb.Visibility = Visibility.Visible;
@@ -359,18 +359,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if (ww.IsChecked == true)
                 {
-                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON3);
+                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON2);
                     console = "WII";
                 }
                 else if (wii.IsChecked == true)
                 {
-                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON2);
-                    console = "WII";
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
                 }
                 else if (hb.IsChecked == true)
                 {
-                    bi.Frame = new Bitmap(Properties.Resources.Icon);
-                    console = "other";
+                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON2);
+                    console = "WII";
                 }
             }
            

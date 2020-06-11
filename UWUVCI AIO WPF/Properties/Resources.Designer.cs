@@ -313,6 +313,16 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap wii3New {
+            get {
+                object obj = ResourceManager.GetObject("wii3New", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap WiiIcon {
             get {
                 object obj = ResourceManager.GetObject("WiiIcon", resourceCulture);

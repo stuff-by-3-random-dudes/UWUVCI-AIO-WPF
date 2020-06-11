@@ -45,6 +45,6 @@
         <Label Content="Style:" Grid.Column="1" HorizontalAlignment="Left" Margin="15,87,0,0" VerticalAlignment="Top" Name="ws" Visibility="Hidden"/>
         <RadioButton Content="WiiWare" Grid.Column="1" HorizontalAlignment="Left" Margin="115,90,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis"  IsChecked="True" TabIndex="2" Width="73" Name="ww" Visibility="Hidden" Click="ww_Click"/>
         <RadioButton Content="Homebrew" Grid.Column="1" HorizontalAlignment="Left" Margin="202,90,-7,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis"  TabIndex="3" Width="81" Name="hb" Visibility="Hidden"  Click="ww_Click"/>
-        <RadioButton Content="Wii" Grid.Column="1" HorizontalAlignment="Left" Margin="56,90,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis" IsChecked="True" TabIndex="3" Width="45" Name="wii" Visibility="Hidden"  Click="ww_Click"/>
+        <RadioButton Content="Wii" Grid.Column="1" HorizontalAlignment="Left" Margin="56,90,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="wis" IsChecked="True" Visibility="Hidden" TabIndex="3" Width="54" Name="wii"   Click="ww_Click"/>
     </Grid>
 </Window>

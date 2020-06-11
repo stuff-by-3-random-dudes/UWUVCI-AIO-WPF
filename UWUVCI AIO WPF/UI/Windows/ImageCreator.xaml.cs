@@ -475,7 +475,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     switchs(Visibility.Visible);
                     console = "other";
-                    bi.Frame = Properties.Resources.NDS;
+                    bi.Frame = Properties.Resources.wii3New;
                 }
                 
             }
