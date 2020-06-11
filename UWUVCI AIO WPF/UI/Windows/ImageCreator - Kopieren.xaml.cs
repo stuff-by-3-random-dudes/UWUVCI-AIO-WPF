@@ -53,9 +53,21 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void SetTemplate()
         {
-            if(console == "WII")
+            if(console == "WII" && (FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
             {
                 bi.Frame = new Bitmap(Properties.Resources.Wii2);
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
+            else if ((FindResource("mvm") as MainViewModel).test == GameConsoles.GCN)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                hb.IsChecked = true;
+                ww.Content = "Alt 2";
+                hb.Content = "Default";
+                wii.Content = "Alt 1";
                 ww.Visibility = Visibility.Visible;
                 ws.Visibility = Visibility.Visible;
                 hb.Visibility = Visibility.Visible;
@@ -328,18 +340,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void ww_Click(object sender, RoutedEventArgs e)
         {
-            if(ww.IsChecked == true)
+            if((FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
             {
-                bi.Frame = new Bitmap(Properties.Resources.WiiIcon);
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.WiiIcon);
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Wii2);
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.HBICON);
+                }
             }
-            else if(wii.IsChecked == true)
+            else
             {
-                bi.Frame = new Bitmap(Properties.Resources.Wii2);
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON3);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON2);
+                    console = "WII";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
             }
-            else if(hb.IsChecked == true)
-            {
-                bi.Frame = new Bitmap(Properties.Resources.HBICON);
-            }
+           
             DrawImage();
         }
     }

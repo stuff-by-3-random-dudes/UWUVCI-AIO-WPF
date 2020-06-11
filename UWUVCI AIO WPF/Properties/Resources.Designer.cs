@@ -113,6 +113,26 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GCN_ICON2 {
+            get {
+                object obj = ResourceManager.GetObject("GCN_ICON2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GCN_ICON3 {
+            get {
+                object obj = ResourceManager.GetObject("GCN_ICON3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap HBICON {
             get {
                 object obj = ResourceManager.GetObject("HBICON", resourceCulture);
