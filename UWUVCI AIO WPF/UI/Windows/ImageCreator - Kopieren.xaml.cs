@@ -64,7 +64,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             else if ((FindResource("mvm") as MainViewModel).test == GameConsoles.GCN)
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
-                hb.IsChecked = true;
+                wii.IsChecked = true;
                 ww.Content = "Alt 1";
                 hb.Content = "Alt 2";
                 wii.Content = "GCN";
@@ -369,7 +369,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 else if (hb.IsChecked == true)
                 {
-                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON2);
+                    bi.Frame = new Bitmap(Properties.Resources.GCN_ICON3);
                     console = "WII";
                 }
             }
