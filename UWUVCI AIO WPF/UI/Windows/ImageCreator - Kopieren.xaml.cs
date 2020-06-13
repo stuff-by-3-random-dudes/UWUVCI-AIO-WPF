@@ -35,6 +35,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         MenuIconImage bi = new MenuIconImage();
         Bitmap b;
         string console = "other";
+        string othercons = "";
         bool drc = false;
 
         public IconCreator()
@@ -50,9 +51,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             imageName.Content = "iconTex";
             SetTemplate();
         }
-
+        public IconCreator(string name, string extra)
+        {
+            InitializeComponent();
+            console = name;
+            othercons = extra;
+            imageName.Content = "iconTex";
+            SetTemplate();
+        }
         private void SetTemplate()
         {
+            if(othercons == "GB")
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "GB";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
+            if(othercons == "GBC")
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "GBC";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
             if(console == "WII" && (FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
             {
                 bi.Frame = new Bitmap(Properties.Resources.Wii2);
@@ -97,6 +129,30 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 hb.Visibility = Visibility.Visible;
                 wii.Visibility = Visibility.Visible;
             }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.GBA && othercons == "")
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "GBA";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.MSX)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "MSX";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.SNES)
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
@@ -104,6 +160,30 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 ww.Content = "Alt 1";
                 hb.Content = "Alt 2";
                 wii.Content = "SNES";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NES)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "NES";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.TG16)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "TGX";
                 ww.Visibility = Visibility.Visible;
                 ws.Visibility = Visibility.Visible;
                 hb.Visibility = Visibility.Visible;
@@ -376,7 +456,44 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void ww_Click(object sender, RoutedEventArgs e)
         {
-            if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
+            if(othercons == "GB")
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GB_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GB_alt2);
+                    console = "WII";
+                }
+            }
+            else if(othercons == "GBC")
+            {
+
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GBC_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GBC_alt2);
+                    console = "WII";
+                }
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
             {
                 if (ww.IsChecked == true)
                 {
@@ -412,7 +529,24 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     console = "WII";
                 }
             }
-
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NES)
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.NES_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.NES_alt2);
+                    console = "WII";
+                }
+            }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.N64)
             {
                 if (ww.IsChecked == true)
@@ -428,6 +562,60 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 else if (hb.IsChecked == true)
                 {
                     bi.Frame = new Bitmap(Properties.Resources.N64_alt2);
+                    console = "WII";
+                }
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.MSX)
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.MSX_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.MSX_alt2);
+                    console = "WII";
+                }
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.TG16)
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.TGFX_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.TGFX_alt2);
+                    console = "WII";
+                }
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.GBA)
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GBA_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.GBA_alt2);
                     console = "WII";
                 }
             }

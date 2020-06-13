@@ -73,6 +73,26 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GB_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("GB_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GB_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("GB_alt2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap GBA {
             get {
                 object obj = ResourceManager.GetObject("GBA", resourceCulture);
@@ -83,9 +103,49 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GBA_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("GBA_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GBA_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("GBA_alt2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap GBC {
             get {
                 object obj = ResourceManager.GetObject("GBC", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GBC_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("GBC_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GBC_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("GBC_alt2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -173,6 +233,26 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap MSX_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("MSX_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MSX_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("MSX_alt2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap N64 {
             get {
                 object obj = ResourceManager.GetObject("N64", resourceCulture);
@@ -236,6 +316,26 @@ namespace UWUVCI_AIO_WPF.Properties {
         internal static System.Drawing.Bitmap NES {
             get {
                 object obj = ResourceManager.GetObject("NES", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NES_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("NES_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NES_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("NES_alt2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -316,6 +416,26 @@ namespace UWUVCI_AIO_WPF.Properties {
         internal static System.Drawing.Bitmap TGCD {
             get {
                 object obj = ResourceManager.GetObject("TGCD", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TGFX_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("TGFX_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TGFX_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("TGFX_alt2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

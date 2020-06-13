@@ -414,7 +414,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
                 {
-                    Custom_Message cm = new Custom_Message("No Updates available", "You are currently using the newest version of UWUVCI AIO");
+                    Custom_Message cm = new Custom_Message("No Updates available", " You are currently using the newest version of UWUVCI AIO ");
                     try
                     {
                         cm.Owner = mw;
@@ -522,7 +522,7 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
             {
-                Custom_Message cm = new Custom_Message("Issue", "One of your added Paths seems to not exist anymore.\nThe Tool is now using it's default Paths\nPlease check the paths in the Path menu!");
+                Custom_Message cm = new Custom_Message("Issue", " One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
                 try
                 {
                     cm.Owner = mw;
@@ -541,7 +541,7 @@ namespace UWUVCI_AIO_WPF
            
             
             string ret = string.Empty;
-            Custom_Message cm = new Custom_Message("Information", "Please put a TurboGrafX CD ROM into a folder and select said folder.\n\nThe Folder should atleast contain:\nEXACTLY ONE *.hcd file\nOne or more *.ogg files\nOne or More *.bin files\n\nNot doing so will result in a faulty Inject. You have been warned!");
+            Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder.\n\n The Folder should atleast contain:\n EXACTLY ONE *.hcd file\n One or more *.ogg files\n One or More *.bin files\n\n Not doing so will result in a faulty Inject. You have been warned!");
             try
             {
                 cm.Owner = mw;
@@ -559,7 +559,7 @@ namespace UWUVCI_AIO_WPF
                     {
                         if (DirectoryIsEmpty(dialog.FileName))
                         {
-                            cm = new Custom_Message("Issue", "The folder is Empty. Please choose another folder");
+                            cm = new Custom_Message("Issue", " The folder is Empty. Please choose another folder ");
                             try
                             {
                                 cm.Owner = mw;
@@ -571,7 +571,7 @@ namespace UWUVCI_AIO_WPF
                         {
                             if (Directory.GetDirectories(dialog.FileName).Length > 0)
                             {
-                                cm = new Custom_Message("Issue", "This folder mustn't contain any subfolders.");
+                                cm = new Custom_Message("Issue", " This folder mustn't contain any subfolders. ");
                                 try
                                 {
                                     cm.Owner = mw;
@@ -589,7 +589,7 @@ namespace UWUVCI_AIO_WPF
                                 }
                                 else
                                 {
-                                    cm = new Custom_Message("Issue", "This Folder does not contain needed minimum of Files");
+                                    cm = new Custom_Message("Issue", " This Folder does not contain needed minimum of Files ");
                                     try
                                     {
                                         cm.Owner = mw;
@@ -679,7 +679,7 @@ namespace UWUVCI_AIO_WPF
             formatter.Serialize(compressedStream, backup);
             compressedStream.Close();
             createConfigStream.Close();
-            Custom_Message cm = new Custom_Message("Export success", "The Config was successfully exported.\nClick the Open Folder Button to open the Location where the Config is stored.", Path.Combine(Directory.GetCurrentDirectory(), outputPath));
+            Custom_Message cm = new Custom_Message("Export success", " The Config was successfully exported.\n Click the Open Folder Button to open the Location where the Config is stored. ", Path.Combine(Directory.GetCurrentDirectory(), outputPath));
             try
             {
                 cm.Owner = mw;
@@ -877,11 +877,11 @@ namespace UWUVCI_AIO_WPF
              
                 Progress = 0;
                 string extra = "";
-                if (GameConfiguration.Console == GameConsoles.WII) extra = "\nSome games cannot reboot into the WiiU Menu. Shut down via the GamePad.\nIf Stuck in a BlackScreen, you need to unplug your WiiU.";
-                if (GameConfiguration.Console == GameConsoles.WII && romPath.ToLower().Contains(".wad")) extra += "\nMake sure that the chosen WAD is installed in your vWii!";
-                if (GC) extra = "\nMake sure to have Nintendon't + config on your SD.\nYou can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
+                if (GameConfiguration.Console == GameConsoles.WII) extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad.\n If Stuck in a BlackScreen, you need to unplug your WiiU.";
+                if (GameConfiguration.Console == GameConsoles.WII && romPath.ToLower().Contains(".wad")) extra += "\n Make sure that the chosen WAD is installed in your vWii!";
+                if (GC) extra = "\n Make sure to have Nintendon't + config on your SD.\n You can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
                 gc2rom = "";
-                Custom_Message cm = new Custom_Message("Injection Complete", $"It's recommended to install onto USB to avoid brick risks.{extra}\nTo Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);                try
+                Custom_Message cm = new Custom_Message("Injection Complete", $" It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press SD Setup. ", Settings.Default.OutPath);                try
                 {
                     cm.Owner = mw;
                 }
@@ -1026,7 +1026,7 @@ namespace UWUVCI_AIO_WPF
             Progress = 0;
             if (Injected)
             {
-                Custom_Message cm = new Custom_Message("Finished Injection Part", "Injection Finished, please choose how you want to export the Inject next.");
+                Custom_Message cm = new Custom_Message("Finished Injection Part", " Injection Finished, please choose how you want to export the Inject next.");
                 try
                 {
                     cm.Owner = mw;
@@ -1068,7 +1068,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        Custom_Message dw = new Custom_Message("No Internet connection", "You have files missing, which need to be downloaded but you dont have an Internet Connection.\nThe Program will now terminate");
+                        Custom_Message dw = new Custom_Message("No Internet connection", " You have files missing, which need to be downloaded but you dont have an Internet Connection. \n The Program will now terminate ");
                         try
                         {
                             dw.Owner = mw;
@@ -1111,7 +1111,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    Custom_Message dw = new Custom_Message("No Internet connection", "You have files missing, which need to be downloaded but you dont have an Internet Connection.\nThe Program will now terminate");
+                    Custom_Message dw = new Custom_Message("No Internet connection", " You have files missing, which need to be downloaded but you dont have an Internet Connection. \n The Program will now terminate ");
                     try
                     {
                         dw.Owner = mw;
@@ -1153,7 +1153,7 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 dw.ShowDialog();
-                Custom_Message cm = new Custom_Message("Finished Update", "Finished Updating Tools! Restarting UWUVCI AIO");
+                Custom_Message cm = new Custom_Message("Finished Update", " Finished Updating Tools! Restarting UWUVCI AIO ");
                 try
                 {
                     cm.Owner = mw;
@@ -1177,7 +1177,7 @@ namespace UWUVCI_AIO_WPF
         }
         public void ResetTKQuest()
         {
-            Custom_Message cm = new Custom_Message("Resetting TitleKeys", "This Option will reset all entered TitleKeys meaning you will need to reenter them again!\nDo you still wish to continue?");
+            Custom_Message cm = new Custom_Message("Resetting TitleKeys", " This Option will reset all entered TitleKeys meaning you will need to reenter them again! \n Do you still wish to continue?");
             try
             {
                 cm.Owner = mw;
@@ -1197,7 +1197,7 @@ namespace UWUVCI_AIO_WPF
                 File.Delete("bin/keys/tg16.vck");
                 File.Delete("bin/keys/snes.vck");
                 File.Delete("bin/keys/wii.vck");
-                Custom_Message cm = new Custom_Message("Reset Successful", "The TitleKeys are now reset.\nThe Program will now restart.");
+                Custom_Message cm = new Custom_Message("Reset Successful", " The TitleKeys are now reset. \n The Program will now restart.");
             try
             {
                 cm.Owner = mw;
@@ -1258,7 +1258,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 dw.ShowDialog();
 
-                Custom_Message cm = new Custom_Message("Finished Updating", "Finished Updating Bases! Restarting UWUVCI AIO");
+                Custom_Message cm = new Custom_Message("Finished Updating", " Finished Updating Bases! Restarting UWUVCI AIO ");
                 try
                 {
                     cm.Owner = mw;
@@ -1337,7 +1337,7 @@ namespace UWUVCI_AIO_WPF
                     if (GetConsoleOfConfig(ret, console))
                     {
                         ImportConfig(ret);
-                        Custom_Message cm = new Custom_Message("Import Complete", "Importing of Config completed.\nPlease reselect a Base!");
+                        Custom_Message cm = new Custom_Message("Import Complete", " Importing of Config completed. \n Please reselect a Base!");
                         try
                         {
                             cm.Owner = mw;
@@ -1347,7 +1347,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        Custom_Message cm = new Custom_Message("Import Failed", $"The config you are trying to import is not made for {console.ToString()} Injections. \nPlease choose a config made for these kind of Injections or choose a different kind of Injection");
+                        Custom_Message cm = new Custom_Message("Import Failed", $" The config you are trying to import is not made for {console.ToString()} Injections. \n Please choose a config made for these kind of Injections or choose a different kind of Injection");
                         try
                         {
                             cm.Owner = mw;
@@ -1384,7 +1384,7 @@ namespace UWUVCI_AIO_WPF
                 switch (GameConfiguration.Console)
                 {
                     case GameConsoles.NDS:
-                        cm = new Custom_Message("Information", "You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White)\n\nIf attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection. ");
+                        cm = new Custom_Message("Information", " You can only inject NDS ROMs that are not DSi Enhanced (example for not working: Pokémon Black & White) \n\n If attempting to inject a DSi Enhanced ROM, we will not give you any support with fixing said injection. ");
                         try
                         {
                             cm.Owner = mw;
@@ -1398,7 +1398,7 @@ namespace UWUVCI_AIO_WPF
 
                         break;
                     case GameConsoles.SNES:
-                        cm = new Custom_Message("Information", "You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox)\n\nIf attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection. ");
+                        cm = new Custom_Message("Information", " You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox) \n\n If attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection. ");
                         try
                         {
                             cm.Owner = mw;
@@ -1488,7 +1488,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (dialog.FileName.ToLower().Contains(".gcz"))
                     {
-                        Custom_Message cm1 = new Custom_Message("Information", "Using a GameCube GCZ Nkit for a Wii Inject or vice versa will break things.\nYou will not be able to grab the BootImages or GameName using this type of ROM. ");
+                        Custom_Message cm1 = new Custom_Message("Information", " Using a GameCube GCZ Nkit for a Wii Inject or vice versa will break things. \n You will not be able to grab the BootImages or GameName using this type of ROM. ");
                         try
                         {
                             cm1.Owner = mw;
@@ -1582,7 +1582,7 @@ namespace UWUVCI_AIO_WPF
             }catch(Exception e)
             {
                 Console.WriteLine(e.Message);
-                Custom_Message cm = new Custom_Message("Error 005: \"Unable to Download VCB Base\"", "There was an Error downloading the VCB Base File.\nThe Programm will now terminate.");
+                Custom_Message cm = new Custom_Message("Error 005: \"Unable to Download VCB Base\"", " There was an Error downloading the VCB Base File. \n The Programm will now terminate.");
                 try
                 {
                     cm.Owner = mvm.mw;
@@ -1619,7 +1619,7 @@ namespace UWUVCI_AIO_WPF
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Custom_Message cm = new Custom_Message("Error 006: \"Unable to Download Tool\"", "There was an Error downloading the Tool.\nThe Programm will now terminate.");
+                Custom_Message cm = new Custom_Message("Error 006: \"Unable to Download Tool\"", " There was an Error downloading the Tool. \n The Programm will now terminate.");
                 try
                 {
                     cm.Owner = mvm.mw;
@@ -1804,7 +1804,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        Custom_Message dw = new Custom_Message("No Internet connection", "You have files missing, which need to be downloaded but you dont have an Internet Connection.\nThe Program will now terminate");
+                        Custom_Message dw = new Custom_Message("No Internet connection", " You have files missing, which need to be downloaded but you dont have an Internet Connection. \n The Program will now terminate");
                         try
                         {
                             dw.Owner = mw;
@@ -2153,7 +2153,7 @@ namespace UWUVCI_AIO_WPF
         }
         public void ImageWarning()
         {
-            Custom_Message cm = new Custom_Message("Image Warning", "Images need to either be in a Bit Depth of 32bit or 24bit. \nIf using Tools like paint.net do not choose the Auto function.");
+            Custom_Message cm = new Custom_Message("Image Warning", " Images need to either be in a Bit Depth of 32bit or 24bit. \n If using Tools like paint.net do not choose the Auto function.");
             try
             {
                 cm.Owner = mw;
@@ -2166,7 +2166,7 @@ namespace UWUVCI_AIO_WPF
         public bool CBaseConvertInfo()
         {
             bool ret = false;
-            Custom_Message cm = new Custom_Message("NUS Custom Base", "You seem to have added a NUS format Custom Base.\nDo you want it to be converted to be used with the Injector?");
+            Custom_Message cm = new Custom_Message("NUS Custom Base", " You seem to have added a NUS format Custom Base. \n Do you want it to be converted to be used with the Injector?");
             try
             {
                 cm.Owner = mw;
@@ -2361,7 +2361,7 @@ namespace UWUVCI_AIO_WPF
                         }
                         else
                         {
-                            Custom_Message cm = new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Inject Folder?");
+                            Custom_Message cm = new Custom_Message("Information", " Folder contains Files or Subfolders, do you really want to use this folder as the Inject Folder? ");
                             try
                             {
                                 cm.Owner = mw;
@@ -2385,7 +2385,7 @@ namespace UWUVCI_AIO_WPF
                     }catch(Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        Custom_Message cm = new Custom_Message("Error", "An Error occured, please try again!");
+                        Custom_Message cm = new Custom_Message("Error", " An Error occured, please try again! ");
                         try
                         {
                             cm.Owner = mw;
@@ -2417,7 +2417,7 @@ namespace UWUVCI_AIO_WPF
                         }
                         else
                         {
-                            Custom_Message cm = new Custom_Message("Information", "Folder contains Files or Subfolders, do you really want to use this folder as the Bases Folder?");
+                            Custom_Message cm = new Custom_Message("Information", " Folder contains Files or Subfolders, do you really want to use this folder as the Bases Folder? ");
                             try
                             {
                                 cm.Owner = mw;
@@ -2442,7 +2442,7 @@ namespace UWUVCI_AIO_WPF
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
-                        Custom_Message cm = new Custom_Message("Error", "An Error occured, please try again!");
+                        Custom_Message cm = new Custom_Message("Error", " An Error occured, please try again! ");
                         try
                         {
                             cm.Owner = mw;
@@ -3323,7 +3323,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }catch(Exception )
             {
-                Custom_Message cm = new Custom_Message("Unknown ROM", "It seems that you inserted an unknown ROM as a Wii or GameCube game.\nIt is not recommended continuing with said ROM!");
+                Custom_Message cm = new Custom_Message("Unknown ROM", " It seems that you inserted an unknown ROM as a Wii or GameCube game. \n It is not recommended continuing with said ROM!");
                 try
                 {
                     cm.Owner = mw;
@@ -3346,7 +3346,7 @@ namespace UWUVCI_AIO_WPF
             }
             catch
             {
-                Custom_Message cm = new Custom_Message("No Internet Connection", "To Download Tools, Bases or required Files you need to be connected to the Internet. The Program will now terminate.");
+                Custom_Message cm = new Custom_Message("No Internet Connection", " To Download Tools, Bases or required Files you need to be connected to the Internet. The Program will now terminate. ");
                 try
                 {
                     cm.Owner = mw;
@@ -3422,10 +3422,10 @@ namespace UWUVCI_AIO_WPF
             }
             if (ini || btsnd)
             {
-                string extra = "There are more additional files found. Do you want to download those?";
-                if (ini && !btsnd) { extra = "There is an additional INI file available for download. Do you want to download it?"; }
-                if (!ini && btsnd) { extra = "There is an additional BootSound file available for download. Do you want to download it?"; }
-                if (ini && btsnd) { extra = "There is an adittional INI and BootSound file available for download. Do you want to download those?"; }
+                string extra = " There are more additional files found. Do you want to download those? ";
+                if (ini && !btsnd) { extra = " There is an additional INI file available for download. Do you want to download it? "; }
+                if (!ini && btsnd) { extra = " There is an additional BootSound file available for download. Do you want to download it? "; }
+                if (ini && btsnd) { extra = " There is an adittional INI and BootSound file available for download. Do you want to download those? "; }
               
                 Custom_Message cm = new Custom_Message("Found additional Files", extra);
                 try

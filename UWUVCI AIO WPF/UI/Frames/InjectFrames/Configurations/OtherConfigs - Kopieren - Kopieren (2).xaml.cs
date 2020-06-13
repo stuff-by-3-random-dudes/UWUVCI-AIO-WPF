@@ -325,7 +325,26 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
             }*/
             string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "iconTex.png");
-            IconCreator ic = new IconCreator();
+            IconCreator ic;
+            if (!string.IsNullOrEmpty(mvm.RomPath))
+            {
+                if (new FileInfo(mvm.RomPath).Extension.ToLower() == ".gb")
+                {
+                    ic =  new IconCreator("other", "GB");
+                }
+                else if (new FileInfo(mvm.RomPath).Extension.ToLower() == ".gbc")
+                {
+                    ic = new IconCreator("other", "GBC");
+                }
+                else
+                {
+                    ic = new IconCreator();
+                }
+            }
+            else
+            {
+                ic = new IconCreator();
+            }
             try
             {
                 ic.Owner = mvm.mw;
