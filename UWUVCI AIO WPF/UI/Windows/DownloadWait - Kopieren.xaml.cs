@@ -56,7 +56,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             InitializeComponent();
             gc = gamecube;
              path = injectlocation;
-          
+            if (!gamecube)
+            {
+                setup.Content = "Copy to SD";
+            }
             
             Task.Run(() => checkfornewinput());
             Task.Run(() => checkfornewoutput());

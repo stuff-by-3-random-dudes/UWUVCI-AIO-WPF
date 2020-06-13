@@ -895,5 +895,33 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             mvm.passtrough = true;
         }
+
+        private void RF_tp_Click(object sender, RoutedEventArgs e)
+        {
+            if (RF_tp.IsChecked == true)
+            {
+                mvm.regionfrii = true;
+                mvm.regionfriijp = false;
+                mvm.regionfriius = false;
+            }
+            if (RF_tj.IsChecked == true)
+            {
+                mvm.regionfrii = true;
+                mvm.regionfriijp = true;
+                mvm.regionfriius = false;
+            }
+            if (RF_tn.IsChecked == true)
+            {
+                mvm.regionfrii = true;
+                mvm.regionfriijp = false;
+                mvm.regionfriius = true;
+            }
+            if (RF_n.IsChecked == true)
+            {
+                mvm.regionfrii = false;
+                mvm.regionfriijp = false;
+                mvm.regionfriius = false;
+            }
+        }
     }
 }

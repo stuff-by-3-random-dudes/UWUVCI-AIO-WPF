@@ -706,6 +706,45 @@ namespace UWUVCI_AIO_WPF
             }
             if (!mvm.donttrim)
             {
+                if (mvm.regionfrii)
+                {
+                    if (mvm.regionfriius)
+                    {
+                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
+                        {
+                            fs.Seek(0x4E003, SeekOrigin.Begin);
+                            fs.Write(new byte[] { 0x01 },0,1);
+                            fs.Seek(0x4E010, SeekOrigin.Begin);
+                            fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 },0,16);
+                            fs.Close();
+
+                        }
+                    }
+                    else if(mvm.regionfriijp)
+                    {
+                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
+                        {
+                            fs.Seek(0x4E003, SeekOrigin.Begin);
+                            fs.Write(new byte[] { 0x00 }, 0, 1);
+                            fs.Seek(0x4E010, SeekOrigin.Begin);
+                            fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 },0, 16);
+                            fs.Close();
+
+                        }
+                    }
+                    else
+                    {
+                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
+                        {
+                            fs.Seek(0x4E003, SeekOrigin.Begin);
+                            fs.Write(new byte[] { 0x02 }, 0, 1);
+                            fs.Seek(0x4E010, SeekOrigin.Begin);
+                            fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                            fs.Close();
+
+                        }
+                    }
+                }
                 using (Process trimm = new Process())
                 {
                     if (!mvm.debug)

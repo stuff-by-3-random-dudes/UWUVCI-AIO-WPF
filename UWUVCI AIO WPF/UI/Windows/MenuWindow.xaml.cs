@@ -206,6 +206,9 @@ namespace UWUVCI_AIO_WPF
             mvm.jppatch = false;
             mvm.GC = false;
             mvm.test = GameConsoles.WII;
+            mvm.regionfrii = false;
+            mvm.regionfriijp = false;
+            mvm.regionfriius = false;
             mvm.pixelperfect = false;
             mvm.RemoveCreatedIMG();
             mvm.isDoneMW();

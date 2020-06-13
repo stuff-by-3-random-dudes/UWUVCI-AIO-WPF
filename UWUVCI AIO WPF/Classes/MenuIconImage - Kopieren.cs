@@ -74,7 +74,7 @@ namespace UWUVCI_AIO_WPF.Classes
         {
             Bitmap img = new Bitmap(170, 42);
             Graphics g = Graphics.FromImage(img);
-            StringFormat format1 = new StringFormat(StringFormatFlags.NoClip);
+            StringFormat format1 = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
             format1.Alignment = StringAlignment.Center;
             format1.LineAlignment = StringAlignment.Center;
             g.PixelOffsetMode = PixelOffsetMode.Half;

@@ -50,7 +50,9 @@ namespace UWUVCI_AIO_WPF
             }
         }
         private string romPath;
-
+        public bool regionfrii = false;
+        public bool regionfriius = false;
+        public bool regionfriijp = false;
         public string RomPath
         {
             get { return romPath; }
@@ -877,9 +879,9 @@ namespace UWUVCI_AIO_WPF
              
                 Progress = 0;
                 string extra = "";
-                if (GameConfiguration.Console == GameConsoles.WII) extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad.\n If Stuck in a BlackScreen, you need to unplug your WiiU.";
+                if (GameConfiguration.Console == GameConsoles.WII) extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad. \n If Stuck in a BlackScreen, you need to unplug your WiiU.";
                 if (GameConfiguration.Console == GameConsoles.WII && romPath.ToLower().Contains(".wad")) extra += "\n Make sure that the chosen WAD is installed in your vWii!";
-                if (GC) extra = "\n Make sure to have Nintendon't + config on your SD.\n You can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings.";
+                if (GC) extra = "\n Make sure to have Nintendon't + config on your SD.\n You can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings. ";
                 gc2rom = "";
                 Custom_Message cm = new Custom_Message("Injection Complete", $" It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press SD Setup. ", Settings.Default.OutPath);                try
                 {
@@ -1026,7 +1028,7 @@ namespace UWUVCI_AIO_WPF
             Progress = 0;
             if (Injected)
             {
-                Custom_Message cm = new Custom_Message("Finished Injection Part", " Injection Finished, please choose how you want to export the Inject next.");
+                Custom_Message cm = new Custom_Message("Finished Injection Part", " Injection Finished, please choose how you want to export the Inject next. ");
                 try
                 {
                     cm.Owner = mw;
