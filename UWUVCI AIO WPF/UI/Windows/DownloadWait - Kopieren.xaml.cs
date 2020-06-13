@@ -59,6 +59,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (!gamecube)
             {
                 setup.Content = "Copy to SD";
+                tbTitleBar.Text = "Copy to SD";
             }
             
             Task.Run(() => checkfornewinput());

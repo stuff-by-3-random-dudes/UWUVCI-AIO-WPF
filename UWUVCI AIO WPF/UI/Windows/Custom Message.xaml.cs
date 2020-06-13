@@ -107,6 +107,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             if (message.Contains("If you want the inject to be put on your SD now"))
             {
+                if(message.Contains("Copy to SD"))
+                {
+                    nc.Content = "Copy to SD";
+                }
                 nc.Visibility = Visibility.Visible;
             }
             dont.Visibility = Visibility.Hidden;
