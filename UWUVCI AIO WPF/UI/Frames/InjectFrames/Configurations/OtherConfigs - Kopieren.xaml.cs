@@ -35,6 +35,33 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
 
         }
+        public void clearImages(int i)
+        {
+
+            switch (i)
+            {
+                case 0:
+                    icoIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGAIco = new Classes.PNGTGA();
+                    ic.Text = null;
+                    break;
+                case 1:
+                    tvIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGATv = new Classes.PNGTGA();
+                    tv.Text = null;
+                    break;
+                case 2:
+                    drcIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGADrc = new Classes.PNGTGA();
+                    drc.Text = null;
+                    break;
+                case 3:
+                    logIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGALog = new Classes.PNGTGA();
+                    log.Text = null;
+                    break;
+            }
+        }
         public TurboGrafX(GameConfig c)
         {
             InitializeComponent();
@@ -87,10 +114,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.RomPath = path;
                 mvm.RomSet = true;
+                if (!cd)
+                {
+                    mvm.getBootIMGTG(mvm.RomPath);
+                }
                 if (mvm.BaseDownloaded)
                 {
                     mvm.CanInject = true;
-
+                    
                 }
             }
 
@@ -287,10 +318,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 icoIMG.Visibility = Visibility.Visible;
             }
         }
-
+        public void imgpath(string icon, string tv)
+        {
+            ic.Text = icon;
+            this.tv.Text = tv;
+        }
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
-            if (!Settings.Default.dont)
+            /*if (!Settings.Default.dont)
             {
                 mvm.ImageWarning();
             }
@@ -310,8 +345,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     log.Text = "";
                     logIMG.Visibility = Visibility.Hidden;
                 }
+            }*/
+            string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootLogoTex.png");
+            LogoCreator ic = new LogoCreator();
+            try
+            {
+                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
             }
+            catch (Exception)
+            {
 
+            }
+            ic.ShowDialog();
+            if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
+            {
+                mvm.GameConfiguration.TGALog.ImgPath = path;
+                mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
+                this.log.Text = path;
+                logIMG.Visibility = Visibility.Visible;
+            }
 
         }
         public void getInfoFromConfig()

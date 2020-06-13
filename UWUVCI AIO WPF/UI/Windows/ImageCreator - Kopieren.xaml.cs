@@ -73,6 +73,30 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 hb.Visibility = Visibility.Visible;
                 wii.Visibility = Visibility.Visible;
             }
+            else if((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "NDS";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.N64)
+            {
+                bi.Frame = new Bitmap(Properties.Resources.Icon);
+                wii.IsChecked = true;
+                ww.Content = "Alt 1";
+                hb.Content = "Alt 2";
+                wii.Content = "N64";
+                ww.Visibility = Visibility.Visible;
+                ws.Visibility = Visibility.Visible;
+                hb.Visibility = Visibility.Visible;
+                wii.Visibility = Visibility.Visible;
+            }
             else
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
@@ -340,7 +364,45 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void ww_Click(object sender, RoutedEventArgs e)
         {
-            if((FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
+            if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.NDS_Alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.NDS_Alt2);
+                    console = "WII";
+                }
+            }
+
+          
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.N64)
+            {
+                if (ww.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.N64_alt1);
+                    console = "WII";
+                }
+                else if (wii.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.Icon);
+                    console = "other";
+                }
+                else if (hb.IsChecked == true)
+                {
+                    bi.Frame = new Bitmap(Properties.Resources.N64_alt2);
+                    console = "WII";
+                }
+            }
+            else if ((FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
             {
                 if (ww.IsChecked == true)
                 {

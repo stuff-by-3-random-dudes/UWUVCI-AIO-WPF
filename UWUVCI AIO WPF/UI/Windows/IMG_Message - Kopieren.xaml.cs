@@ -27,9 +27,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         string copy = "";
         string pat = "";
+        bool drc = false;
         BitmapImage bitmap = new BitmapImage();
         public TDRSHOW(string path, bool drc)
         {
+            this.drc = drc;
             try
             {
                 if (this.Owner.GetType() != typeof(MainWindow))
@@ -130,5 +132,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             (FindResource("mvm") as MainViewModel).mw.Topmost = false;
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            int a = 1;
+            if (drc) a = 2;
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            switch (mvm.GameConfiguration.Console)
+            {
+                case GameBaseClassLibrary.GameConsoles.NDS:
+                case GameBaseClassLibrary.GameConsoles.NES:
+                case GameBaseClassLibrary.GameConsoles.SNES:
+                case GameBaseClassLibrary.GameConsoles.MSX:
+                    (mvm.Thing as OtherConfigs).clearImages(a);
+                    break;
+                case GameBaseClassLibrary.GameConsoles.GBA:
+                    (mvm.Thing as GBA).clearImages(a);
+                    break;
+                case GameBaseClassLibrary.GameConsoles.WII:
+                    if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
+                    {
+                        (mvm.Thing as GCConfig).clearImages(a);
+                    }
+                    else
+                    {
+                        (mvm.Thing as WiiConfig).clearImages(a);
+                    }
+                    break;
+                case GameBaseClassLibrary.GameConsoles.N64:
+                    (mvm.Thing as N64Config).clearImages(a);
+                    break;
+                case GameBaseClassLibrary.GameConsoles.TG16:
+                    (mvm.Thing as TurboGrafX).clearImages(a);
+                    break;
+            }
+            this.Close();
+        }
     }
 }

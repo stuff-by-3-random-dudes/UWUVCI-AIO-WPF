@@ -63,19 +63,9 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Gameboy1 {
+        internal static System.Drawing.Bitmap bootLogoTex {
             get {
-                object obj = ResourceManager.GetObject("Gameboy1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Gameboy2 {
-            get {
-                object obj = ResourceManager.GetObject("Gameboy2", resourceCulture);
+                object obj = ResourceManager.GetObject("bootLogoTex", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -143,26 +133,6 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap homebrew {
-            get {
-                object obj = ResourceManager.GetObject("homebrew", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap homebrew2 {
-            get {
-                object obj = ResourceManager.GetObject("homebrew2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap homebrew3 {
             get {
                 object obj = ResourceManager.GetObject("homebrew3", resourceCulture);
@@ -213,9 +183,49 @@ namespace UWUVCI_AIO_WPF.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap N64_alt1 {
+            get {
+                object obj = ResourceManager.GetObject("N64_alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap N64_alt2 {
+            get {
+                object obj = ResourceManager.GetObject("N64_alt2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap NDS {
             get {
                 object obj = ResourceManager.GetObject("NDS", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NDS_Alt1 {
+            get {
+                object obj = ResourceManager.GetObject("NDS_Alt1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NDS_Alt2 {
+            get {
+                object obj = ResourceManager.GetObject("NDS_Alt2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

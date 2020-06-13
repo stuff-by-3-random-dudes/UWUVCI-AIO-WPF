@@ -122,7 +122,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            /*IconCreator ic = new IconCreator("WII") ;
+            LogoCreator ic = new LogoCreator() ;
              try
              {
                  ic.Owner = (FindResource("mvm") as MainViewModel).mw;
@@ -131,12 +131,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames
              {
 
              }
-             ic.ShowDialog();*/
-            var listitem = (FindResource("mvm") as MainViewModel).mw.listCONS.Items;
-            foreach(var item in listitem)
-            {
-                Console.WriteLine((item as System.Windows.Controls.ListViewItem).Name);
-            }
+             ic.ShowDialog();
+            
         }
 
         

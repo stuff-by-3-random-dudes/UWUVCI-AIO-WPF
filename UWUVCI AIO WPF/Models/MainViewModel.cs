@@ -29,6 +29,7 @@ using NAudio.Wave;
 using System.Timers;
 using NAudio.Utils;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -2572,6 +2573,351 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
+        public void getBootIMGSNES(string rom)
+        {
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string repoid = "";
+            string SystemType = "snes/";
+            IMG_Message img = null;
+            repoid = GetFakeSNESProdcode(rom);
+            string[] ext = { "png" };
+            List<string> repoids = new List<string>();
+            if (CheckForInternetConnectionWOWarning())
+            {
+                repoids.Add(SystemType + repoid);
+                foreach (var e in ext)
+                {
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                    {
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
+                    }
+                }
+                checkForAdditionalFiles(GameConsoles.SNES, repoids);
+
+            }
+
+        }
+        public void getBootIMGMSX(string rom)
+        {
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string repoid = "";
+            string SystemType = "msx/";
+            IMG_Message img = null;
+            repoid = GetFakeMSXTGProdcode(rom, true);
+            string[] ext = { "png" };
+            List<string> repoids = new List<string>();
+            if (CheckForInternetConnectionWOWarning())
+            {
+                repoids.Add(SystemType + repoid);
+                foreach (var e in ext)
+                {
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                    {
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
+                    }
+                }
+                checkForAdditionalFiles(GameConsoles.MSX, repoids);
+
+            }
+
+        }
+        public void getBootIMGTG(string rom)
+        {
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string repoid = "";
+            string SystemType = "tg16/";
+            IMG_Message img = null;
+            repoid = GetFakeMSXTGProdcode(rom, false);
+            string[] ext = { "png" };
+            List<string> repoids = new List<string>();
+            if (CheckForInternetConnectionWOWarning())
+            {
+                repoids.Add(SystemType + repoid);
+                foreach (var e in ext)
+                {
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                    {
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
+                    }
+                }
+                checkForAdditionalFiles(GameConsoles.TG16, repoids);
+
+            }
+
+        }
+        private string GetFakeMSXTGProdcode(string v, bool msx)
+        {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            Regex rgx2 = new Regex("[^0-9]");
+            byte[] procode = new byte[0x210];
+            using (var md5 = MD5.Create())
+            {
+                using (var fs = new FileStream(v,
+                             FileMode.Open,
+                             FileAccess.ReadWrite))
+                {
+
+                    fs.Read(procode, 0, 0x210);
+
+                    fs.Close();
+                }
+                string hash = GetMd5Hash(md5, procode);
+                //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
+                if (msx) Console.Write("MSX");
+                else Console.Write("TG16");
+                Console.WriteLine(" PRODCODE:");
+                Console.WriteLine("File Name: " + new FileInfo(v).Name);
+                Console.WriteLine("MD5 of Code Snippet: " + hash);
+                string hashonlynumbers = rgx2.Replace(hash, "");
+                do
+                {
+                    if (hashonlynumbers.Length < 10)
+                    {
+                        hashonlynumbers += 0;
+                    }
+                } while (hashonlynumbers.Length < 10);
+
+                string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
+                string prodcode = getCodeOfNumbers(Convert.ToInt32(first10));
+                if (msx) prodcode += "SX";
+                else prodcode += "TG";
+                //Console.WriteLine("NumberHash of GameName: "+ number);
+                Console.WriteLine("Fake ProdCode: " + prodcode);
+                Console.WriteLine("---------------------------------------------------");
+                return prodcode;
+            }
+        }
+        private string GetFakeSNESProdcode(string path)
+        {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            Regex rgx2 = new Regex("[^0-9]");
+            using (var md5 = MD5.Create())
+            {
+                var name = new byte[] { };
+                bool skip = false;
+                using (var fs = new FileStream(path,
+                             FileMode.Open,
+                             FileAccess.ReadWrite))
+                {
+                    byte[] procode = new byte[4];
+                    fs.Seek(0x7FB2, SeekOrigin.Begin);
+                    fs.Read(procode, 0, 4);
+
+                    string repoid = ByteArrayToString(procode);
+
+
+                    repoid = rgx.Replace(repoid, "");
+                DOSTUFF:
+                    if (repoid.Length < 4 && !skip)
+                    {
+                        fs.Seek(0xFFB2, SeekOrigin.Begin);
+                        fs.Read(procode, 0, 4);
+
+                        repoid = rgx.Replace(ByteArrayToString(procode), "");
+                        if (repoid.Length < 4)
+                        {
+                            repoid = "Unknown";
+                            skip = true;
+                            goto DOSTUFF;
+                        }
+
+                        fs.Seek(0xFFC0, SeekOrigin.Begin);
+                        procode = new byte[21];
+                        fs.Read(procode, 0, 21);
+                        name = procode;
+
+                    }
+                    else
+                    {
+
+
+                        fs.Seek(0x7FC0, SeekOrigin.Begin);
+                        procode = new byte[21];
+                        fs.Read(procode, 0, 21);
+                        name = procode;
+                    }
+                }
+                string gamenameo = ByteArrayToString(name);
+                string gamename = rgx.Replace(gamenameo, "");
+                string hash = GetMd5Hash(md5, gamename);
+                //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
+                Console.WriteLine("SNES PRODCODE:");
+                Console.WriteLine("GameName: " + gamename);
+                Console.WriteLine("MD5 of Name: " + hash);
+                string hashonlynumbers = rgx2.Replace(hash, "");
+                do
+                {
+                    if (hashonlynumbers.Length < 10)
+                    {
+                        hashonlynumbers += 0;
+                    }
+                } while (hashonlynumbers.Length < 10);
+
+                string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
+
+                //Console.WriteLine("NumberHash of GameName: "+ number);
+                Console.WriteLine("Fake ProdCode: " + getCodeOfNumbers(Convert.ToInt32(first10)));
+                Console.WriteLine("---------------------------------------------------");
+               return getCodeOfNumbers(Convert.ToInt32(first10));
+                // Console.WriteLine(md5.ComputeHash(name));
+                // Console.WriteLine("NumberCode: "+hash.GetHashCode());
+
+            }
+        }
+        public void getBootIMGNES(string rom)
+        {
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string repoid = "";
+            string SystemType = "nes/";
+            IMG_Message img = null;
+            repoid = GetFakeNESProdcode(rom);
+            string[] ext = { "png" };
+            List<string> repoids = new List<string>();
+            if (CheckForInternetConnectionWOWarning())
+            {
+                repoids.Add(SystemType + repoid);
+                foreach (var e in ext)
+                {
+                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                    {
+                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        try
+                        {
+                            img.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        img.ShowDialog(); break;
+                    }
+                }
+                checkForAdditionalFiles(GameConsoles.NES, repoids);
+
+            }
+
+        }
+        static string GetMd5Hash(MD5 md5Hash, byte[] input)
+        {
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = md5Hash.ComputeHash(input);
+
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+        }
+
+        static string GetMd5Hash(MD5 md5Hash, string input)
+        {
+
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
+        }
+        private string GetFakeNESProdcode(string path)
+        {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            Regex rgx2 = new Regex("[^0-9]");
+            byte[] procode = new byte[0xB0];
+            using (var md5 = MD5.Create())
+            {
+                using (var fs = new FileStream(path,
+                             FileMode.Open,
+                             FileAccess.ReadWrite))
+                {
+
+                    fs.Seek(0x8000, SeekOrigin.Begin);
+                    fs.Read(procode, 0, 0xB0);
+
+                    fs.Close();
+                }
+                string hash = GetMd5Hash(md5, procode);
+                //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
+                Console.WriteLine("NES PRODCODE:");
+                Console.WriteLine("File Name: " + new FileInfo(path).Name);
+                Console.WriteLine("MD5 of Code Snippet: " + hash);
+                string hashonlynumbers = rgx2.Replace(hash, "");
+                do
+                {
+                    if (hashonlynumbers.Length < 10)
+                    {
+                        hashonlynumbers += 0;
+                    }
+                } while (hashonlynumbers.Length < 10);
+
+                string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
+
+                //Console.WriteLine("NumberHash of GameName: "+ number);
+                Console.WriteLine("Fake ProdCode: " + getCodeOfNumbers(Convert.ToInt32(first10)));
+                Console.WriteLine("---------------------------------------------------");
+                return getCodeOfNumbers(Convert.ToInt32(first10));
+            }
+        }
+        static string getCodeOfNumbers(int number)
+        {
+            string ts = number.ToString();
+            int n1 = Convert.ToInt32(ts[0] + ts[1]);
+            int n2 = Convert.ToInt32(ts[2] + ts[3]);
+            int n3 = Convert.ToInt32(ts[4] + ts[5]);
+            int n4 = Convert.ToInt32(ts[6] + ts[7]);
+            char[] letters = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+            while (n1 > 23)
+            {
+                n1 -= 23;
+            }
+            while (n2 > 23)
+            {
+                n2 -= 23;
+            }
+            while (n3 > 23)
+            {
+                n3 -= 23;
+            }
+            while (n4 > 23)
+            {
+                n4 -= 23;
+            }
+            var toret = new char[] { letters[n1], letters[n2], letters[n3], letters[n4] };
+            return new string(toret).ToUpper();
+        }
         public void getBootIMGNDS(string rom)
         {
             string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
@@ -3106,6 +3452,9 @@ namespace UWUVCI_AIO_WPF
                         switch (console)
                         {
                             case GameConsoles.NDS:
+                            case GameConsoles.NES:
+                            case GameConsoles.SNES:
+                            case GameConsoles.MSX:
                                 (Thing as OtherConfigs).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.GBA:
@@ -3123,6 +3472,9 @@ namespace UWUVCI_AIO_WPF
                                 {
                                     (Thing as WiiConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
+                                break;
+                            case GameConsoles.TG16:
+                                (Thing as TurboGrafX).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
 
                         }

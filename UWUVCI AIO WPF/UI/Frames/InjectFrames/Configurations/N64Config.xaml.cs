@@ -27,6 +27,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
     /// </summary>
     public partial class N64Config : Page
     {
+        
         MainViewModel mvm;
         public N64Config()
         {
@@ -318,7 +319,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
-            if (!Settings.Default.dont)
+            /*if (!Settings.Default.dont)
             {
                 mvm.ImageWarning();
             }
@@ -338,8 +339,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     log.Text = "";
                     logIMG.Visibility = Visibility.Hidden;
                 }
+            }*/
+            string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootLogoTex.png");
+            LogoCreator ic = new LogoCreator();
+            try
+            {
+                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
             }
+            catch (Exception)
+            {
 
+            }
+            ic.ShowDialog();
+            if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
+            {
+                mvm.GameConfiguration.TGALog.ImgPath = path;
+                mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
+                this.log.Text = path;
+                logIMG.Visibility = Visibility.Visible;
+            }
 
         }
 
@@ -410,7 +428,32 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             ics.ShowDialog();
         }
-
+        public void clearImages(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    icoIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGAIco = new Classes.PNGTGA();
+                    ic.Text = null;
+                    break;
+                case 1:
+                    tvIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGATv = new Classes.PNGTGA();
+                    tv.Text = null;
+                    break;
+                case 2:
+                    drcIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGADrc = new Classes.PNGTGA();
+                    drc.Text = null;
+                    break;
+                case 3:
+                    logIMG.Visibility = Visibility.Hidden;
+                    mvm.GameConfiguration.TGALog = new Classes.PNGTGA();
+                    log.Text = null;
+                    break;
+            }
+        }
         private void tvIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             TDRSHOW t = new TDRSHOW(tv.Text, false);

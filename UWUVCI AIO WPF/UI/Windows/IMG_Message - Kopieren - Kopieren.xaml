@@ -6,15 +6,16 @@
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Height="186" Width="145" MinHeight="186" MinWidth="145" materialDesign:ShadowAssist.CacheMode="{x:Null}" MaxHeight="186" MaxWidth="145"  WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" SizeToContent="WidthAndHeight" Closing="wind_Closing" Closed="wind_Closed">
+        Title="MAIN" Height="186" Width="170.673" MinHeight="186" MinWidth="170" materialDesign:ShadowAssist.CacheMode="{x:Null}" MaxHeight="186" MaxWidth="170"  WindowStyle="None" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" ResizeMode="NoResize" Icon="/UWUVCI AIO WPF;component/a.ico" Name="wind" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" SizeToContent="WidthAndHeight" Closing="wind_Closing" Closed="wind_Closed">
 
-    <Grid Margin="0,0,-4,0">
+    <Grid HorizontalAlignment="Left" Width="166">
         <Grid.RowDefinitions>
 
 
         </Grid.RowDefinitions>
-        <Button Content="Close" HorizontalAlignment="Left" Margin="61,143,0,0" VerticalAlignment="Top" Width="74" Click="Canc_Click" RenderTransformOrigin="0.5,0.5"/>
-        <Image HorizontalAlignment="Left" Height="128" Width="128" Margin="6,10,0,0" VerticalAlignment="Top" Name="img"/>
+        <Button Content="Close" HorizontalAlignment="Left" Margin="85,143,0,0" VerticalAlignment="Top" Width="74" Click="Canc_Click" RenderTransformOrigin="0.5,0.5"/>
+        <Image Height="128" Margin="20,10,0,0" VerticalAlignment="Top" Name="img" HorizontalAlignment="Left" Width="128"/>
+        <Button Content="Clear" HorizontalAlignment="Left" Margin="6,143,0,0" VerticalAlignment="Top" Width="67" Click="Button_Click"/>
 
     </Grid>
 </Window>

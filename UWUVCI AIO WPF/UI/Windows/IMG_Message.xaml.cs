@@ -117,7 +117,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 (mvm.Thing as GBA).icoIMG.Visibility = Visibility.Visible;
             }
-            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.TG16)
+            {
+                (mvm.Thing as TurboGrafX).icoIMG.Visibility = Visibility.Visible;
+            }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.MSX)
             {
                 (mvm.Thing as OtherConfigs).icoIMG.Visibility = Visibility.Visible;
             }
@@ -127,10 +131,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
             {
                 (mvm.Thing as GCConfig).tvIMG.Visibility = Visibility.Visible;
+                (mvm.Thing as GCConfig).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
             {
                 (mvm.Thing as WiiConfig).tvIMG.Visibility = Visibility.Visible;
+                (mvm.Thing as WiiConfig).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.N64)
             {
@@ -143,7 +151,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 (mvm.Thing as GBA).tvIMG.Visibility = Visibility.Visible;
                 (mvm.Thing as GBA).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
             }
-            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.TG16)
+            {
+                (mvm.Thing as TurboGrafX).tvIMG.Visibility = Visibility.Visible;
+                (mvm.Thing as TurboGrafX).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+            }
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.MSX)
             {
                 (mvm.Thing as OtherConfigs).tvIMG.Visibility = Visibility.Visible;
                 (mvm.Thing as OtherConfigs).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));

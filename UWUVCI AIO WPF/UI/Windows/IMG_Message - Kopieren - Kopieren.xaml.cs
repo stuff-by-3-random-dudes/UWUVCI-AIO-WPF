@@ -117,5 +117,38 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             (FindResource("mvm") as MainViewModel).mw.Topmost = false;
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            switch (mvm.GameConfiguration.Console)
+            {
+                case GameBaseClassLibrary.GameConsoles.NDS:
+                case GameBaseClassLibrary.GameConsoles.NES:
+                case GameBaseClassLibrary.GameConsoles.SNES:
+                case GameBaseClassLibrary.GameConsoles.MSX:
+                    (mvm.Thing as OtherConfigs).clearImages(0);
+                    break;
+                case GameBaseClassLibrary.GameConsoles.GBA:
+                    (mvm.Thing as GBA).clearImages(0);
+                    break;
+                case GameBaseClassLibrary.GameConsoles.WII:
+                    if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
+                    {
+                        (mvm.Thing as GCConfig).clearImages(0);
+                    }
+                    else
+                    {
+                        (mvm.Thing as WiiConfig).clearImages(0);
+                    }
+                    break;
+                case GameBaseClassLibrary.GameConsoles.N64:
+                    (mvm.Thing as N64Config).clearImages(0);
+                    break;
+                case GameBaseClassLibrary.GameConsoles.TG16:
+                    (mvm.Thing as TurboGrafX).clearImages(0);
+                    break;
+            }
+            this.Close();
+        }
     }
 }
