@@ -57,7 +57,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "wglp.exe",
             "font.otf",
             "ChangeAspectRatio.exe",
-            "font2.ttf"
+            "font2.ttf",
+            "forwarder.dol"
         };
 
         public static bool DoesToolsFolderExist()

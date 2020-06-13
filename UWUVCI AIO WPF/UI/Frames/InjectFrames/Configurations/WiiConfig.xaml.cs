@@ -120,7 +120,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 int TitleIDInt = 0;
                 bool isok = false;
-                if (path.ToLower().Contains(".gcz") || path.ToLower().Contains(".dol"))
+                if (path.ToLower().Contains(".gcz") || path.ToLower().Contains(".dol") || path.ToLower().Contains(".wad"))
                 {
                     isok = true;
                 }
@@ -152,6 +152,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
                     motepass.IsEnabled = false;
                     motepass.IsChecked = false;
+                    gamepad.IsEnabled = true;
                     mvm.NKITFLAG = false;
                     trimn.IsEnabled = false;
                     trimn.IsChecked = false;
@@ -177,7 +178,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.CanInject = true;
 
                     }
-                    if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol"))
+                    if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol") && !path.ToLower().Contains(".wad"))
                     {
                         string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
@@ -214,6 +215,23 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         motepass.IsChecked = false;
                         motepass.IsEnabled = true;
                         mvm.donttrim = false;
+                        gamepad.IsEnabled = false;
+                        LR.IsEnabled = false;
+                    }else if (path.ToLower().Contains(".wad"))
+                    {
+                        mvm.NKITFLAG = false;
+                        trimn.IsEnabled = false;
+                        trimn.IsChecked = false;
+                        vmcsmoll.IsEnabled = false;
+                        pal.IsEnabled = false;
+                        ntsc.IsEnabled = false;
+                        RF_n.IsEnabled = false;
+                        RF_tj.IsEnabled = false;
+                        RF_tn.IsEnabled = false;
+                        RF_tp.IsEnabled = false;
+                        jppatch.IsEnabled = false;
+                        mvm.donttrim = false;
+                       
                     }
                     else
                     {

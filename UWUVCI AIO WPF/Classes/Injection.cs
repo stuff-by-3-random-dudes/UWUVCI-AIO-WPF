@@ -409,6 +409,9 @@ namespace UWUVCI_AIO_WPF
                     if (RomPath.ToLower().EndsWith(".dol"))
                     {
                         WiiHomebrew(RomPath, mvm);
+                    }else if (RomPath.ToLower().EndsWith(".wad"))
+                    {
+                        WiiForwarder(RomPath, mvm);
                     }
                     else
                     {
@@ -420,6 +423,129 @@ namespace UWUVCI_AIO_WPF
                     GC(RomPath, mvm, force);
                     break;
             }
+        }
+        private static string ByteArrayToString(byte[] arr)
+        {
+            System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+            return enc.GetString(arr);
+        }
+        private static void WiiForwarder(string romPath, MainViewModel mvm)
+        {
+            string savedir = Directory.GetCurrentDirectory();
+            mvvm.msg = "Extracting Forwarder Base...";
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
+            using (Process zip = new Process())
+            {
+                if (!mvm.debug)
+                {
+
+                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
+                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
+                zip.Start();
+                zip.WaitForExit();
+            }
+
+            DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
+            mvvm.Progress = 20;
+            mvvm.msg = "Setting up Forwarder...";
+            byte[] test = new byte[4];
+            using (FileStream fs = new FileStream(romPath, FileMode.Open))
+            {
+                fs.Seek(0xC20, SeekOrigin.Begin);
+                fs.Read(test, 0, 4);
+                fs.Close();
+
+            }
+
+            string[] id = { ByteArrayToString(test) };
+            File.WriteAllLines(Path.Combine(tempPath, "TempBase", "files","title.txt"), id);
+            mvm.Progress = 30;
+            mvm.msg = "Copying Forwarder...";
+            File.Copy(Path.Combine(toolsPath, "forwarder.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
+            mvm.Progress = 40;
+            mvvm.msg = "Creating Injectable file...";
+            using (Process wit = new Process())
+            {
+                if (!mvm.debug)
+                {
+
+                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                wit.Start();
+                wit.WaitForExit();
+            }
+
+            Thread.Sleep(6000);
+            if (!File.Exists(Path.Combine(tempPath, "game.iso")))
+            {
+                Console.Clear();
+
+                throw new Exception("WIIAn error occured while Creating the ISO");
+            }
+            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+            romPath = Path.Combine(tempPath, "game.iso");
+            mvvm.Progress = 50;
+
+            mvm.msg = "Replacing TIK and TMD...";
+            using (Process extract = new Process())
+            {
+                if (!mvm.debug)
+                {
+                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
+                extract.Start();
+                extract.WaitForExit();
+                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
+                {
+                    File.Delete(sFile);
+                }
+                File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
+                File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
+                Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
+            }
+            mvm.Progress = 60;
+            mvm.msg = "Injecting ROM...";
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
+            {
+                File.Delete(sFile);
+            }
+            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
+            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
+            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+            using (Process iso2nfs = new Process())
+            {
+                if (!mvm.debug)
+                {
+
+                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                }
+                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                string extra = "";
+                if (mvm.Index == 2)
+                {
+                    extra = "-horizontal ";
+                }
+                if (mvm.Index == 3) { extra = "-wiimote "; }
+                if (mvm.Index == 4) { extra = "-instantcc "; }
+                if (mvm.Index == 5) { extra = "-nocc "; }
+                if (mvm.LR) { extra += "-lrpatch "; }
+                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}-iso game.iso";
+                iso2nfs.Start();
+                iso2nfs.WaitForExit();
+                File.Delete("nfs2iso2nfs.exe");
+                File.Delete("game.iso");
+            }
+            Directory.SetCurrentDirectory(savedir);
+            mvm.Progress = 80;
+
+
         }
 
         private static void WiiHomebrew(string romPath, MainViewModel mvm)
