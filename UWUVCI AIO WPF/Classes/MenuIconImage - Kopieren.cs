@@ -84,7 +84,7 @@ namespace UWUVCI_AIO_WPF.Classes
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             g.Clear(System.Drawing.Color.FromArgb(30, 30, 30));
             g.DrawImage(Frame, 0, 0, 170, 42);
-            Rectangle rectangletxt = new Rectangle(12, 7, 152, 30);
+            Rectangle rectangletxt = new Rectangle(12, 5, 152, 32);
 
             System.Drawing.Text.PrivateFontCollection privateFonts = new System.Drawing.Text.PrivateFontCollection();
             privateFonts.AddFontFile(@"bin\Tools\font2.ttf");
