@@ -9,7 +9,7 @@
       Title="SettingsFrame" >
 
     <Grid>
-        <TextBlock x:Name="tb" Margin="10,172,10,192" TextWrapping="Wrap" Text="Welcome to UWUVCI AIO v2.1. To start Injecting select a Console to your left." FontSize="20" Height="116" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="1110" />
+        <TextBlock x:Name="tb" Margin="10,172,10,192" TextWrapping="Wrap" Text="Welcome to UWUVCI AIO v3.0. To start Injecting select a Console to your left." FontSize="20" Height="116" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="1110" />
 
 
     </Grid>

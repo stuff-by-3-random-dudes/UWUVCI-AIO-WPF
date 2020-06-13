@@ -13,9 +13,9 @@
 
 
         </Grid.RowDefinitions>
-        <Button Content="Close" HorizontalAlignment="Left" Margin="256,204,0,0" VerticalAlignment="Top" Width="74" Click="Canc_Click" RenderTransformOrigin="0.5,0.5"/>
+        <Button Content="Close" Margin="256,204,0,0" VerticalAlignment="Top" Click="Canc_Click" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="74"/>
         <Image HorizontalAlignment="Left" Height="180" Width="320" Margin="8,10,0,0" VerticalAlignment="Top" Name="img"/>
-        <Button Content="Clear" HorizontalAlignment="Left" Margin="10,204,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click" RenderTransformOrigin="0.5,0.5"/>
+        <Button Content="Clear" HorizontalAlignment="Left" Margin="7,204,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click" RenderTransformOrigin="0.5,0.5"/>
 
     </Grid>
 </Window>

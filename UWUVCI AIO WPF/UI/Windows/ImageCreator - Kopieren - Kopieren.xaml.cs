@@ -43,6 +43,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             InitializeComponent();
             imageName.Content = "bootLogoTex";
             SetTemplate();
+            t_Copy.Text = "18";
         }
 
 
@@ -59,10 +60,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void FileSelect_Click(object sender, RoutedEventArgs e)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            if (!Settings.Default.dont)
-            {
-                mvm.ImageWarning();
-            }
+
             string path = mvm.GetFilePath(false, false);
             if (!CheckIfNull(path))
             {
@@ -96,8 +94,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     copy = path;
                 }
                 bi.Frame = new Bitmap(copy);
-                b = bi.Create("");
-                Finish_Click(null, null);
+                b = bi.Create("", 20);
+                Image.Source = BitmapToImageSource(b);
+                //Finish_Click(null, null);
             }
 
         }
@@ -160,7 +159,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void wind_Loaded(object sender, RoutedEventArgs e)
         {
-            b = bi.Create(t.Text);
+            b = bi.Create(t.Text, 20);
             Image.Source = BitmapToImageSource(b);
         }
         BitmapImage BitmapToImageSource(Bitmap bitmap)
@@ -185,7 +184,20 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         
         void DrawImage()
         {
-            b = bi.Create(t.Text);
+            if(!bi.Frame.Equals(new Bitmap(Properties.Resources.bootLogoTex)))
+            {
+                bi.Frame = new Bitmap(Properties.Resources.bootLogoTex);
+            }
+            int fontsize = 18;
+            try
+            {
+                fontsize = Convert.ToInt32(t_Copy.Text);
+            }
+            catch (Exception)
+            {
+                fontsize = 18;
+            }
+            b = bi.Create(t.Text, fontsize);
             Image.Source = BitmapToImageSource(b);
         }
 
@@ -210,9 +222,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
-            bi.Frame = Properties.Resources.SFAM;
-            b = bi.Create(console);
-            Image.Source = BitmapToImageSource(b);
         }
 
         private void PLDi_Click(object sender, RoutedEventArgs e)
@@ -231,6 +240,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void t_TextChanged(object sender, TextChangedEventArgs e)
         {
+            DrawImage();
+        }
+
+        private void t_Copy_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            
             DrawImage();
         }
     }

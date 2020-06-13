@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="ImageCreator" Height="160.461" Width="467" Foreground="White" Background="LightGray" ResizeMode="NoResize" materialDesign:ShadowAssist.CacheMode="{x:Null}" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200" MinWidth="467">
+        Title="ImageCreator" Height="204.054" Width="467" Foreground="White" Background="LightGray" ResizeMode="NoResize" materialDesign:ShadowAssist.CacheMode="{x:Null}" Icon="/UWUVCI AIO WPF;component/b.ico" Name="wind" SizeToContent="WidthAndHeight" BorderBrush="#FF2196F3" BorderThickness="1.5,1.5,1.5,1.5" ShowInTaskbar="False" WindowStyle="None" Loaded="wind_Loaded" WindowStartupLocation="CenterOwner" MaxHeight="200" MinWidth="467">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
@@ -17,16 +17,15 @@
         <Label Height="9" Margin="0,0,353,0"></Label>
         <Label Margin="0,0,353,0"></Label>
 
-
-        <TextBox materialDesign:HintAssist.Hint="LOGO TEXT"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,48,-16,71" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" Name="t" TextChanged="t_TextChanged" TabIndex="3" Grid.Column="1"/>
-
         <Image Height="42"  VerticalAlignment="Top" Name="Image" Margin="18,49,13,0" />
-        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="153,105,-16,0" Width="99" Click="Button_Click" Height="32" VerticalAlignment="Top" TabIndex="5"/>
-        <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click" TabIndex="4"/>
+        <Button Content="Cancel" Grid.Column="1" HorizontalAlignment="Left" Margin="151,154,-14,0" Width="99" Click="Button_Click" Height="32" VerticalAlignment="Top" TabIndex="5"/>
+        <Button Content="Finish" Grid.Column="1" HorizontalAlignment="Left" Margin="10,154,0,0" VerticalAlignment="Top" Width="99" Name="Finish" Click="Finish_Click" TabIndex="4"/>
         <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" Height="43" VerticalAlignment="Top" Margin="17,48,11,0"/>
 
         <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,108" />
-        <Button Content="Use File Instead" Grid.Column="1" HorizontalAlignment="Left" Margin="121,10,-16,0" VerticalAlignment="Top" Width="131" x:Name="Finish_Copy" Click="FileSelect_Click" TabIndex="4"/>
+        <Button Content="Use File Instead" Grid.Column="1" HorizontalAlignment="Left" Margin="119,10,-14,0" VerticalAlignment="Top" Width="131" x:Name="Finish_Copy" Click="FileSelect_Click" TabIndex="4"/>
+        <TextBox materialDesign:HintAssist.Hint="LOGO TEXT"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,46,-16,110" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" x:Name="t" TextChanged="t_TextChanged" TabIndex="3" Grid.Column="1"/>
+        <TextBox materialDesign:HintAssist.Hint="FONTSIZE"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,97,-16,59" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" x:Name="t_Copy" TextChanged="t_Copy_TextChanged" TabIndex="3" Grid.Column="1" MaxLength="2" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting"/>
 
     </Grid>
 </Window>

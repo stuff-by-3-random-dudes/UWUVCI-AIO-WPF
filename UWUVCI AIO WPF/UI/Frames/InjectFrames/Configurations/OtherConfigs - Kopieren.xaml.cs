@@ -263,17 +263,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             ic.ShowDialog();
             if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
             {
-                mvm.GameConfiguration.TGATv.ImgPath = path;
-                mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
-                tv.Text = path;
-                tvIMG.Visibility = Visibility.Visible;
+                mvm.GameConfiguration.TGADrc.ImgPath = path;
+                mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
+                drc.Text = path;
+                drcIMG.Visibility = Visibility.Visible;
             }
-            else
-            {
-                mvm.GameConfiguration.TGATv.ImgPath = null;
-                tv.Text = "";
-                tvIMG.Visibility = Visibility.Hidden;
-            }
+           
         }
 
         private void Set_IconTex(object sender, RoutedEventArgs e)
