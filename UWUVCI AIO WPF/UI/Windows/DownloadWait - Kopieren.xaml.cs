@@ -73,16 +73,34 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             WqlEventQuery query = new WqlEventQuery("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2");
             watcher.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
             watcher.Query = query;
+            watcher.Options.Timeout = new TimeSpan(0, 0, 5);
             watcher.Start();
-            watcher.WaitForNextEvent();
+            try
+            {
+                watcher.WaitForNextEvent();
+            }
+            catch (Exception)
+            {
+
+            }
+            
         }
         private void checkfornewoutput()
         {
             WqlEventQuery query = new WqlEventQuery("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 3");
             watcher2.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
             watcher2.Query = query;
+            watcher2.Options.Timeout = new TimeSpan(0, 0, 5);
             watcher2.Start();
-            watcher2.WaitForNextEvent();
+            try
+            {
+                watcher2.WaitForNextEvent();
+            }
+            catch (Exception)
+            {
+
+            }
+
         }
 
         private void watcher_EventArrived(object sender, EventArrivedEventArgs e)
@@ -157,7 +175,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             watcher.Stop();
             watcher2.Stop();
-            
+            watcher.Dispose();
+            watcher2.Dispose();
             this.Close();
         }
         private void close_MouseLeave(object sender, MouseEventArgs e)
