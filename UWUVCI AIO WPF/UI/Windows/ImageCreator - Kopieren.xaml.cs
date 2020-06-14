@@ -27,14 +27,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für ImageCreator.xaml
     /// </summary>  
-    
+
     public partial class IconCreator : Window, IDisposable
     {
         private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
         private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         MenuIconImage bi = new MenuIconImage();
         Bitmap b;
-        Bitmap framecopy;
         string console = "other";
         string othercons = "";
         bool drc = false;
@@ -45,7 +44,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             imageName.Content = "iconTex";
             SetTemplate();
         }
-        public IconCreator(string name) 
+        public IconCreator(string name)
         {
             InitializeComponent();
             console = name;
@@ -62,9 +61,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void SetTemplate()
         {
-            if(othercons == "GB")
+            if (othercons == "GB")
             {
-                
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
                 wii.IsChecked = true;
                 ww.Content = "Alt 1";
@@ -75,7 +73,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 hb.Visibility = Visibility.Visible;
                 wii.Visibility = Visibility.Visible;
             }
-            if(othercons == "GBC")
+            if (othercons == "GBC")
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
                 wii.IsChecked = true;
@@ -87,7 +85,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 hb.Visibility = Visibility.Visible;
                 wii.Visibility = Visibility.Visible;
             }
-            if(console == "WII" && (FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
+            if (console == "WII" && (FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
             {
                 bi.Frame = new Bitmap(Properties.Resources.Wii2);
                 ww.Visibility = Visibility.Visible;
@@ -107,7 +105,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 hb.Visibility = Visibility.Visible;
                 wii.Visibility = Visibility.Visible;
             }
-            else if((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
+            else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
                 wii.IsChecked = true;
@@ -195,7 +193,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
             }
-            framecopy = bi.Frame.Clone() as Bitmap;
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -207,10 +205,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             string file = "";
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-           file = mvm.GetFilePath(false, false);
-            if(!string.IsNullOrEmpty(file))
+            file = mvm.GetFilePath(false, false);
+            if (!string.IsNullOrEmpty(file))
             {
-      
+
                 string copy = "";
                 if (new FileInfo(file).Extension.Contains("tga"))
                 {
@@ -240,23 +238,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     copy = file;
                 }
-                
-                if(enOv.IsChecked == false)
-                {
-
-                    //bi.TitleScreen = new Bitmap(copy);
-                    bi.Frame = new Bitmap(copy);
-                    b = bi.Create(console);
-                    Image.Source = BitmapToImageSource(b);
-                }
-                else
-                {
-                    bi.TitleScreen = new Bitmap(copy);
-                    b = bi.Create(console);
-                    Image.Source = BitmapToImageSource(b);
-                }
-               
-                
+                bi.TitleScreen = new Bitmap(copy);
+                b = bi.Create(console);
+                Image.Source = BitmapToImageSource(b);
             }
         }
 
@@ -266,7 +250,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Directory.CreateDirectory(@"bin\createdIMG");
             }
-            if(File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
+            if (File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
             {
                 File.Delete(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             }
@@ -275,10 +259,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 b = ResizeImage(b, 854, 480);
 
             }
-            
-                b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
-            
-           
+
+            b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+
+
             this.Close();
         }
 
@@ -334,17 +318,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
         }
 
-        
+
 
         private void enOv_Click(object sender, RoutedEventArgs e)
         {
-            if(enOv.IsChecked == true)
+            if (enOv.IsChecked == true)
             {
-                if(bi.Frame != framecopy)
-                {
-                    bi.TitleScreen = bi.Frame.Clone() as Bitmap;
-                    bi.Frame = framecopy;
-                }
+
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
                 ww.IsEnabled = true;
@@ -358,13 +338,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 wii.IsEnabled = false;
                 hb.IsEnabled = false;
                 ws.IsEnabled = false;
-                
-                if(bi.TitleScreen != null)
+
+                if (bi.TitleScreen != null)
                 {
-                    //b = ResizeImage(bi.TitleScreen, 128, 128); 
-                    bi.Frame = bi.TitleScreen;
-                    b = bi.Create(console);
-                    Image.Source = BitmapToImageSource(b);
+                    b = ResizeImage(bi.TitleScreen, 128, 128); Image.Source = BitmapToImageSource(b);
                 }
                 else
                 {
@@ -411,7 +388,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Players_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            
+
         }
 
         private void Players_TextChanged(object sender, TextChangedEventArgs e)
@@ -421,7 +398,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public void Dispose()
         {
-         
+
         }
 
         private void combo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -431,7 +408,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 bi.Frame = Properties.Resources.SNES_PAL;
 
             }
-            else if(combo.SelectedIndex == 1)
+            else if (combo.SelectedIndex == 1)
             {
                 bi.Frame = Properties.Resources.SNES_USA;
             }
@@ -445,7 +422,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void pal_Click(object sender, RoutedEventArgs e)
         {
-            if(pal.IsChecked == true)
+            if (pal.IsChecked == true)
             {
                 bi.Frame = Properties.Resources.SNES_PAL;
 
@@ -473,13 +450,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void RLEn_Click(object sender, RoutedEventArgs e)
         {
-           
+
             DrawImage();
         }
 
         private void ww_Click(object sender, RoutedEventArgs e)
         {
-            if(othercons == "GB")
+            if (othercons == "GB")
             {
                 if (ww.IsChecked == true)
                 {
@@ -497,7 +474,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     console = "WII";
                 }
             }
-            else if(othercons == "GBC")
+            else if (othercons == "GBC")
             {
 
                 if (ww.IsChecked == true)
@@ -675,7 +652,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     console = "WII";
                 }
             }
-            framecopy = bi.Frame.Clone() as Bitmap;
+
             DrawImage();
         }
     }

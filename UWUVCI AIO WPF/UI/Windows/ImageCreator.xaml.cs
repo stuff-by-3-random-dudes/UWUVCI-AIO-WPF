@@ -27,14 +27,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für ImageCreator.xaml
     /// </summary>  
-    
+
     public partial class ImageCreator : Window, IDisposable
     {
         private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
         private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         BootImage bi = new BootImage();
         Bitmap b;
-        Bitmap framecopy;
         string console = "other";
         bool drc = false;
         private string backupcons;
@@ -57,7 +56,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
             Bitmap bit;
-            if(consoles == GameConsoles.TG16)
+            if (consoles == GameConsoles.TG16)
             {
                 if (other)
                 {
@@ -87,15 +86,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void SetTemplate(GameConsoles console)
         {
             Bitmap bit;
-            switch (console){
+            switch (console)
+            {
                 case GameConsoles.NDS:
                     bit = new Bitmap(Properties.Resources.NDS);
-                   
+
                     this.console = "NDS";
                     break;
                 case GameConsoles.N64:
                     bit = new Bitmap(Properties.Resources.N64);
-                  
+
                     break;
                 case GameConsoles.NES:
                     bit = new Bitmap(Properties.Resources.NES);
@@ -114,7 +114,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     RLDi.Visibility = Visibility.Hidden;
                     RLEn.Visibility = Visibility.Hidden;
                     ReleaseYear.Visibility = Visibility.Hidden;
-                   
+
                     PLDi.Visibility = Visibility.Hidden;
                     PLEn.Visibility = Visibility.Hidden;
                     Players.Visibility = Visibility.Hidden;
@@ -149,7 +149,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     break;
             }
             bi.Frame = bit;
-            framecopy = bit.Clone() as Bitmap;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -161,10 +160,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             string file = "";
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-           file = mvm.GetFilePath(false, false);
-            if(!string.IsNullOrEmpty(file))
+            file = mvm.GetFilePath(false, false);
+            if (!string.IsNullOrEmpty(file))
             {
-      
+
                 string copy = "";
                 if (new FileInfo(file).Extension.Contains("tga"))
                 {
@@ -194,19 +193,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     copy = file;
                 }
-                if(enOv.IsChecked == false)
-                {
-                    bi.Frame = new Bitmap(copy);
-                    b = bi.Create(console);
-                    Image.Source = BitmapToImageSource(b);
-                }
-                else
-                {
-                    bi.TitleScreen = new Bitmap(copy);
-                    b = bi.Create(console);
-                    Image.Source = BitmapToImageSource(b);
-                }
-                
+                bi.TitleScreen = new Bitmap(copy);
+                b = bi.Create(console);
+                Image.Source = BitmapToImageSource(b);
             }
         }
 
@@ -216,7 +205,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Directory.CreateDirectory(@"bin\createdIMG");
             }
-            if(File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
+            if (File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
             {
                 File.Delete(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             }
@@ -225,10 +214,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 b = ResizeImage(b, 854, 480);
 
             }
-            
-                b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
-            
-           
+
+            b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+
+
             this.Close();
         }
 
@@ -292,7 +281,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             RLDi.IsEnabled = en;
             RLEn.IsEnabled = en;
             ReleaseYear.IsEnabled = en;
-            if(en && RLDi.IsChecked == true)
+            if (en && RLDi.IsChecked == true)
             {
                 ReleaseYear.IsEnabled = false;
             }
@@ -304,7 +293,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 Players.IsEnabled = false;
             }
             PlayerLabel.IsEnabled = en;
-            if(snesonly.IsVisible == true)
+            if (snesonly.IsVisible == true)
             {
                 snesonly.IsEnabled = en;
             }
@@ -312,13 +301,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void enOv_Click(object sender, RoutedEventArgs e)
         {
-            if((ovl.IsVisible == true && enOv.IsChecked == true))
+            if ((ovl.IsVisible == true && enOv.IsChecked == true))
             {
-                if (bi.Frame != framecopy)
-                {
-                    bi.TitleScreen = bi.Frame.Clone() as Bitmap;
-                    bi.Frame = framecopy;
-                }
                 EnableOrDisbale(true);
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
@@ -326,12 +310,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             else
             {
                 EnableOrDisbale(false);
-                if(bi.TitleScreen != null)
+                if (bi.TitleScreen != null)
                 {
-                    //b = ResizeImage(bi.TitleScreen, 1280, 720); 
-                    bi.Frame = bi.TitleScreen;
-                    b = bi.Create(console);
-                    Image.Source = BitmapToImageSource(b);
+                    b = ResizeImage(bi.TitleScreen, 1280, 720); Image.Source = BitmapToImageSource(b);
                 }
                 else
                 {
@@ -373,8 +354,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         void DrawImage()
         {
 
-            
-           
+
+
             bi.NameLine1 = GameName1.Text;
             bi.NameLine2 = GameName2.Text;
             if (!string.IsNullOrWhiteSpace(GameName2.Text))
@@ -385,8 +366,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 bi.Longname = false;
             }
-    
-            if(PLEn.IsChecked == true && !String.IsNullOrWhiteSpace(Players.Text))
+
+            if (PLEn.IsChecked == true && !String.IsNullOrWhiteSpace(Players.Text))
             {
                 bi.Players = Convert.ToInt32(Players.Text);
             }
@@ -409,7 +390,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Players_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            
+
         }
 
         private void Players_TextChanged(object sender, TextChangedEventArgs e)
@@ -419,7 +400,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public void Dispose()
         {
-         
+
         }
 
         private void combo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -429,7 +410,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 bi.Frame = Properties.Resources.SNES_PAL;
 
             }
-            else if(combo.SelectedIndex == 1)
+            else if (combo.SelectedIndex == 1)
             {
                 bi.Frame = Properties.Resources.SNES_USA;
             }
@@ -443,7 +424,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void pal_Click(object sender, RoutedEventArgs e)
         {
-            if(console != "WII" && backupcons != "WII")
+            if (console != "WII" && backupcons != "WII")
             {
                 if (pal.IsChecked == true)
                 {
@@ -470,14 +451,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     bi.Frame = Properties.Resources.WIIWARE;
                 }
             }
-            framecopy = bi.Frame.Clone() as Bitmap;
+
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }
 
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
-            if(console != "WII" && backupcons != "WII")
+            if (console != "WII" && backupcons != "WII")
             {
                 backupcons = console;
                 bi.Frame = Properties.Resources.SFAM;
@@ -485,7 +466,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             else
             {
                 backupcons = "WII";
-                if(altwii.IsChecked == false)
+                if (altwii.IsChecked == false)
                 {
                     console = "WII";
                     switchs(Visibility.Hidden);
@@ -497,9 +478,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     console = "other";
                     bi.Frame = Properties.Resources.wii3New;
                 }
-                
+
             }
-            framecopy = bi.Frame.Clone() as Bitmap;
+
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }
@@ -532,7 +513,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            if(alt.IsChecked == true)
+            if (alt.IsChecked == true)
             {
                 bi.changefont(true);
             }
@@ -552,8 +533,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
 
             Players.Visibility = v;
-            
-            if(v == Visibility.Hidden)
+
+            if (v == Visibility.Hidden)
             {
                 bi.NameLine1 = "";
                 bi.NameLine2 = "";
@@ -572,9 +553,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     bi.Players = Convert.ToInt32(Players.Text);
                 }
-               
+
             }
-    
+
         }
     }
 }
