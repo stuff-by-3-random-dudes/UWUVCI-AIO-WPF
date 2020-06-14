@@ -34,6 +34,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         BootImage bi = new BootImage();
         Bitmap b;
+        Bitmap framecopy;
         string console = "other";
         bool drc = false;
         private string backupcons;
@@ -148,6 +149,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     break;
             }
             bi.Frame = bit;
+            framecopy = bit.Clone() as Bitmap;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -192,9 +194,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     copy = file;
                 }
-                bi.TitleScreen = new Bitmap(copy);
-                b = bi.Create(console);
-                Image.Source = BitmapToImageSource(b);
+                if(enOv.IsChecked == false)
+                {
+                    bi.Frame = new Bitmap(copy);
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
+                }
+                else
+                {
+                    bi.TitleScreen = new Bitmap(copy);
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
+                }
+                
             }
         }
 
@@ -302,6 +314,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if((ovl.IsVisible == true && enOv.IsChecked == true))
             {
+                if (bi.Frame != framecopy)
+                {
+                    bi.TitleScreen = bi.Frame.Clone() as Bitmap;
+                    bi.Frame = framecopy;
+                }
                 EnableOrDisbale(true);
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
@@ -311,7 +328,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 EnableOrDisbale(false);
                 if(bi.TitleScreen != null)
                 {
-                    b = ResizeImage(bi.TitleScreen, 1280, 720); Image.Source = BitmapToImageSource(b);
+                    //b = ResizeImage(bi.TitleScreen, 1280, 720); 
+                    bi.Frame = bi.TitleScreen;
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
                 }
                 else
                 {
@@ -450,7 +470,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     bi.Frame = Properties.Resources.WIIWARE;
                 }
             }
-            
+            framecopy = bi.Frame.Clone() as Bitmap;
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }
@@ -479,7 +499,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 
             }
-            
+            framecopy = bi.Frame.Clone() as Bitmap;
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
         }

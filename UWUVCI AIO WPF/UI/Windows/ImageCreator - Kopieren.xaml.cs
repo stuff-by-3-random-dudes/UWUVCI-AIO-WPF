@@ -34,6 +34,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         MenuIconImage bi = new MenuIconImage();
         Bitmap b;
+        Bitmap framecopy;
         string console = "other";
         string othercons = "";
         bool drc = false;
@@ -63,6 +64,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if(othercons == "GB")
             {
+                
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
                 wii.IsChecked = true;
                 ww.Content = "Alt 1";
@@ -193,7 +195,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 bi.Frame = new Bitmap(Properties.Resources.Icon);
             }
-         
+            framecopy = bi.Frame.Clone() as Bitmap;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -238,9 +240,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     copy = file;
                 }
-                bi.TitleScreen = new Bitmap(copy);
-                b = bi.Create(console);
-                Image.Source = BitmapToImageSource(b);
+                
+                if(enOv.IsChecked == false)
+                {
+
+                    //bi.TitleScreen = new Bitmap(copy);
+                    bi.Frame = new Bitmap(copy);
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
+                }
+                else
+                {
+                    bi.TitleScreen = new Bitmap(copy);
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
+                }
+               
+                
             }
         }
 
@@ -324,7 +340,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if(enOv.IsChecked == true)
             {
-               
+                if(bi.Frame != framecopy)
+                {
+                    bi.TitleScreen = bi.Frame.Clone() as Bitmap;
+                    bi.Frame = framecopy;
+                }
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
                 ww.IsEnabled = true;
@@ -341,7 +361,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 
                 if(bi.TitleScreen != null)
                 {
-                    b = ResizeImage(bi.TitleScreen, 128, 128); Image.Source = BitmapToImageSource(b);
+                    //b = ResizeImage(bi.TitleScreen, 128, 128); 
+                    bi.Frame = bi.TitleScreen;
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
                 }
                 else
                 {
@@ -652,7 +675,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     console = "WII";
                 }
             }
-           
+            framecopy = bi.Frame.Clone() as Bitmap;
             DrawImage();
         }
     }
