@@ -24,7 +24,7 @@
 
         <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,108" />
         <Button Content="Use File Instead" Grid.Column="1" HorizontalAlignment="Left" Margin="119,10,-14,0" VerticalAlignment="Top" Width="131" x:Name="Finish_Copy" Click="FileSelect_Click" TabIndex="4"/>
-        <TextBox materialDesign:HintAssist.Hint="LOGO TEXT"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,46,-16,110" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" x:Name="t" TextChanged="t_TextChanged" TabIndex="3" Grid.Column="1"/>
+        <TextBox materialDesign:HintAssist.Hint="LOGO TEXT"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,46,-16,110" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" x:Name="t" TextChanged="t_TextChanged" TabIndex="3" Grid.Column="1" MaxLength="12"/>
         <TextBox materialDesign:HintAssist.Hint="FONTSIZE"  Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Margin="10,97,-16,59" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" x:Name="t_Copy" TextChanged="t_Copy_TextChanged" TabIndex="3" Grid.Column="1" MaxLength="2" PreviewTextInput="TextBox_PreviewTextInput" DataObject.Pasting="TextBoxPasting"/>
 
     </Grid>

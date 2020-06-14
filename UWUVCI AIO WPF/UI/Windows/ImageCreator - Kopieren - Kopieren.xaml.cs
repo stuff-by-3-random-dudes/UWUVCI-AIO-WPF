@@ -245,10 +245,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void t_Copy_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(Convert.ToInt32(t_Copy.Text) > 35)
+            try
             {
-                t_Copy.Text = "35";
+                if (Convert.ToInt32(t_Copy.Text) > 30)
+                {
+                    t_Copy.Text = "30";
+                }
             }
+            catch (Exception)
+            {
+                t_Copy.Text = "18";
+            }
+            
             DrawImage();
         }
     }
