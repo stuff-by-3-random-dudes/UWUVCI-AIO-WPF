@@ -1821,7 +1821,7 @@ namespace UWUVCI_AIO_WPF
             string gameName = string.Empty;
             if(gameNameOr != string.Empty && gameNameOr != null)
             {
-                Regex reg = new Regex("[^a-zA-Z0-9 é - |]");
+                Regex reg = new Regex("[^a-zA-Z0-9 éÉ - |]");
                 gameName= reg.Replace(gameNameOr, "");
                 if (gameName.Contains('|'))
                 {

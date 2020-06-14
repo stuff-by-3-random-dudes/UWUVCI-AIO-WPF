@@ -192,6 +192,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             try
             {
                 fontsize = Convert.ToInt32(t_Copy.Text);
+                if(fontsize == 0)
+                {
+                    fontsize = 1;
+                }
             }
             catch (Exception)
             {
@@ -247,6 +251,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
+                
                 if (Convert.ToInt32(t_Copy.Text) > 30)
                 {
                     t_Copy.Text = "30";
@@ -254,7 +259,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception)
             {
-                t_Copy.Text = "18";
+                
             }
             
             DrawImage();
