@@ -242,6 +242,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
             }
+            enOv_Click(null, null);
         }
 
         private void Finish_Click(object sender, RoutedEventArgs e)
