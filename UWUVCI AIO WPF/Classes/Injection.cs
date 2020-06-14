@@ -1595,7 +1595,7 @@ namespace UWUVCI_AIO_WPF
             
             DirectoryCopy(baseRomPath,outputPath, true);
 
-            Custom_Message cm = new Custom_Message("Injection Complete", $"To Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press SD Setup.", Settings.Default.OutPath);
+            Custom_Message cm = new Custom_Message("Injection Complete", $"To Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press Copy to SD.", Settings.Default.OutPath);
             try
             {
                 cm.Owner = mvvm.mw;
