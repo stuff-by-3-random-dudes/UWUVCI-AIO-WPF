@@ -923,5 +923,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.regionfriius = false;
             }
         }
+
+        private void log_TextChanged_1(object sender, TextChangedEventArgs e)
+        {
+            mvm.GameConfiguration.GameName = gn.Text;
+        }
     }
 }

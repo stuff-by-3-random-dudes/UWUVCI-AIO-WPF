@@ -650,6 +650,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 cm.Show();
             }
         }
+
+        private void gn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            mvm.GameConfiguration.GameName = gn.Text;
+        }
     } 
 }
 
