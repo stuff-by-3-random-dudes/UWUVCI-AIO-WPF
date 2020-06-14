@@ -24,10 +24,20 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public byte[] bootsound;
+        public string extension = "";
+        public bool fourbythree = false;
+        public bool disgamepad = false;
+        public bool donttrim = false;
+        public bool lr = false;
+
+        public bool pokepatch = false;
+
+        public bool tgcd = false;
 
         public int Index;
 
-
+        public bool pixelperfect = false;
         public string GameName { get; set; }
 
 

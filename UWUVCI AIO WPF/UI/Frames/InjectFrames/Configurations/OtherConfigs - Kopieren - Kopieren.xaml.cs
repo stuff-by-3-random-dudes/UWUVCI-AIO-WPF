@@ -148,6 +148,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     if (path.Contains("nkit.iso"))
                     {
                         trimn.IsEnabled = false;
+                        trimn.IsChecked = false;
+                        trimn_Click(null, null);
                     }
                     mvm.RomPath = path;
                     mvm.RomSet = true;
@@ -158,6 +160,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     if (!path.ToLower().Contains(".gcz"))
                     {
+                        trimn.IsChecked = false;
+                        trimn_Click(null, null);
                         string rom = mvm.getInternalWIIGCNName(mvm.RomPath, true);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
@@ -435,7 +439,42 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 logIMG.Visibility = Visibility.Visible;
             }
             gn.Text = mvm.GameConfiguration.GameName;
-
+            if (mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
+            {
+                if (!Directory.Exists(@"bin\cfgBoot"))
+                {
+                    Directory.CreateDirectory(@"bin\cfgBoot");
+                }
+                if (File.Exists($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}"))
+                {
+                    File.Delete($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}");
+                }
+                File.WriteAllBytes($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}", mvm.GameConfiguration.bootsound);
+                sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "cfgBoot", $"bootSound.{mvm.GameConfiguration.extension}");
+                mvm.BootSound = sound.Text;
+                sound_TextChanged(null, null);
+            }
+            if (mvm.GameConfiguration.disgamepad)
+            {
+                mvm.Index = -1;
+                gp.IsChecked = true;
+            }
+            else
+            {
+                mvm.Index = 1;
+                gp.IsChecked = false;
+            }
+           cd = mvm.GameConfiguration.fourbythree;
+            mvm.cd = cd;
+            fbt.IsChecked = cd;
+            if (mvm.GameConfiguration.donttrim)
+            {
+                trimn.IsChecked = true;
+            }
+            else
+            {
+                trimn.IsChecked = false;
+            }
         }
         private bool CheckIfNull(string s)
         {
@@ -448,7 +487,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            cd = true;
+            
+            cd = !cd;
+            mvm.cd = cd;
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)

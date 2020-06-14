@@ -432,8 +432,26 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 logIMG.Visibility = Visibility.Visible;
             }
-            gn.Text = mvm.GameConfiguration.GameName;
-
+            
+                rbREF.IsChecked = mvm.PokePatch;
+                rbRDF.IsChecked = !mvm.PokePatch;
+            
+                gn.Text = mvm.GameConfiguration.GameName;
+            if (mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
+            {
+                if (!Directory.Exists(@"bin\cfgBoot"))
+                {
+                    Directory.CreateDirectory(@"bin\cfgBoot");
+                }
+                if (File.Exists($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}"))
+                {
+                    File.Delete($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}");
+                }
+                File.WriteAllBytes($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}", mvm.GameConfiguration.bootsound);
+                sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "cfgBoot", $"bootSound.{mvm.GameConfiguration.extension}");
+                mvm.BootSound = sound.Text;
+                sound_TextChanged(null, null);
+            }
         }
         private bool CheckIfNull(string s)
         {

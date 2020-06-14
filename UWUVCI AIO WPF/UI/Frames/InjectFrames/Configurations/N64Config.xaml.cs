@@ -183,7 +183,21 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             if (gn != null) gn.Text = mvm.GameConfiguration.GameName;
             if (ini != null) ini.Text = mvm.GameConfiguration.N64Stuff.INIPath;
-
+            if(mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
+            {
+                if (!Directory.Exists(@"bin\cfgBoot"))
+                {
+                    Directory.CreateDirectory(@"bin\cfgBoot");
+                }
+                if (File.Exists($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}"))
+                {
+                    File.Delete($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}");
+                }
+                File.WriteAllBytes($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}", mvm.GameConfiguration.bootsound);
+                sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "cfgBoot", $"bootSound.{mvm.GameConfiguration.extension}");
+                mvm.BootSound = sound.Text;
+                sound_TextChanged(null, null);
+            }
         }
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {

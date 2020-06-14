@@ -639,7 +639,7 @@ namespace UWUVCI_AIO_WPF
         {
             mw = mwi;
         }
-
+        public bool cd = false;
         public void ExportFile()
         {
             string drcp = null;
@@ -651,8 +651,22 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.TGATv.ImgPath != null || GameConfiguration.TGATv.ImgPath == "") tvcp = String.Copy(GameConfiguration.TGATv.ImgPath);
             if (GameConfiguration.TGAIco.ImgPath != null || GameConfiguration.TGAIco.ImgPath == "") iccp = String.Copy(GameConfiguration.TGAIco.ImgPath);
             if (GameConfiguration.TGALog.ImgPath != null || GameConfiguration.TGALog.ImgPath == "") lgcp = String.Copy(GameConfiguration.TGALog.ImgPath);
-
+            GameConfiguration.pixelperfect = pixelperfect;
+            GameConfiguration.lr = LR;
+            GameConfiguration.pokepatch = PokePatch;
+            GameConfiguration.tgcd = cd;
+            GameConfiguration.donttrim = donttrim;
+            if(Index != -1)
+            {
+                GameConfiguration.disgamepad = false;
+            }
+            else
+            {
+                GameConfiguration.disgamepad = true;
+            }
+            GameConfiguration.fourbythree = cd;
             if (GameConfiguration.N64Stuff.INIPath != null || GameConfiguration.N64Stuff.INIPath == "") incp = String.Copy(GameConfiguration.N64Stuff.INIPath);
+            ReadBootSoundIntoConfig();
             ReadImagesIntoConfig();
             if (GameConfiguration.Console == GameConsoles.N64)
             {
@@ -688,6 +702,7 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception) { }
             cm.ShowDialog();
+
             GameConfiguration.TGADrc.ImgPath = drcp;
             GameConfiguration.TGATv.ImgPath = tvcp;
             GameConfiguration.TGAIco.ImgPath = iccp;
@@ -732,12 +747,20 @@ namespace UWUVCI_AIO_WPF
         public void ImportConfig(string configPath)
         {
             FileInfo fn = new FileInfo(configPath);
+            if (Directory.Exists(@"bin\cfgBoot"))
+            {
+                Directory.Delete(@"bin\cfgBoot", true);
+            }
             if (fn.Extension.Contains("uwuvci"))
             {
                 FileStream inputConfigStream = new FileStream(configPath, FileMode.Open, FileAccess.Read);
                 GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
                 IFormatter formatter = new BinaryFormatter();
                 GameConfiguration = (GameConfig)formatter.Deserialize(decompressedConfigStream);
+                pixelperfect = GameConfiguration.pixelperfect;
+                LR = GameConfiguration.lr;
+                cd = GameConfiguration.tgcd;
+                PokePatch = GameConfiguration.pokepatch;
             }
             if(GameConfiguration.Console == GameConsoles.N64)
             {
@@ -768,7 +791,10 @@ namespace UWUVCI_AIO_WPF
                 }
             }
         }
-
+        public void ReadBootSoundIntoConfig()
+        {
+            ReadFileAsBin(GameConfiguration, bootsound, 6);
+        }
         
         public void ReadImagesIntoConfig()
         {
@@ -811,6 +837,12 @@ namespace UWUVCI_AIO_WPF
                         case 5:
                             file.N64Stuff.INIBin = new byte[len];
                             filedata.Read(file.N64Stuff.INIBin, 0, len);
+                            break;
+                        case 6:
+                            
+                            file.bootsound = new byte[len];
+                            filedata.Read(file.bootsound, 0, len);
+                            file.extension = new FileInfo(FilePath).Extension.Replace(".", "");
                             break;
                     }
 

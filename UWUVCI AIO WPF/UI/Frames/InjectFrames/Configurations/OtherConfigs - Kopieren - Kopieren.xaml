@@ -28,7 +28,7 @@
         <StackPanel Margin="10,20,48,436" Orientation="Horizontal" >
 
             <Label Content="Config:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="90"/>
-            <CheckBox Content="Force 4:3" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click" ToolTip="If checked Games will run in 4:3 instead of 16:9" IsTabStop="False"/>
+            <CheckBox Content="Force 4:3" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="98" Click="CheckBox_Click" ToolTip="If checked Games will run in 4:3 instead of 16:9" IsTabStop="False" Name="fbt"/>
             <CheckBox Content="Disable GamePad" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Width="305" Click="CheckBox_Click_1" ToolTip="If checked the GamePad will not be used as a controller" Name="gp" IsTabStop="False"/>
             <CheckBox Content="Disable Trim" Margin="0,5,0,31" Name="trimn" Click="trimn_Click" IsEnabled="False" IsTabStop="False"/>
         </StackPanel>

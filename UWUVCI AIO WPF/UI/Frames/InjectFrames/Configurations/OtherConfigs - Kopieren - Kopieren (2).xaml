@@ -25,7 +25,7 @@
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" ToolTip="Patches Pokemon GBA games to work with GBA VC">
 
             <Label Content="PokePatch:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="90" IsTabStop="False"/>
-            <RadioButton Content="Enabled" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="df"  Click="RadioButton_Click" IsTabStop="False"/>
+            <RadioButton Content="Enabled" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="df" Name="rbREF"  Click="RadioButton_Click" IsTabStop="False"/>
 
             <RadioButton x:Name="rbRDF" Width="111" Content="Disabled" HorizontalAlignment="Left" Margin="0,5,0,0"  VerticalAlignment="Top" GroupName="df" Click="rbRDF_Click" IsChecked="True" IsTabStop="False"/>
         </StackPanel>

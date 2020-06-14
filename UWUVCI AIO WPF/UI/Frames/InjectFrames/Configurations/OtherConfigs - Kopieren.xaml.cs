@@ -388,7 +388,28 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 logIMG.Visibility = Visibility.Visible;
             }
             gn.Text = mvm.GameConfiguration.GameName;
-
+            cd = mvm.cd;
+            if (cd)
+            {
+                mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
+                Injection.Content = "Set Path";
+                cdtg.IsChecked = true;
+            }
+            if (mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
+            {
+                if (!Directory.Exists(@"bin\cfgBoot"))
+                {
+                    Directory.CreateDirectory(@"bin\cfgBoot");
+                }
+                if (File.Exists($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}"))
+                {
+                    File.Delete($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}");
+                }
+                File.WriteAllBytes($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}", mvm.GameConfiguration.bootsound);
+                sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "cfgBoot", $"bootSound.{mvm.GameConfiguration.extension}");
+                mvm.BootSound = sound.Text;
+                sound_TextChanged(null, null);
+            }
         }
         private bool CheckIfNull(string s)
         {
@@ -407,6 +428,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             if (cd)
             {
                 cd = false;
+                
                 mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
                 Injection.Content = "Select File";
             }
@@ -417,6 +439,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.mw.tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-CD VC INJECT";
                 Injection.Content = "Set Path";
             }
+            mvm.cd = cd;
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)

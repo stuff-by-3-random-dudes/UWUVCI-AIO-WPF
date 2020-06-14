@@ -207,6 +207,7 @@ namespace UWUVCI_AIO_WPF
             mvm.GC = false;
             mvm.test = GameConsoles.WII;
             mvm.regionfrii = false;
+            mvm.cd = false;
             mvm.regionfriijp = false;
             mvm.regionfriius = false;
             mvm.pixelperfect = false;
