@@ -42,9 +42,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
             imageName.Content = name;
+            
+           
             if (name.ToLower().Contains("drc"))
             {
                 drc = true;
+                imageName_Copy.Content = "DRC IMAGE";
             }
         }
         public ImageCreator(GameConsoles console, string name) : this(name)

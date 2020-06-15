@@ -41,10 +41,11 @@
             <RadioButton Content="Super Famicom" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
-        <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,148"/>
+        <Label Content=" bootTvTex" x:Name="imageName" Margin="14,25,14,148" Visibility="Hidden"/>
         <Label Content="Overlay:" HorizontalAlignment="Left" Margin="21,188,0,0" VerticalAlignment="Top"/>
         <RadioButton Content="Wii" HorizontalAlignment="Left" Margin="82,192,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" x:Name="enOv_Copy" Click="enOv_Click" IsChecked="True" TabIndex="2"/>
         <RadioButton Content="WiiWare" HorizontalAlignment="Left" Margin="148,192,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" TabIndex="3" Grid.ColumnSpan="2"/>
         <RadioButton Content="Homebrew" HorizontalAlignment="Left" Margin="82,192,0,0" VerticalAlignment="Top" Foreground="Black" GroupName="ov" Click="enOv_Click" TabIndex="3" Grid.Column="1"/>
+        <Label Content=" ICON IMAGE" x:Name="imageName_Copy" Margin="14,25,14,148"/>
     </Grid>
 </Window>
