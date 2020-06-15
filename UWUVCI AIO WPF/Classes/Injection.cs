@@ -1858,14 +1858,14 @@ namespace UWUVCI_AIO_WPF
                         doc.SelectSingleNode("menu/longname_zht").InnerText = gameName.Replace(",", "");
                     }
 
-                    if(code != null)
+                   /* if(code != null)
                     {
                         doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{code}";
                     }
                     else
-                    {
+                    {*/
                         doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID2}";
-                    }
+                    //}
                      if (index > 0)
                     {
                     doc.SelectSingleNode("menu/drc_use").InnerText = "65537";

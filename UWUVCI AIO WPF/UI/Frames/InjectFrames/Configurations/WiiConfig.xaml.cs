@@ -525,6 +525,70 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.BootSound = sound.Text;
                 sound_TextChanged(null, null);
             }
+            LR.IsChecked = mvm.LR;
+            if (mvm.GameConfiguration.donttrim)
+            {
+                trimn.IsChecked = true;
+            }
+            else
+            {
+                trimn.IsChecked = false;
+            }
+            jppatch.IsChecked = mvm.jppatch;
+            motepass.IsChecked = mvm.passtrough;
+            if (mvm.Patch)
+            {
+                if (mvm.toPal)
+                {
+                    vmcsmoll.IsChecked = false;
+                    pal.IsChecked = false;
+                    ntsc.IsChecked = true;
+                }
+                else
+                {
+                    vmcsmoll.IsChecked = false;
+                    ntsc.IsChecked = false;
+                    pal.IsChecked = true;
+                }
+            }
+            else
+            {
+                vmcsmoll.IsChecked = true;
+                pal.IsChecked = false;
+                ntsc.IsChecked = false;
+            }
+
+            if (mvm.regionfrii)
+            {
+                if (mvm.regionfriijp)
+                {
+                    RF_n.IsChecked = false;
+                    RF_tj.IsChecked = true;
+                    RF_tn.IsChecked = false;
+                    RF_tp.IsChecked = false;
+                }
+                else if (mvm.regionfriius)
+                {
+                    RF_n.IsChecked = false;
+                    RF_tj.IsChecked = false;
+                    RF_tn.IsChecked = true;
+                    RF_tp.IsChecked = false;
+                }
+                else
+                {
+                    RF_n.IsChecked = false;
+                    RF_tj.IsChecked = false;
+                    RF_tn.IsChecked = false;
+                    RF_tp.IsChecked =true;
+                }
+            }
+            else
+            {
+                RF_n.IsChecked = true;
+                RF_tj.IsChecked = false;
+                RF_tn.IsChecked = false;
+                RF_tp.IsChecked = false;
+            }
         }
         private bool CheckIfNull(string s)
         {
@@ -941,7 +1005,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void log_TextChanged_1(object sender, TextChangedEventArgs e)
         {
-            mvm.GameConfiguration.GameName = gn.Text;
+            try
+            {
+                mvm.GameConfiguration.GameName = gn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }

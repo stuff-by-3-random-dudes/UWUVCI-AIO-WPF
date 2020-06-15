@@ -30,6 +30,7 @@ using System.Timers;
 using NAudio.Utils;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
+using System.Drawing;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -656,6 +657,13 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration.pokepatch = PokePatch;
             GameConfiguration.tgcd = cd;
             GameConfiguration.donttrim = donttrim;
+            GameConfiguration.motepass = passtrough;
+            GameConfiguration.jppatch = jppatch;
+            GameConfiguration.vm = Patch;
+            GameConfiguration.vmtopal = toPal;
+            GameConfiguration.rf = regionfrii;
+            GameConfiguration.rfjp = regionfriijp;
+            GameConfiguration.rfus = regionfriius;
             if(Index != -1)
             {
                 GameConfiguration.disgamepad = false;
@@ -761,6 +769,13 @@ namespace UWUVCI_AIO_WPF
                 LR = GameConfiguration.lr;
                 cd = GameConfiguration.tgcd;
                 PokePatch = GameConfiguration.pokepatch;
+                passtrough = GameConfiguration.motepass;
+                jppatch = GameConfiguration.jppatch;
+                Patch = GameConfiguration.vm ;
+                toPal = GameConfiguration.vmtopal;
+                regionfrii = GameConfiguration.rf;
+                regionfriijp = GameConfiguration.rfjp;
+                regionfriius = GameConfiguration.rfus;
             }
             if(GameConfiguration.Console == GameConsoles.N64)
             {

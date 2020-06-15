@@ -30,7 +30,8 @@ namespace UWUVCI_AIO_WPF
         public bool disgamepad = false;
         public bool donttrim = false;
         public bool lr = false;
-
+        public bool motepass = false;
+        public bool jppatch = false;
         public bool pokepatch = false;
 
         public bool tgcd = false;
@@ -39,6 +40,15 @@ namespace UWUVCI_AIO_WPF
 
         public bool pixelperfect = false;
         public string GameName { get; set; }
+
+        public bool vm = false;
+        public bool vmtopal = false;
+
+
+        public bool rf = false;
+        public bool rfus = false;
+        public bool rfjp = false;
+
 
 
         public PNGTGA TGAIco { get; set; } = new PNGTGA();
