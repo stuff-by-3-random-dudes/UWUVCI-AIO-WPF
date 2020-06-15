@@ -43,7 +43,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
             {
                 cbCombo.ToolTip = "We recommend Metal Slader Glory for NES Injection!";
             }
-            if(console == GameConsoles.SNES)
+            if (console == GameConsoles.GBA)
+            {
+                cbCombo.ToolTip = "For RTC use RockMan EXE 4.5 as base";
+            }
+            if (console == GameConsoles.SNES)
             {
                 cbCombo.ToolTip = "We recommend Kirby's Dream Land 3 for SNES Injection!";
             }
