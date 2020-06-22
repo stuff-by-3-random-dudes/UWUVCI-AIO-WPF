@@ -61,7 +61,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 setup.Content = "Copy to SD";
                 tbTitleBar.Text = "Copy to SD";
             }
-            
+        
             Task.Run(() => checkfornewinput());
             Task.Run(() => checkfornewoutput());
             
@@ -124,6 +124,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void min_MouseLeave(object sender, MouseEventArgs e)
         {
          
+        }
+        public static long GetDirectorySize(string p)
+        {
+            string[] a = Directory.GetFiles(p, "*.*");
+            long b = 0;
+            foreach (string name in a)
+            {
+                FileInfo info = new FileInfo(name);
+                b += info.Length;
+            }
+            return b;
+        }
+        public static long GetDirectorySize(string b, bool t)
+        {
+           
+
+            long result = 0;
+            Stack<string> stack = new Stack<string>();
+            stack.Push(b);
+
+            while (stack.Count > 0)
+            {
+                string dir = stack.Pop();
+                try
+                {
+                    result += GetDirectorySize(dir);
+                    foreach (string dn in Directory.GetDirectories(dir))
+                    {
+                        stack.Push(dn);
+                    }
+                }
+                catch { }
+            }
+            return result;
         }
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
@@ -203,22 +237,52 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
         }
         DispatcherTimer dp = new DispatcherTimer();
-        
+        private static string FormatBytes(long bytes)
+        {
+            string[] Suffix = { "B", "KB", "MB", "GB", "TB" };
+            int i;
+            double dblSByte = bytes;
+            for (i = 0; i < Suffix.Length && bytes >= 1024; i++, bytes /= 1024)
+            {
+                dblSByte = bytes / 1024.0;
+            }
+
+            return String.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
+        }
         private void setup_Click(object sender, RoutedEventArgs e)
         {
-            dp.Tick += Dp_Tick;
-            dp.Interval = TimeSpan.FromSeconds(1);
-            dp.Start();
-            Task.Run(() =>
-                 {
+            long injctSize = GetDirectorySize(System.IO.Path.Combine(path, (FindResource("mvm") as MainViewModel).foldername), true);
+            if(injctSize >= new DriveInfo(driveletter).AvailableFreeSpace)
+            {
+                long div = injctSize - new DriveInfo(driveletter).AvailableFreeSpace + 1048576;
+                Custom_Message cm = new Custom_Message("Insufficient Space", $" You do not have enough space on the selected drive. \n Please make sure you have atleast {FormatBytes(div)} free on the drive! ");
+                try
+                {
+                    cm.Owner = (FindResource("mvm") as MainViewModel).mw;
+                }
+                catch (Exception)
+                {
 
-                     if (gc)
-                     {
-                         SetupNintendont();
-                     }
-                     CopyInject();
-                 });
-            setup.IsEnabled = false;
+                }
+                cm.ShowDialog();
+            }
+            else
+            {
+                dp.Tick += Dp_Tick;
+                dp.Interval = TimeSpan.FromSeconds(1);
+                dp.Start();
+                Task.Run(() =>
+                {
+
+                    if (gc)
+                    {
+                        SetupNintendont();
+                    }
+                    CopyInject();
+                });
+                setup.IsEnabled = false;
+            }
+            
 
          
             
@@ -274,7 +338,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.msg = "Copying Injected Game...";
-            if(path.Contains("[LOADIINE]") && !path.Contains("[WUP]"))
+            if(!path.Contains("[WUP]"))
             {
                 DirectoryCopy(System.IO.Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
             }
