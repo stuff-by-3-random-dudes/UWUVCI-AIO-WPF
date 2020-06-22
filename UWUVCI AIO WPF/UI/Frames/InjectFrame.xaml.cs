@@ -43,16 +43,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             else if (console == GameConsoles.WII)
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.WiiConfig();
+              
             }
             else if (console == GameConsoles.GCN)
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.GCConfig();
+               
             }
             else
             {
                 fLoadConfig.Content = new InjectFrames.Configurations.OtherConfigs();
             }
-            
+            mvm.injected2 = false;
             Console.WriteLine("GameConfig : " + mvm.GameConfiguration.Console.ToString());
             fBaseFrame.Content = new InjectFrames.Bases.BaseContainerFrame(console);
         }

@@ -1821,12 +1821,12 @@ namespace UWUVCI_AIO_WPF
             string gameName = string.Empty;
             if(gameNameOr != string.Empty && gameNameOr != null)
             {
-                Regex reg = new Regex("[^a-zA-Z0-9 éÉ - |]");
-                gameName= reg.Replace(gameNameOr, "");
+
+                gameName = gameNameOr;
                 if (gameName.Contains('|'))
                 {
                     var split = gameName.Split('|');
-                    gameName = split[0] + ", " + split[1];
+                    gameName = split[0] + "," + split[1];
                 }
             }
 
@@ -1844,18 +1844,18 @@ namespace UWUVCI_AIO_WPF
                     doc.Load(metaXml);
                     if (gameName != null && gameName != string.Empty)
                     {
-                        doc.SelectSingleNode("menu/longname_ja").InnerText = gameName.Replace(",", "" );
-                        doc.SelectSingleNode("menu/longname_en").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_fr").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_de").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_it").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_es").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_ko").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_nl").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_pt").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_ru").InnerText = gameName.Replace(",", "");
-                        doc.SelectSingleNode("menu/longname_zht").InnerText = gameName.Replace(",", "");
+                        doc.SelectSingleNode("menu/longname_ja").InnerText = gameName.Replace(",", "\n" );
+                        doc.SelectSingleNode("menu/longname_en").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_fr").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_de").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_it").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_es").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_ko").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_nl").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_pt").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_ru").InnerText = gameName.Replace(",", "\n");
+                        doc.SelectSingleNode("menu/longname_zht").InnerText = gameName.Replace(",", "\n");
                     }
 
                    /* if(code != null)

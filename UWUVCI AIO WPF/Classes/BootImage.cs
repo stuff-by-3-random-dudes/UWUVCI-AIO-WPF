@@ -205,7 +205,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 GraphicsPath r = new GraphicsPath();
                 r.AddString("Released: " + Released.ToString(), font.FontFamily,
                     (int)(FontStyle.Regular),
-                    g.DpiY * 25.0F / 72.0F, new Rectangle(586, 450, 300, 40), format);
+                    g.DpiY * 25.0F / 72.0F, new Rectangle(586, 450, 600, 40), format);
                 g.DrawPath(shadow, r);
                 g.DrawPath(outline, r);
                 g.FillPath(brush, r);
@@ -218,7 +218,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 
                     p.AddString("Players: " + pStr, font.FontFamily,
                     (int)(FontStyle.Regular),
-                    g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 400, 40), format);
+                    g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
                 
                 
                g.DrawPath(shadow, p);

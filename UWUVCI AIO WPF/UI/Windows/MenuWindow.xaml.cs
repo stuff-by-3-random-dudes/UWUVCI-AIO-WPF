@@ -211,6 +211,8 @@ namespace UWUVCI_AIO_WPF
             mvm.regionfriijp = false;
             mvm.regionfriius = false;
             mvm.pixelperfect = false;
+            mvm.injected2 = false;
+            
             mvm.RemoveCreatedIMG();
             mvm.isDoneMW();
 

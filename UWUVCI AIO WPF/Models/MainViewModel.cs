@@ -36,6 +36,18 @@ namespace UWUVCI_AIO_WPF
 {
     public class MainViewModel : BaseModel
     {
+        private bool Injected2 = false;
+        public bool injected2
+        {
+            
+                get { return Injected2; }
+            set
+                {
+                Injected2 = value;
+                OnPropertyChanged();
+            }
+            
+        }
         public string prodcode = "";
         //public GameConfig GameConfiguration { get; set; }
         private GameConfig gameConfiguration = new GameConfig();
@@ -1068,8 +1080,18 @@ namespace UWUVCI_AIO_WPF
               task.Start();*/
             Task.Run(() =>
             {
-                if (Injection.Inject(GameConfiguration, RomPath, this, force)) Injected = true;
-                else Injected = false;
+                if (Injection.Inject(GameConfiguration, RomPath, this, force))
+                {
+
+                    Injected = true;
+                    injected2 = true;
+                    if(GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
+                    {
+                        injected2 = false;
+                    }
+                   
+                }
+                else { Injected = false; injected2 = false; }
             });
             DownloadWait dw = new DownloadWait("Injecting Game - Please Wait", "", this);
             try
