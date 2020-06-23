@@ -923,6 +923,7 @@ namespace UWUVCI_AIO_WPF
                 if(gameConfiguration.GameName != null)
                 {
                     Regex reg = new Regex("[^a-zA-Z0-9 é -]");
+                    gameConfiguration.GameName = gameConfiguration.GameName.Replace("|", " ");
                     gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
                 }
                 
