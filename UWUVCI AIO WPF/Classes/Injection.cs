@@ -1584,13 +1584,13 @@ namespace UWUVCI_AIO_WPF
             gameName = gameName.Replace("|", " ");
             Regex reg = new Regex("[^a-zA-Z0-9 é -]");
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE] {reg.Replace(gameName,"")} [{mvvm.prodcode}]");
-            mvvm.foldername = $"[LOADIINE] {reg.Replace(gameName, "")} [{mvvm.prodcode}]";
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName,"")} [{mvvm.prodcode}]");
+            mvvm.foldername = $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
-                mvvm.foldername = $"[LOADIINE] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
+                mvvm.foldername = $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
                 i++;
             }
             
@@ -1616,15 +1616,16 @@ namespace UWUVCI_AIO_WPF
             mvm.msg = "Creating Outputfolder...";
             Regex reg = new Regex("[^a-zA-Z0-9 -]");
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
-            gameName = gameName.Replace("|", " ");
+           
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP] {reg.Replace(gameName,"")}");
-            mvvm.foldername = $"[WUP] {reg.Replace(gameName, "")}";
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"").Replace("|", " ")}");
+            outputPath = outputPath.Replace("|", " ");
+            mvvm.foldername = $"[WUP]{reg.Replace(gameName, "").Replace("|"," ")}";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP] {reg.Replace(gameName,"")}_{i}");
-                mvvm.foldername = $"[WUP] {reg.Replace(gameName, "")}_{i}";
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"").Replace("|", " ")}_{i}");
+                mvvm.foldername = $"[WUP]{reg.Replace(gameName, "").Replace("|", " ")}_{i}";
                 i++;
             }
             

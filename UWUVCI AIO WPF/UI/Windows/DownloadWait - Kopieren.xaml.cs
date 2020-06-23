@@ -255,7 +255,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if(injctSize >= new DriveInfo(driveletter).AvailableFreeSpace)
             {
                 long div = injctSize - new DriveInfo(driveletter).AvailableFreeSpace + 1048576;
-                Custom_Message cm = new Custom_Message("Insufficient Space", $" You do not have enough space on the selected drive. \n Please make sure you have atleast {FormatBytes(div)} free on the drive! ");
+                Custom_Message cm = new Custom_Message("Insufficient Space", $" You do not have enough space on the selected drive. \n Please make sure you have at least {FormatBytes(div)} free! ");
                 try
                 {
                     cm.Owner = (FindResource("mvm") as MainViewModel).mw;
