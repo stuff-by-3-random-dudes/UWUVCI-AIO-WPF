@@ -758,13 +758,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void trimn_Click(object sender, RoutedEventArgs e)
         {
-            if (!mvm.donttrim)
+            if(trimn.IsChecked == true)
             {
-                mvm.donttrim = false;
+                mvm.donttrim = true;
+
             }
             else
             {
-                mvm.donttrim = true;
+                mvm.donttrim = false;
             }
            
         }
