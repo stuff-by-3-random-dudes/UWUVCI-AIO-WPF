@@ -338,7 +338,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.msg = "Copying Injected Game...";
-            if(!path.Contains("[WUP]"))
+            if(!System.IO.Path.Combine(path, mvm.foldername).Contains("[WUP]"))
             {
                 DirectoryCopy(System.IO.Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
             }
