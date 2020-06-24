@@ -410,10 +410,11 @@ namespace UWUVCI_AIO_WPF
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.debug = true;
             spc.Visibility = Visibility.Visible;
-            
+            spc.ToolTip = "\"Unhides\" used Tools (Displays whats going on in the Background while a ProgressBar appears";
             if (mvm.saveworkaround)
             {
                 spc.Text = "Debug & Space Bypass Mode";
+                spc.ToolTip += "\nDisables all Space checks. May cause issues.";
             }
             else
             {
