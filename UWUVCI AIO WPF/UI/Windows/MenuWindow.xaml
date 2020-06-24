@@ -51,6 +51,7 @@
 
             </Grid.Background>
             <TextBlock Name="tbTitleBar" HorizontalAlignment="Left" Margin="61,19,0,0" TextWrapping="Wrap" Text="UWUVCI AIO - Start" VerticalAlignment="Top" FontSize="25" Width="1075" TextAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Left" Margin="61,3,0,0" TextWrapping="Wrap" Text="Space Bypass Mode" VerticalAlignment="Top" ToolTip="Disables all Space checks. May cause issues." Name="spc" Visibility="Hidden"/>
         </Grid>
         <Grid x:Name="GridMenu" Width="60" HorizontalAlignment="Left">
             <Grid.Background>

@@ -36,6 +36,8 @@ namespace UWUVCI_AIO_WPF
 {
     public class MainViewModel : BaseModel
     {
+        public bool saveworkaround = false;
+
         private bool Injected2 = false;
         public bool injected2
         {
@@ -1242,11 +1244,26 @@ namespace UWUVCI_AIO_WPF
                 p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
                 if (debug)
                 {
-                    p.StartInfo.Arguments = "--debug --skip";
+                    if (saveworkaround)
+                    {
+                        p.StartInfo.Arguments = "--debug --skip --spacebypass";
+                    }
+                    else
+                    {
+                        p.StartInfo.Arguments = "--debug --skip";
+                    }
+                    
                 }
                 else
                 {
-                    p.StartInfo.Arguments = "--skip";
+                    if (saveworkaround)
+                    {
+                        p.StartInfo.Arguments = "--skip --spacebypass";
+                    }
+                    else
+                    {
+                        p.StartInfo.Arguments = "--skip";
+                    }
                 }
                 p.Start();
                 Environment.Exit(0);
@@ -3720,6 +3737,39 @@ namespace UWUVCI_AIO_WPF
 
             }
 
+        }
+        public void RestartIntoBypass()
+        {
+            using(Process p = new Process())
+            {
+                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+                if (debug)
+                {
+                    if (saveworkaround)
+                    {
+                        p.StartInfo.Arguments = "--debug --skip --spacebypass";
+                    }
+                    else
+                    {
+                        p.StartInfo.Arguments = "--debug --skip";
+                    }
+
+                }
+                else
+                {
+                    if (saveworkaround)
+                    {
+                        p.StartInfo.Arguments = "--skip --spacebypass";
+                    }
+                    else
+                    {
+                        p.StartInfo.Arguments = "--skip";
+                    }
+                }
+                p.Start();
+                Environment.Exit(0);
+            }
+            
         }
     }
 }

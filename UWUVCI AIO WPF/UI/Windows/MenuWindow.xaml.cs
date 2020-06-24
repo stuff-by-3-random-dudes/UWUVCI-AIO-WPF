@@ -409,6 +409,21 @@ namespace UWUVCI_AIO_WPF
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.debug = true;
+            spc.Visibility = Visibility.Visible;
+            
+            if (mvm.saveworkaround)
+            {
+                spc.Text = "Debug & Space Bypass Mode";
+            }
+            else
+            {
+                spc.Text = "Debug Mode";
+            }
+        }
+        public void allowBypass()
+        {
+            (FindResource("mvm") as MainViewModel).saveworkaround = true;
+            spc.Visibility = Visibility.Visible;
         }
     }
 }

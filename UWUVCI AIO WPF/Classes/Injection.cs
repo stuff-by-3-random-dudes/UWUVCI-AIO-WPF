@@ -148,30 +148,39 @@ namespace UWUVCI_AIO_WPF
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
-            
             Clean();
-            long gamesize = new FileInfo(RomPath).Length;
-            var drive = new DriveInfo(tempPath);
+            long freeSpaceInBytes = 0;
+            if (!mvm.saveworkaround)
+            {
+                long gamesize = new FileInfo(RomPath).Length;
+
+                var drive = new DriveInfo(tempPath);
+
+                
+                freeSpaceInBytes = drive.AvailableFreeSpace;
+            }
             long neededspace = 0;
-            long freeSpaceInBytes = drive.AvailableFreeSpace;
-           
+
             mvvm = mvm;
 
 
             if (Directory.Exists(tempPath))
             {
+
                 Directory.Delete(tempPath, true);
             }
+
             Directory.CreateDirectory(tempPath);
+
 
             mvm.msg = "Checking Tools...";
             mvm.InjcttoolCheck();
             mvm.Progress = 5;
-
+           
             mvm.msg = "Copying Base...";
             try
             {
-                if (Configuration.Console == GameConsoles.WII || Configuration.Console == GameConsoles.GCN)
+                if (!mvm.saveworkaround && (Configuration.Console == GameConsoles.WII || Configuration.Console == GameConsoles.GCN))
                 {
 
                     if (mvm.GC)
@@ -186,6 +195,10 @@ namespace UWUVCI_AIO_WPF
                     {
                         throw new Exception("12G");
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Using Bypass");
                 }
                 if(Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
                 {

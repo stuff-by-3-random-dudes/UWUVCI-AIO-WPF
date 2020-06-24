@@ -55,6 +55,7 @@ namespace UWUVCI_AIO_WPF
 				}
 			}
 			bool check = true;
+			bool bypass = false;
 			if (e.Args.Length >= 1)
 			{
 				foreach(var s in e.Args)
@@ -62,6 +63,11 @@ namespace UWUVCI_AIO_WPF
 					if(s == "--skip")
 					{
 						check = false;
+					}
+					if(s == "--spacebypass")
+					{
+						
+						bypass = true;
 					}
 				}
 			}
@@ -71,7 +77,7 @@ namespace UWUVCI_AIO_WPF
 			{
 				t.Elapsed += KillProg;
 				t.Start();
-				Custom_Message cm = new Custom_Message("Another Instance Running", "You already got another instance of UWUVCI AIO running.\nThis instance will terminate in 5 seconds.");
+				Custom_Message cm = new Custom_Message("Another Instance Running", " You already got another instance of UWUVCI AIO running. \n This instance will terminate in 5 seconds. ");
 
 				cm.ShowDialog();
 				KillProg(null, null);
@@ -98,6 +104,10 @@ namespace UWUVCI_AIO_WPF
 					cm.ShowDialog();
 				}
 				MainWindow wnd = new MainWindow();
+				if (bypass) {
+					wnd.allowBypass();
+
+				}
 				// The OpenFile() method is just an example of what you could do with the
 				// parameter. The method should be declared on your MainWindow class, where
 				// you could use a range of methods to process the passed file path

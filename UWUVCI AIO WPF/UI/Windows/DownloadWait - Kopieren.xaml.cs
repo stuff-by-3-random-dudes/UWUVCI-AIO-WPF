@@ -250,38 +250,59 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             return String.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
         }
         private void setup_Click(object sender, RoutedEventArgs e)
-        {
-            long injctSize = GetDirectorySize(System.IO.Path.Combine(path, (FindResource("mvm") as MainViewModel).foldername), true);
-            if(injctSize >= new DriveInfo(driveletter).AvailableFreeSpace)
+        {if(!(FindResource("mvm") as MainViewModel).saveworkaround)
             {
-                long div = injctSize - new DriveInfo(driveletter).AvailableFreeSpace + 1048576;
-                Custom_Message cm = new Custom_Message("Insufficient Space", $" You do not have enough space on the selected drive. \n Please make sure you have at least {FormatBytes(div)} free! ");
-                try
+                long injctSize = GetDirectorySize(System.IO.Path.Combine(path, (FindResource("mvm") as MainViewModel).foldername), true);
+                if (injctSize >= new DriveInfo(driveletter).AvailableFreeSpace)
                 {
-                    cm.Owner = (FindResource("mvm") as MainViewModel).mw;
-                }
-                catch (Exception)
-                {
+                    long div = injctSize - new DriveInfo(driveletter).AvailableFreeSpace + 1048576;
+                    Custom_Message cm = new Custom_Message("Insufficient Space", $" You do not have enough space on the selected drive. \n Please make sure you have at least {FormatBytes(div)} free! ");
+                    try
+                    {
+                        cm.Owner = (FindResource("mvm") as MainViewModel).mw;
+                    }
+                    catch (Exception)
+                    {
 
+                    }
+                    cm.ShowDialog();
                 }
-                cm.ShowDialog();
+                else
+                {
+                    dp.Tick += Dp_Tick;
+                    dp.Interval = TimeSpan.FromSeconds(1);
+                    dp.Start();
+                    Task.Run(() =>
+                    {
+
+                        if (gc)
+                        {
+                            SetupNintendont();
+                        }
+                        CopyInject();
+                    });
+                    setup.IsEnabled = false;
+                }
             }
             else
             {
-                dp.Tick += Dp_Tick;
-                dp.Interval = TimeSpan.FromSeconds(1);
-                dp.Start();
-                Task.Run(() =>
-                {
-
-                    if (gc)
+                
+                    dp.Tick += Dp_Tick;
+                    dp.Interval = TimeSpan.FromSeconds(1);
+                    dp.Start();
+                    Task.Run(() =>
                     {
-                        SetupNintendont();
-                    }
-                    CopyInject();
-                });
-                setup.IsEnabled = false;
+
+                        if (gc)
+                        {
+                            SetupNintendont();
+                        }
+                        CopyInject();
+                    });
+                    setup.IsEnabled = false;
+                
             }
+            
             
 
          

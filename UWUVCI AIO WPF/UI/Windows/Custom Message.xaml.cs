@@ -266,8 +266,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             try
             {
-                if((FindResource("mvm") as MainViewModel).mw != null)
-                (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+                if (!Title.Text.Contains("Warning"))
+                {
+                    if ((FindResource("mvm") as MainViewModel).mw != null)
+                        (FindResource("mvm") as MainViewModel).mw.Topmost = true;
+                }
+               
             }
             catch (Exception ) 
             { 
@@ -280,8 +284,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if ((FindResource("mvm") as MainViewModel).mw != null)
-                    (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+                if (!Title.Text.Contains("Warning"))
+                {
+                    if ((FindResource("mvm") as MainViewModel).mw != null)
+                        (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+                }
             }
             catch (Exception)
             {

@@ -29,7 +29,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             InitializeComponent();
             parent = mw;
-            
+            spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
         }
         public void Dispose()
         {
@@ -135,6 +135,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             
         }
 
-        
+        private void Button_Click_12(object sender, RoutedEventArgs e)
+        {
+            (FindResource("mvm") as MainViewModel).RestartIntoBypass();
+        }
     }
 }
