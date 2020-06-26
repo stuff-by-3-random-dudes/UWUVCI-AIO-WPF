@@ -165,6 +165,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
             }
+            mvm.GameConfiguration.GameName = gn.Text;
             mvm.Inject(false);
             mvm.PokePatch = false;
             rbRDF.IsChecked = true;

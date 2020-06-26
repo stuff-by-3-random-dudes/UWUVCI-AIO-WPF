@@ -306,6 +306,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.LR = false;
             }
+            mvm.GameConfiguration.GameName = gn.Text;
             mvm.Inject(false);
         }
 

@@ -1548,11 +1548,12 @@ namespace UWUVCI_AIO_WPF
                             case GameConsoles.WII:
                                 if(test == GameConsoles.GCN)
                                 {
-                                    dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
+                                    dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 }
                                 else
                                 {
-                                    dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
+                                    dialog.Filter = "All Types (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso; *.dol; *.wad) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso; *.dol; *.wad|Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
+                                    // dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
                                 }
                                 
                                 break;

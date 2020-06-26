@@ -1835,7 +1835,7 @@ namespace UWUVCI_AIO_WPF
         private static void EditXML(string gameNameOr, int index, string code)
         {
             string gameName = string.Empty;
-            if(gameNameOr != string.Empty && gameNameOr != null)
+            if(gameNameOr != null || !String.IsNullOrWhiteSpace(gameNameOr))
             {
 
                 gameName = gameNameOr;
@@ -1846,6 +1846,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
 
+            
             
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");

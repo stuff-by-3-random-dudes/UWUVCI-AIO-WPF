@@ -233,6 +233,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
             }
+            mvm.GameConfiguration.GameName = gn.Text;
             mvm.GC = true;
             mvm.Inject(cd);
             mvm.Index = 1;
