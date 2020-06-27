@@ -148,15 +148,21 @@ namespace UWUVCI_AIO_WPF
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
+            mvm.failed = false;
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += tick;
             Clean();
             long freeSpaceInBytes = 0;
             if (!mvm.saveworkaround)
             {
+                timer.Start();
                 long gamesize = new FileInfo(RomPath).Length;
-
+                Thread.Sleep(20000);
                 var drive = new DriveInfo(tempPath);
 
-                
+                done = true;
+                timer.Stop();
                 freeSpaceInBytes = drive.AvailableFreeSpace;
             }
             long neededspace = 0;
@@ -239,6 +245,11 @@ namespace UWUVCI_AIO_WPF
                 mvm.Progress = 100;
                 
                 code = null;
+                if(e.Message == "Failed this shit")
+                {
+                    Clean();
+                    return false;
+                }
                 if (e.Message.Contains("Images")){
 
                     MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -286,6 +297,16 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
+        private static bool done = false;
+        private static void tick(object sender, EventArgs e)
+        {
+            if (!done)
+            {
+                mvvm.failed = true;
+            }
+            throw new Exception("Failed this shit");
+        }
+
         public static void SendKey(IntPtr hWnd, System.Windows.Forms.Keys key)
         {
             PostMessage(hWnd, WM_KEYUP, key, 0);

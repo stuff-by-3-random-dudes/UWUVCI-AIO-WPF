@@ -1074,7 +1074,7 @@ namespace UWUVCI_AIO_WPF
             
 
         }
-
+        public bool failed = false;
 
         public void Inject(bool force)
         {
@@ -1113,6 +1113,19 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
+            }
+            else
+            {
+                if (failed)
+                {
+                    MessageBox.Show("In here");
+                    mw.allowBypass();
+                    if (debug)
+                    {
+                        mw.setDebug(true);
+                    }
+                    Inject(force);
+                }
             }
             
             

@@ -405,26 +405,31 @@ namespace UWUVCI_AIO_WPF
         {
             min.Background = new SolidColorBrush(Color.FromArgb(0, 250, 250, 250));
         }
-        public void setDebug()
+        public void setDebug(bool bypass)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.debug = true;
             spc.Visibility = Visibility.Visible;
-            spc.ToolTip = "\"Unhides\" used Tools (Displays whats going on in the Background while a ProgressBar appears";
-            if (mvm.saveworkaround)
+           
+            if (bypass)
             {
                 spc.Text = "Debug & Space Bypass Mode";
-                spc.ToolTip += "\nDisables all Space checks. May cause issues.";
+                spc.ToolTip = "Disables all Space checks. May cause issues.\n\"Unhides\" used Tools (Displays whats going on in the Background while a ProgressBar appears";
             }
             else
             {
                 spc.Text = "Debug Mode";
+                spc.ToolTip = "\"Unhides\" used Tools (Displays whats going on in the Background while a ProgressBar appears";
             }
+                
+            
         }
         public void allowBypass()
         {
             (FindResource("mvm") as MainViewModel).saveworkaround = true;
             spc.Visibility = Visibility.Visible;
+            spc.Text = "Space Bypass Mode";
+            spc.ToolTip = "Disables all Space checks. May cause issues.";
         }
     }
 }

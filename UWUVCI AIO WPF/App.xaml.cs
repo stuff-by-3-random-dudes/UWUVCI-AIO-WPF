@@ -113,7 +113,7 @@ namespace UWUVCI_AIO_WPF
 				// you could use a range of methods to process the passed file path
 				if (e.Args.Length >= 1 && e.Args[0] == "--debug")
 				{
-					wnd.setDebug();
+					wnd.setDebug(bypass);
 				}
 				wnd.Show();
 			}
