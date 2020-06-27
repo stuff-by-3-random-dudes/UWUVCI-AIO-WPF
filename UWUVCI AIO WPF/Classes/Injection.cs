@@ -196,10 +196,7 @@ namespace UWUVCI_AIO_WPF
                         throw new Exception("12G");
                     }
                 }
-                else
-                {
-                    MessageBox.Show("Using Bypass");
-                }
+
                 if(Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
                 {
                     throw new Exception("BASE");
