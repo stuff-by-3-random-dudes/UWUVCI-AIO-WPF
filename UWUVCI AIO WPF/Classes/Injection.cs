@@ -164,11 +164,6 @@ namespace UWUVCI_AIO_WPF
             mvvm = mvm;
 
 
-            if (Directory.Exists(tempPath))
-            {
-
-                Directory.Delete(tempPath, true);
-            }
 
             Directory.CreateDirectory(tempPath);
 
@@ -1579,12 +1574,32 @@ namespace UWUVCI_AIO_WPF
             }
             mvvm.Progress = 80;
         }
-       
+        public static void DeleteDirectory(string path)
+        {
+            foreach (string directory in Directory.GetDirectories(path))
+            {
+                DeleteDirectory(directory);
+            }
+
+            try
+            {
+                Thread.Sleep(0);
+                Directory.Delete(path, true);
+            }
+            catch (IOException)
+            {
+                Directory.Delete(path, true);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Directory.Delete(path, true);
+            }
+        }
         public static void Clean()
         {
             if (Directory.Exists(tempPath))
             {
-                Directory.Delete(tempPath, true);
+                DeleteDirectory(tempPath);
             }
         }
         [STAThread]
@@ -1710,7 +1725,11 @@ namespace UWUVCI_AIO_WPF
                             decrypt.WaitForExit();
                         }
                         mvm.Progress += 10;
-                        File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
+                        foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
+                        {
+                            File.Delete(sFile);
+                        }
+                    File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
 
                         File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
 
