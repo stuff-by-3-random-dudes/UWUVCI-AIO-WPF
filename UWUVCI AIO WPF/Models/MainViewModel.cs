@@ -2013,7 +2013,15 @@ namespace UWUVCI_AIO_WPF
             lGameBasesString.Clear();
             foreach(GameBases gb in LBases)
             {
-                LGameBasesString.Add($"{gb.Name} {gb.Region}");
+                if(gb.Name == "Custom")
+                {
+                    LGameBasesString.Add($"{gb.Name}");
+                }
+                else
+                {
+                    LGameBasesString.Add($"{gb.Name} {gb.Region}");
+                }
+                
             }
         }
         
