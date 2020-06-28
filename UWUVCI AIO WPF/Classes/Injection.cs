@@ -156,14 +156,13 @@ namespace UWUVCI_AIO_WPF
             long freeSpaceInBytes = 0;
             if (!mvm.saveworkaround)
             {
-                timer.Start();
+               
                 long gamesize = new FileInfo(RomPath).Length;
-                Thread.Sleep(20000);
+             
                 var drive = new DriveInfo(tempPath);
 
                 done = true;
-                timer.Stop();
-                freeSpaceInBytes = drive.AvailableFreeSpace;
+                           freeSpaceInBytes = drive.AvailableFreeSpace;
             }
             long neededspace = 0;
 
