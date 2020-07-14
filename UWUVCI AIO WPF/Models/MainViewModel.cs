@@ -2129,7 +2129,42 @@ namespace UWUVCI_AIO_WPF
                 }
                 KeyFile.ExportFile(temp, console);
             }
+            else
+            {
+                FixupKeys(l, console);
+            }
                        
+        }
+         private void FixupKeys(List<GameBases> l, GameConsoles console)
+        {
+            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            var save =  KeyFile.ReadBasesFromKeyFile(file);
+            List<TKeys> temp = new List<TKeys>();
+            foreach(TKeys a in save)
+            {
+                temp.Add(a);
+            }
+            foreach (GameBases gb in l)
+            {
+                TKeys tempkey = new TKeys();
+                bool check = false;
+                foreach(TKeys a in save)
+                {
+                    if(a.Base.Name == gb.Name && a.Base.Region == gb.Region)
+                    { 
+                        check = true;
+                        break;
+                    }
+                }
+                if (!check)
+                {
+                    tempkey.Base = gb;
+                    temp.Add(tempkey);
+                }
+                
+            }
+            File.Delete(file);
+            KeyFile.ExportFile(temp, console);
         }
         private void UpdateKeyFile(List<GameBases> l, GameConsoles console)
         {
