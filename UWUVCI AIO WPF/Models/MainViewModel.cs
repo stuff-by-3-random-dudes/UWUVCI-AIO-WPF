@@ -280,7 +280,7 @@ namespace UWUVCI_AIO_WPF
         {
             using (var fs = new FileStream(RomPath,
                                 FileMode.Open,
-                                FileAccess.ReadWrite))
+                                FileAccess.Read))
             {
                 byte[] procode = new byte[4];
                 fs.Seek(0x200, SeekOrigin.Begin);
@@ -2791,7 +2791,7 @@ namespace UWUVCI_AIO_WPF
             {
                 using (var fs = new FileStream(v,
                              FileMode.Open,
-                             FileAccess.ReadWrite))
+                             FileAccess.Read))
                 {
 
                     fs.Read(procode, 0, 0x210);
@@ -2834,7 +2834,7 @@ namespace UWUVCI_AIO_WPF
                 bool skip = false;
                 using (var fs = new FileStream(path,
                              FileMode.Open,
-                             FileAccess.ReadWrite))
+                             FileAccess.Read))
                 {
                     byte[] procode = new byte[4];
                     fs.Seek(0x7FB2, SeekOrigin.Begin);
@@ -2980,7 +2980,7 @@ namespace UWUVCI_AIO_WPF
             {
                 using (var fs = new FileStream(path,
                              FileMode.Open,
-                             FileAccess.ReadWrite))
+                             FileAccess.Read))
                 {
 
                     fs.Seek(0x8000, SeekOrigin.Begin);
