@@ -121,7 +121,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     PLDi.Visibility = Visibility.Hidden;
                     PLEn.Visibility = Visibility.Hidden;
                     Players.Visibility = Visibility.Hidden;
-                    alt.Visibility = Visibility.Hidden;
 
                     PlayerLabel.Visibility = Visibility.Hidden;
                     snesonly.Visibility = Visibility.Visible;
@@ -515,18 +514,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             DrawImage();
         }
 
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            if (alt.IsChecked == true)
-            {
-                bi.changefont(true);
-            }
-            else
-            {
-                bi.changefont(false);
-            }
-            DrawImage();
-        }
         private void switchs(Visibility v)
         {
             GameName1.Visibility = v;
