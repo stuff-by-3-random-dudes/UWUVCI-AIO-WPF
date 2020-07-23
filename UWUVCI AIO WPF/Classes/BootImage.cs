@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows;
-using System.Windows.Media;
-using Color = System.Drawing.Color;
-using FontFamily = System.Drawing.FontFamily;
-using FontStyle = System.Drawing.FontStyle;
-using Pen = System.Drawing.Pen;
+using System.Drawing.Text;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -42,7 +37,6 @@ namespace UWUVCI_AIO_WPF.Classes
         public int Released;
         public int Players;
         public bool Longname;
-        private bool bf = false;
 
         public BootImage()
         {
@@ -95,25 +89,21 @@ namespace UWUVCI_AIO_WPF.Classes
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.CompositingMode = CompositingMode.SourceOver;
             g.CompositingQuality = CompositingQuality.HighQuality;
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
             g.Clear(Color.White);
-            System.Drawing.Text.PrivateFontCollection privateFonts = new System.Drawing.Text.PrivateFontCollection();
-            privateFonts.AddFontFile(@"bin\Tools\font.otf");
-            if (bf)
+            try
             {
-                font = new Font("Trebuchet MS", 10.0F, System.Drawing.FontStyle.Bold, GraphicsUnit.Point);
-            }
-            else
-            {
+                PrivateFontCollection privateFonts = new PrivateFontCollection();
+                privateFonts.AddFontFile(@"bin\Tools\font.otf");
                 font = new Font(privateFonts.Families[0], 10.0F, FontStyle.Regular, GraphicsUnit.Point);
-                
-
-
-
+            }
+            catch (Exception)
+            {
+                font = new Font("Trebuchet MS", 10.0F, FontStyle.Bold, GraphicsUnit.Point);
             }
 
             SolidBrush brush = new SolidBrush(Color.FromArgb(32, 32, 32));
-            Pen outline = new Pen(System.Drawing.Color.FromArgb(222, 222, 222), 4.0F);
+            Pen outline = new Pen(Color.FromArgb(222, 222, 222), 4.0F);
             Pen shadow = new Pen(Color.FromArgb(190, 190, 190), 6.0F);
             StringFormat format = new StringFormat();
             Rectangle rectangleGBA = new Rectangle(132, 260, 399, 266);
@@ -227,17 +217,6 @@ namespace UWUVCI_AIO_WPF.Classes
             }
 
             return img;
-        }
-        public void changefont(bool t)
-        {
-            if (t)
-            {
-                bf = true;
-            }
-            else
-            {
-                bf = false;
-            }
         }
     }
 }

@@ -57,7 +57,6 @@
             <RadioButton Content="Alternative - Wii" GroupName="snes" Click="RadioButton_Click" Foreground="Black" Margin="0,6,0,-6" Name="altwii" Visibility="Hidden"/>
             <ComboBox Margin="0,2" Width="169" Name="combo" SelectionChanged="combo_SelectionChanged" Foreground="Black" Visibility="Hidden" ></ComboBox>
         </StackPanel>
-        <CheckBox Content="Use ALT font" HorizontalAlignment="Left" Height="18" Margin="407,333,0,0" VerticalAlignment="Top" Foreground="Black" Click="CheckBox_Click" Name="alt" Visibility="Hidden"/>
         <Label Content=" TV IMAGE" x:Name="imageName_Copy" Margin="9,24,419,329"/>
     </Grid>
 </Window>
