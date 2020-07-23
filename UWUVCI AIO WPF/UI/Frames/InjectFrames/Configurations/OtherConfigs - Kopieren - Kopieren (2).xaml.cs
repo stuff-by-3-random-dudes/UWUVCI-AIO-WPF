@@ -173,29 +173,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
-            /* if (!Settings.Default.dont)
-             {
-                 mvm.ImageWarning();
-             }
-             string path = mvm.GetFilePath(false, false);
-             if (!CheckIfNull(path))
-             {
-                 mvm.GameConfiguration.TGATv.ImgPath = path;
-                 mvm.GameConfiguration.TGATv.extension = new FileInfo(path).Extension;
-                 tv.Text = path;
-                 tvIMG.Visibility = Visibility.Visible;
-             }
-             else
-             {
-                 if (path == "")
-                 {
-                     mvm.GameConfiguration.TGATv.ImgPath = null;
-                     tv.Text = "";
-                     tvIMG.Visibility = Visibility.Hidden;
-                 }
-             }*/
             string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootTvTex.png");
-            
+
             ImageCreator ic;
             if (!string.IsNullOrEmpty(mvm.RomPath))
             {
@@ -216,8 +195,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 ic = new ImageCreator(GameBaseClassLibrary.GameConsoles.GBA, "bootTvTex");
             }
-           
-           
+
             try
             {
                 ic.Owner = mvm.mw;
@@ -227,6 +205,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
             ic.ShowDialog();
+            ic.Dispose();
             if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
             {
                 mvm.GameConfiguration.TGATv.ImgPath = path;
@@ -239,27 +218,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_DrcTex(object sender, RoutedEventArgs e)
         {
-            /* if (!Settings.Default.dont)
-             {
-                 mvm.ImageWarning();
-             }
-             string path = mvm.GetFilePath(false, false);
-             if (!CheckIfNull(path))
-             {
-                 mvm.GameConfiguration.TGADrc.ImgPath = path;
-                 mvm.GameConfiguration.TGADrc.extension = new FileInfo(path).Extension;
-                 drc.Text = path;
-                 drcIMG.Visibility = Visibility.Visible;
-             }
-             else
-             {
-                 if (path == "")
-                 {
-                     mvm.GameConfiguration.TGADrc.ImgPath = null;
-                     drc.Text = "";
-                     drcIMG.Visibility = Visibility.Hidden;
-                 }
-             }*/
             string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootDrcTex.png");
 
             ImageCreator ic;
@@ -283,7 +241,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ic = new ImageCreator(GameBaseClassLibrary.GameConsoles.GBA, "bootDrcTex");
             }
 
-
             try
             {
                 ic.Owner = mvm.mw;
@@ -293,6 +250,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
             ic.ShowDialog();
+            ic.Dispose();
             if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
             {
                 mvm.GameConfiguration.TGADrc.ImgPath = path;
@@ -304,27 +262,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_IconTex(object sender, RoutedEventArgs e)
         {
-            /*if (!Settings.Default.dont)
-            {
-                mvm.ImageWarning();
-            }
-            string path = mvm.GetFilePath(false, false);
-            if (!CheckIfNull(path))
-            {
-                mvm.GameConfiguration.TGAIco.ImgPath = path;
-                mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
-                ic.Text = path;
-                icoIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                if (path == "")
-                {
-                    mvm.GameConfiguration.TGAIco.ImgPath = null;
-                    ic.Text = "";
-                    icoIMG.Visibility = Visibility.Hidden;
-                }
-            }*/
             string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "iconTex.png");
             IconCreator ic;
             if (!string.IsNullOrEmpty(mvm.RomPath))
@@ -355,6 +292,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
             ic.ShowDialog();
+            ic.Dispose();
             if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
@@ -366,38 +304,20 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void Set_LogoTex(object sender, RoutedEventArgs e)
         {
-            /* if (!Settings.Default.dont)
-             {
-                 mvm.ImageWarning();
-             }
-             string path = mvm.GetFilePath(false, false);
-             if (!CheckIfNull(path))
-             {
-                 mvm.GameConfiguration.TGALog.ImgPath = path;
-                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
-                 log.Text = path;
-                 logIMG.Visibility = Visibility.Visible;
-             }
-             else
-             {
-                 if (path == "")
-                 {
-                     mvm.GameConfiguration.TGALog.ImgPath = null;
-                     log.Text = "";
-                     logIMG.Visibility = Visibility.Hidden;
-                 }
-             }*/
             string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "createdIMG", "bootLogoTex.png");
-            LogoCreator ic = new LogoCreator();
-            try
+            using (LogoCreator ic = new LogoCreator())
             {
-                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
-            }
-            catch (Exception)
-            {
+                try
+                {
+                    ic.Owner = (FindResource("mvm") as MainViewModel).mw;
+                }
+                catch (Exception)
+                {
 
+                }
+                ic.ShowDialog();
             }
-            ic.ShowDialog();
+
             if (File.Exists(path) && mvm.CheckTime(new FileInfo(path).CreationTime))
             {
                 mvm.GameConfiguration.TGALog.ImgPath = path;

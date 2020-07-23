@@ -122,17 +122,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            LogoCreator ic = new LogoCreator() ;
-             try
-             {
-                 ic.Owner = (FindResource("mvm") as MainViewModel).mw;
-             }
-             catch (Exception)
-             {
+            using (LogoCreator ic = new LogoCreator())
+            {
+                try
+                {
+                    ic.Owner = (FindResource("mvm") as MainViewModel).mw;
+                }
+                catch (Exception)
+                {
 
-             }
-             ic.ShowDialog();
-            
+                }
+                ic.ShowDialog();
+            }
         }
 
         private void Button_Click_12(object sender, RoutedEventArgs e)

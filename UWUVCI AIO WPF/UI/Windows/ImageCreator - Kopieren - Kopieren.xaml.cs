@@ -37,6 +37,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         Bitmap b;
         string console = "other";
         bool drc = false;
+        private bool _disposed;
 
         public LogoCreator()
         {
@@ -137,6 +138,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
 
         private static readonly Regex _regex = new Regex("[^0-9]+"); //regex that matches disallowed text
+
         private static bool IsTextAllowed(string text)
         {
             return !_regex.IsMatch(text);
@@ -217,12 +219,21 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public void Dispose()
         {
-         
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-       
+        private void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                bi?.Dispose();
+                b?.Dispose();
+            }
 
-        
+            _disposed = true;
+        }
 
         private void RadioButton_Click(object sender, RoutedEventArgs e)
         {
