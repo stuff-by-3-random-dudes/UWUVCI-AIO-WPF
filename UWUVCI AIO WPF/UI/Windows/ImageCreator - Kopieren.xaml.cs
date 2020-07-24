@@ -37,6 +37,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         string console = "other";
         string othercons = "";
         bool drc = false;
+        private bool _disposed;
 
         public IconCreator()
         {
@@ -399,7 +400,20 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
+        private void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                bi?.Dispose();
+                b?.Dispose();
+            }
+
+            _disposed = true;
         }
 
         private void combo_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -37,6 +37,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         string console = "other";
         bool drc = false;
         private string backupcons;
+        private bool _disposed;
 
         public ImageCreator(string name)
         {
@@ -121,7 +122,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     PLDi.Visibility = Visibility.Hidden;
                     PLEn.Visibility = Visibility.Hidden;
                     Players.Visibility = Visibility.Hidden;
-                    alt.Visibility = Visibility.Hidden;
 
                     PlayerLabel.Visibility = Visibility.Hidden;
                     snesonly.Visibility = Visibility.Visible;
@@ -236,6 +236,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
 
         private static readonly Regex _regex = new Regex("[^0-9]+"); //regex that matches disallowed text
+
         private static bool IsTextAllowed(string text)
         {
             return !_regex.IsMatch(text);
@@ -404,7 +405,20 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
+        private void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            if (disposing)
+            {
+                bi?.Dispose();
+                b?.Dispose();
+            }
+
+            _disposed = true;
         }
 
         private void combo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -515,18 +529,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             DrawImage();
         }
 
-        private void CheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            if (alt.IsChecked == true)
-            {
-                bi.changefont(true);
-            }
-            else
-            {
-                bi.changefont(false);
-            }
-            DrawImage();
-        }
         private void switchs(Visibility v)
         {
             GameName1.Visibility = v;
