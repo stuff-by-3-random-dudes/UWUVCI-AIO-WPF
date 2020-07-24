@@ -558,7 +558,7 @@ namespace UWUVCI_AIO_WPF
            
             
             string ret = string.Empty;
-            Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder.\n\n The Folder should atleast contain:\n EXACTLY ONE *.hcd file\n One or more *.ogg files\n One or More *.bin files\n\n Not doing so will result in a faulty Inject. You have been warned!");
+            Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder.\n\n The Folder should at least contain:\n EXACTLY ONE *.hcd file\n One or more *.ogg files\n One or More *.bin files\n\n Not doing so will result in a faulty Inject. You have been warned!");
             try
             {
                 cm.Owner = mw;
