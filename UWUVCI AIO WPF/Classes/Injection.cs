@@ -325,13 +325,11 @@ namespace UWUVCI_AIO_WPF
                             WaveFileWriter.CreateWaveFile(Path.Combine(tempPath, "in.wav"), pcm);
                         }
                     }
-                    
                 }
                 else
                 {
                     File.Copy(sound, Path.Combine(tempPath, "in.wav"));
                 }
-                sound = Path.Combine(tempPath, "in.wav");
                 //extract SOX.zip
                 using(Process zip = new Process())
                 {
@@ -355,43 +353,32 @@ namespace UWUVCI_AIO_WPF
                     p.Start();
                     p.WaitForExit();
                     File.Delete("in.wav");
-                    
                 }
                 //Delete SOX Folder
                 Directory.Delete(Path.Combine(toolsPath, "SOX"), true);
-                //extract IKVM.zip
-                using (Process zip = new Process())
-                {
-                    if (Directory.Exists(Path.Combine(toolsPath, "IKVMW"))) { Directory.Delete(Path.Combine(toolsPath, "IKVMW"), true); }
-                    if (!mvvm.debug)
-                    {
-                        zip.StartInfo.UseShellExecute = false;
-                        zip.StartInfo.CreateNoWindow = true;
-                    }
 
-                    zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                    zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "IKVMW.zip")}\" -o\"{Path.Combine(toolsPath, "IKVMW")}\"";
-                    zip.Start();
-                    zip.WaitForExit();
-                }
                 //convert to btsnd
-                using (Process wav2btsnd = new Process())
-                {
-                    wav2btsnd.StartInfo.FileName = Path.Combine(toolsPath, "IKVMW", "wav2btsnd.exe");
-                    wav2btsnd.StartInfo.Arguments = $"-in \"{Path.Combine(tempPath, "converted.wav")}\" -out \"{Path.Combine(tempPath, "sound.btsnd")}\"";
-                    wav2btsnd.Start();
-                    wav2btsnd.WaitForExit();
-                    sound = Path.Combine(tempPath, "sound.btsnd");
-                }
-
-                //Delete IKVM.zip
-                Directory.Delete(Path.Combine(toolsPath, "IKVMW"), true);
+                sound = Path.Combine(tempPath, "sound.btsnd");
+                wav2btsnd(Path.Combine(tempPath, "converted.wav"), sound);
             }
             //Copy BootSound to location
             File.Delete(Path.Combine(baseRomPath, "meta", "bootSound.btsnd"));
             File.Copy(sound, Path.Combine(baseRomPath, "meta", "bootSound.btsnd"));
+        }
 
-
+        private static void wav2btsnd(string input_wav, string output_btsnd)
+        {
+            // credits to the original creator of wav2btsnd for the general logic
+            byte[] buffer = File.ReadAllBytes(input_wav);
+            using (FileStream output = new FileStream(output_btsnd, FileMode.OpenOrCreate))
+            using (BinaryWriter writer = new BinaryWriter(output))
+            {
+                writer.Write(new byte[] {0x0, 0x0, 0x0, 0x2, 0x0, 0x0, 0x0, 0x0});
+                for (int i = 0x2C; i < buffer.Length; i += 2)
+                {
+                    writer.Write(new[] {buffer[i+1], buffer[i]});
+                }
+            }
         }
 
         static void timer_Tick(object sender, EventArgs e)
