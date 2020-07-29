@@ -1749,7 +1749,7 @@ namespace UWUVCI_AIO_WPF
                         {
                             File.Delete(sFile);
                         }
-                    File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
+                        /* File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
 
                         File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
 
@@ -1795,8 +1795,8 @@ namespace UWUVCI_AIO_WPF
 
                         File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.tmd"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
 
-                        Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);
-                        mvm.Progress += 5;
+                        Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);*/
+                        mvm.Progress += 15;
                     }
                 }
                 else
