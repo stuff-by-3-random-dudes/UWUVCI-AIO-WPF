@@ -48,7 +48,7 @@ namespace UWUVCI_AIO_WPF.Classes
             "NKit.dll",
             "SharpCompress.dll",
             "NKit.dll.config",
-            "SOX.zip",
+            "sox.exe",
             "jpg2tga.exe",
             "bmp2tga.exe",
             "ConvertToNKit.exe",
