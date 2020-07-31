@@ -3051,7 +3051,15 @@ namespace UWUVCI_AIO_WPF
             int n1 = Convert.ToInt32(ts[0] + ts[1]);
             int n2 = Convert.ToInt32(ts[2] + ts[3]);
             int n3 = Convert.ToInt32(ts[4] + ts[5]);
-            int n4 = Convert.ToInt32(ts[6] + ts[7]);
+            int n4;
+            try
+            {
+              n4=  Convert.ToInt32(ts[6] + ts[7]);
+            }catch(Exception e)
+            {
+              n4 =  Convert.ToInt32(ts[6]);
+            }
+            
             char[] letters = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
             while (n1 > 23)
             {
