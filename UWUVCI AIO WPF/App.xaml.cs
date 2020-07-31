@@ -19,7 +19,7 @@ namespace UWUVCI_AIO_WPF
     {
 		Timer t = new Timer(5000);
 		private void Application_Startup(object sender, StartupEventArgs e)
-		{
+		 {
 
 			if (Directory.Exists(@"custom"))
 			{

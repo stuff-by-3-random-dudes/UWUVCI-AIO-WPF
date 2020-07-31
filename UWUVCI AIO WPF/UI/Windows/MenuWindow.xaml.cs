@@ -477,8 +477,8 @@ namespace UWUVCI_AIO_WPF
             (FindResource("mvm") as MainViewModel).saveworkaround = true;
             spc.Visibility = Visibility.Visible;
             spc.Text = "Space Bypass Mode";
-            spc.ToolTip = "Disables all Space checks. May cause issues.";
-        }
+           spc.ToolTip = "Disables all Space checks. May cause issues.";
+       }
 
         private void Window_MouseUp(object sender, MouseButtonEventArgs e)
         {

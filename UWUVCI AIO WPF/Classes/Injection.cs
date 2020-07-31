@@ -211,6 +211,10 @@ namespace UWUVCI_AIO_WPF
                     //Custom Base Functionality here
                     CopyBase($"Custom", Configuration.CBasePath);
                 }
+                if(!Directory.Exists(Path.Combine(baseRomPath, "code")) || !Directory.Exists(Path.Combine(baseRomPath, "content")) || !Directory.Exists(Path.Combine(baseRomPath, "meta")))
+                {
+                    throw new Exception("MISSINGF");
+                }
                 mvm.Progress = 10;
                 mvm.msg = "Injecting ROM...";
                 if (mvm.GC)
@@ -249,7 +253,12 @@ namespace UWUVCI_AIO_WPF
                     Clean();
                     return false;
                 }
-                if (e.Message.Contains("Images")){
+                if (e.Message == "MISSINGF")
+                {
+                    MessageBox.Show("Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base! ", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                   
+                }
+                else if (e.Message.Contains("Images")){
 
                     MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
