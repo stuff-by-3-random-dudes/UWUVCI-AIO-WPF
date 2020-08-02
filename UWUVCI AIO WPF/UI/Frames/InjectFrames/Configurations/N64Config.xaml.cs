@@ -184,6 +184,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             if (gn != null) gn.Text = mvm.GameConfiguration.GameName;
             if (ini != null) ini.Text = mvm.GameConfiguration.N64Stuff.INIPath;
+            chkWide.IsChecked = mvm.GameConfiguration.N64Stuff.WideScreen;
             if(mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
             {
                 if (!Directory.Exists(@"bin\cfgBoot"))
@@ -550,6 +551,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
 
             }
+        }
+
+        private void chkWide_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.GameConfiguration.N64Stuff.WideScreen = !mvm.GameConfiguration.N64Stuff.WideScreen;
         }
     }
 }

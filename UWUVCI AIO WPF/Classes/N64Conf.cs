@@ -18,7 +18,7 @@ namespace UWUVCI_AIO_WPF.Classes
             set { iniPath = value;
             }
         }
-        private bool darkFilter;
+        private bool darkFilter = false;
 
         public bool DarkFilter
         {
@@ -27,6 +27,13 @@ namespace UWUVCI_AIO_WPF.Classes
             }
         }
 
+        private bool wideScreen = false;
+
+        public bool WideScreen
+        {
+            get { return wideScreen; }
+            set { wideScreen = value; }
+        }
 
         public byte[] INIBin { get; set; }
 

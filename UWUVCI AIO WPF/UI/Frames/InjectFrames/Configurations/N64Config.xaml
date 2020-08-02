@@ -24,12 +24,13 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection" IsTabStop="False"/>
         <TextBox Name="ini" materialDesign:HintAssist.Hint="INI PATH (LEAVE EMPTY FOR BLANK INI)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsTabStop="False" Margin="10,118,157,345" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,133,0,0" VerticalAlignment="Top" Width="127" Click="Set_IniPath" IsTabStop="False"/>
-        <StackPanel Margin="10,20,244,436" Orientation="Horizontal" >
+        <StackPanel Margin="10,20,222,436" Orientation="Horizontal" >
 
             <Label Content="DarkFilter:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="90"/>
             <RadioButton Content="Enabled" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="df" IsChecked="True" Click="RadioButton_Click" IsTabStop="False"/>
 
             <RadioButton x:Name="rbRDF" Width="111" Content="Disabled" HorizontalAlignment="Left" Margin="0,5,0,0"  VerticalAlignment="Top" GroupName="df" Click="rbRDF_Click" IsTabStop="False"/>
+            <CheckBox x:Name="chkWide" Content="Enable Widescreen" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28" Click="chkWide_Click"/>
         </StackPanel>
         <TextBox materialDesign:HintAssist.Hint="BOOT SOUND (OPTIONAL)"  IsTabStop="False" ToolTip="Needs to be a RIFF WAVE file 48000khz and 16bit stereo." x:Name="sound" Text="{Binding BootSound}"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,365,157,101" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" TextChanged="sound_TextChanged"/>
         <Image HorizontalAlignment="Left" Height="35" Margin="452,191,0,0" VerticalAlignment="Top" Width="38" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/newcamera2.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden" />

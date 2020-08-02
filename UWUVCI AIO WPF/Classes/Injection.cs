@@ -2208,6 +2208,17 @@ namespace UWUVCI_AIO_WPF
                 mvvm.Progress = 60;
 
             }
+            if (config.WideScreen)
+            {
+                mvvm.msg = "Removing Dark Filter...";
+                string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
+                using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
+                {
+                    writer.Seek(0x1B0D, SeekOrigin.Begin);
+                    writer.Write(new byte[] { 0xF0 },0,1);
+                }
+                mvvm.Progress = 65;
+            }
             if (config.DarkFilter)
             {
                 mvvm.msg = "Removing Dark Filter...";
