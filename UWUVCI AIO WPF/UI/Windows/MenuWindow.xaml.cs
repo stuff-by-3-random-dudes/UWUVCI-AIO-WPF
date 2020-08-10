@@ -394,8 +394,8 @@ namespace UWUVCI_AIO_WPF
                             break;*/
                         case 9:
                             DestroyFrame();
-                            tbTitleBar.Text = "UWUVCI AIO - Settings";
-                            load_frame.Content = new SettingsFrame(this);
+                            tbTitleBar.Text = "UWUVCI AIO - ???";
+                            load_frame.Content = new Teaser();
 
                             break;
                     }
@@ -453,6 +453,14 @@ namespace UWUVCI_AIO_WPF
         {
             min.Background = new SolidColorBrush(Color.FromArgb(0, 250, 250, 250));
         }
+        private void sett_MouseEnter(object sender, MouseEventArgs e)
+        {
+            settings.Background = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+        }
+        private void sett_MouseLeave(object sender, MouseEventArgs e)
+        {
+            settings.Background = new SolidColorBrush(Color.FromArgb(0, 250, 250, 250));
+        }
         public void setDebug(bool bypass)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
@@ -493,6 +501,43 @@ namespace UWUVCI_AIO_WPF
                 
             }).Start();
             
+        }
+
+        private void settings_Click(object sender, RoutedEventArgs e)
+        {
+            MainViewModel mvm = FindResource("mvm") as MainViewModel;
+            mvm.GameConfiguration = new GameConfig();
+            mvm.LGameBasesString.Clear();
+            mvm.CanInject = false;
+            mvm.BaseDownloaded = false;
+            mvm.RomSet = false;
+            mvm.RomPath = null;
+            mvm.Injected = false;
+            mvm.CBasePath = null;
+            mvm.bcf = null;
+            mvm.BootSound = null;
+            mvm.setThing(null);
+            mvm.gc2rom = null;
+            mvm.Index = -1;
+            mvm.donttrim = false;
+            mvm.NKITFLAG = false;
+            mvm.prodcode = "";
+            mvm.foldername = "";
+            mvm.jppatch = false;
+            mvm.GC = false;
+            mvm.test = GameConsoles.WII;
+            mvm.regionfrii = false;
+            mvm.cd = false;
+            mvm.regionfriijp = false;
+            mvm.regionfriius = false;
+            mvm.pixelperfect = false;
+            mvm.injected2 = false;
+
+            mvm.RemoveCreatedIMG();
+            mvm.isDoneMW();
+            DestroyFrame();
+            tbTitleBar.Text = "UWUVCI AIO - Settings";
+            load_frame.Content = new SettingsFrame(this);
         }
     }
 }
