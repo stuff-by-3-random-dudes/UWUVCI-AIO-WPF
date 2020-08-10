@@ -5,12 +5,12 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames"
       mc:Ignorable="d" 
-       d:DesignHeight="480" d:DesignWidth="1130"
+       d:DesignHeight="600" d:DesignWidth="1135"
       Title="Teaser" >
 
     <Grid>
         <TextBlock x:Name="tb" TextWrapping="Wrap" Text="Under Construction       " FontSize="20" Height="29" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="1110" />
 
-
+        <Image Source="/UI/Images/rarch.png" Opacity="0.1" Margin="997,473,23,10"/>
     </Grid>
 </Page>

@@ -394,7 +394,7 @@ namespace UWUVCI_AIO_WPF
                             break;*/
                         case 9:
                             DestroyFrame();
-                            tbTitleBar.Text = "UWUVCI AIO - ???";
+                            tbTitleBar.Text = "UWUVCI AIO - ???????? ?? ??????";
                             load_frame.Content = new Teaser();
 
                             break;

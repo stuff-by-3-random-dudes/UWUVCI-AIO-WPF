@@ -149,7 +149,7 @@
                         <StackPanel Orientation="Horizontal">
                             <!--<materialDesign:PackIcon Foreground="White" Kind="SettingsApplications" Height="45" Width="45"/>-->
                             <Image Source="/UI/Images/teaser.png"></Image>
-                            <TextBlock Text="???" VerticalAlignment="Center" Margin="20 10"/>
+                            <TextBlock Text="???????? ?? ??????" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
                 </ListView>

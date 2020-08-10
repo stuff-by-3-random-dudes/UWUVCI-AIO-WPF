@@ -25,7 +25,16 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace UWUVCI_AIO_WPF
 {
-   
+    public static class StringExtensions
+    {
+        public static string ToHex(this string input)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in input)
+                sb.AppendFormat("{0:X2}", (int)c);
+            return sb.ToString().Trim();
+        }
+    }
     internal static class Injection
     {
         [DllImport("User32.dll")]
@@ -697,6 +706,23 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 15;
                 }
             }
+            //GET ROMCODE and change it
+            mvm.msg = "Trying to change the Manual...";
+            //READ FIRST 4 BYTES
+            byte[] chars = new byte[4];
+            FileStream fstrm = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open);
+            fstrm.Read(chars, 0, 4);
+            fstrm.Close();
+            string procod = ByteArrayToString(chars);
+            string neededformanual = procod.ToHex();
+            string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
+            XmlDocument doc = new XmlDocument();
+            doc.Load(metaXml);
+            doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
+            doc.Save(metaXml);
+            //edit emta.xml
+            mvm.Progress = 20;
+
             if (!mvm.donttrim)
             {
                 if (mvm.regionfrii)
