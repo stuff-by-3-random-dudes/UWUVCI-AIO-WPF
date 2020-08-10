@@ -1718,12 +1718,18 @@ namespace UWUVCI_AIO_WPF
                     string basePath = $@"bin\Tools\";
                     Directory.SetCurrentDirectory(basePath);
                 }
-                
-                using (var client = new WebClient())
+                do
                 {
-                    client.DownloadFile(getDownloadLink(name, true), name);
-                    
-                }
+                    if (File.Exists(name))
+                    {
+                        File.Delete(name);
+                    }
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(getDownloadLink(name, true), name);
+                    }
+                } while (!ToolCheck.IsToolRight(name));
+                
                
             }
             catch (Exception e)

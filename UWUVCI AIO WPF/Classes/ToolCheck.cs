@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -68,6 +70,33 @@ namespace UWUVCI_AIO_WPF.Classes
             return false;
         }
 
+        public static bool IsToolRight(string name)
+        {
+            bool ret = false;
+            WebClient client = new WebClient();
+            client.DownloadFile(backupulr + name + ".md5", name + ".md5");
+            StreamReader sr = new StreamReader(name + ".md5");
+            var md5 = sr.ReadLine();
+            if(CalculateMD5(name) == md5)
+            {
+                ret = true;
+            }
+            sr.Close();
+            File.Delete(name + ".md5");
+            return ret;
+        }
+        static string CalculateMD5(string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+                    stream.Close();
+                    return ret;
+                }
+            }
+        }
         public static List<MissingTool> CheckForMissingTools()
         {
             List<MissingTool> ret = new List<MissingTool>();

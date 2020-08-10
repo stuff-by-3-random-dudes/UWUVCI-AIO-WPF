@@ -17,6 +17,7 @@ namespace UWUVCI_AIO_WPF
     /// </summary>
     public partial class App : Application
     {
+		
 		Timer t = new Timer(5000);
 		private void Application_Startup(object sender, StartupEventArgs e)
 		 {
