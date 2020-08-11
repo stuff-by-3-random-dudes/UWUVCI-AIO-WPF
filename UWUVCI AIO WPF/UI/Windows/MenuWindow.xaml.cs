@@ -89,6 +89,15 @@ namespace UWUVCI_AIO_WPF
                 }
             }
         }
+
+        internal void is32()
+        {
+            this.Wii.DataContext = this;
+            this.Wii.IsEnabled = false;
+            this.GC.DataContext = this;
+            this.GC.IsEnabled = false;
+        }
+
         static MemoryStream sound = new MemoryStream(Properties.Resources.mario);
         private int _match;
         static MemoryStream ms = new MemoryStream(StreamToBytes(sound));

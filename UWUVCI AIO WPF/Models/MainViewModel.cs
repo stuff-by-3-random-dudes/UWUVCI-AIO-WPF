@@ -1952,7 +1952,9 @@ namespace UWUVCI_AIO_WPF
 
         public void UpdatePathSet()
         {
+           
             PathsSet = Settings.Default.PathsSet;
+
             if(BaseStore != Settings.Default.BasePath)
             {
                 BaseStore = Settings.Default.BasePath;
@@ -3736,7 +3738,8 @@ namespace UWUVCI_AIO_WPF
         AudioFileReader audioFileReader;
         public System.Timers.Timer t;
         public bool passtrough = true;
-
+        internal bool enableWii = true;
+        internal bool backupenableWii = true;
         public void PlaySound()
         {
             

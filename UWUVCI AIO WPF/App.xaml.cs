@@ -85,6 +85,7 @@ namespace UWUVCI_AIO_WPF
 			}
 			else
 			{
+				MainWindow wnd = new MainWindow();
 				double height = System.Windows.SystemParameters.PrimaryScreenHeight;
 				double witdh = System.Windows.SystemParameters.PrimaryScreenWidth;
 				if (witdh < 1150 || height < 700)
@@ -101,10 +102,11 @@ namespace UWUVCI_AIO_WPF
 				}
 				else
 				{
-					Custom_Message cm = new Custom_Message("Incompatible Operating System", "Your Operating System is not a 64Bit OS.\nThe Injector will run, but most likley many (if not all) features will not work.");
+					wnd.is32();
+					Custom_Message cm = new Custom_Message("Warning", "Your Operating System is not a 64Bit OS.\nThe Injector will run, but features may be unstable.\nDue to that, WII and GC injections will only work on a 64Bit OS.");
 					cm.ShowDialog();
 				}
-				MainWindow wnd = new MainWindow();
+				
 				if (bypass) {
 					wnd.allowBypass();
 
