@@ -161,7 +161,10 @@
         <Button Content="Button" HorizontalAlignment="Left" Margin="1140,11,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Minimize" MouseEnter="Button_MouseEnter" Name="min" MouseLeave="min_MouseLeave"/>
         <TextBlock HorizontalAlignment="Left" Margin="1141,10,0,0" TextWrapping="Wrap" Text="🗕" VerticalAlignment="Top" Foreground="White" FontSize="16" IsHitTestVisible="False"/>
 
-        <Button HorizontalAlignment="Left" Margin="1093,39,0,0" VerticalAlignment="Top" Width="98" Background="{x:Null}" BorderBrush="{x:Null}" Height="23" Click="settings_Click" Name="settings" Content="Open Settings" FontSize="10"/>
+        <!--<Button HorizontalAlignment="Left" Margin="1123,36,-2,0" VerticalAlignment="Top" Width="74" Background="{x:Null}" BorderBrush="{x:Null}" Height="23" Click="settings_Click" Name="settings" Content="Settings" FontSize="10"/>-->
+        <Button  HorizontalAlignment="Left" Margin="1159,38,0,0" Height="20" VerticalAlignment="Top" Width="21" Background="Transparent" BorderBrush="Transparent" Foreground="Transparent" Click="settings_Click" FontSize="22" Padding="0" Name="settings" IsTabStop="False">
+            <Image Source="/UI/Images/cogwheel.png" Height="20" Width="16"/>
+        </Button>
 
 
     </Grid>

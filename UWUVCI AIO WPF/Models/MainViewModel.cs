@@ -291,11 +291,13 @@ namespace UWUVCI_AIO_WPF
                 if (s.ToLower().Contains("nkit"))
                 {
                     NKITFLAG = true;
+                    
                 }
                 else
                 {
                     NKITFLAG = false;
                 }
+                MessageBox.Show(NKITFLAG.ToString());
             }
         }
 

@@ -102,8 +102,8 @@ namespace UWUVCI_AIO_WPF
 				}
 				else
 				{
-					wnd.is32();
-					Custom_Message cm = new Custom_Message("Warning", "Your Operating System is not a 64Bit OS.\nThe Injector will run, but features may be unstable.\nDue to that, WII and GC injections will only work on a 64Bit OS.");
+					//wnd.is32();
+					Custom_Message cm = new Custom_Message("Warning", "Some features may cause issues on a 32Bit System. Upgrading to 64Bit would be recommended. \nReport any issues in the UWUVCI Discord, or ping @NicoAICP in #wiiu-assistance in the Nintendo Homebrew discord. ");
 					cm.ShowDialog();
 				}
 				

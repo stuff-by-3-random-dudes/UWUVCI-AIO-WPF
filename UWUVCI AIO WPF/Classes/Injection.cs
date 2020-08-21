@@ -157,11 +157,15 @@ namespace UWUVCI_AIO_WPF
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
+         
             mvm.failed = false;
+           
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += tick;
+            
             Clean();
+            
             long freeSpaceInBytes = 0;
             if (!mvm.saveworkaround)
             {
@@ -174,16 +178,18 @@ namespace UWUVCI_AIO_WPF
                            freeSpaceInBytes = drive.AvailableFreeSpace;
             }
             long neededspace = 0;
-
+            
             mvvm = mvm;
 
 
-
+          
             Directory.CreateDirectory(tempPath);
+            
 
-
+            
             mvm.msg = "Checking Tools...";
             mvm.InjcttoolCheck();
+     
             mvm.Progress = 5;
            
             mvm.msg = "Copying Base...";
@@ -866,7 +872,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-             /* if(mvm.Index == 4 || mvm.Patch)
+              if(mvm.Index == 4 || mvm.Patch)
                 {
                     using (Process trimm = new Process())
                     {
@@ -952,9 +958,9 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
                 else
-                {*/
+                {
                     File.Move(Path.Combine(tempPath, "pre.iso"), Path.Combine(tempPath, "game.iso"));
-              // }
+               }
                
             }
             

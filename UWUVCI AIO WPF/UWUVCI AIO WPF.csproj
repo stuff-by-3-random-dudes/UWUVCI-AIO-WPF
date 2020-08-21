@@ -596,6 +596,15 @@
   <ItemGroup>
     <Resource Include="UI\Images\setting.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\Rtest.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\Rtest2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\cogwheel.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
