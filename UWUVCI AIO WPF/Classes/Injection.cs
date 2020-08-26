@@ -169,13 +169,22 @@ namespace UWUVCI_AIO_WPF
             long freeSpaceInBytes = 0;
             if (!mvm.saveworkaround)
             {
-               
-                long gamesize = new FileInfo(RomPath).Length;
-             
-                var drive = new DriveInfo(tempPath);
+                try
+                {
+                    long gamesize = new FileInfo(RomPath).Length;
 
-                done = true;
-                           freeSpaceInBytes = drive.AvailableFreeSpace;
+                    var drive = new DriveInfo(tempPath);
+
+                    done = true;
+                    freeSpaceInBytes = drive.AvailableFreeSpace;
+                }
+                catch(Exception e)
+                {
+                    mvm.saveworkaround = true;
+                }
+
+               
+                           
             }
             long neededspace = 0;
             
@@ -662,7 +671,7 @@ namespace UWUVCI_AIO_WPF
         private static void WII(string romPath, MainViewModel mvm)
         {
             string savedir = Directory.GetCurrentDirectory();
-            if (romPath.Contains("nkit") || mvm.NKITFLAG)
+            if (mvm.NKITFLAG || romPath.Contains("nkit"))
             {
                 using (Process toiso = new Process())
                 {

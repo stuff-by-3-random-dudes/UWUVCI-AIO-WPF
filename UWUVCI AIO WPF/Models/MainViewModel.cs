@@ -297,7 +297,6 @@ namespace UWUVCI_AIO_WPF
                 {
                     NKITFLAG = false;
                 }
-                MessageBox.Show(NKITFLAG.ToString());
             }
         }
 
@@ -560,7 +559,7 @@ namespace UWUVCI_AIO_WPF
            
             
             string ret = string.Empty;
-            Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder.\n\n The Folder should at least contain:\n EXACTLY ONE *.hcd file\n One or more *.ogg files\n One or More *.bin files\n\n Not doing so will result in a faulty Inject. You have been warned!");
+            Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder. \n\n The Folder should at least contain: \n EXACTLY ONE *.hcd file \n One or more *.ogg files \n One or More *.bin files \n\n Not doing so will result in a faulty Inject. You have been warned! ");
             try
             {
                 cm.Owner = mw;
@@ -953,7 +952,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 gc2rom = "";
 
-                Custom_Message cm = new Custom_Message("Injection Complete", $" It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", Settings.Default.OutPath);                try
+                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (example: haxchi or mocha) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", Settings.Default.OutPath);                try
                 {
                     cm.Owner = mw;
                 }
