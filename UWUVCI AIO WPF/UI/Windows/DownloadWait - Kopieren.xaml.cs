@@ -350,7 +350,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 File.Copy(@"bin\tempsd\nintendont\nincfg.bin", driveletter + @"\nincfg.bin");
             }
-            DirectoryCopy(@"bin\tempsd\nintendont\apps", driveletter + "\\apps", true);
+            if(!Directory.Exists(driveletter + "\\apps\\nintendont"))
+            {
+                Directory.CreateDirectory(driveletter + "\\apps\\nintendont");
+            }
+            else
+            {
+                Directory.Delete(driveletter + "\\apps\\nintendont", true);
+                Directory.CreateDirectory(driveletter + "\\apps\\nintendont");
+            }
+            client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/loader/loader.dol", driveletter + "\\apps\\nintendont\\boot.dol");
+            client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/nintendont/meta.xml", driveletter + "\\apps\\nintendont\\meta.xml");
+            client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/nintendont/icon.png", driveletter + "\\apps\\nintendont\\icon.png");
             DirectoryCopy(@"bin\tempsd\nintendont\codes", driveletter + "\\codes", true);
             Directory.Delete(@"bin\tempsd", true);
         }

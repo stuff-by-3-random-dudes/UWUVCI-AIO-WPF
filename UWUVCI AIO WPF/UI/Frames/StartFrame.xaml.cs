@@ -23,7 +23,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         public StartFrame()
         {
             InitializeComponent();
-            tb.Text+= "\n\nIf any Issues happen during injection and you updated from the old version using the AutoUpdater, please go to settings and click Update Tools.";
+            tb.Text += "\n\nIf any Issues happen during injection and you updated from the old version using the AutoUpdater, please go to settings and click Update Tools.";
         }
     }
 }
