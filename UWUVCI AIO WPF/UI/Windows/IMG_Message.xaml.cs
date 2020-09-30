@@ -35,7 +35,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if(this.Owner != null)
                 {
-                    if (this.Owner.GetType() != typeof(MainWindow))
+                    if (this.Owner?.GetType() != typeof(MainWindow))
                     {
                         this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
