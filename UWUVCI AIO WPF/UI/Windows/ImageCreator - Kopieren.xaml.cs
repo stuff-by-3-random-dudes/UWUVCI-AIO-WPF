@@ -239,9 +239,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     copy = file;
                 }
-                bi.TitleScreen = new Bitmap(copy);
-                b = bi.Create(console);
-                Image.Source = BitmapToImageSource(b);
+                try
+                {
+                    bi.TitleScreen = new Bitmap(copy);
+                    b = bi.Create(console);
+                    Image.Source = BitmapToImageSource(b);
+                }
+                catch
+                {
+                    System.Windows.Forms.MessageBox.Show("The image you're trying to use will not work, please try a different image.", "Image Issue");
+                }
             }
             enOv_Click(null, null);
         }
