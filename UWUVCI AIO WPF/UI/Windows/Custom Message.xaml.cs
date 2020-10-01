@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -33,26 +22,24 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             nc.Visibility = Visibility.Hidden;
             try
             {
-                if(this.Owner != null)
+                if(Owner != null)
                 {
-                    if (this.Owner?.GetType() != typeof(MainWindow))
+                    if (Owner?.GetType() != typeof(MainWindow))
                     {
-                        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
                     else
                     {
-                        this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner;
                     }
                 }
-               
-               
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
-           dont.Visibility = Visibility.Hidden;
+            dont.Visibility = Visibility.Hidden;
             Title.Text = title;
             Message.Content = message;
             Folder.Visibility = Visibility.Hidden;
@@ -75,10 +62,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 dont.Visibility = Visibility.Visible;
             }
-            if (title.ToLower().Contains("instance"))
-            {
-               
-            }
         }
 
         public void CloseProgram(object sender, RoutedEventArgs e)
@@ -86,18 +69,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Environment.Exit(1);
         }
         public Custom_Message(string title, string message, string Path)
-        {
-           
+        {           
             try
             {
-                if (this.Owner?.GetType() != typeof(MainWindow))
+                if (Owner?.GetType() != typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
             InitializeComponent();
@@ -116,34 +98,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             dont.Visibility = Visibility.Hidden;
             Title.Text = title;
             Message.Content = message;
-            this.path = Path;
+            path = Path;
             Folder.Visibility = Visibility.Visible;
             
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(dont.IsChecked == true)
-            {
-                if (Message.Content.ToString().ToLower().Contains("gcz"))
-                {
-                    Properties.Settings.Default.gczw = true;
-                }
-                else if (Message.Content.ToString().ToLower().Contains("dsi"))
-                {
-                    Properties.Settings.Default.ndsw = true;
-                }
-                else if (Message.Content.ToString().ToLower().Contains("co-processor"))
-                {
-                    Properties.Settings.Default.snesw = true;
-                }
-                else if (Message.Content.ToString().ToLower().Contains("images"))
-                {
-                    Properties.Settings.Default.dont = true;
-                }
-
-                Properties.Settings.Default.Save();
-            }
-            this.Close();
+            dontChecked();
+            Close();
         }
 
         private void Folder_Click(object sender, RoutedEventArgs e)
@@ -152,7 +114,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
                 Process.Start(path);
-                this.Close();
+                Close();
             }
             catch (Exception)
             {
@@ -162,30 +124,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     cm.Owner = (FindResource("mvm") as MainViewModel).mw;
                 }catch(Exception)
                 {
-
+                    //left empty on purpose
                 }
                 cm.ShowDialog();
-                if (dont.IsChecked == true)
-                {
-                    if (Message.Content.ToString().ToLower().Contains("gcz"))
-                    {
-                        Properties.Settings.Default.gczw = true;
-                    }
-                    else if (Message.Content.ToString().ToLower().Contains("dsi"))
-                    {
-                        Properties.Settings.Default.ndsw = true;
-                    }
-                    else if (Message.Content.ToString().ToLower().Contains("co-processor"))
-                    {
-                        Properties.Settings.Default.snesw = true;
-                    }
-                    else if (Message.Content.ToString().ToLower().Contains("images"))
-                    {
-                        Properties.Settings.Default.dont = true;
-                    }
-                    Properties.Settings.Default.Save();
-                }
-                this.Close();
+                dontChecked();
+                Close();
             }
            
         }
@@ -194,7 +137,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (reset)
             {
-                this.Close();
+                Close();
                 ((MainViewModel)FindResource("mvm")).ResetTitleKeys();
             }
             else if (add)
@@ -205,95 +148,78 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 ((MainViewModel)FindResource("mvm")).choosefolder = true;
             }
-            if (dont.IsChecked == true)
-            {
-                if (Message.Content.ToString().ToLower().Contains("gcz"))
-                {
-                    Properties.Settings.Default.gczw = true;
-                }
-                else if (Message.Content.ToString().ToLower().Contains("dsi"))
-                {
-                    Properties.Settings.Default.ndsw = true;
-                }
-                else if (Message.Content.ToString().ToLower().Contains("co-processor"))
-                {
-                    Properties.Settings.Default.snesw = true;
-                }
-                else if (Message.Content.ToString().ToLower().Contains("images"))
-                {
-                    Properties.Settings.Default.dont = true;
-                }
-                Properties.Settings.Default.Save();
-            }
-            this.Close();
+            dontChecked();
+            Close();
         }
 
         private void nc_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
-            if (Message.Content.ToString().ToLower().Contains("nintendont"))
-            {
-               SDSetup sd = new SDSetup(true, path);
-                try
-                {
-                    sd.Owner = (FindResource("mvm") as MainViewModel).mw;
-                    sd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                }
-                catch (Exception)
-                {
+            Close();
+            var containNintendont = Message.Content.ToString().ToLower().Contains("nintendont");
 
-                }
-               sd.ShowDialog();
-            }
-            else
+            SDSetup sd = new SDSetup(containNintendont ? true : false, path);
+            try
             {
-                SDSetup sd = new SDSetup(false, path);
-                try
-                {
-                    sd.Owner = (FindResource("mvm") as MainViewModel).mw;
-                    sd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                }
-                catch (Exception)
-                {
-
-                }
-                sd.ShowDialog();
+                sd.Owner = (FindResource("mvm") as MainViewModel).mw;
+                sd.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             }
+            catch (Exception)
+            {
+                //left empty on purpose
+            }
+            sd.ShowDialog();
         }
 
         private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
-            try
-            {
-                if (!Title.Text.Contains("Warning"))
-                {
-                    if ((FindResource("mvm") as MainViewModel).mw != null)
-                        (FindResource("mvm") as MainViewModel).mw.Topmost = true;
-                }
-               
-            }
-            catch (Exception ) 
-            { 
-            }
-
-            
+            isWindClosing(true);
         }
 
         private void wind_Closed(object sender, EventArgs e)
+        {
+            isWindClosing(false);
+        }
+
+        private void isWindClosing(bool topMost)
         {
             try
             {
                 if (!Title.Text.Contains("Warning"))
                 {
                     if ((FindResource("mvm") as MainViewModel).mw != null)
-                        (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+                        (FindResource("mvm") as MainViewModel).mw.Topmost = topMost;
                 }
             }
             catch (Exception)
             {
+                //left empty on purpose;
             }
+        }
 
+        private void dontChecked()
+        {
+            if (dont.IsChecked == true)
+            {
+                var messageLower = Message.Content.ToString().ToLower();
+                if (messageLower.Contains("gcz"))
+                {
+                    Properties.Settings.Default.gczw = true;
+                }
+                else if (messageLower.Contains("dsi"))
+                {
+                    Properties.Settings.Default.ndsw = true;
+                }
+                else if (messageLower.Contains("co-processor"))
+                {
+                    Properties.Settings.Default.snesw = true;
+                }
+                else if (messageLower.Contains("images"))
+                {
+                    Properties.Settings.Default.dont = true;
+                }
+
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }
