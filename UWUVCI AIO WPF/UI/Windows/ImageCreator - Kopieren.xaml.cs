@@ -1,25 +1,15 @@
 ﻿using GameBaseClassLibrary;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -30,8 +20,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
     public partial class IconCreator : Window, IDisposable
     {
-        private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         MenuIconImage bi = new MenuIconImage();
         Bitmap b;
         string console = "other";
@@ -41,22 +31,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public IconCreator()
         {
-            InitializeComponent();
-            imageName.Content = "iconTex";
-            SetTemplate();
+            setUpIconCreator();
         }
         public IconCreator(string name)
         {
-            InitializeComponent();
+            setUpIconCreator();
             console = name;
-            imageName.Content = "iconTex";
-            SetTemplate();
         }
         public IconCreator(string name, string extra)
         {
-            InitializeComponent();
+            setUpIconCreator();
             console = name;
             othercons = extra;
+        }
+
+        private void setUpIconCreator()
+        {
+            InitializeComponent();
             imageName.Content = "iconTex";
             SetTemplate();
         }
@@ -64,27 +55,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (othercons == "GB")
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "GB";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             if (othercons == "GBC")
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "GBC";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             if (console == "WII" && (FindResource("mvm") as MainViewModel).test != GameConsoles.GCN)
             {
@@ -96,99 +73,43 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else if ((FindResource("mvm") as MainViewModel).test == GameConsoles.GCN)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "GCN";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NDS)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "NDS";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.N64)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "N64";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.GBA && othercons == "")
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "GBA";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.MSX)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "MSX";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.SNES)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "SNES";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.NES)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "NES";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else if ((FindResource("mvm") as MainViewModel).GameConfiguration.Console == GameConsoles.TG16)
             {
-                bi.Frame = new Bitmap(Properties.Resources.Icon);
-                wii.IsChecked = true;
-                ww.Content = "Alt 1";
-                hb.Content = "Alt 2";
+                setUpBiFrame();
                 wii.Content = "TGX";
-                ww.Visibility = Visibility.Visible;
-                ws.Visibility = Visibility.Visible;
-                hb.Visibility = Visibility.Visible;
-                wii.Visibility = Visibility.Visible;
             }
             else
             {
@@ -197,39 +118,47 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         }
 
+        private void setUpBiFrame()
+        {
+            bi.Frame = new Bitmap(Properties.Resources.Icon);
+            wii.IsChecked = true;
+            ww.Content = "Alt 1";
+            hb.Content = "Alt 2";
+            ww.Visibility = Visibility.Visible;
+            ws.Visibility = Visibility.Visible;
+            hb.Visibility = Visibility.Visible;
+            wii.Visibility = Visibility.Visible;
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void FileSelect_Click(object sender, RoutedEventArgs e)
         {
-            string file = "";
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            file = mvm.GetFilePath(false, false);
+            string file = mvm.GetFilePath(false, false);
             if (!string.IsNullOrEmpty(file))
             {
-
                 string copy = "";
                 if (new FileInfo(file).Extension.Contains("tga"))
                 {
                     using (Process conv = new Process())
                     {
-
                         conv.StartInfo.UseShellExecute = false;
                         conv.StartInfo.CreateNoWindow = true;
-                        if (Directory.Exists(System.IO.Path.Combine(tempPath, "image")))
+                        if (Directory.Exists(Path.Combine(tempPath, "image")))
                         {
-                            Directory.Delete(System.IO.Path.Combine(tempPath, "image"), true);
+                            Directory.Delete(Path.Combine(tempPath, "image"), true);
                         }
-                        Directory.CreateDirectory(System.IO.Path.Combine(tempPath, "image"));
-                        conv.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "tga2png.exe");
-                        conv.StartInfo.Arguments = $"-i \"{file}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
+                        Directory.CreateDirectory(Path.Combine(tempPath, "image"));
+                        conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                        conv.StartInfo.Arguments = $"-i \"{file}\" -o \"{Path.Combine(tempPath, "image")}\"";
 
                         conv.Start();
                         conv.WaitForExit();
 
-                        foreach (string sFile in Directory.GetFiles(System.IO.Path.Combine(tempPath, "image"), "*.png"))
+                        foreach (string sFile in Directory.GetFiles(Path.Combine(tempPath, "image"), "*.png"))
                         {
                             copy = sFile;
                         }
@@ -247,7 +176,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 catch
                 {
-                    System.Windows.Forms.MessageBox.Show("The image you're trying to use will not work, please try a different image.", "Image Issue");
+                    MessageBox.Show("The image you're trying to use will not work, please try a different image.", "Image Issue");
                 }
             }
             enOv_Click(null, null);
@@ -259,25 +188,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Directory.CreateDirectory(@"bin\createdIMG");
             }
-            if (File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
+            if (File.Exists(Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
             {
-                File.Delete(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+                File.Delete(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             }
             if (drc)
             {
                 b = ResizeImage(b, 854, 480);
-
             }
 
-            b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+            b.Save(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
 
-
-            this.Close();
-        }
-
-        private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-
+            Close();
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -292,9 +214,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
         {
-            if (e.DataObject.GetDataPresent(typeof(String)))
+            if (e.DataObject.GetDataPresent(typeof(string)))
             {
-                String text = (String)e.DataObject.GetData(typeof(String));
+                string text = (string)e.DataObject.GetData(typeof(string));
                 if (!IsTextAllowed(text))
                 {
                     e.CancelCommand();
@@ -315,7 +237,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             using (MemoryStream memory = new MemoryStream())
             {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                bitmap.Save(memory, ImageFormat.Bmp);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();
@@ -333,7 +255,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (enOv.IsChecked == true)
             {
-
                 b = bi.Create(console);
                 Image.Source = BitmapToImageSource(b);
                 ww.IsEnabled = true;
@@ -356,7 +277,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     b = new Bitmap(128, 128);
                     using (Graphics gfx = Graphics.FromImage(b))
-                    using (SolidBrush brush = new SolidBrush(System.Drawing.Color.FromArgb(0, 0, 0)))
+                    using (SolidBrush brush = new SolidBrush(Color.FromArgb(0, 0, 0)))
                     {
                         gfx.FillRectangle(brush, 0, 0, 128, 128);
                     }
@@ -366,7 +287,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         public static Bitmap ResizeImage(System.Drawing.Image image, int width, int height)
         {
-            var destRect = new System.Drawing.Rectangle(0, 0, width, height);
+            var destRect = new Rectangle(0, 0, width, height);
             var destImage = new Bitmap(width, height);
 
             destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
@@ -393,11 +314,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
-        }
-
-        private void Players_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-
         }
 
         private void Players_TextChanged(object sender, TextChangedEventArgs e)
@@ -428,7 +344,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (combo.SelectedIndex == 0)
             {
                 bi.Frame = Properties.Resources.SNES_PAL;
-
             }
             else if (combo.SelectedIndex == 1)
             {
@@ -447,7 +362,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (pal.IsChecked == true)
             {
                 bi.Frame = Properties.Resources.SNES_PAL;
-
             }
             else
             {
@@ -466,13 +380,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void PLDi_Click(object sender, RoutedEventArgs e)
         {
-
             DrawImage();
         }
 
         private void RLEn_Click(object sender, RoutedEventArgs e)
         {
-
             DrawImage();
         }
 
@@ -498,7 +410,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else if (othercons == "GBC")
             {
-
                 if (ww.IsChecked == true)
                 {
                     bi.Frame = new Bitmap(Properties.Resources.GBC_alt1);
