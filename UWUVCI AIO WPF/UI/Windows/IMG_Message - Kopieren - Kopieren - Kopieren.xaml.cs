@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
+using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -23,8 +24,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// </summary>
     public partial class LOGSHOW : Window, IDisposable
     {
-        private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         string copy = "";
         string pat = "";
         BitmapImage bitmap = new BitmapImage();
@@ -43,12 +44,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             pat = String.Copy(path);
             InitializeComponent();
-            if (Directory.Exists(System.IO.Path.Combine(tempPath, "image"))) Directory.Delete(System.IO.Path.Combine(tempPath, "image"), true);
-            Directory.CreateDirectory(System.IO.Path.Combine(tempPath, "image"));
+            if (Directory.Exists(Path.Combine(tempPath, "image"))) Directory.Delete(Path.Combine(tempPath, "image"), true);
+            Directory.CreateDirectory(Path.Combine(tempPath, "image"));
             if (path == "Added via Config")
             {
-                File.WriteAllBytes(System.IO.Path.Combine(tempPath, "image", "log." + (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.extension), (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.ImgBin);
-                pat = System.IO.Path.Combine(tempPath, "image", "log." + (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.extension);
+                File.WriteAllBytes(Path.Combine(tempPath, "image", "log." + (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.extension), (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.ImgBin);
+                pat = Path.Combine(tempPath, "image", "log." + (FindResource("mvm") as MainViewModel).GameConfiguration.TGALog.extension);
             }
             if (new FileInfo(pat).Extension.Contains("tga"))
             {
@@ -59,13 +60,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     conv.StartInfo.CreateNoWindow = true;
 
 
-                    conv.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "tga2png.exe");
-                    conv.StartInfo.Arguments = $"-i \"{pat}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
+                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                    conv.StartInfo.Arguments = $"-i \"{pat}\" -o \"{Path.Combine(tempPath, "image")}\"";
 
                     conv.Start();
                     conv.WaitForExit();
 
-                    foreach (string sFile in Directory.GetFiles(System.IO.Path.Combine(tempPath, "image"), "*.png"))
+                    foreach (string sFile in Directory.GetFiles(Path.Combine(tempPath, "image"), "*.png"))
                     {
                         copy = sFile;
                     }

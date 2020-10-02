@@ -3547,9 +3547,9 @@ namespace UWUVCI_AIO_WPF
         }
         private void checkForAdditionalFiles(GameConsoles console, List<string> repoids)
         {
-            if (!Directory.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
             {
-                Directory.CreateDirectory(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
+                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
             }
             bool ini = false;
             bool btsnd = false;
@@ -3612,40 +3612,40 @@ namespace UWUVCI_AIO_WPF
                     var client = new WebClient();
                     if (ini)
                     {
-                        client.DownloadFile(inip, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
-                        (Thing as N64Config).ini.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
-                        GameConfiguration.N64Stuff.INIPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        client.DownloadFile(inip, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
+                        (Thing as N64Config).ini.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        GameConfiguration.N64Stuff.INIPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
                     }
                     if (btsnd)
                     {
-                        client.DownloadFile(btsndp, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
-                        BootSound = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                        client.DownloadFile(btsndp, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
+                        BootSound = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                         switch (console)
                         {
                             case GameConsoles.NDS:
                             case GameConsoles.NES:
                             case GameConsoles.SNES:
                             case GameConsoles.MSX:
-                                (Thing as OtherConfigs).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (Thing as OtherConfigs).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.GBA:
-                                (Thing as GBA).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (Thing as GBA).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.N64:
-                                (Thing as N64Config).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (Thing as N64Config).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.WII:
                                 if (test == GameConsoles.GCN)
                                 {
-                                    (Thing as GCConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                    (Thing as GCConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 else
                                 {
-                                    (Thing as WiiConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                    (Thing as WiiConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 break;
                             case GameConsoles.TG16:
-                                (Thing as TurboGrafX).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (Thing as TurboGrafX).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
 
                         }

@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
+using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -30,8 +31,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
     public partial class ImageCreator : Window, IDisposable
     {
-        private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         BootImage bi = new BootImage();
         Bitmap b;
         string console = "other";
@@ -175,18 +176,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
                         conv.StartInfo.UseShellExecute = false;
                         conv.StartInfo.CreateNoWindow = true;
-                        if (Directory.Exists(System.IO.Path.Combine(tempPath, "image")))
+                        if (Directory.Exists(Path.Combine(tempPath, "image")))
                         {
-                            Directory.Delete(System.IO.Path.Combine(tempPath, "image"), true);
+                            Directory.Delete(Path.Combine(tempPath, "image"), true);
                         }
-                        Directory.CreateDirectory(System.IO.Path.Combine(tempPath, "image"));
-                        conv.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "tga2png.exe");
-                        conv.StartInfo.Arguments = $"-i \"{file}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
+                        Directory.CreateDirectory(Path.Combine(tempPath, "image"));
+                        conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                        conv.StartInfo.Arguments = $"-i \"{file}\" -o \"{Path.Combine(tempPath, "image")}\"";
 
                         conv.Start();
                         conv.WaitForExit();
 
-                        foreach (string sFile in Directory.GetFiles(System.IO.Path.Combine(tempPath, "image"), "*.png"))
+                        foreach (string sFile in Directory.GetFiles(Path.Combine(tempPath, "image"), "*.png"))
                         {
                             copy = sFile;
                         }
@@ -209,9 +210,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Directory.CreateDirectory(@"bin\createdIMG");
             }
-            if (File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
+            if (File.Exists(Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
             {
-                File.Delete(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+                File.Delete(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             }
             if (drc)
             {
@@ -219,7 +220,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             }
 
-            b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+            b.Save(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
 
 
             this.Close();

@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
+using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -23,8 +24,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// </summary>
     public partial class TDRSHOW : Window, IDisposable
     {
-        private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         string copy = "";
         string pat = "";
         bool drc = false;
@@ -45,8 +46,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             pat = String.Copy(path);
             InitializeComponent();
-            if (Directory.Exists(System.IO.Path.Combine(tempPath, "image"))) Directory.Delete(System.IO.Path.Combine(tempPath, "image"),true);
-                Directory.CreateDirectory(System.IO.Path.Combine(tempPath, "image"));
+            if (Directory.Exists(Path.Combine(tempPath, "image"))) Directory.Delete(Path.Combine(tempPath, "image"),true);
+                Directory.CreateDirectory(Path.Combine(tempPath, "image"));
             if (pat == "Added via Config")
             {
                 string ext = "";
@@ -55,15 +56,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     ext = (FindResource("mvm") as MainViewModel).GameConfiguration.TGADrc.extension;
                     imageb = (FindResource("mvm") as MainViewModel).GameConfiguration.TGADrc.ImgBin;
-                    File.WriteAllBytes(System.IO.Path.Combine(tempPath, "image", "drc." + ext), imageb);
-                    pat = System.IO.Path.Combine(tempPath, "image", "drc." + ext);
+                    File.WriteAllBytes(Path.Combine(tempPath, "image", "drc." + ext), imageb);
+                    pat = Path.Combine(tempPath, "image", "drc." + ext);
                 }
                 else
                 {
                     ext = (FindResource("mvm") as MainViewModel).GameConfiguration.TGATv.extension;
                     imageb = (FindResource("mvm") as MainViewModel).GameConfiguration.TGATv.ImgBin;
-                    File.WriteAllBytes(System.IO.Path.Combine(tempPath, "image", "tv." + ext), imageb);
-                    pat = System.IO.Path.Combine(tempPath, "image", "tv." + ext);
+                    File.WriteAllBytes(Path.Combine(tempPath, "image", "tv." + ext), imageb);
+                    pat = Path.Combine(tempPath, "image", "tv." + ext);
                 }
                 
             }
@@ -76,13 +77,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     conv.StartInfo.CreateNoWindow = true;
 
 
-                    conv.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "tga2png.exe");
-                    conv.StartInfo.Arguments = $"-i \"{pat}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
+                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                    conv.StartInfo.Arguments = $"-i \"{pat}\" -o \"{Path.Combine(tempPath, "image")}\"";
 
                     conv.Start();
                     conv.WaitForExit();
 
-                    foreach (string sFile in Directory.GetFiles(System.IO.Path.Combine(tempPath, "image"), "*.png"))
+                    foreach (string sFile in Directory.GetFiles(Path.Combine(tempPath, "image"), "*.png"))
                     {
                         copy = sFile;
                     }
