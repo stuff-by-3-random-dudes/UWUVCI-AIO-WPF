@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Linq;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -12,6 +13,14 @@ namespace UWUVCI_AIO_WPF.Classes
         private Bitmap _frame;
         private Bitmap _titleScreen;
         private Font font;
+
+        public string _imageVar;
+        public Rectangle _rectangleGBA = new Rectangle(132, 260, 399, 266);
+        public Rectangle _rectangleGBC = new Rectangle(183, 260, 296, 266);
+        public Rectangle _rectangleH4V3 = new Rectangle(131, 249, 400, 300);
+        // Rectangle rectanglewii = new Rectangle(224, 201, 832, 332);
+        public Rectangle _rectangleWII = new Rectangle(224, 200, 832, 333);
+
         public Bitmap Frame
         {
             set
@@ -62,7 +71,7 @@ namespace UWUVCI_AIO_WPF.Classes
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {
@@ -106,51 +115,14 @@ namespace UWUVCI_AIO_WPF.Classes
             Pen outline = new Pen(Color.FromArgb(222, 222, 222), 4.0F);
             Pen shadow = new Pen(Color.FromArgb(190, 190, 190), 6.0F);
             StringFormat format = new StringFormat();
-            Rectangle rectangleGBA = new Rectangle(132, 260, 399, 266);
-            Rectangle rectangleGBC = new Rectangle(183, 260, 296, 266);
-            Rectangle rectangleH4V3 = new Rectangle(131, 249, 400, 300);
-            // Rectangle rectanglewii = new Rectangle(224, 201, 832, 332);
-           Rectangle rectanglewii = new Rectangle(224, 200, 832, 333);
-            if (console == "GBA")
-            {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectangleGBA);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleGBA);
-            }
-            else if (console == "GBC")
-            {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectangleGBC);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleGBC);
-            }
-            else if (console == "NDS")
-            {
-                if (TitleScreen != null)
-                {
-                    
-                        g.DrawImage(TitleScreen, rectangleH4V3);
-                       
-                    
-                }
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleH4V3);
-            }
-            else if(console == "WII")
-            {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectanglewii);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectanglewii);
-            }
-            else 
-            {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectangleH4V3);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleH4V3);
-            }
+
+            _imageVar = "_rectangle" + (new[] { "other", "NDS" }.Contains(console) ? "H4V3" : console);
+            var rectangle = (Rectangle)GetType().GetField(_imageVar).GetValue(this);
+
+            if (TitleScreen != null)
+                g.DrawImage(TitleScreen, rectangle);
+            else
+                g.FillRectangle(new SolidBrush(Color.Black), rectangle);
 
             if (Frame != null)
                 g.DrawImage(Frame, new Rectangle(0, 0, 1280, 720));
@@ -211,7 +183,7 @@ namespace UWUVCI_AIO_WPF.Classes
                     g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
                 
                 
-               g.DrawPath(shadow, p);
+                g.DrawPath(shadow, p);
                 g.DrawPath(outline, p);
                 g.FillPath(brush, p);
             }
