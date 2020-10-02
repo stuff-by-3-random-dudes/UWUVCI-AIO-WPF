@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
+using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -35,7 +36,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if(this.Owner != null)
                 {
-                    if (this.Owner.GetType() != typeof(MainWindow))
+                    if (this.Owner?.GetType() != typeof(MainWindow))
                     {
                         this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
@@ -93,13 +94,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             var client = new WebClient();
-            if (Directory.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
+            if (Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
             {
-                Directory.Delete(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
+                Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"), true);
             }
-            Directory.CreateDirectory(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
-            client.DownloadFile(ic, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"));
-            mvm.GameConfiguration.TGAIco.ImgPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}");
+            Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
+            client.DownloadFile(ic, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"));
+            mvm.GameConfiguration.TGAIco.ImgPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}");
             mvm.GameConfiguration.TGAIco.extension = $".{ic.Split('.')[3]}";
             if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
             {
@@ -125,41 +126,41 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 (mvm.Thing as OtherConfigs).icoIMG.Visibility = Visibility.Visible;
             }
-            client.DownloadFile(tvs, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
-            mvm.GameConfiguration.TGATv.ImgPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}");
+            client.DownloadFile(tvs, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+            mvm.GameConfiguration.TGATv.ImgPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}");
             mvm.GameConfiguration.TGATv.extension = $".{tvs.Split('.')[3]}";
             if (mvm.test == GameBaseClassLibrary.GameConsoles.GCN)
             {
                 (mvm.Thing as GCConfig).tvIMG.Visibility = Visibility.Visible;
-                (mvm.Thing as GCConfig).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+                (mvm.Thing as GCConfig).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
 
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
             {
                 (mvm.Thing as WiiConfig).tvIMG.Visibility = Visibility.Visible;
-                (mvm.Thing as WiiConfig).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+                (mvm.Thing as WiiConfig).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
 
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.N64)
             {
                 (mvm.Thing as N64Config).tvIMG.Visibility = Visibility.Visible;
-                (mvm.Thing as N64Config).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+                (mvm.Thing as N64Config).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
             
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.GBA)
             {
                 (mvm.Thing as GBA).tvIMG.Visibility = Visibility.Visible;
-                (mvm.Thing as GBA).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+                (mvm.Thing as GBA).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.TG16)
             {
                 (mvm.Thing as TurboGrafX).tvIMG.Visibility = Visibility.Visible;
-                (mvm.Thing as TurboGrafX).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+                (mvm.Thing as TurboGrafX).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.MSX)
             {
                 (mvm.Thing as OtherConfigs).tvIMG.Visibility = Visibility.Visible;
-                (mvm.Thing as OtherConfigs).imgpath(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
+                (mvm.Thing as OtherConfigs).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
 
             }
            /* if(mvm.test == GameConsoles.GCN)
@@ -175,9 +176,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void checkForAdditionalFiles(GameConsoles console)
         {
-            if (!Directory.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
             {
-                Directory.CreateDirectory(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
+                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
             }
             bool ini = false;
             bool btsnd = false;
@@ -226,33 +227,33 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     var client = new WebClient();
                     if (ini)
                     {
-                        client.DownloadFile(inip, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
-                        (mvm.Thing as N64Config).ini.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
-                        mvm.GameConfiguration.N64Stuff.INIPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        client.DownloadFile(inip, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
+                        (mvm.Thing as N64Config).ini.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        mvm.GameConfiguration.N64Stuff.INIPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
                     }
                     if (btsnd)
                     {
-                        client.DownloadFile(btsndp, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
-                        mvm.BootSound = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                        client.DownloadFile(btsndp, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
+                        mvm.BootSound = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                         switch (console)
                         {
                             case GameConsoles.NDS:
-                                (mvm.Thing as OtherConfigs).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (mvm.Thing as OtherConfigs).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.GBA:
-                                (mvm.Thing as GBA).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (mvm.Thing as GBA).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.N64:
-                                (mvm.Thing as N64Config).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (mvm.Thing as N64Config).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.WII:
                                 if(mvm.test == GameConsoles.GCN)
                                 {
-                                    (mvm.Thing as GCConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                    (mvm.Thing as GCConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 else
                                 {
-                                    (mvm.Thing as WiiConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                    (mvm.Thing as WiiConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 break;
                                 
@@ -264,9 +265,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         public void checkForAdditionalFiles(GameConsoles console, string repoid)
         {
-            if (!Directory.Exists(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
+            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
             {
-                Directory.CreateDirectory(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
+                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
             }
             bool ini = false;
             bool btsnd = false;
@@ -315,33 +316,33 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     var client = new WebClient();
                     if (ini)
                     {
-                        client.DownloadFile(inip, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
-                        (mvm.Thing as N64Config).ini.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
-                        mvm.GameConfiguration.N64Stuff.INIPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        client.DownloadFile(inip, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
+                        (mvm.Thing as N64Config).ini.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
+                        mvm.GameConfiguration.N64Stuff.INIPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
                     }
                     if (btsnd)
                     {
-                        client.DownloadFile(btsndp, System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
-                        mvm.BootSound = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                        client.DownloadFile(btsndp, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
+                        mvm.BootSound = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                         switch (console)
                         {
                             case GameConsoles.NDS:
-                                (mvm.Thing as OtherConfigs).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (mvm.Thing as OtherConfigs).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.GBA:
-                                (mvm.Thing as GBA).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (mvm.Thing as GBA).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.N64:
-                                (mvm.Thing as N64Config).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                (mvm.Thing as N64Config).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.WII:
                                 if (mvm.test == GameConsoles.GCN)
                                 {
-                                    (mvm.Thing as GCConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                    (mvm.Thing as GCConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 else
                                 {
-                                    (mvm.Thing as WiiConfig).sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
+                                    (mvm.Thing as WiiConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 break;
 

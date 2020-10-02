@@ -6,21 +6,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
+using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -30,8 +22,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
     public partial class ImageCreator : Window, IDisposable
     {
-        private static readonly string tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         BootImage bi = new BootImage();
         Bitmap b;
         string console = "other";
@@ -62,27 +54,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Bitmap bit;
             if (consoles == GameConsoles.TG16)
             {
-                if (other)
-                {
-                    bit = new Bitmap(Properties.Resources.TGCD);
-                }
-                else
-                {
-                    bit = new Bitmap(Properties.Resources.TG16);
-                }
+                bit = new Bitmap(other ? Properties.Resources.TGCD : Properties.Resources.TG16);
             }
             else
             {
-                this.console = "GBC";
-                if (other)
-                {
-                    bit = new Bitmap(Properties.Resources.GBC);
-                }
-                else
-                {
-                    bit = new Bitmap(Properties.Resources.newgameboy);
-
-                }
+                console = "GBC";
+                bit = new Bitmap(other ? Properties.Resources.GBC : Properties.Resources.newgameboy);
             }
             bi.Frame = bit;
         }
@@ -156,14 +133,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void FileSelect_Click(object sender, RoutedEventArgs e)
         {
-            string file = "";
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            file = mvm.GetFilePath(false, false);
+            string file = mvm.GetFilePath(false, false);
             if (!string.IsNullOrEmpty(file))
             {
 
@@ -175,18 +151,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
                         conv.StartInfo.UseShellExecute = false;
                         conv.StartInfo.CreateNoWindow = true;
-                        if (Directory.Exists(System.IO.Path.Combine(tempPath, "image")))
+                        if (Directory.Exists(Path.Combine(tempPath, "image")))
                         {
-                            Directory.Delete(System.IO.Path.Combine(tempPath, "image"), true);
+                            Directory.Delete(Path.Combine(tempPath, "image"), true);
                         }
-                        Directory.CreateDirectory(System.IO.Path.Combine(tempPath, "image"));
-                        conv.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "tga2png.exe");
-                        conv.StartInfo.Arguments = $"-i \"{file}\" -o \"{System.IO.Path.Combine(tempPath, "image")}\"";
+                        Directory.CreateDirectory(Path.Combine(tempPath, "image"));
+                        conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                        conv.StartInfo.Arguments = $"-i \"{file}\" -o \"{Path.Combine(tempPath, "image")}\"";
 
                         conv.Start();
                         conv.WaitForExit();
 
-                        foreach (string sFile in Directory.GetFiles(System.IO.Path.Combine(tempPath, "image"), "*.png"))
+                        foreach (string sFile in Directory.GetFiles(Path.Combine(tempPath, "image"), "*.png"))
                         {
                             copy = sFile;
                         }
@@ -209,25 +185,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 Directory.CreateDirectory(@"bin\createdIMG");
             }
-            if (File.Exists(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
+            if (File.Exists(Path.Combine(@"bin\createdIMG", imageName.Content + ".png")))
             {
-                File.Delete(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+                File.Delete(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             }
             if (drc)
             {
                 b = ResizeImage(b, 854, 480);
-
             }
 
-            b.Save(System.IO.Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
+            b.Save(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
 
 
-            this.Close();
-        }
-
-        private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-
+            Close();
         }
 
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -243,9 +213,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void TextBoxPasting(object sender, DataObjectPastingEventArgs e)
         {
-            if (e.DataObject.GetDataPresent(typeof(String)))
+            if (e.DataObject.GetDataPresent(typeof(string)))
             {
-                String text = (String)e.DataObject.GetData(typeof(String));
+                string text = (string)e.DataObject.GetData(typeof(string));
                 if (!IsTextAllowed(text))
                 {
                     e.CancelCommand();
@@ -266,7 +236,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             using (MemoryStream memory = new MemoryStream())
             {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                bitmap.Save(memory, ImageFormat.Bmp);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();
@@ -358,44 +328,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         void DrawImage()
         {
-
-
-
             bi.NameLine1 = GameName1.Text;
             bi.NameLine2 = GameName2.Text;
-            if (!string.IsNullOrWhiteSpace(GameName2.Text))
-            {
-                bi.Longname = true;
-            }
-            else
-            {
-                bi.Longname = false;
-            }
 
-            if (PLEn.IsChecked == true && !String.IsNullOrWhiteSpace(Players.Text))
-            {
-                bi.Players = Convert.ToInt32(Players.Text);
-            }
-            else
-            {
-                bi.Players = 0;
-            }
-            if (RLEn.IsChecked == true && !String.IsNullOrWhiteSpace(ReleaseYear.Text))
-            {
-                bi.Released = Convert.ToInt32(ReleaseYear.Text);
-            }
-            else
-            {
-                bi.Released = 0;
-            }
+            bi.Longname = !string.IsNullOrWhiteSpace(GameName2.Text);
+
+            bi.Players = (PLEn.IsChecked == true && !string.IsNullOrWhiteSpace(Players.Text)) ? Convert.ToInt32(Players.Text) : 0;
+
+            bi.Released = (RLEn.IsChecked == true && !string.IsNullOrWhiteSpace(ReleaseYear.Text)) ? Convert.ToInt32(ReleaseYear.Text) : 0;
 
             b = bi.Create(console);
             Image.Source = BitmapToImageSource(b);
-        }
-
-        private void Players_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-
         }
 
         private void Players_TextChanged(object sender, TextChangedEventArgs e)
@@ -444,30 +387,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (console != "WII" && backupcons != "WII")
             {
-                if (pal.IsChecked == true)
-                {
-                    bi.Frame = Properties.Resources.SNES_PAL;
-
-                }
-                else
-                {
-                    bi.Frame = Properties.Resources.SNES_USA;
-                }
+                bi.Frame = pal.IsChecked == true ? Properties.Resources.SNES_PAL : Properties.Resources.SNES_USA;
             }
             else
             {
-
                 console = "WII";
                 switchs(Visibility.Hidden);
-                if (pal.IsChecked == true)
-                {
-                    bi.Frame = Properties.Resources.WII;
 
-                }
-                else
-                {
-                    bi.Frame = Properties.Resources.WIIWARE;
-                }
+                bi.Frame = pal.IsChecked == true ? Properties.Resources.WII : Properties.Resources.WIIWARE;
             }
 
             b = bi.Create(console);
@@ -505,27 +432,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void PLDi_Click(object sender, RoutedEventArgs e)
         {
-            if (PLEn.IsChecked != true)
-            {
-                Players.IsEnabled = false;
-            }
-            else
-            {
-                Players.IsEnabled = true;
-            }
+            Players.IsEnabled = PLEn.IsChecked == true;
+
             DrawImage();
         }
 
         private void RLEn_Click(object sender, RoutedEventArgs e)
         {
-            if (RLEn.IsChecked != true)
-            {
-                ReleaseYear.IsEnabled = false;
-            }
-            else
-            {
-                ReleaseYear.IsEnabled = true;
-            }
+            ReleaseYearLabel.IsEnabled = RLEn.IsChecked == true;
+
             DrawImage();
         }
 
@@ -534,9 +449,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             GameName1.Visibility = v;
             GameName2.Visibility = v;
 
-
             ReleaseYear.Visibility = v;
-
 
             Players.Visibility = v;
 
@@ -551,11 +464,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 bi.NameLine1 = GameName1.Text;
                 bi.NameLine2 = GameName2.Text;
-                if (!String.IsNullOrEmpty(ReleaseYear.Text))
+                if (!string.IsNullOrEmpty(ReleaseYear.Text))
                 {
                     bi.Released = Convert.ToInt32(ReleaseYear.Text);
                 }
-                if (!String.IsNullOrEmpty(Players.Text))
+                if (!string.IsNullOrEmpty(Players.Text))
                 {
                     bi.Players = Convert.ToInt32(Players.Text);
                 }

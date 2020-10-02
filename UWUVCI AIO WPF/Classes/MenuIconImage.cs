@@ -11,6 +11,11 @@ namespace UWUVCI_AIO_WPF.Classes
         private Bitmap _frame;
         private Bitmap _titleScreen;
 
+        public string _imageVar;
+        public Rectangle _rectangleGBA = new Rectangle(3, 17, 122, 81);
+        public Rectangle _rectangleH4V3 = new Rectangle(3, 9, 122, 92);
+        public Rectangle _rectangleWII = new Rectangle(0, 23, 128, 94);
+
         public Bitmap Frame
         {
             set
@@ -51,7 +56,7 @@ namespace UWUVCI_AIO_WPF.Classes
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {
@@ -81,16 +86,25 @@ namespace UWUVCI_AIO_WPF.Classes
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
             g.Clear(Color.FromArgb(30, 30, 30));
 
-            Rectangle rectangleGBA = new Rectangle(3, 17, 122, 81);
-            Rectangle rectangleH4V3 = new Rectangle(3, 9, 122, 92);
-            Rectangle rectangleWii = new Rectangle(0, 23, 128, 94);
-            if (console == "GBA")
+            _imageVar = "_rectangle" + console;
+            Rectangle rectangle;
+            try
             {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectangleGBA);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleGBA);
+                rectangle = (Rectangle)GetType().GetField(_imageVar).GetValue(this);
             }
+            catch
+            {
+                //if rectangle isn't able to get set then H4V3 should be used.
+                rectangle = _rectangleH4V3;
+            }
+
+            if (TitleScreen != null)
+                g.DrawImage(TitleScreen, rectangle);
+            else
+                g.FillRectangle(new SolidBrush(Color.Black), rectangle);
+
+            /*
+             * commented this section out because it doesn't seem to be doing anything right now, but maybe it was suppose to?
             else if (console == "NDS")
             {
                 if (TitleScreen != null)
@@ -110,22 +124,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 }
                 else
                     g.FillRectangle(new SolidBrush(Color.Black), rectangleH4V3);
-            }
-            else if(console == "WII")
-            {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectangleWii);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleWii);
-            }
-            else
-            {
-                if (TitleScreen != null)
-                    g.DrawImage(TitleScreen, rectangleH4V3);
-                else
-                    g.FillRectangle(new SolidBrush(Color.Black), rectangleH4V3);
-            }
-
+            */
             if (Frame == null)
             {
                 GraphicsPath vc = new GraphicsPath();

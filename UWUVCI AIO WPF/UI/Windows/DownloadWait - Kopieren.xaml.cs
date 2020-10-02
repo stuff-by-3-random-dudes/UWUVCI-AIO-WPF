@@ -5,16 +5,11 @@ using System.IO.Compression;
 using System.Linq;
 using System.Management;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -22,7 +17,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für DownloadWait.xaml
     /// </summary>
-   
+
     partial class SDSetup : Window, IDisposable
     {
         bool gc = false;
@@ -55,7 +50,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
             gc = gamecube;
-             path = injectlocation;
+            path = injectlocation;
             if (!gamecube)
             {
                 setup.Content = "Copy to SD";
@@ -69,7 +64,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void checkfornewinput()
         {
-           
             WqlEventQuery query = new WqlEventQuery("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2");
             watcher.EventArrived += new EventArrivedEventHandler(watcher_EventArrived);
             watcher.Query = query;
@@ -81,7 +75,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception)
             {
-
+                //left empty on purpose
             }
             
         }
@@ -98,17 +92,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception)
             {
-
+                //left empty on purpose
             }
 
         }
 
         private void watcher_EventArrived(object sender, EventArrivedEventArgs e)
         {
-
-            this.Dispatcher.Invoke(() => { GetDrives(); });
-
-
+            Dispatcher.Invoke(() => { GetDrives(); });
         }
 
         private void GetDrives()
@@ -116,15 +107,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             sd.ItemsSource = DriveInfo.GetDrives().Where(d => d.IsReady && d.DriveType == DriveType.Removable).Select(d => d.Name + " " + d.VolumeLabel + "").ToList();
         }
 
-
-        private void Button_MouseEnter(object sender, MouseEventArgs e)
-        {
-           
-        }
-        private void min_MouseLeave(object sender, MouseEventArgs e)
-        {
-         
-        }
         public static long GetDirectorySize(string p)
         {
             string[] a = Directory.GetFiles(p, "*.*");
@@ -138,8 +120,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         public static long GetDirectorySize(string b, bool t)
         {
-           
-
             long result = 0;
             Stack<string> stack = new Stack<string>();
             stack.Push(b);
@@ -161,41 +141,35 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
        
         public void changeOwner(MainWindow ow)
         {
-            this.Owner = ow;
+            Owner = ow;
             try
             {
-                if (this.Owner.GetType() == typeof(MainWindow))
+                if (Owner?.GetType() == typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    this.ShowInTaskbar = false;
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    ShowInTaskbar = false;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-        }
-        private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-           
-            
-            
         }
         private void MoveWindow(object sender, MouseButtonEventArgs e)
         {
             try
             {
                 if (e.ChangedButton == MouseButton.Left)
-                    this.DragMove();
+                    DragMove();
             }
             catch (Exception)
             {
-
+                //left empty on purpose
             }
         }
         private void Window_Close(object sender, RoutedEventArgs e)
@@ -211,7 +185,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             watcher2.Stop();
             watcher.Dispose();
             watcher2.Dispose();
-            this.Close();
+            Close();
         }
         private void close_MouseLeave(object sender, MouseEventArgs e)
         {
@@ -233,7 +207,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception )
             {
-
+                //left empty on purpose
             }
         }
         DispatcherTimer dp = new DispatcherTimer();
@@ -247,12 +221,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 dblSByte = bytes / 1024.0;
             }
 
-            return String.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
+            return string.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
         }
         private void setup_Click(object sender, RoutedEventArgs e)
         {if(!(FindResource("mvm") as MainViewModel).saveworkaround)
             {
-                long injctSize = GetDirectorySize(System.IO.Path.Combine(path, (FindResource("mvm") as MainViewModel).foldername), true);
+                long injctSize = GetDirectorySize(Path.Combine(path, (FindResource("mvm") as MainViewModel).foldername), true);
                 if (injctSize >= new DriveInfo(driveletter).AvailableFreeSpace)
                 {
                     long div = injctSize - new DriveInfo(driveletter).AvailableFreeSpace + 1048576;
@@ -263,7 +237,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     }
                     catch (Exception)
                     {
-
+                        //left empty on purpose
                     }
                     cm.ShowDialog();
                 }
@@ -301,14 +275,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     });
                     setup.IsEnabled = false;
                 
-            }
-            
-            
-
-         
-            
-           
-            
+            }   
         }
 
         private void Dp_Tick(object sender, EventArgs e)
@@ -370,13 +337,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
             mvm.msg = "Copying Injected Game...";
-            if(!System.IO.Path.Combine(path, mvm.foldername).Contains("[WUP]"))
+            if(!Path.Combine(path, mvm.foldername).Contains("[WUP]"))
             {
-                DirectoryCopy(System.IO.Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
+                DirectoryCopy(Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
             }
             else
             {
-                DirectoryCopy(System.IO.Path.Combine(path,mvm.foldername), driveletter + "\\install\\" + mvm.foldername, true);
+                DirectoryCopy(Path.Combine(path,mvm.foldername), driveletter + "\\install\\" + mvm.foldername, true);
             }
             
             mvm.foldername = "";
@@ -403,7 +370,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             // Get the files in the directory and copy them to the new location.
             foreach (FileInfo file in dir.EnumerateFiles())
             {
-                file.CopyTo(System.IO.Path.Combine(destDirName, file.Name), true);
+                file.CopyTo(Path.Combine(destDirName, file.Name), true);
             }
 
             // If copying subdirectories, copy them and their contents to new location.
@@ -411,7 +378,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
                 {
-                    DirectoryCopy(subdir.FullName, System.IO.Path.Combine(destDirName, subdir.Name), copySubDirs);
+                    DirectoryCopy(subdir.FullName, Path.Combine(destDirName, subdir.Name), copySubDirs);
                 }
             }
         }
