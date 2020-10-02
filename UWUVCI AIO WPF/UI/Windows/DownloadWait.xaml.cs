@@ -1,16 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -18,7 +7,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für DownloadWait.xaml
     /// </summary>
-   
+
     partial class DownloadWait : Window
     {
         MainViewModel mvm;
@@ -27,14 +16,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if (this.Owner?.GetType() == typeof(MainWindow))
+                if (Owner?.GetType() == typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             this.mvm = mvm;
             InitializeComponent();
@@ -48,14 +37,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if (this.Owner?.GetType() != typeof(MainWindow))
+                if (Owner?.GetType() != typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             this.mvm = mvm;
             InitializeComponent();
@@ -65,17 +54,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             timer.Tick += timer_Tick;
             
         }
-        private void Button_MouseEnter(object sender, MouseEventArgs e)
-        {
-           
-        }
-        private void min_MouseLeave(object sender, MouseEventArgs e)
-        {
-         
-        }
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
         private void timer_Tick(object sender, EventArgs e)
         {
@@ -97,25 +78,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         }
         public void changeOwner(MainWindow ow)
         {
-            this.Owner = ow;
+            Owner = ow;
             try
             {
-                if (this.Owner?.GetType() == typeof(MainWindow))
+                if (Owner?.GetType() == typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                    this.ShowInTaskbar = false;
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    ShowInTaskbar = false;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-        }
-        private void wind_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-           
-            
-            
         }
 
         private void wind_Closed(object sender, EventArgs e)
