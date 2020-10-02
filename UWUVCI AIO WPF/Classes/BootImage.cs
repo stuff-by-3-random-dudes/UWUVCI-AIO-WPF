@@ -116,8 +116,17 @@ namespace UWUVCI_AIO_WPF.Classes
             Pen shadow = new Pen(Color.FromArgb(190, 190, 190), 6.0F);
             StringFormat format = new StringFormat();
 
-            _imageVar = "_rectangle" + (new[] { "other", "NDS" }.Contains(console) ? "H4V3" : console);
-            var rectangle = (Rectangle)GetType().GetField(_imageVar).GetValue(this);
+            _imageVar = "_rectangle" + console;
+            Rectangle rectangle;
+            try
+            {
+                rectangle = (Rectangle)GetType().GetField(_imageVar).GetValue(this);
+            }
+            catch
+            {
+                //if rectangle isn't able to get set then H4V3 should be used.
+                rectangle = _rectangleH4V3;
+            }
 
             if (TitleScreen != null)
                 g.DrawImage(TitleScreen, rectangle);
