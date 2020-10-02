@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Frames;
 
 using GameBaseClassLibrary;
 using UWUVCI_AIO_WPF.UI.Frames.Path;
 using System.IO;
 using NAudio.Wave;
-using System.Windows.Media.Animation;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -92,10 +84,10 @@ namespace UWUVCI_AIO_WPF
 
         internal void is32()
         {
-            this.Wii.DataContext = this;
-            this.Wii.IsEnabled = false;
-            this.GC.DataContext = this;
-            this.GC.IsEnabled = false;
+            Wii.DataContext = this;
+            Wii.IsEnabled = false;
+            GC.DataContext = this;
+            GC.IsEnabled = false;
         }
 
         static MemoryStream sound = new MemoryStream(Properties.Resources.mario);
@@ -112,7 +104,6 @@ namespace UWUVCI_AIO_WPF
                 if (++_match >= _konamiCode.Count)
                 {
                     _match = 0;
-
 
                     output.PlaybackStopped += new EventHandler<StoppedEventArgs>(Media_Ended);
                     output.Init(ws);
@@ -188,14 +179,12 @@ namespace UWUVCI_AIO_WPF
                 if (e.ChangedButton == MouseButton.Left && move)
                 {
                     movingrn = true;
-                    this.DragMove();
+                    DragMove();
                 }
-                    
-                
             }
             catch (Exception)
             {
-
+                //left empty on purpose
             }
             startedmoving = false;
         }
@@ -247,7 +236,6 @@ namespace UWUVCI_AIO_WPF
                     mvm.prodcode = "";
                     mvm.foldername = "";
                     mvm.jppatch = false;
-                    mvm.GC = false;
                     mvm.test = GameConsoles.WII;
                     mvm.regionfrii = false;
                     mvm.cd = false;
@@ -259,11 +247,12 @@ namespace UWUVCI_AIO_WPF
                     mvm.RemoveCreatedIMG();
                     mvm.isDoneMW();
 
+                    DestroyFrame();
+                    mvm.saveconf = null;
+                    mvm.GC = false;
                     switch ((sender as ListView).SelectedIndex)
                     {
                         case 0:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - NDS VC INJECT";
                             /*  if(mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.NDS)
                               {
@@ -274,11 +263,8 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.NDS);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         case 1:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - GBA VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.GBA)
                             {
@@ -289,11 +275,8 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.GBA);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         case 2:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - N64 VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.N64)
                             {
@@ -305,11 +288,8 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.N64);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         case 4:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - NES VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.NES)
                             {
@@ -320,11 +300,8 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.NES);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         case 3:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - SNES VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.SNES)
                             {
@@ -333,12 +310,9 @@ namespace UWUVCI_AIO_WPF
                             else
                             {*/
                             load_frame.Content = new INJECTFRAME(GameConsoles.SNES);
-                            mvm.saveconf = null;
                             //}
                             break;
                         case 5:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - TurboGrafX-16 VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.TG16 )
                             {
@@ -349,11 +323,8 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.TG16);
 
                             // }
-                            mvm.saveconf = null;
                             break;
                         case 6:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - MSX VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.MSX)
                             {
@@ -364,11 +335,8 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.MSX);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         case 7:
-                            DestroyFrame();
-                            mvm.GC = false;
                             tbTitleBar.Text = "UWUVCI AIO - Wii VC INJECT";
                             /*if (mvm.saveconf != null && mvm.saveconf.Console == GameConsoles.WII)
                             {
@@ -379,10 +347,9 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.WII);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         case 8:
-                            DestroyFrame();
+                            mvm.GC = true;
                             tbTitleBar.Text = "UWUVCI AIO - GC VC INJECT";
                             /*if (mvm.saveconf != null && (mvm.saveconf.Console == GameConsoles.WII || mvm.saveconf.Console == GameConsoles.GCN) && mvm.GC == true)
                             {
@@ -393,7 +360,6 @@ namespace UWUVCI_AIO_WPF
                             load_frame.Content = new INJECTFRAME(GameConsoles.GCN);
 
                             //}
-                            mvm.saveconf = null;
                             break;
                         /*case 9:
                             DestroyFrame();
@@ -402,21 +368,17 @@ namespace UWUVCI_AIO_WPF
 
                             break;*/
                         case 9:
-                            DestroyFrame();
                             tbTitleBar.Text = "UWUVCI AIO - ???????? ?? ??????";
                             load_frame.Content = new Teaser();
 
                             break;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
-
+                    // left empty on purpose
                 }
             }
-            
-            
-           
         }
 
         public void paths(bool remove)
@@ -435,12 +397,12 @@ namespace UWUVCI_AIO_WPF
 
         private void Window_Close(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
         private void Button_MouseEnter(object sender, MouseEventArgs e)
@@ -486,16 +448,14 @@ namespace UWUVCI_AIO_WPF
                 spc.Text = "Debug Mode";
                 spc.ToolTip = "\"Unhides\" used Tools (Displays whats going on in the Background while a ProgressBar appears";
             }
-                
-            
         }
         public void allowBypass()
         {
             (FindResource("mvm") as MainViewModel).saveworkaround = true;
             spc.Visibility = Visibility.Visible;
             spc.Text = "Space Bypass Mode";
-           spc.ToolTip = "Disables all Space checks. May cause issues.";
-       }
+            spc.ToolTip = "Disables all Space checks. May cause issues.";
+        }
 
         private void Window_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -505,11 +465,8 @@ namespace UWUVCI_AIO_WPF
                 if (!startedmoving)
                 {
                     movingrn = false;
-
                 }
-                
             }).Start();
-            
         }
 
         private void settings_Click(object sender, RoutedEventArgs e)
