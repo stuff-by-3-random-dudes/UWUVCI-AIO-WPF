@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UWUVCI_AIO_WPF"
        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MAIN" Width="1194.525" WindowStyle="None" materialDesign:ShadowAssist.CacheMode="{x:Null}" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" MouseDown="MoveWindow" ResizeMode="NoResize" Height="670"  Loaded="Window_Loaded" Icon="/UWUVCI AIO WPF;component/a.ico" Closing="wind_Closing" Closed="wind_Closed">
+        Title="MAIN" Width="1194.525" WindowStyle="None" materialDesign:ShadowAssist.CacheMode="{x:Null}" WindowStartupLocation="CenterOwner" Foreground="White" Background="LightGray" MouseDown="MoveWindow" ResizeMode="NoResize" Height="670"  Icon="/UWUVCI AIO WPF;component/a.ico" Closing="wind_Closing" Closed="wind_Closed">
 
 
 
