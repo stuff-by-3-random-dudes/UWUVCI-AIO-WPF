@@ -505,5 +505,10 @@ namespace UWUVCI_AIO_WPF
             tbTitleBar.Text = "UWUVCI AIO - Settings";
             load_frame.Content = new SettingsFrame(this);
         }
+
+        private void vwiiMode_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
