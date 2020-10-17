@@ -9,7 +9,7 @@
       Title="Teaser" >
 
     <Grid>
-        <TextBlock x:Name="tb" TextWrapping="Wrap" Text="Under Construction       " FontSize="20" Height="29" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="1110" />
+        <TextBlock x:Name="tb" TextWrapping="Wrap" Text="Under Construction       " FontSize="20" Height="28" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="179" PreviewMouseLeftButtonDown="tb_PreviewMouseLeftButtonDown" Margin="467,282,489,290" Cursor="Hand"/>
 
         <Image Source="/UI/Images/rarch.png" Opacity="0.1" Margin="997,473,23,10"/>
     </Grid>
