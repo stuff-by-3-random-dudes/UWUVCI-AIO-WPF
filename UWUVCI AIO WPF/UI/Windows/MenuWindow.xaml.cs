@@ -11,6 +11,7 @@ using GameBaseClassLibrary;
 using UWUVCI_AIO_WPF.UI.Frames.Path;
 using System.IO;
 using NAudio.Wave;
+using System.Diagnostics;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -508,7 +509,8 @@ namespace UWUVCI_AIO_WPF
 
         private void vwiiMode_Click(object sender, RoutedEventArgs e)
         {
-
+            Process.Start("UWUVCI VWII.exe");
+            Environment.Exit(0);
         }
     }
 }
