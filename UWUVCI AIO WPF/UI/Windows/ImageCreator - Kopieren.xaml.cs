@@ -175,8 +175,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     Image.Source = BitmapToImageSource(b);
                 }
                 catch
-                {
-                    MessageBox.Show("The image you're trying to use will not work, please try a different image.", "Image Issue");
+                {    
+                    Custom_Message cm = new Custom_Message("Image Issue", "The image you're trying to use will not work, please try a different image.");
+                    try
+                    {
+                        cm.Owner = mvm.mw;
+                    }
+                    catch (Exception)
+                    {
+                        //left empty on purpose
+                    }
+                    cm.ShowDialog();
                 }
             }
             enOv_Click(null, null);
