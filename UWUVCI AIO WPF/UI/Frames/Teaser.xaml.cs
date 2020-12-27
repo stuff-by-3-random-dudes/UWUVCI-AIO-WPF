@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         public Teaser()
         {
             InitializeComponent();
+        }
+
+        private void tb_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start("https://www.reddit.com/r/WiiUHacks/comments/jchcls/poc_retroarch_autoboot_starts_rom_automatically/");
         }
     }
 }

@@ -169,7 +169,7 @@
         <Button  HorizontalAlignment="Left" Margin="1159,38,0,0" Height="20" VerticalAlignment="Top" Width="21" Background="Transparent" BorderBrush="Transparent" Foreground="Transparent" Click="settings_Click" FontSize="22" Padding="0" Name="settings" IsTabStop="False">
             <Image Source="/UI/Images/cogwheel.png" Height="20" Width="16"/>
         </Button>
-        <Button  HorizontalAlignment="Left" Margin="1080,38,0,0" Height="20" VerticalAlignment="Top" Background="Transparent"  BorderBrush="White"   FontSize="14" Padding="0" Name="vwiiMode" IsTabStop="False" Content=" vWii Mode " >
+        <Button  HorizontalAlignment="Left" Margin="1080,38,0,0" Height="20" VerticalAlignment="Top" Background="Transparent"  BorderBrush="White"   FontSize="14" Padding="0" Name="vwiiMode" IsTabStop="False" Content=" vWii Mode " Click="vwiiMode_Click">
         </Button>
 
     </Grid>

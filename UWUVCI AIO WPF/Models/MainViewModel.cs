@@ -506,8 +506,15 @@ namespace UWUVCI_AIO_WPF
         }
             public MainViewModel()
       {
-            
-          
+            if (!Environment.Is64BitOperatingSystem)
+            {
+                List<string> Tools = ToolCheck.ToolNames.ToList();
+                Tools.Remove("CNUSPACKER.exe");
+                Tools.Add("NUSPacker.jar");
+                ToolCheck.ToolNames = Tools.ToArray();
+            }
+           
+
             //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
             if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
             if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
@@ -1807,7 +1814,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
+                        return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
                     }
                 }
                
@@ -1821,7 +1828,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\","");
                 }
 
             }
@@ -1869,7 +1876,16 @@ namespace UWUVCI_AIO_WPF
 
                 foreach (MissingTool m in missingTools)
                 {
-                    DownloadTool(m.Name,this);
+                    if(m.Name == "blank.ini")
+                    {
+                        StreamWriter sw = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini"));
+                        sw.Close();
+                    }
+                    else
+                    {
+                        DownloadTool(m.Name, this);
+                    }
+                   
                     Progress += Convert.ToInt32(l);
                 }
                 Progress = 100;
@@ -3658,26 +3674,7 @@ namespace UWUVCI_AIO_WPF
         {
             WebRequest request;
             //get download link from uwuvciapi
-            try
-            {
-                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetURL?cns=" + console.ToLower());
-
-
-
-
-                var response = request.GetResponse();
-                using (Stream dataStream = response.GetResponseStream())
-                {
-                    // Open the stream using a StreamReader for easy access.  
-                    StreamReader reader = new StreamReader(dataStream);
-                    // Read the content.  
-                    string responseFromServer = reader.ReadToEnd();
-                    // Display the content.  
-                    return responseFromServer;
-                }
-            }
-            catch (Exception)
-            {
+           
                 string url = "";
                 switch (console.ToLower())
                 {
@@ -3717,22 +3714,7 @@ namespace UWUVCI_AIO_WPF
                         url = null;
                         break;
                 }
-                request = WebRequest.Create(url + console.ToLower());
-
-
-
-
-                var response = request.GetResponse();
-                using (Stream dataStream = response.GetResponseStream())
-                {
-                    // Open the stream using a StreamReader for easy access.  
-                    StreamReader reader = new StreamReader(dataStream);
-                    // Read the content.  
-                    string responseFromServer = reader.ReadToEnd();
-                    // Display the content.  
-                    return responseFromServer;
-                }
-            }
+            return url;
                 
         }
          WaveOutEvent waveOutEvent = new WaveOutEvent();
