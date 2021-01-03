@@ -1682,7 +1682,7 @@ namespace UWUVCI_AIO_WPF
                 mvvm.foldername = $"[WUP]{reg.Replace(gameName, "").Replace("|", " ")}_{i}";
                 i++;
             }
-            
+            var oldpath = Directory.GetCurrentDirectory();
             mvm.Progress = 40;
             mvm.msg = "Packing...";
             using (Process cnuspacker = new Process())
@@ -1692,12 +1692,19 @@ namespace UWUVCI_AIO_WPF
                     cnuspacker.StartInfo.UseShellExecute = false;
                     cnuspacker.StartInfo.CreateNoWindow = true;
                 }
-                
-                cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
-
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
+                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+                }
+                else
+                {
+                    cnuspacker.StartInfo.FileName = "java";
+                    cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+                }
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
+                Directory.SetCurrentDirectory(oldpath);
             }
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";

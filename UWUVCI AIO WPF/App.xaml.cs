@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
@@ -98,12 +99,13 @@ namespace UWUVCI_AIO_WPF
 				}
 				if (Environment.Is64BitOperatingSystem)
 				{
-
+					
 				}
 				else
 				{
+					
 					//wnd.is32();
-					Custom_Message cm = new Custom_Message("Warning", "Some features may cause issues on a 32Bit System. Upgrading to 64Bit would be recommended. \nReport any issues in the UWUVCI Discord, or ping @NicoAICP in #wiiu-assistance in the Nintendo Homebrew discord. ");
+					Custom_Message cm = new Custom_Message("Warning", "Some features may cause issues on a 32Bit System. Upgrading to 64Bit would be recommended.\nDue to an Issue with packing on 32Bit Systems, you need Java installed for packing. \nReport any issues in the UWUVCI Discord, or ping @NicoAICP in #wiiu-assistance in the Nintendo Homebrew discord. ");
 					cm.ShowDialog();
 				}
 				
