@@ -509,8 +509,15 @@ namespace UWUVCI_AIO_WPF
 
         private void vwiiMode_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("UWUVCI VWII.exe");
-            Environment.Exit(0);
+            try
+            {
+                Process.Start("UWUVCI VWII.exe");
+                Environment.Exit(0);
+            }
+            catch
+            {
+                //left empty on purpose
+            }
         }
     }
 }
