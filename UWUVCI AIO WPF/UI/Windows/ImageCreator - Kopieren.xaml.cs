@@ -32,24 +32,26 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public IconCreator()
         {
             setUpIconCreator();
+            SetTemplate();
         }
         public IconCreator(string name)
         {
             setUpIconCreator();
             console = name;
+            SetTemplate();
         }
         public IconCreator(string name, string extra)
         {
             setUpIconCreator();
             console = name;
             othercons = extra;
+            SetTemplate();
         }
 
         private void setUpIconCreator()
         {
             InitializeComponent();
             imageName.Content = "iconTex";
-            SetTemplate();
         }
         private void SetTemplate()
         {
