@@ -712,13 +712,17 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.GameName == "" || GameConfiguration.GameName == null) backup.GameName = "NoName";
             GameConfiguration.Index = Index;
             CheckAndFixConfigFolder();
-            string outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}.uwuvci";
+            var sanitizedGameName = backup.GameName;
+            Array.ForEach(Path.GetInvalidFileNameChars(),
+                  c => sanitizedGameName = sanitizedGameName.Replace(c.ToString(), string.Empty));
+            string outputPath = $@"configs\[{backup.Console}]{sanitizedGameName}.uwuvci";
             int i = 1;
             while (File.Exists(outputPath))
             {
-                outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}_{i}.uwuvci";
+                outputPath = $@"configs\[{backup.Console}]{sanitizedGameName}_{i}.uwuvci";
                 i++;
             }
+
             Stream createConfigStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
             GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
             IFormatter formatter = new BinaryFormatter();
