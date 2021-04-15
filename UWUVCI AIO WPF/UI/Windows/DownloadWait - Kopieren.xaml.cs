@@ -313,10 +313,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 s.Close();
             }
            mvm.msg = "Setting up Nintendon't...";
-            if (File.Exists(driveletter + "\\nincfg.bin"))
-            {
-                File.Delete(driveletter + "\\nincfg.bin");
-            }
+            if (!File.Exists(driveletter + "\\nincfg.bin"))
+               
+                {
+                    File.Copy(@"bin\tempsd\nintendont\nincfg.bin", driveletter + @"\nincfg.bin");
+                }
 
             if (!Directory.Exists(driveletter + "\\apps\\nintendont"))
             {
