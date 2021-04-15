@@ -184,7 +184,7 @@ namespace UWUVCI_AIO_WPF.Classes
 
             if (Players > 0)
             {
-                string pStr = "1-" + (Players >= 4 ? "4" : Players.ToString());
+                string pStr = Players >= 4 ? "1-4" : (Players == 1 ? "1" : "1-" + Players.ToString());
                 GraphicsPath p = new GraphicsPath();
                 
                 p.AddString("Players: " + pStr, font.FontFamily,
