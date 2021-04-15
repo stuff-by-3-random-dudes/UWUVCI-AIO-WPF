@@ -184,13 +184,12 @@ namespace UWUVCI_AIO_WPF.Classes
 
             if (Players > 0)
             {
-                string pStr = Players >= 4 ? "1-4" : Players == 3 ? "1-3" : Players == 2 ? "1-2" : "1";
+                string pStr = Players >= 4 ? "1-4" : (Players == 1 ? "1" : "1-" + Players.ToString());
                 GraphicsPath p = new GraphicsPath();
                 
-                    p.AddString("Players: " + pStr, font.FontFamily,
-                    (int)(FontStyle.Regular),
-                    g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
-                
+                p.AddString("Players: " + pStr, font.FontFamily,
+                (int)(FontStyle.Regular),
+                g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
                 
                 g.DrawPath(shadow, p);
                 g.DrawPath(outline, p);
