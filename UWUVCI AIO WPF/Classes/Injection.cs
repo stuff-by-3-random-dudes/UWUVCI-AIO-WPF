@@ -2258,12 +2258,12 @@ namespace UWUVCI_AIO_WPF
             }
             if (config.WideScreen)
             {
-                mvvm.msg = "Removing Dark Filter...";
+                mvvm.msg = "Enabling Wide Screen...";
                 string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
                 using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
                 {
                     writer.Seek(0x1B0D, SeekOrigin.Begin);
-                    writer.Write(new byte[] { 0xF0 },0,1);
+                    writer.Write(new byte[] { 0x44, 0xF0, 0, 0 }, 0, 4);
                 }
                 mvvm.Progress = 65;
             }
@@ -2274,7 +2274,8 @@ namespace UWUVCI_AIO_WPF
                 using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
                 {
                     writer.Seek(0x1AD8, SeekOrigin.Begin);
-                    writer.Write(0L);
+                    var dfByte = (byte)1;
+                    writer.Write(dfByte);
                 }
                 mvvm.Progress = 70;
             }
