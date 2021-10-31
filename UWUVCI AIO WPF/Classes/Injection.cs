@@ -2256,29 +2256,125 @@ namespace UWUVCI_AIO_WPF
                 mvvm.Progress = 60;
 
             }
-            if (config.WideScreen)
+
+            if (config.WideScreen || config.DarkFilter)
             {
-                mvvm.msg = "Enabling Wide Screen...";
-                string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
-                using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
+                using (var fileStream = File.Open(Path.Combine(baseRomPath, "content", "FrameLayout.arc"), FileMode.Open))
                 {
-                    writer.Seek(0x1B0D, SeekOrigin.Begin);
-                    writer.Write(new byte[] { 0x44, 0xF0, 0, 0 }, 0, 4);
-                }
-                mvvm.Progress = 65;
-            }
-            if (config.DarkFilter)
-            {
-                mvvm.msg = "Removing Dark Filter...";
-                string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
-                using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
-                {
-                    writer.Seek(0x1AD8, SeekOrigin.Begin);
-                    var dfByte = (byte)1;
-                    writer.Write(dfByte);
+                    uint offset = 0;
+                    uint size = 0;
+                    byte[] offsetB = new byte[4];
+                    byte[] sizeB = new byte[4];
+                    byte[] nameB = new byte[0x18];
+                    var header = new byte[4];
+
+                    byte[] oneOut = BitConverter.GetBytes((float)1);
+                    byte[] zeroOut = BitConverter.GetBytes((float)0);
+
+                    byte darkFilter = (byte)(config.DarkFilter ? 0 : 1);
+                    byte[] wideScreen = config.WideScreen ? new byte[] { 0x44, 0xF0, 0, 0 } : new byte[] { 0x44, 0xB4, 0, 0 };
+
+                    fileStream.Read(header, 0, 4);
+
+                    if (header[0] == 'S' && header[1] == 'A' && header[2] == 'R' && header[3] == 'C')
+                    {
+                        fileStream.Position = 0x0C;
+                        fileStream.Read(offsetB, 0, 4);
+
+                        offset = (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                        fileStream.Position = 0x38;
+                        fileStream.Read(offsetB, 0, 4);
+                        offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                        fileStream.Position = offset;
+                        fileStream.Read(header, 0, 4);
+
+                        if (header[0] == 'F' && header[1] == 'L' && header[2] == 'Y' && header[3] == 'T')
+                        {
+                            fileStream.Position = offset + 0x04;
+                            fileStream.Read(offsetB, 0, 4);
+
+                            offsetB[0] = 0;
+                            offsetB[1] = 0;
+
+                            offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                            fileStream.Position = offset;
+
+                            while (true)
+                            {
+                                fileStream.Read(header, 0, 4);
+                                fileStream.Read(sizeB, 0, 4);
+                                size = (uint)(sizeB[0] << 24 | sizeB[1] << 16 | sizeB[2] << 8 | sizeB[3]);
+
+                                if (header[0] == 'p' && header[1] == 'i' && header[2] == 'c' && header[3] == '1')
+                                {
+                                    fileStream.Position = offset + 0x0C;
+                                    fileStream.Read(nameB, 0, 0x18);
+                                    int count = Array.IndexOf(nameB, (byte)0);
+                                    string name = Encoding.ASCII.GetString(nameB, 0, count);
+
+                                    if (name == "frame")
+                                    {
+                                        fileStream.Position = offset + 0x2C;
+                                        fileStream.WriteByte(zeroOut[3]);
+                                        fileStream.WriteByte(zeroOut[2]);
+                                        fileStream.WriteByte(zeroOut[1]);
+                                        fileStream.WriteByte(zeroOut[0]);
+
+                                        fileStream.Position = offset + 0x30;//TranslationX
+                                        fileStream.WriteByte(zeroOut[3]);
+                                        fileStream.WriteByte(zeroOut[2]);
+                                        fileStream.WriteByte(zeroOut[1]);
+                                        fileStream.WriteByte(zeroOut[0]);
+
+                                        fileStream.Position = offset + 0x44;//ScaleX
+                                        fileStream.WriteByte(oneOut[3]);
+                                        fileStream.WriteByte(oneOut[2]);
+                                        fileStream.WriteByte(oneOut[1]);
+                                        fileStream.WriteByte(oneOut[0]);
+
+                                        fileStream.Position = offset + 0x48;//ScaleY
+                                        fileStream.WriteByte(oneOut[3]);
+                                        fileStream.WriteByte(oneOut[2]);
+                                        fileStream.WriteByte(oneOut[1]);
+                                        fileStream.WriteByte(oneOut[0]);
+
+                                        fileStream.Position = offset + 0x4C;//Widescreen
+                                        fileStream.Write(wideScreen, 0, 4);
+                                    }
+                                    else if (name == "frame_mask")
+                                    {
+                                        fileStream.Position = offset + 0x08;//Dark filter
+                                        fileStream.WriteByte(darkFilter);
+                                    }
+                                    else if (name == "power_save_bg")
+                                    {
+                                        //This means we finished frame_mask and frame edits so we can end the loop
+                                        break;
+                                    }
+
+                                    offset += size;
+                                    fileStream.Position = offset;
+                                }
+                                else if (offset + size >= fileStream.Length)
+                                {
+                                    //do nothing
+                                }
+                                else
+                                {
+                                    offset += size;
+                                    fileStream.Position = offset;
+                                }
+                            }
+                        }
+                    }
+                    fileStream.Close();
                 }
                 mvvm.Progress = 70;
             }
+
             mvvm.msg = "Copying INI...";
             if(config.INIBin == null)
             {
@@ -2554,7 +2650,7 @@ namespace UWUVCI_AIO_WPF
                             checkIfIssue.Start();
                             checkIfIssue.WaitForExit();
                         }
-                        Console.ReadLine();
+                       // Console.ReadLine();
                     }
 
                     if (Images[1])
