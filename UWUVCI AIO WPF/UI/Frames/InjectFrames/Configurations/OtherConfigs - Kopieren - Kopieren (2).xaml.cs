@@ -601,6 +601,20 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
         }
+        private void rbRDF_GBA_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.GameConfiguration.GBAStuff.DarkFilter = true;
+        }
+
+        private void rbREF_GBA_Click(object sender, RoutedEventArgs e)
+        {
+            mvm.GameConfiguration.GBAStuff.DarkFilter = false;
+        }
+
+        private void RbREF_GBA_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
     } 
 }
 

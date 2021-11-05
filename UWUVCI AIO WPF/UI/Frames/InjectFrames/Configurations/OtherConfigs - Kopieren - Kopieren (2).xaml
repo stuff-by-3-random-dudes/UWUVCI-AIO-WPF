@@ -28,6 +28,11 @@
             <RadioButton Content="Enabled" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="df" Name="rbREF"  Click="RadioButton_Click" IsTabStop="False"/>
 
             <RadioButton x:Name="rbRDF" Width="111" Content="Disabled" HorizontalAlignment="Left" Margin="0,5,0,0"  VerticalAlignment="Top" GroupName="df" Click="rbRDF_Click" IsChecked="True" IsTabStop="False"/>
+
+            <Label Content="DarkFilter:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Width="90"/>
+            <RadioButton x:Name="rbREF_GBA" Content="Enabled" Width="78" HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" GroupName="dfgba" IsChecked="True" Click="rbREF_GBA_Click" IsTabStop="False" Checked="RbREF_GBA_Checked"/>
+            <RadioButton x:Name="rbRDF_GBA" Width="111" Content="Disabled" HorizontalAlignment="Left" Margin="0,5,0,0"  VerticalAlignment="Top" GroupName="dfgba" Click="rbRDF_GBA_Click" IsTabStop="False"/>
+
         </StackPanel>
         <TextBox materialDesign:HintAssist.Hint="BOOT SOUND (OPTIONAL)" ToolTip="Needs to be a RIFF WAVE file 48000khz and 16bit stereo." x:Name="sound" Text="{Binding BootSound}"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,365,157,101" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" TextChanged="sound_TextChanged" IsTabStop="False"/>
         <Image HorizontalAlignment="Left" Height="35" Margin="452,191,0,0" VerticalAlignment="Top" Width="38" OpacityMask="LightGray" Name="icoIMG" Source="/UWUVCI AIO WPF;component/UI/Images/newcamera2.png" Cursor="Hand" MouseLeftButtonDown="icoIMG_MouseLeftButtonDown" Visibility="Hidden" />

@@ -59,6 +59,7 @@ namespace UWUVCI_AIO_WPF
         public PNGTGA TGATv { get; set; } = new PNGTGA();
         public PNGTGA TGALog { get; set; } = new PNGTGA();
         public N64Conf N64Stuff { get; set; } = new N64Conf();
+        public N64Conf GBAStuff { get; set; } = new N64Conf();
 
     }
 }
