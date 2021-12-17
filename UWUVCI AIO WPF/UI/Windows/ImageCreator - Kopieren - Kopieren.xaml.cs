@@ -95,10 +95,25 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     copy = path;
                 }
-                bi.Frame = new Bitmap(copy);
-                b = bi.Create("", 20);
-                Image.Source = BitmapToImageSource(b);
-                //Finish_Click(null, null);
+                try
+                {
+                    bi.Frame = new Bitmap(copy);
+                    b = bi.Create("", 20);
+                    Image.Source = BitmapToImageSource(b);
+                }
+                catch
+                {
+                    Custom_Message cm = new Custom_Message("Image Issue", "The image you're trying to use will not work, please try a different image.");
+                    try
+                    {
+                        cm.Owner = mvm.mw;
+                    }
+                    catch (Exception)
+                    {
+                        //left empty on purpose
+                    }
+                    cm.ShowDialog();
+                }
             }
 
         }
