@@ -1594,7 +1594,7 @@ namespace UWUVCI_AIO_WPF
                 else if(!INI)
                 {
                     
-                    dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga) | *.png;*.jpg;*.bmp;*.tga";
+                    dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga; *jpeg) | *.png;*.jpg;*.bmp;*.tga;*jpeg";
                 }
                 else if(INI)
                 {

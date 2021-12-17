@@ -2698,13 +2698,14 @@ namespace UWUVCI_AIO_WPF
                 {
                     png2tga.StartInfo.UseShellExecute = false;
                     png2tga.StartInfo.CreateNoWindow = true;
-                    if(new FileInfo(inputPath).Extension.Contains("png"))
+                    var extension = new FileInfo(inputPath).Extension;
+                    if (extension.Contains("png"))
                     {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "png2tga.exe");
-                    }else if (new FileInfo(inputPath).Extension.Contains("jpg"))
+                    }else if (extension.Contains("jpg") || extension.Contains("jpeg"))
                     {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "jpg2tga.exe");
-                    }else if (new FileInfo(inputPath).Extension.Contains("bmp"))
+                    }else if (extension.Contains("bmp"))
                     {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "bmp2tga.exe");
                     }
