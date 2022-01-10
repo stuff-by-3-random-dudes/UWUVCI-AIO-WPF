@@ -31,7 +31,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         public GBA()
         {
             mvm = (MainViewModel)FindResource("mvm");
-            mvm.GameConfiguration.GBAStuff = new N64Conf();
+            mvm.GameConfiguration.GBAStuff = new N64Conf
+            {
+                DarkFilter = true
+            };
             InitializeComponent();
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
