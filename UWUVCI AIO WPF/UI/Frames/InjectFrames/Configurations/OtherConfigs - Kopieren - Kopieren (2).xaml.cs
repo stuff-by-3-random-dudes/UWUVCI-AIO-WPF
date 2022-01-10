@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 
@@ -29,8 +30,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         public GBA()
         {
+            mvm = (MainViewModel)FindResource("mvm");
+            mvm.GameConfiguration.GBAStuff = new N64Conf();
             InitializeComponent();
-            mvm = FindResource("mvm") as MainViewModel;
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
 
@@ -603,12 +605,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void rbRDF_GBA_Click(object sender, RoutedEventArgs e)
         {
-            mvm.GameConfiguration.GBAStuff.DarkFilter = true;
+            mvm.GameConfiguration.GBAStuff.DarkFilter = false;
         }
 
         private void rbREF_GBA_Click(object sender, RoutedEventArgs e)
         {
-            mvm.GameConfiguration.GBAStuff.DarkFilter = false;
+            mvm.GameConfiguration.GBAStuff.DarkFilter = true;
         }
 
         private void RbREF_GBA_Checked(object sender, RoutedEventArgs e)
