@@ -2166,9 +2166,9 @@ namespace UWUVCI_AIO_WPF
                 var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
 
                 packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
-                AllDataPacker.Build("psbout", "mod_alldata", packer);
+                packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb");
 
-                packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
+                AllDataPacker.Build("psbout", "mod_alldata", packer);
 
                 allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
             }
