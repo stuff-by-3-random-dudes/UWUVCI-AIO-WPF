@@ -2136,7 +2136,6 @@ namespace UWUVCI_AIO_WPF
             }
 
             var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
-
             if (config.DarkFilter == false)
             {
                 //my dumb af way to ensure everything starts fresh and doesn't throw an error
@@ -2166,14 +2165,14 @@ namespace UWUVCI_AIO_WPF
 
                 allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
             }
-
+            var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
             using (Process psb = new Process())
             {
                 mvvm.msg = "Injecting ROM...";
                 psb.StartInfo.UseShellExecute = false;
                 psb.StartInfo.CreateNoWindow = true;
                 psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
-                psb.StartInfo.Arguments = $"\"{allDataPath}\" \"{injectRomPath}\" \"{allDataPath}\"";
+                psb.StartInfo.Arguments = $"\"{allDataPath}\" \"{injectRomPath}\" \"{outputAllDataPath}\"";
 
                 psb.Start();
                 psb.WaitForExit();
