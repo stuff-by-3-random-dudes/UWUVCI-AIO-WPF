@@ -1686,6 +1686,11 @@ namespace UWUVCI_AIO_WPF
             var oldpath = Directory.GetCurrentDirectory();
             mvm.Progress = 40;
             mvm.msg = "Packing...";
+            try
+            {
+                Directory.Delete(Environment.GetEnvironmentVariable("LocalAppData") + @"\temp\.net\CNUSPACKER", true);
+            }
+            catch { }
             using (Process cnuspacker = new Process())
             {
                 if (!mvm.debug)
@@ -2162,6 +2167,8 @@ namespace UWUVCI_AIO_WPF
 
                 packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
                 AllDataPacker.Build("psbout", "mod_alldata", packer);
+
+                packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
 
                 allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
             }
