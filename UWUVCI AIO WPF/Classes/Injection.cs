@@ -2139,10 +2139,27 @@ namespace UWUVCI_AIO_WPF
 
             if (config.DarkFilter == false)
             {
+                //my dumb af way to ensure everything starts fresh and doesn't throw an error
+                try
+                {
+                    Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
+                }
+                catch { }
+                try
+                {
+                    File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m");
+                }
+                catch { }
+                try
+                {
+                    File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.bin");
+                }
+                catch { }
+
                 var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
                 AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
 
-                var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).FirstOrDefault();
+                var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
 
                 packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
                 AllDataPacker.Build("psbout", "mod_alldata", packer);
