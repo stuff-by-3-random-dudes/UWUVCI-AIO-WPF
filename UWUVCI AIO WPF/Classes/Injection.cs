@@ -1,4 +1,5 @@
 ﻿using GameBaseClassLibrary;
+using GMWare.M2.MArchive;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -407,7 +408,7 @@ namespace UWUVCI_AIO_WPF
                     break;
 
                 case GameConsoles.GBA:
-                    GBA(RomPath);
+                    GBA(RomPath, cfg.GBAStuff);
                     break;
 
                 case GameConsoles.NES:
@@ -2093,7 +2094,7 @@ namespace UWUVCI_AIO_WPF
             mvvm.Progress = 80;
         }
 
-        private static void GBA(string injectRomPath)
+        private static void GBA(string injectRomPath, N64Conf config)
         {
             bool delete = false;
             if(!new FileInfo(injectRomPath).Extension.Contains("gba"))
@@ -2134,13 +2135,28 @@ namespace UWUVCI_AIO_WPF
                 mvvm.Progress = 40;
             }
 
+            var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+
+            if (config.DarkFilter == false)
+            {
+                var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
+                AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
+
+                var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).FirstOrDefault();
+
+                packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
+                AllDataPacker.Build("psbout", "mod_alldata", packer);
+
+                allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
+            }
+
             using (Process psb = new Process())
             {
                 mvvm.msg = "Injecting ROM...";
                 psb.StartInfo.UseShellExecute = false;
                 psb.StartInfo.CreateNoWindow = true;
                 psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
-                psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
+                psb.StartInfo.Arguments = $"\"{allDataPath}\" \"{injectRomPath}\" \"{allDataPath}\"";
 
                 psb.Start();
                 psb.WaitForExit();
