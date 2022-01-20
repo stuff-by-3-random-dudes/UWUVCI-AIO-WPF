@@ -2691,7 +2691,7 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
             List<string> repoids = new List<string>();
-            string[] ext = { "png"};
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             if (CheckForInternetConnectionWOWarning())
             {
                 repoids.Add(SystemType + repoid);
@@ -2763,7 +2763,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "snes/";
             IMG_Message img = null;
             repoid = GetFakeSNESProdcode(rom);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -2793,7 +2793,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "msx/";
             IMG_Message img = null;
             repoid = GetFakeMSXTGProdcode(rom, true);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -2823,7 +2823,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "tg16/";
             IMG_Message img = null;
             repoid = GetFakeMSXTGProdcode(rom, false);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -2972,7 +2972,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "nes/";
             IMG_Message img = null;
             repoid = GetFakeNESProdcode(rom);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -3131,7 +3131,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -3212,7 +3212,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             if (CheckForInternetConnectionWOWarning())
             {
                 repoids.Add(SystemType + repoid);
@@ -3352,7 +3352,7 @@ namespace UWUVCI_AIO_WPF
                     reader.BaseStream.Position = 0x00;
                     char TempChar;
                     //WBFS Check
-                    string[] ext = { "png" };
+                    string[] ext = { "png", "tga", "jpg", "jpeg" };
                     List<string> repoids = new List<string>();
                     if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
                     {
