@@ -140,5 +140,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             (FindResource("mvm") as MainViewModel).RestartIntoBypass();
         }
+
+        private void Button_Click_13(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://ko-fi.com/uwuvci");
+        }
     }
 }

@@ -653,6 +653,9 @@
   <ItemGroup>
     <Resource Include="UI\Images\bg maybe wpf6.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Images\61e111774d3a2f67c827cd25_Frame 5.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
