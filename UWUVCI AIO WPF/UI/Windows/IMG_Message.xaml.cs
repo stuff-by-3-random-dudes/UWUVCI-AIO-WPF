@@ -1,22 +1,19 @@
 ﻿using GameBaseClassLibrary;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using Path = System.IO.Path;
+using Rectangle = System.Drawing.Rectangle;
+using System.Runtime.InteropServices;
+using PixelFormat = System.Windows.Media.PixelFormat;
+using Pfim;
+using System.Windows.Media;
+using System.Collections.Generic;
+using System.Drawing;
+using Image = System.Windows.Controls.Image;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -30,6 +27,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         string repoid = "";
         string icback = "";
         string tvback = "";
+        private static List<GCHandle> handles = new List<GCHandle>();
         public IMG_Message(string icon, string tv, string repoid)
         {
             try
@@ -65,20 +63,135 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 tvl.Visibility = Visibility.Hidden;
                 tgtv.Visibility = Visibility.Visible;
             }
-            BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.UriSource = new Uri(icon, UriKind.Absolute);
-                bitmap.EndInit();
 
-                this.icon.Source = bitmap;
 
-                BitmapImage bmp2 = new BitmapImage();
-                bmp2.BeginInit();
-                bmp2.UriSource = new Uri(tv, UriKind.Absolute);
-                bmp2.EndInit();
-                this.tv.Source = bmp2;
+            this.icon.Source = GetRepoImages(icon);
+            this.tv.Source = GetRepoImages(tv);
             this.repoid = repoid;
         }
+
+        private BitmapImage GetRepoImages(string imageURL)
+        {
+            BitmapImage bitmap = new BitmapImage();
+            try
+            {
+                var webRequest = (HttpWebRequest)WebRequest.Create(new Uri(imageURL, UriKind.Absolute));
+                webRequest.AllowWriteStreamBuffering = true;
+                webRequest.Timeout = 30000;
+
+                var webReponse = webRequest.GetResponse();
+                var stream = webReponse.GetResponseStream();
+
+                if (!imageURL.EndsWith(".tga"))
+                {
+                    var image = System.Drawing.Image.FromStream(stream);
+
+                    using (var graphics = Graphics.FromImage(image))
+                    {
+                        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                        graphics.DrawImage(image, new Rectangle(0, 0, image.Width, image.Height), new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);
+                    }
+
+                    using (var memory = new MemoryStream())
+                    {
+                        image.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                        memory.Position = 0;
+
+                        bitmap.BeginInit();
+                        bitmap.StreamSource = memory;
+                        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                    }
+                }
+                else
+                {
+                    var image = Pfim.Pfim.FromStream(stream);
+                    foreach (var im in WpfImage(image))
+                    {
+                        var encoder = new PngBitmapEncoder();
+                        using (var memory = new MemoryStream())
+                        {
+                            BitmapSource bitmapSource = (BitmapSource)im.Source;
+                            encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                            encoder.Save(memory);
+                            memory.Position = 0;
+
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = memory;
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                //something broke, so yolo we go with the old method!
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(imageURL, UriKind.Absolute);
+                bitmap.EndInit();
+            }
+            return bitmap;
+        }
+
+        private static PixelFormat PixelFormat(IImage image)
+        {
+            switch (image.Format)
+            {
+                case ImageFormat.Rgb24:
+                    return PixelFormats.Bgr24;
+                case ImageFormat.Rgba32:
+                    return PixelFormats.Bgra32;
+                case ImageFormat.Rgb8:
+                    return PixelFormats.Gray8;
+                case ImageFormat.R5g5b5a1:
+                case ImageFormat.R5g5b5:
+                    return PixelFormats.Bgr555;
+                case ImageFormat.R5g6b5:
+                    return PixelFormats.Bgr565;
+                default:
+                    throw new Exception($"Unable to convert {image.Format} to WPF PixelFormat");
+            }
+        }
+
+        private static IEnumerable<Image> WpfImage(IImage image)
+        {
+            var pinnedArray = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
+            var addr = pinnedArray.AddrOfPinnedObject();
+            var bsource = BitmapSource.Create(image.Width, image.Height, 96.0, 96.0,
+                PixelFormat(image), null, addr, image.DataLen, image.Stride);
+
+            handles.Add(pinnedArray);
+            yield return new Image
+            {
+                Source = bsource,
+                Width = image.Width,
+                Height = image.Height,
+                MaxHeight = image.Height,
+                MaxWidth = image.Width,
+                Margin = new Thickness(4),
+            };
+
+            foreach (var mip in image.MipMaps)
+            {
+                var mipAddr = addr + mip.DataOffset;
+                var mipSource = BitmapSource.Create(mip.Width, mip.Height, 96.0, 96.0,
+                    PixelFormat(image), null, mipAddr, mip.DataLen, mip.Stride);
+                yield return new Image
+                {
+                    Source = mipSource,
+                    Width = mip.Width,
+                    Height = mip.Height,
+                    MaxHeight = mip.Height,
+                    MaxWidth = mip.Width,
+                    Margin = new Thickness(4)
+                };
+            }
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Close();

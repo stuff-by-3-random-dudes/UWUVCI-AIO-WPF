@@ -2758,29 +2758,16 @@ namespace UWUVCI_AIO_WPF
         }
         public void getBootIMGSNES(string rom)
         {
-            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
-            string repoid = "";
             string SystemType = "snes/";
-            IMG_Message img = null;
-            repoid = GetFakeSNESProdcode(rom);
-            string[] ext = { "png", "tga", "jpg", "jpeg" };
-            List<string> repoids = new List<string>();
+            var repoid = GetFakeSNESProdcode(rom);
+            List<string> repoids = new List<string>
+            {
+                SystemType + repoid
+            };
+
             if (CheckForInternetConnectionWOWarning())
             {
-                repoids.Add(SystemType + repoid);
-                foreach (var e in ext)
-                {
-                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
-                    {
-                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
-                        try
-                        {
-                            img.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        img.ShowDialog(); break;
-                    }
-                }
+                GetRepoImages(SystemType, repoids, repoid);
                 checkForAdditionalFiles(GameConsoles.SNES, repoids);
 
             }
@@ -3212,7 +3199,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
-            string[] ext = { "png", "tga", "jpg", "jpeg" };
+            string[] ext = {"png", "tga", "jpg", "jpeg" };
             if (CheckForInternetConnectionWOWarning())
             {
                 repoids.Add(SystemType + repoid);
@@ -3832,6 +3819,33 @@ namespace UWUVCI_AIO_WPF
                 Environment.Exit(0);
             }
             
+        }
+        /// <summary>
+        /// Was supposed to replace all of the code that reaches out to UWUVCI-Images, but I don't wanna have to test everything since this is already as Italian as code comes
+        /// </summary>
+        /// <param name="SystemType"></param>
+        /// <param name="repoids"></param>
+        /// <param name="repoid"></param>
+        private void GetRepoImages(string SystemType, List<string> repoids, string repoid)
+        {
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            IMG_Message img = null;
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
+
+            foreach (var e in ext)
+            {
+                if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                {
+                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                    try
+                    {
+                        img.Owner = mw;
+                    }
+                    catch (Exception) { }
+                    img.ShowDialog(); break;
+                }
+            }
+             
         }
     }
 }
