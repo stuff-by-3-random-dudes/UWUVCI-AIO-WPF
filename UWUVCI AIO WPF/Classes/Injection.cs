@@ -2170,8 +2170,16 @@ namespace UWUVCI_AIO_WPF
                 var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
                 AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
                 var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
-                packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
-                using (FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb"))
+
+                var titleProfPsbM = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m";
+                var titleProfPsb = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb";
+
+                var titleProfPsb_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb";
+                var titleProfPsbM_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m";
+
+                packer.DecompressFile(titleProfPsb);
+
+                using (FileStream fs = File.OpenRead(titleProfPsb))
                 {
                     using (PsbReader psbReader = new PsbReader(fs))
                     {
@@ -2180,7 +2188,7 @@ namespace UWUVCI_AIO_WPF
                         jsonObj["root"]["m2epi"]["brightness"] = 1;
                         //string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
                         //File.WriteAllText("settings.json", output);
-                        using (Stream fs2 = File.Create(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb"))
+                        using (Stream fs2 = File.Create(titleProfPsb_Modified))
                         {
                             PsbWriter psbWriter = new PsbWriter(jsonObj, null) { Version = 4 };
                             psbWriter.Write(fs2);
@@ -2192,7 +2200,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 
 
-                using (FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb"))
+                using (FileStream fs = File.OpenRead(titleProfPsb_Modified))
                 {
                     using (PsbReader psbReader = new PsbReader(fs))
                     {
@@ -2202,8 +2210,8 @@ namespace UWUVCI_AIO_WPF
                     }
                     fs.Close();
                 }
-                packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb");
-                File.Move(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m", Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
+                packer.CompressFile(titleProfPsb_Modified);
+                File.Move(titleProfPsbM_Modified, titleProfPsbM);
                 var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
 
                 //ignore this k thx
