@@ -1,5 +1,6 @@
 ﻿using GameBaseClassLibrary;
 using GMWare.M2.MArchive;
+using GMWare.M2.Psb;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -2137,13 +2138,17 @@ namespace UWUVCI_AIO_WPF
                 PokePatch(injectRomPath);
                 delete = true;
                 mvvm.PokePatch = false;
-                mvvm.Progress = 40;
+                mvvm.Progress = 50;
             }
+            
 
-            var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+           
+
+           
             if (config.DarkFilter == false)
             {
                 //my dumb af way to ensure everything starts fresh and doesn't throw an error
+                var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
                 try
                 {
                     Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
@@ -2159,27 +2164,59 @@ namespace UWUVCI_AIO_WPF
                     File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.bin");
                 }
                 catch { }
-
                 var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
                 AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
-
+                string json = "";
                 var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
-
                 packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
-                packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb");
+                using (FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb"))
+                {
+                    using (PsbReader psbReader = new PsbReader(fs))
+                    {
 
+
+                        json = psbReader.Root.ToString();
+                        json = json.Replace("\"brightness\": 0.75,", "\"brightness\": 1,");
+                        psbReader.Close();
+                    }
+                    fs.Close();
+                }
+                using (Stream fs = File.Create(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb"))
+                {
+
+                    var s = Newtonsoft.Json.JsonConvert.SerializeObject(json);
+                    PsbWriter psbWriter = new PsbWriter(s, null) { Version = 4 };
+                    psbWriter.Write(fs);
+                    fs.Close();
+                }
+
+                packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb");
+                File.Move(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m", Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
+                var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+
+                //ignore this k thx
+
+                // get name of rom in psbout\system\roms\
+                // remove the .m
+                // delete original rom
+                // copy the rom to the roms folder and rename to the string you got before (example: AA88P0.D89)
+                // Packer.CompressFile("path to rom");
                 AllDataPacker.Build("psbout", "mod_alldata", packer);
 
                 allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
+                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m"));
+                File.Delete(Path.Combine(baseRomPath, "content", "alldata.bin"));
+                File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m", Path.Combine(baseRomPath, "content", "alldata.psb.m"));
+                File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.bin", Path.Combine(baseRomPath, "content", "alldata.bin"));
             }
-            var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+
             using (Process psb = new Process())
             {
                 mvvm.msg = "Injecting ROM...";
                 psb.StartInfo.UseShellExecute = false;
                 psb.StartInfo.CreateNoWindow = true;
                 psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
-                psb.StartInfo.Arguments = $"\"{allDataPath}\" \"{injectRomPath}\" \"{outputAllDataPath}\"";
+                psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
 
                 psb.Start();
                 psb.WaitForExit();
@@ -2188,7 +2225,7 @@ namespace UWUVCI_AIO_WPF
             if (delete)
             {
                 File.Delete(injectRomPath);
-                if(File.Exists(Path.Combine(toolsPath, "goombamenu.gba")))File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
+                if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
         private static void DownloadSysTitle(MainViewModel mvm)
