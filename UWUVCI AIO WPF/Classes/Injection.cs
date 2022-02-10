@@ -23,7 +23,9 @@ using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
+using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
+using Newtonsoft.Json.Linq;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -2164,32 +2166,42 @@ namespace UWUVCI_AIO_WPF
                     File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.bin");
                 }
                 catch { }
+                
                 var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
                 AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
-                string json = "";
                 var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
                 packer.DecompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
                 using (FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb"))
                 {
                     using (PsbReader psbReader = new PsbReader(fs))
                     {
-
-
-                        json = psbReader.Root.ToString();
-                        json = json.Replace("\"brightness\": 0.75,", "\"brightness\": 1,");
+                        string json = psbReader.Root.ToString();
+                        dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+                        jsonObj["root"]["m2epi"]["brightness"] = 1;
+                        //string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+                        //File.WriteAllText("settings.json", output);
+                        using (Stream fs2 = File.Create(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb"))
+                        {
+                            PsbWriter psbWriter = new PsbWriter(jsonObj, null) { Version = 4 };
+                            psbWriter.Write(fs2);
+                            fs2.Close();
+                        }
                         psbReader.Close();
                     }
                     fs.Close();
                 }
-                using (Stream fs = File.Create(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb"))
-                {
+                
 
-                    var s = Newtonsoft.Json.JsonConvert.SerializeObject(json);
-                    PsbWriter psbWriter = new PsbWriter(s, null) { Version = 4 };
-                    psbWriter.Write(fs);
+                using (FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb"))
+                {
+                    using (PsbReader psbReader = new PsbReader(fs))
+                    {
+
+                       
+                        psbReader.Close();
+                    }
                     fs.Close();
                 }
-
                 packer.CompressFile(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb");
                 File.Move(Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m", Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m");
                 var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
