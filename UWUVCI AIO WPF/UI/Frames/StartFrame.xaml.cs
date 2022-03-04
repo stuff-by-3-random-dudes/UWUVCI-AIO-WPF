@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace UWUVCI_AIO_WPF.UI.Frames
 {
@@ -24,6 +13,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             InitializeComponent();
             tb.Text += "\n\nIf any Issues happen during injection and you updated from the old version using the AutoUpdater, please go to settings and click Update Tools.";
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://ko-fi.com/uwuvci");
         }
     }
 }
