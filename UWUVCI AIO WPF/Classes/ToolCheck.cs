@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -58,7 +56,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "font.otf",
             "ChangeAspectRatio.exe",
             "font2.ttf",
-            "forwarder.dol"
+            "forwarder.dol",
+            "gba1.zip",
+            "gba2.zip"
         };
 
         public static bool DoesToolsFolderExist()
@@ -113,11 +113,42 @@ namespace UWUVCI_AIO_WPF.Classes
 
         private static bool DoesToolExist(string path)
         {
-            if (File.Exists(path))
+            if (!File.Exists(path))
+                return false;
+
+            if (path.ToLower().Contains("gba1.zip"))
             {
-                return true;
+                string p = Path.GetDirectoryName(path);
+                if (!File.Exists(Path.Combine(p, "MArchiveBatchTool.exe")))
+                {
+                    using (Process extract = new Process())
+                    {
+                        extract.StartInfo.UseShellExecute = false;
+                        extract.StartInfo.CreateNoWindow = false;
+                        extract.StartInfo.FileName = "cmd.exe";
+                        extract.StartInfo.Arguments = "/c bin\\Tools\\7za.exe x bin\\Tools\\gba1.zip -obin\\Tools";
+                        extract.Start();
+                        extract.WaitForExit();
+                    }
+                }
             }
-            return false;
+            else if (path.ToLower().Contains("gba2.zip"))
+            {
+                string p = Path.GetDirectoryName(path);
+                if (!File.Exists(Path.Combine(p, "ucrtbase.dll")))
+                {
+                    using (Process extract = new Process())
+                    {
+                        extract.StartInfo.UseShellExecute = false;
+                        extract.StartInfo.CreateNoWindow = false;
+                        extract.StartInfo.FileName = "cmd.exe";
+                        extract.StartInfo.Arguments = "/c bin\\Tools\\7za.exe x bin\\Tools\\gba2.zip -obin\\Tools";
+                        extract.Start();
+                        extract.WaitForExit();
+                    }
+                }
+            }
+            return true;
         }
 
     }
