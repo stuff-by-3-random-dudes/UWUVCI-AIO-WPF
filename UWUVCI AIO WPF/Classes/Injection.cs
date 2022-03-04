@@ -2142,102 +2142,102 @@ namespace UWUVCI_AIO_WPF
                 mvvm.PokePatch = false;
                 mvvm.Progress = 50;
             }
-            
 
-           
 
-           
-            if (config.DarkFilter == false)
-            {
-                //my dumb af way to ensure everything starts fresh and doesn't throw an error
-                var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
-                try
-                {
-                    Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
-                }
-                catch { }
-                try
-                {
-                    File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m");
-                }
-                catch { }
-                try
-                {
-                    File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.bin");
-                }
-                catch { }
-                
-                var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
-                AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
-                var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
 
-                var titleProfPsbM = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m";
-                var titleProfPsb = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb";
+            /*
+             if (config.DarkFilter == false)
+             {
+                 //my dumb af way to ensure everything starts fresh and doesn't throw an error
+                 var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+                 try
+                 {
+                     Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
+                 }
+                 catch { }
+                 try
+                 {
+                     File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m");
+                 }
+                 catch { }
+                 try
+                 {
+                     File.Delete(Directory.GetCurrentDirectory() + @"\mod_alldata.bin");
+                 }
+                 catch { }
 
-                var titleProfPsb_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb";
-                var titleProfPsbM_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m";
+                 var packer = new MArchivePacker(new ZlibCodec(), "MX8wgGEJ2+M47", 80);
+                 AllDataPacker.UnpackFiles(allDataPath, "psbout", packer);
+                 var lastModDirect = new DirectoryInfo("psbout").GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
 
-                packer.DecompressFile(titleProfPsbM);
+                 var titleProfPsbM = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb.m";
+                 var titleProfPsb = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof.psb";
 
-                using (FileStream fs = File.OpenRead(titleProfPsb))
-                {
-                    using (PsbReader psbReader = new PsbReader(fs))
-                    {
-                        string json = psbReader.Root.ToString();
-                        dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-                        jsonObj["root"]["m2epi"]["brightness"] = 1;
-                        //string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
-                        //File.WriteAllText("settings.json", output);
-                        using (Stream fs2 = File.Create(titleProfPsb_Modified))
-                        {
-                            PsbWriter psbWriter = new PsbWriter(jsonObj, null) { Version = 4 };
-                            psbWriter.Write(fs2);
-                            fs2.Close();
-                        }
-                        psbReader.Close();
-                    }
-                    fs.Close();
-                }
-                
+                 var titleProfPsb_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb";
+                 var titleProfPsbM_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m";
 
-                using (FileStream fs = File.OpenRead(titleProfPsb_Modified))
-                {
-                    using (PsbReader psbReader = new PsbReader(fs))
-                    {
+                 packer.DecompressFile(titleProfPsbM);
 
-                       
-                        psbReader.Close();
-                    }
-                    fs.Close();
-                }
-                packer.CompressFile(titleProfPsb_Modified);
-                File.Delete(titleProfPsb);
-                File.Delete(titleProfPsbM);
-                File.Move(titleProfPsbM_Modified, titleProfPsbM);
-                var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+                 using (FileStream fs = File.OpenRead(titleProfPsb))
+                 {
+                     using (PsbReader psbReader = new PsbReader(fs))
+                     {
+                         string json = psbReader.Root.ToString();
+                         dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+                         jsonObj["root"]["m2epi"]["brightness"] = 1;
+                         //string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+                         //File.WriteAllText("settings.json", output);
+                         using (Stream fs2 = File.Create(titleProfPsb_Modified))
+                         {
+                             PsbWriter psbWriter = new PsbWriter(jsonObj, null) { Version = 4 };
+                             psbWriter.Write(fs2);
+                             fs2.Close();
+                         }
+                         psbReader.Close();
+                     }
+                     fs.Close();
+                 }
 
-                //ignore this k thx
 
-                // get name of rom in psbout\system\roms\
-                // remove the .m
-                // delete original rom
-                // copy the rom to the roms folder and rename to the string you got before (example: AA88P0.D89)
-                // Packer.CompressFile("path to rom");
-                AllDataPacker.Build("psbout", "mod_alldata", packer);
+                 using (FileStream fs = File.OpenRead(titleProfPsb_Modified))
+                 {
+                     using (PsbReader psbReader = new PsbReader(fs))
+                     {
 
-                allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
-                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m"));
-                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
-                File.Delete(Path.Combine(baseRomPath, "content", "alldata.bin"));
-                File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m", Path.Combine(baseRomPath, "content", "alldata.psb.m"));
-                File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.bin", Path.Combine(baseRomPath, "content", "alldata.bin"));
 
-                try
-                {
-                    Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
-                }
-                catch { }
-            }
+                         psbReader.Close();
+                     }
+                     fs.Close();
+                 }
+                 packer.CompressFile(titleProfPsb_Modified);
+                 File.Delete(titleProfPsb);
+                 File.Delete(titleProfPsbM);
+                 File.Move(titleProfPsbM_Modified, titleProfPsbM);
+                 var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+
+                 //ignore this k thx
+
+                 // get name of rom in psbout\system\roms\
+                 // remove the .m
+                 // delete original rom
+                 // copy the rom to the roms folder and rename to the string you got before (example: AA88P0.D89)
+                 // Packer.CompressFile("path to rom");
+                 AllDataPacker.Build("psbout", "mod_alldata", packer);
+
+                 allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
+                 File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m"));
+                 File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
+                 File.Delete(Path.Combine(baseRomPath, "content", "alldata.bin"));
+                 File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m", Path.Combine(baseRomPath, "content", "alldata.psb.m"));
+                 File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.bin", Path.Combine(baseRomPath, "content", "alldata.bin"));
+
+                 try
+                 {
+                     Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
+                 }
+                 catch { }
+             }
+            */
 
             using (Process psb = new Process())
             {
@@ -2255,11 +2255,148 @@ namespace UWUVCI_AIO_WPF
 
                 psb.WaitForExit();
 
-                if (!string.IsNullOrEmpty(error.Result))
-                    throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
+                //if (!string.IsNullOrEmpty(error.Result))
+                //throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
 
                 mvvm.Progress = 80;
             }
+
+            if (config.DarkFilter == false)
+            {
+            //Added the exe into the tool Folder to see if it works this way.
+            //Everything looks right, but then it just shoots out a black screen.
+            //Someone else seems to be having this issue here:
+            //https://gbatemp.net/threads/remove-the-dark-filter-from-wii-u-gba-vc-titles.601290/page-3
+
+                var mArchiveExePath = Path.Combine(toolsPath, "MArchiveBatchTool.exe");
+                var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"archive extract \"{allDataPath}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit();
+                    mvvm.Progress += 5;
+                }
+
+                var lastModDirect = new DirectoryInfo(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")).GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
+                var titleprofPsbM = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.m");
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"m unpack \"{titleprofPsbM}\" zlib MX8wgGEJ2+M47 80",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                var titleprofPsb = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb");
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"psb deserialize \"{titleprofPsb}\"",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                var titleprofPsbJson = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.json");
+                var titleprofPsbJson_Modified = Path.Combine(lastModDirect.FullName, "config", "modified_title_prof.psb.json");
+
+                using (StreamReader sr = File.OpenText(titleprofPsbJson))
+                {
+                    var json = sr.ReadToEnd();
+                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    jsonObj["root"]["m2epi"]["brightness"] = 1;
+
+                    json = JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+                    File.WriteAllText(titleprofPsbJson_Modified, json);
+                    sr.Close();
+                }
+                File.Delete(titleprofPsbJson);
+                File.Move(titleprofPsbJson_Modified, titleprofPsbJson);
+
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"psb serialize \"{titleprofPsbJson}\"",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"m pack \"{titleprofPsb}\" zlib MX8wgGEJ2+M47 80",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                File.Delete(titleprofPsbJson);
+
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"archive build --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80 \"{Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")}\" \"{Path.Combine(baseRomPath, "content", "alldata")}\"",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(100000);
+                    mvvm.Progress += 15;
+                }
+
+                Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"),true);
+                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
+            }
+
             if (delete)
             {
                 File.Delete(injectRomPath);
