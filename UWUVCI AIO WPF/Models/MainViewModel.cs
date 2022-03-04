@@ -1259,6 +1259,7 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 dw.ShowDialog();
+                toolCheck();
                 Custom_Message cm = new Custom_Message("Finished Update", " Finished Updating Tools! Restarting UWUVCI AIO ");
                 try
                 {
