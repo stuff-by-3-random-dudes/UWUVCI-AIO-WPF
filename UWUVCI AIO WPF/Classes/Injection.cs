@@ -317,7 +317,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 }
                 Clean();
@@ -2177,7 +2177,7 @@ namespace UWUVCI_AIO_WPF
                 var titleProfPsb_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb";
                 var titleProfPsbM_Modified = Directory.GetCurrentDirectory() + @"\psbout\" + lastModDirect + @"\config\title_prof2.psb.m";
 
-                packer.DecompressFile(titleProfPsb);
+                packer.DecompressFile(titleProfPsbM);
 
                 using (FileStream fs = File.OpenRead(titleProfPsb))
                 {
@@ -2211,6 +2211,8 @@ namespace UWUVCI_AIO_WPF
                     fs.Close();
                 }
                 packer.CompressFile(titleProfPsb_Modified);
+                File.Delete(titleProfPsb);
+                File.Delete(titleProfPsbM);
                 File.Move(titleProfPsbM_Modified, titleProfPsbM);
                 var outputAllDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
 
@@ -2225,9 +2227,16 @@ namespace UWUVCI_AIO_WPF
 
                 allDataPath = Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m";
                 File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m"));
+                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
                 File.Delete(Path.Combine(baseRomPath, "content", "alldata.bin"));
                 File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.psb.m", Path.Combine(baseRomPath, "content", "alldata.psb.m"));
                 File.Move(Directory.GetCurrentDirectory() + @"\mod_alldata.bin", Path.Combine(baseRomPath, "content", "alldata.bin"));
+
+                try
+                {
+                    Directory.Delete(Directory.GetCurrentDirectory() + @"\psbout", true);
+                }
+                catch { }
             }
 
             using (Process psb = new Process())
@@ -2237,9 +2246,18 @@ namespace UWUVCI_AIO_WPF
                 psb.StartInfo.CreateNoWindow = true;
                 psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
                 psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
-
+                psb.StartInfo.RedirectStandardError = true;
+                psb.StartInfo.RedirectStandardOutput = true;
                 psb.Start();
+
+                var error = psb.StandardError.ReadToEndAsync();
+                var output = psb.StandardOutput.ReadToEndAsync();
+
                 psb.WaitForExit();
+
+                if (!string.IsNullOrEmpty(error.Result))
+                    throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
+
                 mvvm.Progress = 80;
             }
             if (delete)
