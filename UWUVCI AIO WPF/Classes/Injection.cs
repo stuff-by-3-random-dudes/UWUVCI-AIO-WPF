@@ -2238,6 +2238,29 @@ namespace UWUVCI_AIO_WPF
                  catch { }
              }
             */
+
+            using (Process psb = new Process())
+            {
+                mvvm.msg = "Injecting ROM...";
+                psb.StartInfo.UseShellExecute = false;
+                psb.StartInfo.CreateNoWindow = true;
+                psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
+                psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
+                psb.StartInfo.RedirectStandardError = true;
+                psb.StartInfo.RedirectStandardOutput = true;
+                psb.Start();
+
+                var error = psb.StandardError.ReadToEndAsync();
+                var output = psb.StandardOutput.ReadToEndAsync();
+
+                psb.WaitForExit();
+
+                //if (!string.IsNullOrEmpty(error.Result))
+                //throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
+
+                mvvm.Progress = 80;
+            }
+
             if (config.DarkFilter == false)
             {
             //Added the exe into the tool Folder to see if it works this way.
@@ -2370,29 +2393,10 @@ namespace UWUVCI_AIO_WPF
                     mvvm.Progress += 15;
                 }
 
-                //Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"),true);
+                Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"),true);
+                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
             }
-            using (Process psb = new Process())
-            {
-                mvvm.msg = "Injecting ROM...";
-                psb.StartInfo.UseShellExecute = false;
-                psb.StartInfo.CreateNoWindow = true;
-                psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
-                psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
-                psb.StartInfo.RedirectStandardError = true;
-                psb.StartInfo.RedirectStandardOutput = true;
-                psb.Start();
 
-                var error = psb.StandardError.ReadToEndAsync();
-                var output = psb.StandardOutput.ReadToEndAsync();
-
-                psb.WaitForExit();
-
-                //if (!string.IsNullOrEmpty(error.Result))
-                    //throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
-
-                mvvm.Progress = 80;
-            }
             if (delete)
             {
                 File.Delete(injectRomPath);
