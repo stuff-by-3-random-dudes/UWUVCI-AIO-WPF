@@ -1,4 +1,6 @@
 ﻿using GameBaseClassLibrary;
+using GMWare.M2.MArchive;
+using GMWare.M2.Psb;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -21,7 +23,9 @@ using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
+using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
+using Newtonsoft.Json.Linq;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -313,7 +317,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 }
                 Clean();
@@ -407,7 +411,7 @@ namespace UWUVCI_AIO_WPF
                     break;
 
                 case GameConsoles.GBA:
-                    GBA(RomPath);
+                    GBA(RomPath, cfg.GBAStuff);
                     break;
 
                 case GameConsoles.NES:
@@ -1685,6 +1689,11 @@ namespace UWUVCI_AIO_WPF
             var oldpath = Directory.GetCurrentDirectory();
             mvm.Progress = 40;
             mvm.msg = "Packing...";
+            try
+            {
+                Directory.Delete(Environment.GetEnvironmentVariable("LocalAppData") + @"\temp\.net\CNUSPACKER", true);
+            }
+            catch { }
             using (Process cnuspacker = new Process())
             {
                 if (!mvm.debug)
@@ -2093,7 +2102,7 @@ namespace UWUVCI_AIO_WPF
             mvvm.Progress = 80;
         }
 
-        private static void GBA(string injectRomPath)
+        private static void GBA(string injectRomPath, N64Conf config)
         {
             bool delete = false;
             if(!new FileInfo(injectRomPath).Extension.Contains("gba"))
@@ -2131,8 +2140,9 @@ namespace UWUVCI_AIO_WPF
                 PokePatch(injectRomPath);
                 delete = true;
                 mvvm.PokePatch = false;
-                mvvm.Progress = 40;
+                mvvm.Progress = 50;
             }
+
 
             using (Process psb = new Process())
             {
@@ -2141,15 +2151,159 @@ namespace UWUVCI_AIO_WPF
                 psb.StartInfo.CreateNoWindow = true;
                 psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
                 psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
-
+                //psb.StartInfo.RedirectStandardError = true;
+                //psb.StartInfo.RedirectStandardOutput = true;
                 psb.Start();
+
+                //var error = psb.StandardError.ReadToEndAsync();
+                //var output = psb.StandardOutput.ReadToEndAsync();
+
                 psb.WaitForExit();
-                mvvm.Progress = 80;
+
+                //if (!string.IsNullOrEmpty(error.Result))
+                //throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
+
+                mvvm.Progress = 50;
             }
+
+            if (config.DarkFilter == false)
+            {
+                //For how often we are making new processes here, there should be a function that just creates the bases that's used and has a signature
+                //that takes in a fileName and arguments, with some optional for if we want to capture the error/output
+                //But this works for now, so I'm not going to edit it anymore
+                var mArchiveExePath = Path.Combine(toolsPath, "MArchiveBatchTool.exe");
+                var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"archive extract \"{allDataPath}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit();
+                    mvvm.Progress += 5;
+                }
+
+                var lastModDirect = new DirectoryInfo(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")).GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
+                var titleprofPsbM = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.m");
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"m unpack \"{titleprofPsbM}\" zlib MX8wgGEJ2+M47 80",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                var titleprofPsb = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb");
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"psb deserialize \"{titleprofPsb}\"",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                var titleprofPsbJson = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.json");
+                var titleprofPsbJson_Modified = Path.Combine(lastModDirect.FullName, "config", "modified_title_prof.psb.json");
+
+                using (StreamReader sr = File.OpenText(titleprofPsbJson))
+                {
+                    var json = sr.ReadToEnd();
+                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    jsonObj["root"]["m2epi"]["brightness"] = 1;
+
+                    json = JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+                    File.WriteAllText(titleprofPsbJson_Modified, json);
+                    sr.Close();
+                }
+                File.Delete(titleprofPsbJson);
+                File.Move(titleprofPsbJson_Modified, titleprofPsbJson);
+
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"psb serialize \"{titleprofPsbJson}\"",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"m pack \"{titleprofPsb}\" zlib MX8wgGEJ2+M47 80",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(3000);
+                    mvvm.Progress += 5;
+                }
+
+                File.Delete(titleprofPsbJson);
+
+                using (var mArchive = new Process())
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        Arguments = $"archive build --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80 \"{Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")}\" \"{Path.Combine(baseRomPath, "content", "alldata")}\"",
+                        FileName = mArchiveExePath
+                    };
+
+                    mArchive.StartInfo = startInfo;
+                    mArchive.Start();
+
+                    mArchive.WaitForExit(100000);
+                    mvvm.Progress += 15;
+                }
+
+                Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"),true);
+                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
+            }
+
             if (delete)
             {
                 File.Delete(injectRomPath);
-                if(File.Exists(Path.Combine(toolsPath, "goombamenu.gba")))File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
+                if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
         private static void DownloadSysTitle(MainViewModel mvm)
@@ -2256,28 +2410,125 @@ namespace UWUVCI_AIO_WPF
                 mvvm.Progress = 60;
 
             }
-            if (config.WideScreen)
+
+            if (config.WideScreen || config.DarkFilter)
             {
-                mvvm.msg = "Removing Dark Filter...";
-                string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
-                using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
+                using (var fileStream = File.Open(Path.Combine(baseRomPath, "content", "FrameLayout.arc"), FileMode.Open))
                 {
-                    writer.Seek(0x1B0D, SeekOrigin.Begin);
-                    writer.Write(new byte[] { 0xF0 },0,1);
-                }
-                mvvm.Progress = 65;
-            }
-            if (config.DarkFilter)
-            {
-                mvvm.msg = "Removing Dark Filter...";
-                string filePath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
-                using (BinaryWriter writer = new BinaryWriter(new FileStream(filePath, FileMode.Open)))
-                {
-                    writer.Seek(0x1AD8, SeekOrigin.Begin);
-                    writer.Write(0L);
+                    uint offset = 0;
+                    uint size = 0;
+                    byte[] offsetB = new byte[4];
+                    byte[] sizeB = new byte[4];
+                    byte[] nameB = new byte[0x18];
+                    var header = new byte[4];
+
+                    byte[] oneOut = BitConverter.GetBytes((float)1);
+                    byte[] zeroOut = BitConverter.GetBytes((float)0);
+
+                    byte darkFilter = (byte)(config.DarkFilter ? 0 : 1);
+                    byte[] wideScreen = config.WideScreen ? new byte[] { 0x44, 0xF0, 0, 0 } : new byte[] { 0x44, 0xB4, 0, 0 };
+
+                    fileStream.Read(header, 0, 4);
+
+                    if (header[0] == 'S' && header[1] == 'A' && header[2] == 'R' && header[3] == 'C')
+                    {
+                        fileStream.Position = 0x0C;
+                        fileStream.Read(offsetB, 0, 4);
+
+                        offset = (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                        fileStream.Position = 0x38;
+                        fileStream.Read(offsetB, 0, 4);
+                        offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                        fileStream.Position = offset;
+                        fileStream.Read(header, 0, 4);
+
+                        if (header[0] == 'F' && header[1] == 'L' && header[2] == 'Y' && header[3] == 'T')
+                        {
+                            fileStream.Position = offset + 0x04;
+                            fileStream.Read(offsetB, 0, 4);
+
+                            offsetB[0] = 0;
+                            offsetB[1] = 0;
+
+                            offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                            fileStream.Position = offset;
+
+                            while (true)
+                            {
+                                fileStream.Read(header, 0, 4);
+                                fileStream.Read(sizeB, 0, 4);
+                                size = (uint)(sizeB[0] << 24 | sizeB[1] << 16 | sizeB[2] << 8 | sizeB[3]);
+
+                                if (header[0] == 'p' && header[1] == 'i' && header[2] == 'c' && header[3] == '1')
+                                {
+                                    fileStream.Position = offset + 0x0C;
+                                    fileStream.Read(nameB, 0, 0x18);
+                                    int count = Array.IndexOf(nameB, (byte)0);
+                                    string name = Encoding.ASCII.GetString(nameB, 0, count);
+
+                                    if (name == "frame")
+                                    {
+                                        fileStream.Position = offset + 0x2C;
+                                        fileStream.WriteByte(zeroOut[3]);
+                                        fileStream.WriteByte(zeroOut[2]);
+                                        fileStream.WriteByte(zeroOut[1]);
+                                        fileStream.WriteByte(zeroOut[0]);
+
+                                        fileStream.Position = offset + 0x30;//TranslationX
+                                        fileStream.WriteByte(zeroOut[3]);
+                                        fileStream.WriteByte(zeroOut[2]);
+                                        fileStream.WriteByte(zeroOut[1]);
+                                        fileStream.WriteByte(zeroOut[0]);
+
+                                        fileStream.Position = offset + 0x44;//ScaleX
+                                        fileStream.WriteByte(oneOut[3]);
+                                        fileStream.WriteByte(oneOut[2]);
+                                        fileStream.WriteByte(oneOut[1]);
+                                        fileStream.WriteByte(oneOut[0]);
+
+                                        fileStream.Position = offset + 0x48;//ScaleY
+                                        fileStream.WriteByte(oneOut[3]);
+                                        fileStream.WriteByte(oneOut[2]);
+                                        fileStream.WriteByte(oneOut[1]);
+                                        fileStream.WriteByte(oneOut[0]);
+
+                                        fileStream.Position = offset + 0x4C;//Widescreen
+                                        fileStream.Write(wideScreen, 0, 4);
+                                    }
+                                    else if (name == "frame_mask")
+                                    {
+                                        fileStream.Position = offset + 0x08;//Dark filter
+                                        fileStream.WriteByte(darkFilter);
+                                    }
+                                    else if (name == "power_save_bg")
+                                    {
+                                        //This means we finished frame_mask and frame edits so we can end the loop
+                                        break;
+                                    }
+
+                                    offset += size;
+                                    fileStream.Position = offset;
+                                }
+                                else if (offset + size >= fileStream.Length)
+                                {
+                                    //do nothing
+                                }
+                                else
+                                {
+                                    offset += size;
+                                    fileStream.Position = offset;
+                                }
+                            }
+                        }
+                    }
+                    fileStream.Close();
                 }
                 mvvm.Progress = 70;
             }
+
             mvvm.msg = "Copying INI...";
             if(config.INIBin == null)
             {
@@ -2553,7 +2804,7 @@ namespace UWUVCI_AIO_WPF
                             checkIfIssue.Start();
                             checkIfIssue.WaitForExit();
                         }
-                        Console.ReadLine();
+                       // Console.ReadLine();
                     }
 
                     if (Images[1])
@@ -2601,13 +2852,14 @@ namespace UWUVCI_AIO_WPF
                 {
                     png2tga.StartInfo.UseShellExecute = false;
                     png2tga.StartInfo.CreateNoWindow = true;
-                    if(new FileInfo(inputPath).Extension.Contains("png"))
+                    var extension = new FileInfo(inputPath).Extension;
+                    if (extension.Contains("png"))
                     {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "png2tga.exe");
-                    }else if (new FileInfo(inputPath).Extension.Contains("jpg"))
+                    }else if (extension.Contains("jpg") || extension.Contains("jpeg"))
                     {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "jpg2tga.exe");
-                    }else if (new FileInfo(inputPath).Extension.Contains("bmp"))
+                    }else if (extension.Contains("bmp"))
                     {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "bmp2tga.exe");
                     }

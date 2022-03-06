@@ -712,13 +712,17 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.GameName == "" || GameConfiguration.GameName == null) backup.GameName = "NoName";
             GameConfiguration.Index = Index;
             CheckAndFixConfigFolder();
-            string outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}.uwuvci";
+            var sanitizedGameName = backup.GameName;
+            Array.ForEach(Path.GetInvalidFileNameChars(),
+                  c => sanitizedGameName = sanitizedGameName.Replace(c.ToString(), string.Empty));
+            string outputPath = $@"configs\[{backup.Console}]{sanitizedGameName}.uwuvci";
             int i = 1;
             while (File.Exists(outputPath))
             {
-                outputPath = $@"configs\[{backup.Console.ToString()}]{backup.GameName}_{i}.uwuvci";
+                outputPath = $@"configs\[{backup.Console}]{sanitizedGameName}_{i}.uwuvci";
                 i++;
             }
+
             Stream createConfigStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
             GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
             IFormatter formatter = new BinaryFormatter();
@@ -1255,6 +1259,7 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 dw.ShowDialog();
+                toolCheck();
                 Custom_Message cm = new Custom_Message("Finished Update", " Finished Updating Tools! Restarting UWUVCI AIO ");
                 try
                 {
@@ -1590,7 +1595,7 @@ namespace UWUVCI_AIO_WPF
                 else if(!INI)
                 {
                     
-                    dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga) | *.png;*.jpg;*.bmp;*.tga";
+                    dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga; *jpeg) | *.png;*.jpg;*.bmp;*.tga;*jpeg";
                 }
                 else if(INI)
                 {
@@ -2687,7 +2692,7 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
             List<string> repoids = new List<string>();
-            string[] ext = { "png"};
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             if (CheckForInternetConnectionWOWarning())
             {
                 repoids.Add(SystemType + repoid);
@@ -2754,29 +2759,16 @@ namespace UWUVCI_AIO_WPF
         }
         public void getBootIMGSNES(string rom)
         {
-            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
-            string repoid = "";
             string SystemType = "snes/";
-            IMG_Message img = null;
-            repoid = GetFakeSNESProdcode(rom);
-            string[] ext = { "png" };
-            List<string> repoids = new List<string>();
+            var repoid = GetFakeSNESProdcode(rom);
+            List<string> repoids = new List<string>
+            {
+                SystemType + repoid
+            };
+
             if (CheckForInternetConnectionWOWarning())
             {
-                repoids.Add(SystemType + repoid);
-                foreach (var e in ext)
-                {
-                    if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
-                    {
-                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
-                        try
-                        {
-                            img.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        img.ShowDialog(); break;
-                    }
-                }
+                GetRepoImages(SystemType, repoids, repoid);
                 checkForAdditionalFiles(GameConsoles.SNES, repoids);
 
             }
@@ -2789,7 +2781,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "msx/";
             IMG_Message img = null;
             repoid = GetFakeMSXTGProdcode(rom, true);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -2819,7 +2811,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "tg16/";
             IMG_Message img = null;
             repoid = GetFakeMSXTGProdcode(rom, false);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -2968,7 +2960,7 @@ namespace UWUVCI_AIO_WPF
             string SystemType = "nes/";
             IMG_Message img = null;
             repoid = GetFakeNESProdcode(rom);
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -3127,7 +3119,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
-            string[] ext = { "png" };
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
             if (CheckForInternetConnectionWOWarning())
             {
@@ -3208,7 +3200,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
-            string[] ext = { "png" };
+            string[] ext = {"png", "tga", "jpg", "jpeg" };
             if (CheckForInternetConnectionWOWarning())
             {
                 repoids.Add(SystemType + repoid);
@@ -3348,7 +3340,7 @@ namespace UWUVCI_AIO_WPF
                     reader.BaseStream.Position = 0x00;
                     char TempChar;
                     //WBFS Check
-                    string[] ext = { "png" };
+                    string[] ext = { "png", "tga", "jpg", "jpeg" };
                     List<string> repoids = new List<string>();
                     if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
                     {
@@ -3828,6 +3820,33 @@ namespace UWUVCI_AIO_WPF
                 Environment.Exit(0);
             }
             
+        }
+        /// <summary>
+        /// Was supposed to replace all of the code that reaches out to UWUVCI-Images, but I don't wanna have to test everything since this is already as Italian as code comes
+        /// </summary>
+        /// <param name="SystemType"></param>
+        /// <param name="repoids"></param>
+        /// <param name="repoid"></param>
+        private void GetRepoImages(string SystemType, List<string> repoids, string repoid)
+        {
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            IMG_Message img = null;
+            string[] ext = { "png", "tga", "jpg", "jpeg" };
+
+            foreach (var e in ext)
+            {
+                if (RemoteFileExists(linkbase + SystemType + repoid + $"/iconTex.{e}") == true)
+                {
+                    img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                    try
+                    {
+                        img.Owner = mw;
+                    }
+                    catch (Exception) { }
+                    img.ShowDialog(); break;
+                }
+            }
+             
         }
     }
 }
