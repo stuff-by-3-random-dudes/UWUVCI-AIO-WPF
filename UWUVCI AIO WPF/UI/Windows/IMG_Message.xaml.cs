@@ -108,6 +108,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 else
                 {
+                    //This code doesn't work
+                    /* 
                     var image = Pfim.Pfim.FromStream(stream);
                     foreach (var im in WpfImage(image))
                     {
@@ -125,6 +127,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                             bitmap.EndInit();
                         }
                     }
+                    */
+
+                    //using old method for .tga
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(imageURL, UriKind.Absolute);
+                    bitmap.EndInit();
                 }
             }
             catch
