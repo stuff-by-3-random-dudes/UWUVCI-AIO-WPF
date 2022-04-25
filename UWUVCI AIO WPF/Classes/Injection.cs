@@ -1290,7 +1290,7 @@ namespace UWUVCI_AIO_WPF
 
                 throw new Exception("WIIAn error occured while Creating the ISO");
             }
-            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+            //Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
             romPath = Path.Combine(tempPath, "game.iso");
             mvvm.Progress = 50;
 
@@ -1298,7 +1298,7 @@ namespace UWUVCI_AIO_WPF
             mvm.msg = "Trying to save rom code...";
             //READ FIRST 4 BYTES
             byte[] chars = new byte[4];
-            FileStream fstrm = new FileStream(romPath, FileMode.Open);
+            FileStream fstrm = new FileStream(Path.Combine(tempPath, "TempBase", "files", "game.iso"), FileMode.Open);
             fstrm.Read(chars, 0, 4);
             fstrm.Close();
             string procod = ByteArrayToString(chars);
@@ -1308,6 +1308,7 @@ namespace UWUVCI_AIO_WPF
             doc.SelectSingleNode("menu/reserved_flag2").InnerText = procod.ToHex();
             doc.Save(metaXml);
             //edit emta.xml
+            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 55;
 
             mvm.msg = "Replacing TIK and TMD...";
