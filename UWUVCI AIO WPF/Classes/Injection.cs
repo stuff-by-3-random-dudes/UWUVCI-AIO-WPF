@@ -1294,6 +1294,22 @@ namespace UWUVCI_AIO_WPF
             romPath = Path.Combine(tempPath, "game.iso");
             mvvm.Progress = 50;
 
+            //GET ROMCODE and change it
+            mvm.msg = "Trying to save rom code...";
+            //READ FIRST 4 BYTES
+            byte[] chars = new byte[4];
+            FileStream fstrm = new FileStream(romPath, FileMode.Open);
+            fstrm.Read(chars, 0, 4);
+            fstrm.Close();
+            string procod = ByteArrayToString(chars);
+            string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
+            XmlDocument doc = new XmlDocument();
+            doc.Load(metaXml);
+            doc.SelectSingleNode("menu/reserved_flag2").InnerText = procod.ToHex();
+            doc.Save(metaXml);
+            //edit emta.xml
+            mvvm.Progress = 55;
+
             mvm.msg = "Replacing TIK and TMD...";
             using (Process extract = new Process())
             {
