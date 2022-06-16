@@ -15,7 +15,7 @@
         <TextBox materialDesign:HintAssist.Hint="TV IMAGE" Name="tv" ToolTip="Also known as bootTvTex" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,227,157,238" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help" IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="LOGO IMAGE (OPTIONAL)" ToolTip="Also known as bootLogoTex" Name="log"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,317,157,149" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" Text="{Binding GameConfiguration.TGALog.ImgPath}" IsTabStop="False" TextChanged="log_TextChanged_1"/>
         <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,413,157,52" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" Name="gn" KeyUp="gn_KeyUp" MaxLength="250" IsTabStop="False"/>
-        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame" Focusable="False" IsTabStop="False"/>
+        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127"  Click="InjectGame" Focusable="False" IsTabStop="False"/>
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,327,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex" IsTabStop="False"/>
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,238,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex" IsTabStop="False"/>
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,283,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex" IsTabStop="False"/>
@@ -54,5 +54,7 @@
             <RadioButton x:Name="RF_tn" Content="To NTSC" Click="RF_tp_Click" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="85" ToolTip="Change Game Region to NTSC" Margin="0,6,0,0"/>
             <RadioButton x:Name="RF_tj" Content="To JPN" Click="RF_tp_Click" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="82" ToolTip="Change Game Region to JPN" Margin="0,6,0,0"/>
         </StackPanel>
+        <TextBox materialDesign:HintAssist.Hint="WIIU ANCAST KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,460,395,5" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding ancastKey}" x:Name="ancastKey" MaxLength="250" IsTabStop="False"/>
+        <Button Content="Get From OTP" HorizontalAlignment="Left" Margin="257,473,0,0" VerticalAlignment="Top" Width="127" Click="ancast_OTP" Focusable="False" IsTabStop="False"/>
     </Grid>
 </Page>

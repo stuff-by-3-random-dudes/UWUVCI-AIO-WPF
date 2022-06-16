@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -146,8 +148,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         reader.Close();
                     }
                 }
-                
-                
+
+                isok = true;
+
                 if (isok)
                 {
                     motepass.IsEnabled = false;
@@ -307,6 +310,63 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.LR = false;
             }
             mvm.GameConfiguration.GameName = gn.Text;
+
+            /*TODO: Make this work
+             * - WiiUDownloader requires titlekey 
+             * - C2W_Patcher doesn't work, but idfk what it's supposed to do so /shrug
+             * - idfk what this shit is supposed to do
+            */ 
+            if (!string.IsNullOrEmpty(ancastKey.Text))
+            {
+                ancastKey.Text = ancastKey.Text.ToUpper();
+                var sourceData = ancastKey.Text;
+                var tempSource = ASCIIEncoding.ASCII.GetBytes(sourceData);
+                var tmpHash = new MD5CryptoServiceProvider().ComputeHash(tempSource);
+                var hash = BitConverter.ToString(tmpHash);
+                if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
+                {
+                    var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+                    var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+
+                    string[,] filesToDownload = {
+                        { "0005001010004000 -file /code/deint.txt", "deint.txt" },
+                        { "0005001010004000 -file /code/font.bin", "font.bin" },
+                        { "0005001010004001 -file /code/c2w.img", "c2w.img" },
+                        { "0005001010004001 -file /code/boot.bin", "boot.bin" },
+                        { "0005001010004001 -file /code/dmcu.d.hex", "dmcu.d.hex"}
+                    };
+
+                    for(var i = 0; i < filesToDownload.Length/2; i++)
+                    {
+                        using (Process download = new Process())
+                        {
+                            download.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "WiiUDownloader.exe");
+                            download.StartInfo.Arguments = $"{filesToDownload[i,0]} \"{System.IO.Path.Combine(tempPath, filesToDownload[i,1])}\"";
+
+                            download.Start();
+                            download.WaitForExit();
+                        }
+                    }
+                    string[] ancastKeyCopy = { ancastKey.Text };
+                    Directory.CreateDirectory(tempPath + "\\C2W");
+                    File.WriteAllLines(tempPath + "\\C2W\\starbuck_key.txt", ancastKeyCopy);
+
+                    using (Process c2w = new Process())
+                    {
+                        c2w.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "c2w_patcher.exe");
+                        c2w.StartInfo.Arguments = $"-nc \"{System.IO.Path.Combine(tempPath, "C2W")}";
+                        c2w.Start();
+                        c2w.WaitForExit();
+                    }
+                }
+                else
+                {
+                    //error 
+                    return;
+                }
+
+            }
+
             mvm.Inject(false);
         }
 
@@ -942,6 +1002,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
 
             }
+        }
+
+        private void ancast_OTP(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
