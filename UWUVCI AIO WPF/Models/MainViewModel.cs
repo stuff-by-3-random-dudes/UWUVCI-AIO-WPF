@@ -409,15 +409,15 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        public bool NKITFLAG { get; set; } = false;
+        public async Task<bool> NKITFLAG { get; set; } = false;
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
         DispatcherTimer timer = new DispatcherTimer();
         public bool PokePatch = false;
-        public void Update(bool button)
+        public async Task UpdateAsync(bool button)
         {
-            if (CheckForInternetConnection())
+            if (await CheckForInternetConnectionAsync())
             {
                 System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -430,7 +430,7 @@ namespace UWUVCI_AIO_WPF
                     Properties.Settings.Default.UpgradeRequired = false;
                     Properties.Settings.Default.Save();
                 }
-                if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
+                if (button && Convert.ToInt32(version.Split('.')[3]) >= await GetNewVersionAsync())
                 {
                     Custom_Message cm = new Custom_Message("No Updates available", " You are currently using the newest version of UWUVCI AIO ");
                     try
@@ -445,7 +445,7 @@ namespace UWUVCI_AIO_WPF
             
         }
 
-        private int GetNewVersion()
+        private async Task<int> GetNewVersionAsync()
         {
 
             try
@@ -456,7 +456,7 @@ namespace UWUVCI_AIO_WPF
                     request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
                
 
-                var response = request.GetResponse();
+                var response = await request.GetResponseAsync();
                 using (Stream dataStream = response.GetResponseStream())
                 {
                     // Open the stream using a StreamReader for easy access.  
@@ -504,8 +504,14 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
         }
-            public MainViewModel()
-      {
+        private MainViewModel()
+        {
+        }
+        //TODO: Figure wtf is going on here
+        //Notes: Constructor wasn't used like a constructor
+        //      MainViewModel is never created just only references are type checking
+        public static async Task<MainViewModel> SetupAsync()
+        {
             if (!Environment.Is64BitOperatingSystem)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
@@ -513,36 +519,45 @@ namespace UWUVCI_AIO_WPF
                 Tools.Add("NUSPacker.jar");
                 ToolCheck.ToolNames = Tools.ToArray();
             }
-           
+
 
             //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
-            if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
-            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+            if (Directory.Exists(@"bases")) 
+                Directory.Delete(@"bases", true);
+
+            if (Directory.Exists(@"temp")) 
+                Directory.Delete(@"temp", true);
 
             if (Directory.Exists(@"keys"))
             {
-               if(Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
+                if (Directory.Exists(@"bin\keys")) 
+                    Directory.Delete(@"bin\keys", true);
+
                 Injection.DirectoryCopy("keys", "bin/keys", true);
                 Directory.Delete("keys", true);
             }
-            if (!Directory.Exists("InjectedGames")) Directory.CreateDirectory("InjectedGames");
-            if (!Directory.Exists("SourceFiles")) Directory.CreateDirectory("SourceFiles");
-            if (!Directory.Exists("bin\\BaseGames")) Directory.CreateDirectory("bin\\BaseGames");
-            if(Properties.Settings.Default.OutPath == "" || Properties.Settings.Default.OutPath == null)
-            {
+            if (!Directory.Exists("InjectedGames"))
+                Directory.CreateDirectory("InjectedGames");
+
+            if (!Directory.Exists("SourceFiles"))
+                Directory.CreateDirectory("SourceFiles");
+
+            if (!Directory.Exists("bin\\BaseGames"))
+                Directory.CreateDirectory("bin\\BaseGames");
+
+            if (Properties.Settings.Default.OutPath == "" || Properties.Settings.Default.OutPath == null)
                 Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
-            }
-            if(Settings.Default.BasePath == "" || Properties.Settings.Default.BasePath == null)
-            {
+
+            if (Settings.Default.BasePath == "" || Properties.Settings.Default.BasePath == null)
                 Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
-            }
+
             Settings.Default.Save();
             ArePathsSet();
 
             Update(false);
 
-            toolCheck();
-            BaseCheck();
+            await toolCheckAsync();
+            await BaseCheck();
 
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
@@ -551,7 +566,8 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     cm.Owner = mw;
-                }catch(Exception )
+                }
+                catch (Exception)
                 {
 
                 }
@@ -560,7 +576,10 @@ namespace UWUVCI_AIO_WPF
             UpdatePathSet();
 
             GetAllBases();
+
+
         }
+
         public string turbocd()
         {
            
@@ -1142,14 +1161,14 @@ namespace UWUVCI_AIO_WPF
             
             
         }
-        private void BaseCheck()
+        private async Task BaseCheck()
         {
             if (Directory.Exists(@"bin\bases"))
             {
                 var test = GetMissingVCBs();
                 if (test.Count > 0)
                 {
-                    if (CheckForInternetConnection())
+                    if (await CheckForInternetConnectionAsync())
                     {
                         Progress = 0;
                         Task.Run(() =>
@@ -1157,7 +1176,7 @@ namespace UWUVCI_AIO_WPF
                             double stuff = 100 / test.Count;
                             foreach (string s in test)
                             {
-                                DownloadBase(s, this);
+                                await DownloadBaseAsync(s, this);
                                 Progress += Convert.ToInt32(stuff);
                             }
                             Progress = 100;
@@ -1170,7 +1189,7 @@ namespace UWUVCI_AIO_WPF
                         catch (Exception) { }
                         dw.ShowDialog();
 
-                        BaseCheck();
+                        await BaseCheck();
                     }
                     else
                     {
@@ -1190,7 +1209,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                if (CheckForInternetConnection())
+                if (await CheckForInternetConnectionAsync())
                 {
                     Directory.CreateDirectory(@"bin\bases");
                     var test = GetMissingVCBs();
@@ -1200,7 +1219,7 @@ namespace UWUVCI_AIO_WPF
                         double stuff = 100 / test.Count;
                         foreach (string s in test)
                         {
-                            DownloadBase(s, this);
+                            await DownloadBaseAsync(s, this);
                             Progress += Convert.ToInt32(stuff);
                         }
                         Progress = 100;
@@ -1213,7 +1232,7 @@ namespace UWUVCI_AIO_WPF
                     catch (Exception) { }
                     dw.ShowDialog();
                     Progress = 0;
-                    BaseCheck();
+                    await BaseCheck();
                 }
                 else
                 {
@@ -1231,9 +1250,9 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void UpdateTools()
+        public async Task UpdateToolsAsync()
         {
-            if (CheckForInternetConnection())
+            if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = ToolCheck.ToolNames;
                 Task.Run(() =>
@@ -1243,7 +1262,7 @@ namespace UWUVCI_AIO_WPF
                     foreach (string s in bases)
                     {
                         DeleteTool(s);
-                        DownloadTool(s, this);
+                        await DownloadToolAsync(s, this);
                         Progress += Convert.ToInt32(l);
                     }
                     Progress = 100;
@@ -1259,7 +1278,7 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 dw.ShowDialog();
-                toolCheck();
+                await toolCheckAsync();
                 Custom_Message cm = new Custom_Message("Finished Update", " Finished Updating Tools! Restarting UWUVCI AIO ");
                 try
                 {
@@ -1342,9 +1361,9 @@ namespace UWUVCI_AIO_WPF
 
 
         }
-        public void UpdateBases()
+        public async Task UpdateBaseAsync()
         {
-            if (CheckForInternetConnection())
+            if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
                 Task.Run(() => {
@@ -1353,7 +1372,7 @@ namespace UWUVCI_AIO_WPF
                     foreach (string s in bases)
                     {
                         DeleteBase(s);
-                        DownloadBase(s, this);
+                        await DownloadBaseAsync(s, this);
 
                         GameConsoles g = new GameConsoles();
                         if (s.Contains("nds")) g = GameConsoles.NDS;
@@ -1487,7 +1506,7 @@ namespace UWUVCI_AIO_WPF
             {
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
                 request.Method = "HEAD";
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+                HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
                 response.Close();
                 return (response.StatusCode == HttpStatusCode.OK);
             }
@@ -1689,7 +1708,7 @@ namespace UWUVCI_AIO_WPF
             }
             return ret;
         }
-        public static void DownloadBase(string name, MainViewModel mvm)
+        public static async Task DownloadBaseAsync(string name, MainViewModel mvm)
         {
             string olddir = Directory.GetCurrentDirectory();
             try
@@ -1697,10 +1716,9 @@ namespace UWUVCI_AIO_WPF
                 string basePath = $@"bin\bases\";
                 Directory.SetCurrentDirectory(basePath);
                 using (var client = new WebClient())
-
                 {
                     var fixname = name.Split('\\');
-                    client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length -1]);
+                    await client.DownloadFileAsync(await getDownloadLinkAsync(name, false), fixname[fixname.Length -1]);
                 }
             }catch(Exception e)
             {
@@ -1716,7 +1734,7 @@ namespace UWUVCI_AIO_WPF
             }
             Directory.SetCurrentDirectory(olddir);
         }
-        public static void DownloadTool(string name, MainViewModel mvm)
+        public static async Task DownloadToolAsync(string name, MainViewModel mvm)
         {
             string olddir = Directory.GetCurrentDirectory();
             try
@@ -1739,9 +1757,9 @@ namespace UWUVCI_AIO_WPF
                     }
                     using (var client = new WebClient())
                     {
-                        client.DownloadFile(getDownloadLink(name, true), name);
+                        await client.DownloadFileAsync(await getDownloadLinkAsync(name, true), name);
                     }
-                } while (!ToolCheck.IsToolRight(name));
+                } while (await !ToolCheck.IsToolRightAsync(name));
                 
                
             }
@@ -1760,7 +1778,7 @@ namespace UWUVCI_AIO_WPF
             }
             Directory.SetCurrentDirectory(olddir);
         }
-        private static string getDownloadLink(string toolname, bool tool)
+        private static async Task<string> getDownloadLinkAsync(string toolname, bool tool)
         {
             try
             {
@@ -1768,7 +1786,7 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     System.Net.WebClient client = new System.Net.WebClient();
-                    string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
+                    string result = await client.DownloadStringAsync("https://uwuvciapi.azurewebsites.net/api/values");
                     ok = true;
                 }
                 catch (System.Net.WebException ex)
@@ -1789,7 +1807,7 @@ namespace UWUVCI_AIO_WPF
                         request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVcbLink?vcb=" + toolname);
                     }
 
-                    var response = request.GetResponse();
+                    var response = await request.GetResponseAsync();
                     using (Stream dataStream = response.GetResponseStream())
                     {
                         // Open the stream using a StreamReader for easy access.  
@@ -1838,7 +1856,7 @@ namespace UWUVCI_AIO_WPF
 
             }
         }
-        public void InjcttoolCheck()
+        public async Task InjcttoolCheck()
         {
             if (ToolCheck.DoesToolsFolderExist())
             {
@@ -1852,13 +1870,13 @@ namespace UWUVCI_AIO_WPF
                         
                         foreach (MissingTool m in missingTools)
                         {
-                            DownloadTool(m.Name,this);
+                            await DownloadToolAsync(m.Name,this);
                             
                         }
                        
                     
                    
-                        InjcttoolCheck();
+                        await InjcttoolCheck();
                     
                 }
             }
@@ -1871,7 +1889,7 @@ namespace UWUVCI_AIO_WPF
               
             }
         }
-        private void ThreadDownload(List<MissingTool> missingTools)
+        private async Task ThreadDownload(List<MissingTool> missingTools)
         {
            
             var thread = new Thread(() =>
@@ -1888,7 +1906,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        DownloadTool(m.Name, this);
+                        await DownloadToolAsync(m.Name, this);
                     }
                    
                     Progress += Convert.ToInt32(l);
@@ -1913,7 +1931,7 @@ namespace UWUVCI_AIO_WPF
                 Progress = 0;
             }
         }
-        private void toolCheck()
+        private async Task toolCheckAsync()
         {
             if (ToolCheck.DoesToolsFolderExist() )
             {
@@ -1922,9 +1940,9 @@ namespace UWUVCI_AIO_WPF
                 
                 if(missingTools.Count > 0)
                 {
-                    if (CheckForInternetConnection())
+                    if (await CheckForInternetConnectionAsync())
                     {
-                        Task.Run(() => ThreadDownload(missingTools));
+                        Task.Run(() => await ThreadDownload(missingTools));
                         DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
                         try
                         {
@@ -1938,7 +1956,7 @@ namespace UWUVCI_AIO_WPF
                         Thread.Sleep(200);
                         //Download Tools
                         Progress = 0;
-                        toolCheck();
+                        await toolCheckAsync();
                     }
                     else
                     {
@@ -1966,7 +1984,7 @@ namespace UWUVCI_AIO_WPF
                     Directory.CreateDirectory("bin/Tools");
                 }
                     
-                toolCheck();
+                await toolCheckAsync();
                
                 
             }
@@ -2388,7 +2406,7 @@ namespace UWUVCI_AIO_WPF
         public void Download()
         {
             ValidatePathsStillExist();
-            if (CheckForInternetConnection())
+            if (CheckForInternetConnectionAsync())
             {
                 Task.Run(() => { Injection.Download(this); });
 
@@ -2693,7 +2711,7 @@ namespace UWUVCI_AIO_WPF
             }
             List<string> repoids = new List<string>();
             string[] ext = { "png", "tga", "jpg", "jpeg" };
-            if (CheckForInternetConnectionWOWarning())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
@@ -2766,7 +2784,7 @@ namespace UWUVCI_AIO_WPF
                 SystemType + repoid
             };
 
-            if (CheckForInternetConnectionWOWarning())
+            if (CheckForInternetConnectionWOWarningAsync())
             {
                 GetRepoImages(SystemType, repoids, repoid);
                 checkForAdditionalFiles(GameConsoles.SNES, repoids);
@@ -2783,7 +2801,7 @@ namespace UWUVCI_AIO_WPF
             repoid = GetFakeMSXTGProdcode(rom, true);
             string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
+            if (CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 foreach (var e in ext)
@@ -2813,7 +2831,7 @@ namespace UWUVCI_AIO_WPF
             repoid = GetFakeMSXTGProdcode(rom, false);
             string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
+            if (CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 foreach (var e in ext)
@@ -2962,7 +2980,7 @@ namespace UWUVCI_AIO_WPF
             repoid = GetFakeNESProdcode(rom);
             string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
+            if (CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 foreach (var e in ext)
@@ -3121,7 +3139,7 @@ namespace UWUVCI_AIO_WPF
             }
             string[] ext = { "png", "tga", "jpg", "jpeg" };
             List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
+            if (CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
@@ -3201,7 +3219,7 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
             string[] ext = {"png", "tga", "jpg", "jpeg" };
-            if (CheckForInternetConnectionWOWarning())
+            if (CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
@@ -3356,7 +3374,7 @@ namespace UWUVCI_AIO_WPF
                         while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
                         string repoid = TempString;
                         
-                        if (CheckForInternetConnectionWOWarning())
+                        if (CheckForInternetConnectionWOWarningAsync())
                         {
                             repoids.Add(SystemType + repoid);
                             repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
@@ -3432,7 +3450,7 @@ namespace UWUVCI_AIO_WPF
                             repoid = TempString;
                         
                         
-                        if (CheckForInternetConnectionWOWarning())
+                        if (CheckForInternetConnectionWOWarningAsync())
                         {
                             repoids.Add(SystemType + repoid);
                             repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
@@ -3514,17 +3532,27 @@ namespace UWUVCI_AIO_WPF
             
             return ret;
         }
-        public bool CheckForInternetConnection()
+        public async Task CheckForInternetConnectionAsync()
         {
             try
             {
                 using (var client = new WebClient())
-                using (client.OpenRead("http://google.com/generate_204"))
-                    return true;
+                    using (await client.OpenReadAsync("http://google.com/generate_204"))
+                        return true;
             }
             catch
             {
-                Custom_Message cm = new Custom_Message("No Internet Connection", " To Download Tools, Bases or required Files you need to be connected to the Internet. The Program will now terminate. ");
+                var googleBlocked = false;
+
+                using (var client = new WebClient())
+                using (await client.OpenReadAsync("https://raw.githubusercontent.com"))
+                    googleBlocked = true;
+
+                Custom_Message cm;
+                if (!googleBlocked)
+                    cm = new Custom_Message("No Internet Connection", " To Download Tools, Bases or required Files you need to be connected to the Internet. The Program will now terminate. ");
+                else
+                    cm = new Custom_Message("Google Can't Be Reached On Your Connection", " To check for Internet on non webapps, Google is normally used since it's the fastest site to reach. You may run into issues with other programs. ");
                 try
                 {
                     cm.Owner = mw;
@@ -3534,22 +3562,27 @@ namespace UWUVCI_AIO_WPF
 
                 catch (Exception) { }
                 cm.ShowDialog();
-                Environment.Exit(1);
-                return false;
+
+                if(!googleBlocked)
+                    Environment.Exit(1);
+
+                return googleBlocked;
             }
         }
-        public bool CheckForInternetConnectionWOWarning()
+        public async Task<bool> CheckForInternetConnectionWOWarningAsync()
         {
             try
             {
                 using (var client = new WebClient())
-                using (client.OpenRead("http://google.com/generate_204"))
+                using (await client.OpenReadAsync("http://google.com/generate_204"))
                     return true;
             }
             catch
             {
-                
-                
+                using (var client = new WebClient())
+                using (await client.OpenReadAsync("http://raw.githubusercontent.com"))
+                    return true;
+
                 return false;
             }
         }
