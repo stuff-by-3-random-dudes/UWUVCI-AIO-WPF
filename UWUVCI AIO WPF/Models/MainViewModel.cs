@@ -2672,6 +2672,7 @@ namespace UWUVCI_AIO_WPF
         public void getBootIMGGBA(string rom)
         {
             string repoid = "";
+            string SystemType = "gba/";
             using (var fs = new FileStream(rom,
                                  FileMode.Open,
                                  FileAccess.Read))
@@ -3451,15 +3452,15 @@ namespace UWUVCI_AIO_WPF
         /// <param name="SystemType"></param>
         /// <param name="repoid"></param>
         /// <param name="repoids"></param>
-        private void GetRepoImages(string SystemType, string repoid, List<string> repoids = new List<string>())
+        private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
             IMG_Message img = null;
             string[] ext = { "png", "tga", "jpg", "jpeg" };
 
-            if (repoids.Count == 0)
+            if (repoids == null || repoids?.Count == 0)
             {
-                var fakeId = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3]);
+                var fakeId = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] });
                 repoids = new List<string>
                 {
                     SystemType + repoid,
@@ -3480,14 +3481,14 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (RemoteFileExists(linkbase + id + $"/iconTex.{e}") == true)
                     {
-                        img = new IMG_Message(linkbase + SystemType + repoid + $"/iconTex.{e}", linkbase + SystemType + repoid + $"/bootTvTex.{e}", SystemType + repoid);
+                        img = new IMG_Message(linkbase + id + $"/iconTex.{e}", linkbase + id + $"/bootTvTex.{e}", id);
                         try
                         {
                             img.Owner = mw;
                         }
                         catch (Exception) { }
                         img.ShowDialog();
-                        break;
+                        return;
                     }
                 }
             }
