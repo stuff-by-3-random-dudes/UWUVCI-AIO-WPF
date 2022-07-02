@@ -409,7 +409,7 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        public async Task<bool> NKITFLAG { get; set; } = false;
+        public bool NKITFLAG { get; set; } = false;
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
@@ -506,12 +506,6 @@ namespace UWUVCI_AIO_WPF
         }
         private MainViewModel()
         {
-        }
-        //TODO: Figure wtf is going on here
-        //Notes: Constructor wasn't used like a constructor
-        //      MainViewModel is never created just only references are type checking
-        public static async Task<MainViewModel> SetupAsync()
-        {
             if (!Environment.Is64BitOperatingSystem)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
@@ -522,15 +516,15 @@ namespace UWUVCI_AIO_WPF
 
 
             //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
-            if (Directory.Exists(@"bases")) 
+            if (Directory.Exists(@"bases"))
                 Directory.Delete(@"bases", true);
 
-            if (Directory.Exists(@"temp")) 
+            if (Directory.Exists(@"temp"))
                 Directory.Delete(@"temp", true);
 
             if (Directory.Exists(@"keys"))
             {
-                if (Directory.Exists(@"bin\keys")) 
+                if (Directory.Exists(@"bin\keys"))
                     Directory.Delete(@"bin\keys", true);
 
                 Injection.DirectoryCopy("keys", "bin/keys", true);
@@ -578,6 +572,13 @@ namespace UWUVCI_AIO_WPF
             GetAllBases();
 
 
+        }
+        //TODO: Figure wtf is going on here
+        //Notes: Constructor wasn't used like a constructor
+        //      MainViewModel is never created just only references are type checking
+        public static async Task<MainViewModel> SetupAsync()
+        {
+            return new MainViewModel();
         }
 
         public string turbocd()
@@ -1171,7 +1172,7 @@ namespace UWUVCI_AIO_WPF
                     if (await CheckForInternetConnectionAsync())
                     {
                         Progress = 0;
-                        Task.Run(() =>
+                        await Task.Run(async () =>
                         {
                             double stuff = 100 / test.Count;
                             foreach (string s in test)
@@ -1214,7 +1215,7 @@ namespace UWUVCI_AIO_WPF
                     Directory.CreateDirectory(@"bin\bases");
                     var test = GetMissingVCBs();
                     Progress = 0;
-                    Task.Run(() =>
+                    await Task.Run(async() =>
                     {
                         double stuff = 100 / test.Count;
                         foreach (string s in test)
@@ -1255,7 +1256,7 @@ namespace UWUVCI_AIO_WPF
             if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = ToolCheck.ToolNames;
-                Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     Progress = 0;
                     double l = 100 / bases.Length;
@@ -1366,7 +1367,7 @@ namespace UWUVCI_AIO_WPF
             if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
-                Task.Run(() => {
+                await Task.Run(async () => {
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
@@ -1500,7 +1501,7 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        private bool RemoteFileExists(string url)
+        private async Task<bool> RemoteFileExists(string url)
         {
             try
             {
@@ -1718,7 +1719,7 @@ namespace UWUVCI_AIO_WPF
                 using (var client = new WebClient())
                 {
                     var fixname = name.Split('\\');
-                    await client.DownloadFileAsync(await getDownloadLinkAsync(name, false), fixname[fixname.Length -1]);
+                    await client.DownloadFileTaskAsync(await getDownloadLinkAsync(name, false), fixname[fixname.Length -1]);
                 }
             }catch(Exception e)
             {
@@ -1749,6 +1750,7 @@ namespace UWUVCI_AIO_WPF
                     string basePath = $@"bin\Tools\";
                     Directory.SetCurrentDirectory(basePath);
                 }
+                var toolsDownloaded = await ToolCheck.IsToolRightAsync(name);
                 do
                 {
                     if (File.Exists(name))
@@ -1757,9 +1759,10 @@ namespace UWUVCI_AIO_WPF
                     }
                     using (var client = new WebClient())
                     {
-                        await client.DownloadFileAsync(await getDownloadLinkAsync(name, true), name);
+                        await client.DownloadFileTaskAsync(await getDownloadLinkAsync(name, true), name);
                     }
-                } while (await !ToolCheck.IsToolRightAsync(name));
+                    toolsDownloaded = await ToolCheck.IsToolRightAsync(name);
+                } while (!toolsDownloaded);
                 
                
             }
@@ -1786,7 +1789,7 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     System.Net.WebClient client = new System.Net.WebClient();
-                    string result = await client.DownloadStringAsync("https://uwuvciapi.azurewebsites.net/api/values");
+                    string result = await client.DownloadStringTaskAsync("https://uwuvciapi.azurewebsites.net/api/values");
                     ok = true;
                 }
                 catch (System.Net.WebException ex)
@@ -1889,17 +1892,17 @@ namespace UWUVCI_AIO_WPF
               
             }
         }
-        private async Task ThreadDownload(List<MissingTool> missingTools)
+        private void ThreadDownload(List<MissingTool> missingTools)
         {
-           
-            var thread = new Thread(() =>
+
+            var thread = new Thread(async () =>
             {
                 double l = 100 / missingTools.Count;
 
 
                 foreach (MissingTool m in missingTools)
                 {
-                    if(m.Name == "blank.ini")
+                    if (m.Name == "blank.ini")
                     {
                         StreamWriter sw = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini"));
                         sw.Close();
@@ -1908,15 +1911,15 @@ namespace UWUVCI_AIO_WPF
                     {
                         await DownloadToolAsync(m.Name, this);
                     }
-                   
+
                     Progress += Convert.ToInt32(l);
                 }
                 Progress = 100;
-                
+
             });
-           thread.SetApartmentState(ApartmentState.STA);
+            thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-            
+
         }
         private void timer_Tick2(object sender, EventArgs e)
         {
@@ -1942,7 +1945,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (await CheckForInternetConnectionAsync())
                     {
-                        Task.Run(() => await ThreadDownload(missingTools));
+                        Task.Run(() => ThreadDownload(missingTools));
                         DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
                         try
                         {
@@ -2403,12 +2406,12 @@ namespace UWUVCI_AIO_WPF
 
            
         }
-        public void Download()
+        public async Task Download()
         {
             ValidatePathsStillExist();
-            if (CheckForInternetConnectionAsync())
+            if (await CheckForInternetConnectionAsync())
             {
-                Task.Run(() => { Injection.Download(this); });
+                await Task.Run(async () => { Injection.Download(this); });
 
                 DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
                 try
@@ -2687,7 +2690,7 @@ namespace UWUVCI_AIO_WPF
 
             return true;
         }
-        public void getBootIMGGBA(string rom)
+        public async Task getBootIMGGBA(string rom)
         {
             string repoid = "";
             string SystemType = "gba/";
@@ -2708,7 +2711,7 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
             List<string> repoids = new List<string>();
-            if (await CheckForInternetConnectionWOWarning())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
@@ -2720,7 +2723,7 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void getBootIMGSNES(string rom)
+        public async Task getBootIMGSNES(string rom)
         {
             string SystemType = "snes/";
             var repoid = GetFakeSNESProdcode(rom);
@@ -2729,7 +2732,7 @@ namespace UWUVCI_AIO_WPF
                 SystemType + repoid
             };
 
-            if (CheckForInternetConnectionWOWarningAsync())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 GetRepoImages(SystemType, repoid);
                 checkForAdditionalFiles(GameConsoles.SNES, repoids);
@@ -2737,7 +2740,7 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void getBootIMGMSX(string rom)
+        public async Task getBootIMGMSX(string rom)
         {
             string SystemType = "msx/";
             var repoid = GetFakeMSXTGProdcode(rom, true);
@@ -2746,14 +2749,14 @@ namespace UWUVCI_AIO_WPF
                 SystemType + repoid
             };
 
-            if (await CheckForInternetConnectionWOWarning())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 GetRepoImages(SystemType, repoid);
                 checkForAdditionalFiles(GameConsoles.MSX, repoids);
             }
 
         }
-        public void getBootIMGTG(string rom)
+        public async Task getBootIMGTG(string rom)
         {
             string SystemType = "tg16/";
             var repoid = GetFakeMSXTGProdcode(rom, false);
@@ -2761,7 +2764,7 @@ namespace UWUVCI_AIO_WPF
             {
                 SystemType + repoid
             };
-            if (await CheckForInternetConnectionWOWarning())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 GetRepoImages(SystemType, repoid);
                 checkForAdditionalFiles(GameConsoles.TG16, repoids);
@@ -2888,7 +2891,7 @@ namespace UWUVCI_AIO_WPF
 
             }
         }
-        public void getBootIMGNES(string rom)
+        public async Task getBootIMGNES(string rom)
         {
             string SystemType = "nes/";
             var repoid = GetFakeNESProdcode(rom);
@@ -2897,7 +2900,7 @@ namespace UWUVCI_AIO_WPF
                 SystemType + repoid
             };
 
-            if (await CheckForInternetConnectionWOWarning())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 GetRepoImages(SystemType, repoid);
                 checkForAdditionalFiles(GameConsoles.NES, repoids);
@@ -3018,7 +3021,7 @@ namespace UWUVCI_AIO_WPF
             var toret = new char[] { letters[n1], letters[n2], letters[n3], letters[n4] };
             return new string(toret).ToUpper();
         }
-        public void getBootIMGNDS(string rom)
+        public async Task getBootIMGNDS(string rom)
         {
             string repoid = "";
             string SystemType = "nds/";
@@ -3039,7 +3042,7 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
             List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarningAsync())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
@@ -3051,7 +3054,7 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void getBootIMGN64(string rom)
+        public async Task getBootIMGN64(string rom)
         {
             string repoid = "";
             string SystemType = "n64/";
@@ -3071,7 +3074,7 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: "+repoid);
             }
-            if (await CheckForInternetConnectionWOWarning())
+            if (await CheckForInternetConnectionWOWarningAsync())
             {
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
@@ -3086,7 +3089,7 @@ namespace UWUVCI_AIO_WPF
             System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
             return enc.GetString(arr);
         }
-        public string getInternalWIIGCNName(string OpenGame, bool gc)
+        public async Task<string> getInternalWIIGCNName(string OpenGame, bool gc)
         {
             //string linkbase = "https://raw.githubusercontent.com/Flumpster/wiivc-bis/master/";
             string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
@@ -3131,7 +3134,7 @@ namespace UWUVCI_AIO_WPF
                             repoid = TempString;
                     }
 
-                    if (await CheckForInternetConnectionWOWarning())
+                    if (await CheckForInternetConnectionWOWarningAsync())
                     {
                         repoids.Add(SystemType + repoid);
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
@@ -3157,12 +3160,12 @@ namespace UWUVCI_AIO_WPF
             
             return ret;
         }
-        public async Task CheckForInternetConnectionAsync()
+        public async Task<bool> CheckForInternetConnectionAsync()
         {
             try
             {
                 using (var client = new WebClient())
-                    using (await client.OpenReadAsync("http://google.com/generate_204"))
+                    using (await client.OpenReadTaskAsync("http://google.com/generate_204"))
                         return true;
             }
             catch
@@ -3170,7 +3173,7 @@ namespace UWUVCI_AIO_WPF
                 var googleBlocked = false;
 
                 using (var client = new WebClient())
-                using (await client.OpenReadAsync("https://raw.githubusercontent.com"))
+                using (await client.OpenReadTaskAsync("https://raw.githubusercontent.com"))
                     googleBlocked = true;
 
                 Custom_Message cm;
@@ -3199,19 +3202,19 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 using (var client = new WebClient())
-                using (await client.OpenReadAsync("http://google.com/generate_204"))
+                using (await client.OpenReadTaskAsync("http://google.com/generate_204"))
                     return true;
             }
             catch
             {
                 using (var client = new WebClient())
-                using (await client.OpenReadAsync("http://raw.githubusercontent.com"))
+                using (await client.OpenReadTaskAsync("http://raw.githubusercontent.com"))
                     return true;
 
                 return false;
             }
         }
-        private void checkForAdditionalFiles(GameConsoles console, List<string> repoids)
+        private async Task checkForAdditionalFiles(GameConsoles console, List<string> repoids)
         {
             if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
             {
@@ -3227,7 +3230,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach(string repoid in repoids)
                 {
-                    if (RemoteFileExists(linkbase + repoid + "/game.ini"))
+                    if (await RemoteFileExists(linkbase + repoid + "/game.ini"))
                     {
                         ini = true;
                         inip = linkbase + repoid + "/game.ini";
@@ -3241,7 +3244,7 @@ namespace UWUVCI_AIO_WPF
             foreach (var e in ext)
             {   foreach(string repoid in repoids)
                 {
-                    if (RemoteFileExists(linkbase + repoid + "/BootSound." + e))
+                    if (await RemoteFileExists(linkbase + repoid + "/BootSound." + e))
                     {
                         btsnd = true;
                         btsndp = linkbase + repoid + "/BootSound." + e;
@@ -3485,7 +3488,7 @@ namespace UWUVCI_AIO_WPF
         /// <param name="SystemType"></param>
         /// <param name="repoid"></param>
         /// <param name="repoids"></param>
-        private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
+        private async Task GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
             IMG_Message img = null;
@@ -3512,7 +3515,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (var id in repoids)
                 {
-                    if (RemoteFileExists(linkbase + id + $"/iconTex.{e}") == true)
+                    if (await RemoteFileExists(linkbase + id + $"/iconTex.{e}") == true)
                     {
                         img = new IMG_Message(linkbase + id + $"/iconTex.{e}", linkbase + id + $"/bootTvTex.{e}", id);
                         try

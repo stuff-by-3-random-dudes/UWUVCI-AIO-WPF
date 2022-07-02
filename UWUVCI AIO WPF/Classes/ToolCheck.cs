@@ -72,7 +72,7 @@ namespace UWUVCI_AIO_WPF.Classes
             bool ret = false;
             using (var client = new WebClient())
             {
-                await client.DownloadFile(backupulr + name + ".md5", name + ".md5");
+                await client.DownloadFileTaskAsync(backupulr + name + ".md5", name + ".md5");
                 using (var sr = new StreamReader(name + ".md5"))
                 {
                     var md5 = sr.ReadLine();
