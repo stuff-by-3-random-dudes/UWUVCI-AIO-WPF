@@ -180,7 +180,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol") && !path.ToLower().Contains(".wad"))
                     {
-                        string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
+                        var romTask = Task.Run(async () => await mvm.getInternalWIIGCNName(mvm.RomPath, true));
+                        while (!romTask.IsCompleted)
+                        {
+                            //literally don't do anything because I need this shit to not be async since I can't use await here
+                        }
+                        string rom = romTask.Result;
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
