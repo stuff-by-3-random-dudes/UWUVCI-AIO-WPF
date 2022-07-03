@@ -548,10 +548,10 @@ namespace UWUVCI_AIO_WPF
             Settings.Default.Save();
             ArePathsSet();
 
-            Task.Run(async () => await UpdateAsync(false));
+            Task.Run(() => UpdateAsync(false));
 
-            Task.Run(async () => await toolCheckAsync());
-            Task.Run(async () => await BaseCheck());
+            Task.Run(() => toolCheckAsync());
+            Task.Run(() => BaseCheck());
 
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
@@ -1164,16 +1164,17 @@ namespace UWUVCI_AIO_WPF
                     if (await CheckForInternetConnectionAsync())
                     {
                         Progress = 0;
-                        await Task.Run(async () =>
+                        Task.Run(() =>
                         {
                             double stuff = 100 / test.Count;
                             foreach (string s in test)
                             {
-                                await DownloadBaseAsync(s, this);
+                                DownloadBaseAsync(s, this);
                                 Progress += Convert.ToInt32(stuff);
                             }
-                            Progress = 100;
                         });
+                        Progress = 100;
+
                         DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                         try
                         {
@@ -1207,16 +1208,18 @@ namespace UWUVCI_AIO_WPF
                     Directory.CreateDirectory(@"bin\bases");
                     var test = GetMissingVCBs();
                     Progress = 0;
-                    await Task.Run(async() =>
+
+                    Task.Run(() =>
                     {
                         double stuff = 100 / test.Count;
                         foreach (string s in test)
                         {
-                            await DownloadBaseAsync(s, this);
+                            DownloadBaseAsync(s, this);
                             Progress += Convert.ToInt32(stuff);
                         }
-                        Progress = 100;
                     });
+                    Progress = 100;
+
                     DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                     try
                     {
@@ -1248,7 +1251,8 @@ namespace UWUVCI_AIO_WPF
             if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = ToolCheck.ToolNames;
-                await Task.Run(() =>
+                Progress = 0;
+                Task.Run(() =>
                 {
                     Progress = 0;
                     double l = 100 / bases.Length;
@@ -1258,8 +1262,8 @@ namespace UWUVCI_AIO_WPF
                         DownloadToolAsync(s, this);
                         Progress += Convert.ToInt32(l);
                     }
-                    Progress = 100;
                 });
+                Progress = 100;
 
                 DownloadWait dw = new DownloadWait("Updating Tools - Please Wait", "", this);
                 try
@@ -1359,13 +1363,15 @@ namespace UWUVCI_AIO_WPF
             if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
-                await Task.Run(async () => {
+
+                Task.Run(() =>
+                { 
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
                     {
                         DeleteBase(s);
-                        await DownloadBaseAsync(s, this);
+                        DownloadBaseAsync(s, this);
 
                         GameConsoles g = new GameConsoles();
                         if (s.Contains("nds")) g = GameConsoles.NDS;
@@ -1711,7 +1717,8 @@ namespace UWUVCI_AIO_WPF
                 using (var client = new WebClient())
                 {
                     var fixname = name.Split('\\');
-                    await client.DownloadFileTaskAsync(await getDownloadLinkAsync(name, false), fixname[fixname.Length -1]);
+                    var downloadLink = await getDownloadLinkAsync(name, false);
+                    await client.DownloadFileTaskAsync(downloadLink, fixname[fixname.Length -1]);
                 }
             }catch(Exception e)
             {
@@ -1865,7 +1872,7 @@ namespace UWUVCI_AIO_WPF
                         
                         foreach (MissingTool m in missingTools)
                         {
-                            await DownloadToolAsync(m.Name,this);
+                            DownloadToolAsync(m.Name,this);
                             
                         }
                        
@@ -1886,7 +1893,6 @@ namespace UWUVCI_AIO_WPF
         }
         private void ThreadDownload(List<MissingTool> missingTools)
         {
-
             var thread = new Thread(() =>
             {
                 double l = 100 / missingTools.Count;
@@ -1896,8 +1902,17 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (m.Name == "blank.ini")
                     {
-                        StreamWriter sw = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini"));
-                        sw.Close();
+                        //somehow the current directory is different, probably because of the async call
+                        //looks to be different each time so we are doing some dumb path builder
+                        var blankPath = Directory.GetCurrentDirectory();
+                        if (!blankPath.Contains("bin"))
+                            blankPath = Path.Combine(blankPath, "bin");
+                        if (!blankPath.Contains("Tools"))
+                            blankPath = Path.Combine(blankPath, "Tools");
+                        if (!blankPath.Contains("blank.ini"))
+                            blankPath = Path.Combine("blank.ini");
+
+                        File.CreateText(blankPath);
                     }
                     else
                     {
@@ -1907,11 +1922,9 @@ namespace UWUVCI_AIO_WPF
                     Progress += Convert.ToInt32(l);
                 }
                 Progress = 100;
-
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-
         }
         private void timer_Tick2(object sender, EventArgs e)
         {
@@ -2403,7 +2416,7 @@ namespace UWUVCI_AIO_WPF
             ValidatePathsStillExist();
             if (await CheckForInternetConnectionAsync())
             {
-                await Task.Run(async () => { Injection.Download(this); });
+                Task.Run(() => { Injection.Download(this); });
 
                 DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
                 try
