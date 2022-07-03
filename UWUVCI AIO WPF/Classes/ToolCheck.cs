@@ -70,16 +70,16 @@ namespace UWUVCI_AIO_WPF.Classes
         public static async Task<bool> IsToolRightAsync(string name)
         {
             bool ret = false;
-            using (var client = new WebClient())
+            WebClient client = new WebClient();
+            await client.DownloadFileTaskAsync(backupulr + name + ".md5", name + ".md5");
+            StreamReader sr = new StreamReader(name + ".md5");
+            var md5 = sr.ReadLine();
+            if (CalculateMD5(name) == md5)
             {
-                await client.DownloadFileTaskAsync(backupulr + name + ".md5", name + ".md5");
-                using (var sr = new StreamReader(name + ".md5"))
-                {
-                    var md5 = sr.ReadLine();
-                    ret = CalculateMD5(name) == md5;
-                }
-                File.Delete(name + ".md5");
+                ret = true;
             }
+            sr.Close();
+            File.Delete(name + ".md5");
             return ret;
         }
         static string CalculateMD5(string filename)

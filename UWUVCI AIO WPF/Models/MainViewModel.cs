@@ -1259,7 +1259,7 @@ namespace UWUVCI_AIO_WPF
                     foreach (string s in bases)
                     {
                         DeleteTool(s);
-                        DownloadToolAsync(s, this);
+                        Task.Run(() => DownloadToolAsync(s, this)).GetAwaiter();
                         Progress += Convert.ToInt32(l);
                     }
                 });
@@ -1749,7 +1749,6 @@ namespace UWUVCI_AIO_WPF
                     string basePath = $@"bin\Tools\";
                     Directory.SetCurrentDirectory(basePath);
                 }
-                var toolsDownloaded = await ToolCheck.IsToolRightAsync(name);
                 do
                 {
                     if (File.Exists(name))
@@ -1760,8 +1759,7 @@ namespace UWUVCI_AIO_WPF
                     {
                         await client.DownloadFileTaskAsync(await getDownloadLinkAsync(name, true), name);
                     }
-                    toolsDownloaded = await ToolCheck.IsToolRightAsync(name);
-                } while (!toolsDownloaded);
+                } while (!Task.Run(() => ToolCheck.IsToolRightAsync(name)).GetAwaiter().GetResult());
                 
                
             }
@@ -1858,7 +1856,7 @@ namespace UWUVCI_AIO_WPF
 
             }
         }
-        public async Task InjcttoolCheck()
+        public void InjcttoolCheck()
         {
             if (ToolCheck.DoesToolsFolderExist())
             {
@@ -1872,13 +1870,13 @@ namespace UWUVCI_AIO_WPF
                         
                         foreach (MissingTool m in missingTools)
                         {
-                            DownloadToolAsync(m.Name,this);
+                            Task.Run(() => DownloadToolAsync(m.Name,this)).GetAwaiter();
                             
                         }
                        
                     
                    
-                        await InjcttoolCheck();
+                        InjcttoolCheck();
                     
                 }
             }
@@ -1887,7 +1885,7 @@ namespace UWUVCI_AIO_WPF
                 string path = $@"{Directory.GetCurrentDirectory()}bin\\Tools";
                 
                     Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
-                    await InjcttoolCheck();
+                    InjcttoolCheck();
               
             }
         }
@@ -1916,7 +1914,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        DownloadToolAsync(m.Name, this);
+                        Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
                     }
 
                     Progress += Convert.ToInt32(l);
@@ -1948,9 +1946,9 @@ namespace UWUVCI_AIO_WPF
                 
                 if(missingTools.Count > 0)
                 {
-                    if (await CheckForInternetConnectionAsync())
+                    if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
                     {
-                        Task.Run(() => ThreadDownload(missingTools));
+                        Task.Run(() => ThreadDownload(missingTools)).GetAwaiter();
                         DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
                         try
                         {
