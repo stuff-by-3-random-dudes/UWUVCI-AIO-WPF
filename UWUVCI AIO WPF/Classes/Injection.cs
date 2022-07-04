@@ -274,7 +274,6 @@ namespace UWUVCI_AIO_WPF
             }catch(Exception e)
             {
                 mvm.Progress = 100;
-                
                 code = null;
                 if(e.Message == "Failed this shit")
                 {
@@ -286,9 +285,10 @@ namespace UWUVCI_AIO_WPF
                     MessageBox.Show("Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base! ", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                    
                 }
-                else if (e.Message.Contains("Images")){
-
-                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                else if (e.Message.Contains("Images"))
+                {
+                    var extraInfo = "TgaIco: " + Path.GetFileName(Configuration.TGAIco.ImgPath) + "\nTgaTv: " + Path.GetFileName(Configuration.TGATv.ImgPath) + "\nTgaDrc:" + Path.GetFileName(Configuration.TGADrc.ImgPath);
+                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit\n\nExtra Info:\n" + extraInfo, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (e.Message.Contains("Size"))
                 {
@@ -317,7 +317,17 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    var romName = Path.GetFileName(mvm.RomPath);
+                    var errorMessage = "Rom Name: " + romName;
+
+                    if (romName.Contains("nkit") && Configuration.Console == GameConsoles.GCN)
+                        errorMessage += "\n\nLooks like you're using a compressed game, try either redumping or using the iso version instead.";
+                    else if (!romName.Contains("iso") && (Configuration.Console == GameConsoles.WII || Configuration.Console == GameConsoles.GCN))
+                        errorMessage += "\n\nLooks like you're using a compressed game, try either redumping or using the iso version instead.";
+                    else
+                        errorMessage += "\n\nIf you're using a compressed or trimmed version, try it with the uncompressed or untrimmed version instead.";
+
+                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message + "\n\nExtra Info:\n" + errorMessage, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 }
                 Clean();
