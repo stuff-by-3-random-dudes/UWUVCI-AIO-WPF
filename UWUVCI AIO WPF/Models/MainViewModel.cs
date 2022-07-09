@@ -3515,9 +3515,7 @@ namespace UWUVCI_AIO_WPF
             }
             
         }
-        /// <summary>
-        /// Was supposed to replace all of the code that reaches out to UWUVCI-Images, but I don't wanna have to test everything since this is already as Italian as code comes
-        /// </summary>
+
         /// <param name="SystemType"></param>
         /// <param name="repoid"></param>
         /// <param name="repoids"></param>
