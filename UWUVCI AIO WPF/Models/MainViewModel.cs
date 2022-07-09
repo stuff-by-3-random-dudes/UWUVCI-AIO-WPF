@@ -441,6 +441,45 @@ namespace UWUVCI_AIO_WPF
                     cm.ShowDialog();
 
                 }
+                else if (button)
+                {
+                    var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
+                    var releases = Task.Run(() => client.Repository.Release.GetAll("stuff-by-3-random-dudes", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
+                    int comparison;
+                    try
+                    {
+                        var latestString = Regex.Replace(releases[0].TagName, "[^0-9.]", "");
+                        var latestLength = latestString.Split('.').Length;
+                        var localLength = version.Split('.').Length;
+
+                        for (var i = 0; i < localLength - latestLength; i++)
+                            latestString += ".0";
+
+                        var latestVersion = new Version(latestString);
+                        var localVersion = new Version(version);
+                        comparison = localVersion.CompareTo(latestVersion);
+                    }
+                    catch
+                    {
+                        //Someone messed up versioning, so eff it just don't even bother then
+                        return;
+                    }
+                    if (comparison > 0)
+                    {
+                        using (var webClient = new WebClient())
+                        {
+                            webClient.Headers.Add(HttpRequestHeader.UserAgent, "MyUserAgent");
+                            Task.Run(() => webClient.DownloadFileTaskAsync(releases[0].ZipballUrl, "UWUVCI_INSTALLER.exe")).GetAwaiter();
+                        }
+                        var cm = new Custom_Message("Update Available!", "Latest version is currently being downloaded!\nPlease look for the file \"UWUVCI_INSTALLER.exe\" in\n" + Directory.GetCurrentDirectory());
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
+                        }
+                }
             }
             
         }
