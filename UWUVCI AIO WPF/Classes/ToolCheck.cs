@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -63,21 +64,17 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public static bool DoesToolsFolderExist()
         {
-            if (Directory.Exists(FolderName))
-            {
-                return true;
-            }
-            return false;
+            return Directory.Exists(FolderName);
         }
 
-        public static bool IsToolRight(string name)
+        public static async Task<bool> IsToolRightAsync(string name)
         {
             bool ret = false;
             WebClient client = new WebClient();
-            client.DownloadFile(backupulr + name + ".md5", name + ".md5");
+            await client.DownloadFileTaskAsync(backupulr + name + ".md5", name + ".md5");
             StreamReader sr = new StreamReader(name + ".md5");
             var md5 = sr.ReadLine();
-            if(CalculateMD5(name) == md5)
+            if (CalculateMD5(name) == md5)
             {
                 ret = true;
             }
@@ -92,7 +89,6 @@ namespace UWUVCI_AIO_WPF.Classes
                 using (var stream = File.OpenRead(filename))
                 {
                     string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                    stream.Close();
                     return ret;
                 }
             }
