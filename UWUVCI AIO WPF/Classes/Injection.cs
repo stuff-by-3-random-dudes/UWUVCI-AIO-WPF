@@ -217,7 +217,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        neededspace = 15000000000;
+                        neededspace = 35000000000;
                     }
                     if (freeSpaceInBytes < neededspace)
                     {
@@ -274,7 +274,6 @@ namespace UWUVCI_AIO_WPF
             }catch(Exception e)
             {
                 mvm.Progress = 100;
-                
                 code = null;
                 if(e.Message == "Failed this shit")
                 {
@@ -286,9 +285,10 @@ namespace UWUVCI_AIO_WPF
                     MessageBox.Show("Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base! ", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                    
                 }
-                else if (e.Message.Contains("Images")){
-
-                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                else if (e.Message.Contains("Images"))
+                {
+                    var extraInfo = "TgaIco: " + Path.GetFileName(Configuration.TGAIco.ImgPath) + "\nTgaTv: " + Path.GetFileName(Configuration.TGATv.ImgPath) + "\nTgaDrc:" + Path.GetFileName(Configuration.TGADrc.ImgPath);
+                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit\n\nExtra Info:\n" + extraInfo, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (e.Message.Contains("Size"))
                 {
@@ -309,7 +309,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else if (e.Message.Contains("12G"))
                 {
-                    MessageBox.Show($" Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($" Please make sure to have atleast {FormatBytes(35000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }else if (e.Message.Contains("nkit"))
                 {
                     MessageBox.Show($"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -317,7 +317,17 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    var romName = Path.GetFileName(mvm.RomPath);
+                    var errorMessage = "Rom Name: " + romName;
+
+                    if (romName.Contains("nkit") && Configuration.Console == GameConsoles.GCN)
+                        errorMessage += "\n\nLooks like you're using a compressed game, try either redumping or using the iso version instead.";
+                    else if (!romName.Contains("iso") && (Configuration.Console == GameConsoles.WII || Configuration.Console == GameConsoles.GCN))
+                        errorMessage += "\n\nLooks like you're using a compressed game, try either redumping or using the iso version instead.";
+                    else
+                        errorMessage += "\n\nIf you're using a compressed or trimmed version, try it with the uncompressed or untrimmed version instead.";
+
+                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message + "\n\nExtra Info:\n" + errorMessage, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 }
                 Clean();
@@ -2369,44 +2379,29 @@ namespace UWUVCI_AIO_WPF
         {
             
             string RomName = string.Empty;
-            using (Process getRomName = new Process())
-            {
-                mvvm.msg = "Getting BaseRom Name...";
-                getRomName.StartInfo.UseShellExecute = false;
-                getRomName.StartInfo.CreateNoWindow = false;
-                getRomName.StartInfo.RedirectStandardOutput = true;
-                getRomName.StartInfo.FileName = "cmd.exe";
-                Console.WriteLine(Directory.GetCurrentDirectory());
-                //getRomName.StartInfo.Arguments = $"/c \"Tools\\7za.exe\" l \"temp\\baserom\\content\\0010\\rom.zip\" | findstr \"WUP\"";
-                getRomName.StartInfo.Arguments = "/c bin\\Tools\\7za.exe l bin\\temp\\baserom\\content\\0010\\rom.zip | findstr WUP";
-                getRomName.Start();
-                getRomName.WaitForExit();
-                var s = getRomName.StandardOutput.ReadToEnd();
-                var split = s.Split(' ');
-                RomName = split[split.Length - 1].Replace("\r\n", "");
-                mvvm.Progress = 15;
-            }
-            using (Process RomEdit = new Process())
-            {
-                mvvm.msg = "Removing BaseRom...";
-                RomEdit.StartInfo.UseShellExecute = false;
-                RomEdit.StartInfo.CreateNoWindow = true;
-                RomEdit.StartInfo.RedirectStandardOutput = true;
-                RomEdit.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                //d Path.Combine(baseRomPath, "content", "0010", "rom.zip")
-                RomEdit.StartInfo.Arguments = $"d bin\\temp\\baserom\\content\\0010\\rom.zip";
-                RomEdit.Start();
-                RomEdit.WaitForExit();
-                mvvm.Progress = 40;
-                mvvm.msg = "Injecting ROM...";
-                File.Copy(injectRomPath, $"{RomName}");
-                RomEdit.StartInfo.Arguments = $"u bin\\temp\\baserom\\content\\0010\\rom.zip {RomName}";
-                RomEdit.Start();
-                RomEdit.WaitForExit();
-                mvvm.Progress = 80;
-            }
-            File.Delete(RomName);
+            mvvm.msg = "Getting BaseRom Name...";
+            var zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
+            using (var zip = ZipFile.Open(zipLocation, ZipArchiveMode.Read))
+                foreach (var file in zip.Entries)
+                    if (file.Name.Contains("WUP"))
+                    {
+                        RomName = file.Name;
+                        break;
+                    }
+            mvvm.Progress = 15;
+            var romPath = Directory.GetCurrentDirectory() + "\\" + RomName;
 
+            mvvm.msg = "Removing BaseRom...";
+            File.Delete(romPath);
+            File.Delete(zipLocation);
+            File.Copy(injectRomPath, romPath);
+
+            using (var stream = new FileStream(zipLocation, FileMode.Create))
+                using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                    archive.CreateEntryFromFile(romPath, Path.GetFileNameWithoutExtension(romPath));
+
+            mvvm.Progress = 80;
+            File.Delete(RomName);
         }
 
     
