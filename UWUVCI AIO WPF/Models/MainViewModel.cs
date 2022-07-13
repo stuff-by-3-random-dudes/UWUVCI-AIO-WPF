@@ -1208,11 +1208,12 @@ namespace UWUVCI_AIO_WPF
                             double stuff = 100 / test.Count;
                             foreach (string s in test)
                             {
-                                Task.Run(() => DownloadBaseAsync(s, this)).GetAwaiter();
+                                DownloadBaseAsync(s, this);
                                 Progress += Convert.ToInt32(stuff);
                             }
+
+                            Progress = 100;
                         });
-                        Progress = 100;
 
                         DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                         try
@@ -1253,11 +1254,11 @@ namespace UWUVCI_AIO_WPF
                         double stuff = 100 / test.Count;
                         foreach (string s in test)
                         {
-                            Task.Run(() => DownloadBaseAsync(s, this)).GetAwaiter();
+                            DownloadBaseAsync(s, this);
                             Progress += Convert.ToInt32(stuff);
                         }
+                        Progress = 100;
                     });
-                    Progress = 100;
 
                     DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                     try
@@ -1397,20 +1398,20 @@ namespace UWUVCI_AIO_WPF
 
 
         }
-        public async Task UpdateBaseAsync()
+        public void UpdateBaseAsync()
         {
-            if (await CheckForInternetConnectionAsync())
+            if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
             {
                 string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
 
-                await Task.Run(async () =>
-                { 
+                Task.Run(() =>
+                {
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
                     {
                         DeleteBase(s);
-                        await DownloadBaseAsync(s, this);
+                        DownloadBaseAsync(s, this);
 
                         GameConsoles g = new GameConsoles();
                         if (s.Contains("nds")) g = GameConsoles.NDS;
@@ -1746,7 +1747,7 @@ namespace UWUVCI_AIO_WPF
             }
             return ret;
         }
-        public static async Task DownloadBaseAsync(string name, MainViewModel mvm)
+        public static void DownloadBaseAsync(string name, MainViewModel mvm)
         {
             string olddir = Directory.GetCurrentDirectory();
             try
@@ -1756,8 +1757,8 @@ namespace UWUVCI_AIO_WPF
                 using (var client = new WebClient())
                 {
                     var fixname = name.Split('\\');
-                    var downloadLink = await getDownloadLinkAsync(name, false);
-                    await client.DownloadFileTaskAsync(downloadLink, fixname[fixname.Length -1]);
+                    var downloadLink = Task.Run(() => getDownloadLinkAsync(name, false)).GetAwaiter().GetResult();
+                    client.DownloadFile(downloadLink, fixname[fixname.Length -1]);
                 }
             }catch(Exception e)
             {
