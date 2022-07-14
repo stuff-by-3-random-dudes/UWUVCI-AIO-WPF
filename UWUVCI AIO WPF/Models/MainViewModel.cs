@@ -469,7 +469,7 @@ namespace UWUVCI_AIO_WPF
                         using (var webClient = new WebClient())
                         {
                             webClient.Headers.Add(HttpRequestHeader.UserAgent, "MyUserAgent");
-                            Task.Run(() => webClient.DownloadFileTaskAsync(releases[0].ZipballUrl, "UWUVCI_INSTALLER.exe")).GetAwaiter();
+                            webClient.DownloadFile(releases[0].ZipballUrl, "UWUVCI_INSTALLER.exe");
                         }
                         var cm = new Custom_Message("Update Available!", "Latest version is currently being downloaded!\nPlease look for the file \"UWUVCI_INSTALLER.exe\" in\n" + Directory.GetCurrentDirectory());
                         try
