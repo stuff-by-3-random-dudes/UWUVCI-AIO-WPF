@@ -504,6 +504,16 @@ namespace UWUVCI_AIO_WPF
                         catch (Exception) { }
                         cm.ShowDialog();
                     }
+                    else
+                    {
+                        var cm = new Custom_Message("No Update Available", "This is currently the latest version.");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
+                    }
                 }
             }
 
