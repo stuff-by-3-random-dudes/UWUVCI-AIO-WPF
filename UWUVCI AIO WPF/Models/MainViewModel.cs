@@ -543,7 +543,7 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
         }
-        public MainViewModel()
+        private MainViewModel()
         {
             if (!Environment.Is64BitOperatingSystem)
             {
@@ -587,10 +587,10 @@ namespace UWUVCI_AIO_WPF
             Settings.Default.Save();
             ArePathsSet();
 
-            Task.Run(async () => await UpdateAsync(false));
+            Update(false);
 
-            Task.Run(async () => await toolCheckAsync());
-            Task.Run(async () => await BaseCheck());
+            await toolCheckAsync();
+            await BaseCheck();
 
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
@@ -612,6 +612,14 @@ namespace UWUVCI_AIO_WPF
 
 
         }
+        //TODO: Figure wtf is going on here
+        //Notes: Constructor wasn't used like a constructor
+        //      MainViewModel is never created just only references are type checking
+        public static async Task<MainViewModel> SetupAsync()
+        {
+            return new MainViewModel();
+        }
+
         public string turbocd()
         {
            
@@ -1287,14 +1295,14 @@ namespace UWUVCI_AIO_WPF
             if (await CheckForInternetConnectionAsync())
             {
                 string[] bases = ToolCheck.ToolNames;
-                await Task.Run(() =>
+                await Task.Run(async () =>
                 {
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
                     {
                         DeleteTool(s);
-                        DownloadToolAsync(s, this);
+                        await DownloadToolAsync(s, this);
                         Progress += Convert.ToInt32(l);
                     }
                     Progress = 100;
@@ -1919,14 +1927,14 @@ namespace UWUVCI_AIO_WPF
                 string path = $@"{Directory.GetCurrentDirectory()}bin\\Tools";
                 
                     Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
-                    await InjcttoolCheck();
+                    InjcttoolCheck();
               
             }
         }
         private void ThreadDownload(List<MissingTool> missingTools)
         {
 
-            var thread = new Thread(() =>
+            var thread = new Thread(async () =>
             {
                 double l = 100 / missingTools.Count;
 
@@ -1940,7 +1948,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        DownloadToolAsync(m.Name, this);
+                        await DownloadToolAsync(m.Name, this);
                     }
 
                     Progress += Convert.ToInt32(l);
@@ -2749,8 +2757,8 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
 
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.GBA, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.GBA, repoids);
             }
 
         }
@@ -2765,8 +2773,8 @@ namespace UWUVCI_AIO_WPF
 
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.SNES, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.SNES, repoids);
 
             }
 
@@ -2782,8 +2790,8 @@ namespace UWUVCI_AIO_WPF
 
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.MSX, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.MSX, repoids);
             }
 
         }
@@ -2797,8 +2805,8 @@ namespace UWUVCI_AIO_WPF
             };
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.TG16, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.TG16, repoids);
 
             }
 
@@ -2933,8 +2941,8 @@ namespace UWUVCI_AIO_WPF
 
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.NES, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.NES, repoids);
             }
 
         }
@@ -3079,8 +3087,8 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.NDS, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.NDS, repoids);
 
             }
 
@@ -3110,8 +3118,8 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
                 
-                await GetRepoImages(SystemType, repoid);
-                await checkForAdditionalFiles(GameConsoles.N64, repoids);
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.N64, repoids);
             }
 
         }
@@ -3172,8 +3180,8 @@ namespace UWUVCI_AIO_WPF
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
 
-                        await GetRepoImages(SystemType, repoid, repoids);
-                        await checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids);
+                        GetRepoImages(SystemType, repoid, repoids);
+                        checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids);
                     }
                 }
             }catch(Exception )
