@@ -3134,8 +3134,10 @@ namespace UWUVCI_AIO_WPF
             System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
             return enc.GetString(arr);
         }
-        public string getInternalWIIGCNName(string OpenGame, bool gc)
+        public async Task<string> getInternalWIIGCNName(string OpenGame, bool gc)
         {
+            //string linkbase = "https://raw.githubusercontent.com/Flumpster/wiivc-bis/master/";
+            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
             string ret = "";
             try
             {
@@ -3177,7 +3179,7 @@ namespace UWUVCI_AIO_WPF
                             repoid = TempString;
                     }
 
-                    if (Task.Run(() => CheckForInternetConnectionWOWarningAsync()).GetAwaiter().GetResult())
+                    if (await CheckForInternetConnectionWOWarningAsync())
                     {
                         repoids.Add(SystemType + repoid);
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
@@ -3185,7 +3187,7 @@ namespace UWUVCI_AIO_WPF
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
 
                         await GetRepoImages(SystemType, repoid, repoids);
-                        checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids);
+                        await checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids);
                     }
                 }
             }catch(Exception )
