@@ -67,7 +67,7 @@ namespace UWUVCI_AIO_WPF.Classes
             return Directory.Exists(FolderName);
         }
 
-        public static async Task<bool> IsToolRightAsync(string name)
+        public static async Task<bool> IsToolRight(string name)
         {
             bool ret = false;
             using (var client = new WebClient())
