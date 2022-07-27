@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
     class ToolCheck
     {
-        static string FolderName = "bin\\Tools";
+        static string FolderName = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools";
         public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
         public static string[] ToolNames =
         {
@@ -70,16 +72,35 @@ namespace UWUVCI_AIO_WPF.Classes
         public static async Task<bool> IsToolRightAsync(string name)
         {
             bool ret = false;
-            WebClient client = new WebClient();
-            await client.DownloadFileTaskAsync(backupulr + name + ".md5", name + ".md5");
-            StreamReader sr = new StreamReader(name + ".md5");
-            var md5 = sr.ReadLine();
-            if (CalculateMD5(name) == md5)
+            string md5Name = FolderName + "\\" + name + ".md5";
+            using (WebClient client = new WebClient())
             {
-                ret = true;
+                await client.DownloadFileTaskAsync(backupulr + md5Name, md5Name);
+                using (StreamReader sr = new StreamReader(md5Name))
+                {
+                    var md5 = sr.ReadLine();
+                    if (CalculateMD5(name) == md5)
+                    {
+                        ret = true;
+                    }
+                }
             }
-            sr.Close();
-            File.Delete(name + ".md5");
+            //Dumb solution but whatever, hopefully this deletes the md5file
+            try
+            {
+                File.Delete(md5Name);
+            }
+            catch { }
+            try
+            {
+                File.Delete(new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools\\" + md5Name);
+            }
+            catch { }
+            try
+            {
+                File.Delete(new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\bases\\" + md5Name);
+            }
+            catch { }
             return ret;
         }
         static string CalculateMD5(string filename)
@@ -112,38 +133,18 @@ namespace UWUVCI_AIO_WPF.Classes
             if (!File.Exists(path))
                 return false;
 
-            if (path.ToLower().Contains("gba1.zip"))
-            {
-                string p = Path.GetDirectoryName(path);
-                if (!File.Exists(Path.Combine(p, "MArchiveBatchTool.exe")))
-                {
-                    using (Process extract = new Process())
+            if (path.ToLower().Contains("gba1.zip") || path.ToLower().Contains("gba2.zip"))
+                if (!File.Exists(Path.Combine(FolderName, "MArchiveBatchTool.exe")) || !File.Exists(Path.Combine(FolderName, "ucrtbase.dll")))
+                    try
                     {
-                        extract.StartInfo.UseShellExecute = false;
-                        extract.StartInfo.CreateNoWindow = false;
-                        extract.StartInfo.FileName = "cmd.exe";
-                        extract.StartInfo.Arguments = "/c bin\\Tools\\7za.exe x bin\\Tools\\gba1.zip -obin\\Tools";
-                        extract.Start();
-                        extract.WaitForExit();
+                        ZipFile.ExtractToDirectory(path, FolderName);
                     }
-                }
-            }
-            else if (path.ToLower().Contains("gba2.zip"))
-            {
-                string p = Path.GetDirectoryName(path);
-                if (!File.Exists(Path.Combine(p, "ucrtbase.dll")))
-                {
-                    using (Process extract = new Process())
+                    catch (Exception)
                     {
-                        extract.StartInfo.UseShellExecute = false;
-                        extract.StartInfo.CreateNoWindow = false;
-                        extract.StartInfo.FileName = "cmd.exe";
-                        extract.StartInfo.Arguments = "/c bin\\Tools\\7za.exe x bin\\Tools\\gba2.zip -obin\\Tools";
-                        extract.Start();
-                        extract.WaitForExit();
+                        Thread.Sleep(200);
+                        DoesToolExist(path);
                     }
-                }
-            }
+
             return true;
         }
 
