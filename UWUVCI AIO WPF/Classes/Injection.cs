@@ -547,9 +547,12 @@ namespace UWUVCI_AIO_WPF
             {
                 File.Delete(sFile);
             }
-            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
-            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+
+            string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
+            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
+            File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
+            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
+
             using (Process iso2nfs = new Process())
             {
                 if (!mvm.debug)
@@ -557,7 +560,7 @@ namespace UWUVCI_AIO_WPF
 
                     iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
-                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                iso2nfs.StartInfo.FileName = nfsPath;
                 string extra = "";
                 if (mvm.Index == 2)
                 {
@@ -567,13 +570,12 @@ namespace UWUVCI_AIO_WPF
                 if (mvm.Index == 4) { extra = "-instantcc "; }
                 if (mvm.Index == 5) { extra = "-nocc "; }
                 if (mvm.LR) { extra += "-lrpatch "; }
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}-iso game.iso";
+                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}-iso " + gamePath;
                 iso2nfs.Start();
                 iso2nfs.WaitForExit();
-                File.Delete("nfs2iso2nfs.exe");
-                File.Delete("game.iso");
+                File.Delete(nfsPath);
+                File.Delete(gamePath);
             }
-            Directory.SetCurrentDirectory(savedir);
             mvm.Progress = 80;
 
 
@@ -654,9 +656,10 @@ namespace UWUVCI_AIO_WPF
             {
                 File.Delete(sFile);
             }
-            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
-            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+            string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
+            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
+            File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
+            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
             using (Process iso2nfs = new Process())
             {
                 if (!mvm.debug)
@@ -664,19 +667,18 @@ namespace UWUVCI_AIO_WPF
 
                     iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
-                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                iso2nfs.StartInfo.FileName = nfsPath;
                 string pass = "-passthrough ";
                 if(mvm.passtrough != true)
                 {
                     pass = "";
                 }
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {pass}-iso game.iso";
+                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {pass}-iso " + gamePath;
                 iso2nfs.Start();
                 iso2nfs.WaitForExit();
-                File.Delete("nfs2iso2nfs.exe");
-                File.Delete("game.iso");
+                File.Delete(gamePath);
+                File.Delete(nfsPath);
             }
-            Directory.SetCurrentDirectory(savedir);
             mvm.Progress = 80;
 
         
@@ -849,11 +851,10 @@ namespace UWUVCI_AIO_WPF
                     mvm.msg = "Video Patching ROM...";
                     using (Process vmc = new Process())
                     {
+                        var wiiVmcPath = Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe");
+                        File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), wiiVmcPath);
 
-                        File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
-
-                        Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
-                        vmc.StartInfo.FileName = "wii-vmc.exe";
+                        vmc.StartInfo.FileName = wiiVmcPath;
                         vmc.StartInfo.Arguments = "main.dol";
                         vmc.StartInfo.UseShellExecute = false;
                         vmc.StartInfo.CreateNoWindow = true;
@@ -869,10 +870,9 @@ namespace UWUVCI_AIO_WPF
                         Thread.Sleep(2000);
                         vmc.StandardInput.WriteLine();
                         vmc.WaitForExit();
-                        File.Delete("wii-vmc.exe");
+                        File.Delete(wiiVmcPath);
 
 
-                        Directory.SetCurrentDirectory(savedir);
                         mvm.Progress = 40;
                     }
 
@@ -936,11 +936,10 @@ namespace UWUVCI_AIO_WPF
                         mvm.msg = "Video Patching ROM...";
                         using (Process vmc = new Process())
                         {
+                            var wiiVmcPath = Path.Combine(tempPath, "TEMP", "DATA", "sys", "wii-vmc.exe");
+                            File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), wiiVmcPath);
 
-                            File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "DATA", "sys", "wii-vmc.exe"));
-
-                            Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "DATA", "sys"));
-                            vmc.StartInfo.FileName = "wii-vmc.exe";
+                            vmc.StartInfo.FileName = wiiVmcPath;
                             vmc.StartInfo.Arguments = "main.dol";
                             vmc.StartInfo.UseShellExecute = false;
                             vmc.StartInfo.CreateNoWindow = true;
@@ -956,10 +955,9 @@ namespace UWUVCI_AIO_WPF
                             Thread.Sleep(2000);
                             vmc.StandardInput.WriteLine();
                             vmc.WaitForExit();
-                            File.Delete("wii-vmc.exe");
+                            File.Delete(wiiVmcPath);
 
 
-                            Directory.SetCurrentDirectory(savedir);
                             mvm.Progress = 40;
                         }
 
@@ -1014,9 +1012,11 @@ namespace UWUVCI_AIO_WPF
             {
                 File.Delete(sFile);
             }
-            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
-            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+            string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
+            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
+            File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
+            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
+
             using (Process iso2nfs = new Process())
             {
                 if (!mvm.debug)
@@ -1024,7 +1024,7 @@ namespace UWUVCI_AIO_WPF
                    
                     iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
-                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                iso2nfs.StartInfo.FileName = nfsPath;
                 string extra = "";
                 if (mvm.Index == 2)
                 {
@@ -1034,13 +1034,12 @@ namespace UWUVCI_AIO_WPF
                 if (mvm.Index == 4) { extra = "-instantcc "; }
                 if (mvm.Index == 5) { extra = "-nocc "; }
                 if (mvm.LR) { extra += "-lrpatch "; }
-                iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso game.iso";
+                iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso " + gamePath;
                 iso2nfs.Start();
                 iso2nfs.WaitForExit();
-                File.Delete("nfs2iso2nfs.exe");
-                File.Delete("game.iso");
+                File.Delete(nfsPath);
+                File.Delete(gamePath);
             }
-            Directory.SetCurrentDirectory(savedir);
             mvm.Progress = 80;
         }
         private static void GC(string romPath, MainViewModel mvm, bool force)
@@ -1346,9 +1345,11 @@ namespace UWUVCI_AIO_WPF
             {
                 File.Delete(sFile);
             }
-            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
-            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+            string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
+            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
+            File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
+            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
+
             using (Process iso2nfs = new Process())
             {
                 if (!mvm.debug)
@@ -1356,14 +1357,13 @@ namespace UWUVCI_AIO_WPF
                    
                     iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                 }
-                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso game.iso";
+                iso2nfs.StartInfo.FileName = nfsPath;
+                iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso " + gamePath;
                 iso2nfs.Start();
                 iso2nfs.WaitForExit();
-                File.Delete("nfs2iso2nfs.exe");
-                File.Delete("game.iso");
+                File.Delete(nfsPath);
+                File.Delete(gamePath);
             }
-            Directory.SetCurrentDirectory(savedir);
             mvm.Progress = 80;
             
         }
@@ -1555,7 +1555,6 @@ namespace UWUVCI_AIO_WPF
                 mvvm.msg = "Injecting ROM...";
                 Console.WriteLine("Converting Game to NFS format...");
                 string olddir = Directory.GetCurrentDirectory();
-                Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
                 tik.StartInfo.FileName = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
                 if (!mvm.GC)
                 {
@@ -1580,7 +1579,6 @@ namespace UWUVCI_AIO_WPF
                 tik.WaitForExit();
                 Console.WriteLine("Finished Conversion");
                 mvvm.Progress = 80;
-                Directory.SetCurrentDirectory(olddir);
             }
         }
 
@@ -1740,7 +1738,6 @@ namespace UWUVCI_AIO_WPF
                 }
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
-                Directory.SetCurrentDirectory(oldpath);
             }
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
