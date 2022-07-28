@@ -1230,6 +1230,10 @@ namespace UWUVCI_AIO_WPF
                             }
                             Progress = 100;
                         });
+<<<<<<< HEAD
+=======
+
+>>>>>>> Asynicify
                         DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                         try
                         {
@@ -1273,6 +1277,10 @@ namespace UWUVCI_AIO_WPF
                         }
                         Progress = 100;
                     });
+<<<<<<< HEAD
+=======
+
+>>>>>>> Asynicify
                     DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                     try
                     {
@@ -1299,11 +1307,12 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void UpdateTools()
+        public void UpdateToolsAsync()
         {
-            if (CheckForInternetConnection())
+            if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
             {
                 string[] bases = ToolCheck.ToolNames;
+                Progress = 0;
                 Task.Run(() =>
                 {
                     Progress = 0;
@@ -1410,18 +1419,20 @@ namespace UWUVCI_AIO_WPF
 
 
         }
-        public void UpdateBases()
+        public void UpdateBaseAsync()
         {
-            if (CheckForInternetConnection())
+            if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
             {
                 string[] bases = { "bases.vcbnds", "bases.vcbn64", "bases.vcbgba", "bases.vcbsnes", "bases.vcbnes", "bases.vcbtg16", "bases.vcbmsx", "bases.vcbwii" };
-                Task.Run(() => {
+
+                Task.Run(() =>
+                { 
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
                     {
                         DeleteBase(s);
-                        DownloadBase(s, this);
+                        Task.Run(() => DownloadBaseAsync(s, this)).GetAwaiter().GetResult();
 
                         GameConsoles g = new GameConsoles();
                         if (s.Contains("nds")) g = GameConsoles.NDS;
@@ -1718,58 +1729,55 @@ namespace UWUVCI_AIO_WPF
         }
         private static void DeleteBase(string console)
         {
-            File.Delete($@"bin\bases\{console}");
+            File.Delete(Path.Combine(Directory.GetCurrentDirectory(), "bin", "bases", console));
         }
         public static List<string> GetMissingVCBs()
         {
             List<string> ret = new List<string>();
-            string path = @"bin\bases\bases.vcb";
-            if (!File.Exists(path + "nds"))
+            string prefix = @"bases.vcb";
+            var location = Path.Combine(Directory.GetCurrentDirectory(), "bin", "bases", prefix);
+            if (!File.Exists(location + "nds"))
             {
-                ret.Add(path + "nds");
+                ret.Add(prefix + "nds");
             }
-            if (!File.Exists(path + "nes"))
+            if (!File.Exists(location + "nes"))
             {
-                ret.Add(path + "nes");
+                ret.Add(prefix + "nes");
             }
-            if (!File.Exists(path + "n64"))
+            if (!File.Exists(location + "n64"))
             {
-                ret.Add(path + "n64");
+                ret.Add(prefix + "n64");
             }
-            if (!File.Exists(path + "snes"))
+            if (!File.Exists(location + "snes"))
             {
-                ret.Add(path + "snes");
+                ret.Add(prefix + "snes");
             }
-            if (!File.Exists(path + "gba"))
+            if (!File.Exists(location + "gba"))
             {
-                ret.Add(path + "gba");
+                ret.Add(prefix + "gba");
             }
-            if (!File.Exists(path + "tg16"))
+            if (!File.Exists(location + "tg16"))
             {
-                ret.Add(path + "tg16");
+                ret.Add(prefix + "tg16");
             }
-            if (!File.Exists(path + "msx"))
+            if (!File.Exists(location + "msx"))
             {
-                ret.Add(path + "msx");
+                ret.Add(prefix + "msx");
             }
-            if (!File.Exists(path + "wii"))
+            if (!File.Exists(location + "wii"))
             {
-                ret.Add(path + "wii");
+                ret.Add(prefix + "wii");
             }
             return ret;
         }
         public static void DownloadBase(string name, MainViewModel mvm)
         {
-            string olddir = Directory.GetCurrentDirectory();
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "bases", name);
             try
             {
-                string basePath = $@"bin\bases\";
-                Directory.SetCurrentDirectory(basePath);
                 using (var client = new WebClient())
-
                 {
-                    var fixname = name.Split('\\');
-                    client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
+                    await client.DownloadFileTaskAsync(getDownloadLink(name, false), filePath);
                 }
             }
             catch (Exception e)
@@ -1784,32 +1792,21 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
                 Environment.Exit(1);
             }
-            Directory.SetCurrentDirectory(olddir);
         }
         public static void DownloadTool(string name, MainViewModel mvm)
         {
-            string olddir = Directory.GetCurrentDirectory();
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", name);
             try
             {
-
-                if (Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
-                {
-                    olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
-                }
-                else
-                {
-                    string basePath = $@"bin\Tools\";
-                    Directory.SetCurrentDirectory(basePath);
-                }
                 do
                 {
-                    if (File.Exists(name))
+                    if (File.Exists(filePath))
                     {
-                        File.Delete(name);
+                        File.Delete(filePath);
                     }
                     using (var client = new WebClient())
                     {
-                        client.DownloadFile(getDownloadLink(name, true), name);
+                        await client.DownloadFileTaskAsync(getDownloadLink(name, true), filePath);
                     }
                 } while (!ToolCheck.IsToolRight(name));
 
@@ -1828,72 +1825,19 @@ namespace UWUVCI_AIO_WPF
 
                 Environment.Exit(1);
             }
-            Directory.SetCurrentDirectory(olddir);
         }
         private static string getDownloadLink(string toolname, bool tool)
         {
             try
             {
-                bool ok = false;
-                try
+                if (tool)
                 {
-                    System.Net.WebClient client = new System.Net.WebClient();
-                    string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
-                    ok = true;
-                }
-                catch (System.Net.WebException ex)
-                {
-
-
-                }
-                if (ok)
-                {
-                    WebRequest request;
-                    //get download link from uwuvciapi
-                    if (tool)
-                    {
-                        request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?tool=" + toolname);
-                    }
-                    else
-                    {
-                        request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVcbLink?vcb=" + toolname);
-                    }
-
-                    var response = request.GetResponse();
-                    using (Stream dataStream = response.GetResponseStream())
-                    {
-                        // Open the stream using a StreamReader for easy access.  
-                        StreamReader reader = new StreamReader(dataStream);
-                        // Read the content.  
-                        string responseFromServer = reader.ReadToEnd();
-                        // Display the content.  
-                        if (responseFromServer == "")
-                        {
-                            if (tool)
-                            {
-                                return $"{ToolCheck.backupulr}{toolname}";
-                            }
-                            else
-                            {
-                                return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
-                            }
-                        }
-                        return responseFromServer;
-                    }
+                    return $"{ToolCheck.backupulr}{toolname}";
                 }
                 else
                 {
-                    if (tool)
-                    {
-                        return $"{ToolCheck.backupulr}{toolname}";
-                    }
-                    else
-                    {
-                        return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
-                    }
-                }
-
-
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
+                }    
             }
             catch (Exception)
             {
@@ -1903,7 +1847,8 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
+                    var name = toolname.Replace("bin\\bases\\", "");
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + name;
                 }
 
             }
@@ -1912,21 +1857,16 @@ namespace UWUVCI_AIO_WPF
         {
             if (ToolCheck.DoesToolsFolderExist())
             {
-
                 List<MissingTool> missingTools = new List<MissingTool>();
                 missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
-
-
 
                     foreach (MissingTool m in missingTools)
                     {
                         DownloadTool(m.Name, this);
 
                     }
-
-
 
                     InjcttoolCheck();
 
@@ -1943,7 +1883,6 @@ namespace UWUVCI_AIO_WPF
         }
         private void ThreadDownload(List<MissingTool> missingTools)
         {
-
             var thread = new Thread(() =>
             {
                 double l = 100 / missingTools.Count;
@@ -1958,7 +1897,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        DownloadTool(m.Name, this);
+                        Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
                     }
 
                     Progress += Convert.ToInt32(l);
@@ -2198,14 +2137,23 @@ namespace UWUVCI_AIO_WPF
             LTG16.Clear();
             LMSX.Clear();
             LWII.Clear();
-            lNDS = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnds");
-            lNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnes");
-            lSNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbsnes");
-            lN64 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbn64");
-            lGBA = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbgba");
-            lTG16 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbtg16");
-            lMSX = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbmsx");
-            lWii = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbwii");
+            try
+            {
+                lNDS = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnds");
+                lNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnes");
+                lSNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbsnes");
+                lN64 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbn64");
+                lGBA = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbgba");
+                lTG16 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbtg16");
+                lMSX = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbmsx");
+                lWii = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbwii");
+            }
+            catch (Exception)
+            {
+                //Nico, look at what you made me do
+                Thread.Sleep(200);
+                GetAllBases();
+            }
             CreateSettingIfNotExist(lNDS, GameConsoles.NDS);
             CreateSettingIfNotExist(lNES, GameConsoles.NES);
             CreateSettingIfNotExist(lSNES, GameConsoles.SNES);
