@@ -66,14 +66,10 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public static bool DoesToolsFolderExist()
         {
-            if (Directory.Exists(FolderName))
-            {
-                return true;
-            }
-            return false;
+            return Directory.Exists(FolderName);
         }
 
-        public static bool IsToolRight(string name)
+        public static async Task<bool> IsToolRightAsync(string name)
         {
             bool ret = false;
             string md5Name = FolderName + "\\" + name + ".md5";
@@ -114,7 +110,6 @@ namespace UWUVCI_AIO_WPF.Classes
                 using (var stream = File.OpenRead(filename))
                 {
                     string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                    stream.Close();
                     return ret;
                 }
             }
@@ -122,7 +117,7 @@ namespace UWUVCI_AIO_WPF.Classes
         public static List<MissingTool> CheckForMissingTools()
         {
             List<MissingTool> ret = new List<MissingTool>();
-            foreach(string s in ToolNames)
+            foreach (string s in ToolNames)
             {
                 string path = $@"{FolderName}\{s}";
                 if (!DoesToolExist(path))
