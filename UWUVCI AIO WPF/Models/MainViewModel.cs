@@ -41,14 +41,12 @@ namespace UWUVCI_AIO_WPF
         private bool Injected2 = false;
         public bool injected2
         {
-
             get { return Injected2; }
             set
             {
                 Injected2 = value;
                 OnPropertyChanged();
             }
-
         }
         public string prodcode = "";
         //public GameConfig GameConfiguration { get; set; }
@@ -96,7 +94,6 @@ namespace UWUVCI_AIO_WPF
             get { return selectedBaseAsString; }
             set { selectedBaseAsString = value; }
         }
-
 
         private List<string> lGameBasesString = new List<string>();
 
@@ -164,7 +161,6 @@ namespace UWUVCI_AIO_WPF
             get { return thing; }
             set { thing = value; }
         }
-
         public int OldIndex { get; set; }
 
         public bool RomSet { get; set; }
@@ -226,8 +222,6 @@ namespace UWUVCI_AIO_WPF
 
         private List<GameBases> lSNES = new List<GameBases>();
 
-
-
         public List<GameBases> LSNES
         {
             get { return lSNES; }
@@ -282,9 +276,7 @@ namespace UWUVCI_AIO_WPF
         public void RemoveCreatedIMG()
         {
             if (Directory.Exists(@"bin\createdIMG"))
-            {
                 Directory.Delete(@"bin\createdIMG", true);
-            }
         }
 
         private List<GameBases> lWii = new List<GameBases>();
@@ -301,36 +293,17 @@ namespace UWUVCI_AIO_WPF
                 var s = ByteArrayToString(procode);
 
                 fs.Close();
-                if (s.ToLower().Contains("nkit"))
-                {
-                    NKITFLAG = true;
 
-                }
-                else
-                {
-                    NKITFLAG = false;
-                }
+                NKITFLAG = s.ToLower().Contains("nkit");
             }
         }
-
         public bool CheckTime(DateTime creationTime)
         {
             DateTime curr = DateTime.Now;
             if (creationTime.Hour == curr.Hour || creationTime.Hour == curr.Hour - 1)
-            {
-                if (creationTime.Minute == curr.Minute || creationTime.Minute == curr.Minute - 2)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+                return creationTime.Minute == curr.Minute || creationTime.Minute == curr.Minute - 2;
+
+            return false;
         }
 
         public List<GameBases> LWII
@@ -350,7 +323,6 @@ namespace UWUVCI_AIO_WPF
 
         public bool BaseDownloaded { get; set; } = false;
 
-
         private bool canInject = false;
 
         public bool CanInject
@@ -362,7 +334,6 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
-
         private string cBasePath;
 
         public string CBasePath
@@ -374,7 +345,6 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
-
 
         public int Index = -1;
         public bool LR = false;
@@ -419,7 +389,6 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
-
         public System.Windows.Controls.ListViewItem curr = null;
 
         private bool ckeys;
@@ -433,7 +402,6 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
-
         public bool NKITFLAG { get; set; } = false;
 
         public MainWindow mw;
@@ -506,19 +474,12 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
             }
-
         }
-
         private async Task<int> GetNewVersionAsync()
         {
-
             try
             {
-                WebRequest request;
-                //get download link from uwuvciapi
-
-                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
-
+                WebRequest request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
 
                 var response = await request.GetResponseAsync();
                 using (Stream dataStream = response.GetResponseStream())
@@ -530,14 +491,12 @@ namespace UWUVCI_AIO_WPF
                     // Display the content.  
                     return Convert.ToInt32(responseFromServer);
                 }
-
             }
             catch (Exception)
             {
                 return 100000;
             }
         }
-
         public bool ConfirmRiffWave(string path)
         {
             using (var reader = new BinaryReader(File.OpenRead(path)))
@@ -546,20 +505,12 @@ namespace UWUVCI_AIO_WPF
                 long WAVHeader1 = reader.ReadInt32();
                 reader.BaseStream.Position = 0x08;
                 long WAVHeader2 = reader.ReadInt32();
-                if (WAVHeader1 == 1179011410 & WAVHeader2 == 1163280727)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+
+                return WAVHeader1 == 1179011410 & WAVHeader2 == 1163280727;
             }
         }
-
         public void OpenDialog(string title, string msg)
         {
-
             Custom_Message cm = new Custom_Message(title, msg);
             try
             {
@@ -578,8 +529,6 @@ namespace UWUVCI_AIO_WPF
                 ToolCheck.ToolNames = Tools.ToArray();
             }
 
-
-            //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
             if (Directory.Exists(@"bases"))
                 Directory.Delete(@"bases", true);
 
@@ -632,15 +581,10 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
             UpdatePathSet();
-
             GetAllBases();
-
-
         }
         public string turbocd()
         {
-
-
             string ret = string.Empty;
             Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder. \n\n The Folder should at least contain: \n EXACTLY ONE *.hcd file \n One or more *.ogg files \n One or More *.bin files \n\n Not doing so will result in a faulty Inject. You have been warned! ");
             try
@@ -708,19 +652,14 @@ namespace UWUVCI_AIO_WPF
 
                     }
                 }
-
             }
-
-
-
-
-
             return ret;
         }
         public GameConfig saveconf = null;
         public void resetCBASE()
         {
-            if (cb != null) cb.Reset();
+            if (cb != null) 
+                cb.Reset();
         }
         public void removeCBASE()
         {
@@ -762,14 +701,7 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration.rf = regionfrii;
             GameConfiguration.rfjp = regionfriijp;
             GameConfiguration.rfus = regionfriius;
-            if (Index != -1)
-            {
-                GameConfiguration.disgamepad = false;
-            }
-            else
-            {
-                GameConfiguration.disgamepad = true;
-            }
+            GameConfiguration.disgamepad = Index != -1;
             GameConfiguration.fourbythree = cd;
             if (GameConfiguration.N64Stuff.INIPath != null || GameConfiguration.N64Stuff.INIPath == "") incp = String.Copy(GameConfiguration.N64Stuff.INIPath);
             ReadBootSoundIntoConfig();
@@ -826,33 +758,6 @@ namespace UWUVCI_AIO_WPF
                 GameConfiguration.N64Stuff.INIBin = null;
                 GameConfiguration.N64Stuff.INIPath = incp;
             }
-            /*if (GameConfiguration.Console == GameConsoles.N64)
-            {
-                (thing as N64Config).reset();
-            }
-            else if (gameConfiguration.Console == GameConsoles.TG16)
-            {
-                (thing as TurboGrafX).reset();
-            }
-            else if (gameConfiguration.Console == GameConsoles.WII && test != GameConsoles.GCN)
-            {
-                (thing as WiiConfig).reset();
-            }
-            else if (test == GameConsoles.GCN)
-            {
-                (thing as GCConfig).reset();
-            }
-            else
-            {
-                try
-                {
-                    (thing as OtherConfigs).reset();
-                }
-                catch (Exception e)
-                {
-                    (thing as GCConfig).reset();
-                }
-            }*/
         }
         public void ImportConfig(string configPath)
         {
@@ -915,7 +820,6 @@ namespace UWUVCI_AIO_WPF
         {
             ReadFileAsBin(GameConfiguration, bootsound, 6);
         }
-
         public void ReadImagesIntoConfig()
         {
             ReadFileAsBin(GameConfiguration, GameConfiguration.TGAIco.ImgPath, 1);
@@ -927,7 +831,6 @@ namespace UWUVCI_AIO_WPF
         {
             ReadFileAsBin(GameConfiguration, GameConfiguration.N64Stuff.INIPath, 5);
         }
-
         private void ReadFileAsBin(GameConfig file, string FilePath, int scase)
         {
             if (FilePath != null)
@@ -992,25 +895,18 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
             }
-
-
         }
         public bool donttrim = false;
         private static void CheckAndFixConfigFolder()
         {
-            if (!Directory.Exists(@"configs"))
-            {
-                Directory.CreateDirectory(@"configs");
-            }
+            Directory.CreateDirectory(@"configs");
         }
         public void Pack(bool loadiine)
         {
             ValidatePathsStillExist();
             if (loadiine)
-            {
                 Injection.Loadiine(GameConfiguration.GameName);
-                //
-            }
+
             else
             {
                 if (gameConfiguration.GameName != null)
@@ -1064,7 +960,6 @@ namespace UWUVCI_AIO_WPF
             foldername = "";
             mw.ListView_Click(mw.listCONS, null);
         }
-
         private void ClearImage()
         {
             switch (GameConfiguration.Console)
@@ -1162,8 +1057,6 @@ namespace UWUVCI_AIO_WPF
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-
-
         }
         public bool failed = false;
 
@@ -1176,16 +1069,17 @@ namespace UWUVCI_AIO_WPF
             {
                 if (Injection.Inject(GameConfiguration, RomPath, this, force))
                 {
-
                     Injected = true;
                     injected2 = true;
-                    if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
-                    {
-                        injected2 = false;
-                    }
 
+                    if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
+                        injected2 = false;
                 }
-                else { Injected = false; injected2 = false; }
+                else 
+                { 
+                    Injected = false; 
+                    injected2 = false; 
+                }
             });
             DownloadWait dw = new DownloadWait("Injecting Game - Please Wait", "", this);
             try
@@ -1218,8 +1112,6 @@ namespace UWUVCI_AIO_WPF
                     Inject(force);
                 }
             }
-
-
         }
         private void BaseCheck()
         {
@@ -1263,9 +1155,6 @@ namespace UWUVCI_AIO_WPF
                         dw.ShowDialog();
                         Environment.Exit(1);
                     }
-
-
-
                 }
             }
             else
@@ -1308,10 +1197,7 @@ namespace UWUVCI_AIO_WPF
                     dw.ShowDialog();
                     Environment.Exit(1);
                 }
-
-
             }
-
         }
         public void UpdateToolsAsync()
         {
@@ -1351,32 +1237,12 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
+
                 Process p = new Process();
                 p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
-                if (debug)
-                {
-                    if (saveworkaround)
-                    {
-                        p.StartInfo.Arguments = "--debug --skip --spacebypass";
-                    }
-                    else
-                    {
-                        p.StartInfo.Arguments = "--debug --skip";
-                    }
-
-                }
-                else
-                {
-                    if (saveworkaround)
-                    {
-                        p.StartInfo.Arguments = "--skip --spacebypass";
-                    }
-                    else
-                    {
-                        p.StartInfo.Arguments = "--skip";
-                    }
-                }
+                p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
                 p.Start();
+
                 Environment.Exit(0);
             }
 
@@ -1391,7 +1257,6 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
             cm.Close();
-
         }
         public void ResetTitleKeys()
         {
@@ -1411,20 +1276,13 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             cm.ShowDialog();
             mw.Close();
+
             Process p = new Process();
             p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
-            if (debug)
-            {
-                p.StartInfo.Arguments = "--debug --skip";
-            }
-            else
-            {
-                p.StartInfo.Arguments = "--skip";
-            }
+            p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip";
             p.Start();
+
             Environment.Exit(0);
-
-
         }
         public void UpdateBaseAsync()
         {
@@ -1473,21 +1331,14 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
+
                 Process p = new Process();
                 p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
-                if (debug)
-                {
-                    p.StartInfo.Arguments = "--debug --skip";
-                }
-                else
-                {
-                    p.StartInfo.Arguments = "--skip";
-                }
+                p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip";
                 p.Start();
+
                 Environment.Exit(0);
             }
-
-
         }
         public bool checkSysKey(string key)
         {
@@ -1526,8 +1377,8 @@ namespace UWUVCI_AIO_WPF
                 GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
                 IFormatter formatter = new BinaryFormatter();
                 GameConfig check = (GameConfig)formatter.Deserialize(decompressedConfigStream);
-                if (check.Console == console) return true;
 
+                return check.Console == console;
             }
             return false;
         }
@@ -1565,8 +1416,8 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
             }
-
         }
+        //I hate everything about this function
         private async Task<bool> RemoteFileExists(string url)
         {
             try
@@ -1602,8 +1453,6 @@ namespace UWUVCI_AIO_WPF
                         {
                             cm.ShowDialog();
                         }
-
-
                         break;
                     case GameConsoles.SNES:
                         cm = new Custom_Message("Information", " You can only inject SNES ROMs that are not using any Co-Processors (example for not working: Star Fox) \n\n If attempting to inject a ROM in need of a Co-Processor, we will not give you any support with fixing said injection. ");
@@ -1616,7 +1465,6 @@ namespace UWUVCI_AIO_WPF
                         {
                             cm.ShowDialog();
                         }
-
                         break;
                 }
             }
@@ -1626,13 +1474,9 @@ namespace UWUVCI_AIO_WPF
                 if (ROM)
                 {
                     if (INI)
-                    {
                         dialog.Filter = "BootSound Files (*.mp3; *.wav; *.btsnd) | *.mp3;*.wav;*.btsnd";
-                    }
                     else if (GC)
-                    {
                         dialog.Filter = "GCN ROM (*.iso; *.gcm) | *.iso; *.gcm";
-                    }
                     else
                     {
                         switch (GameConfiguration.Console)
@@ -1675,22 +1519,14 @@ namespace UWUVCI_AIO_WPF
                                 break;
                         }
                     }
-
-
                 }
                 else if (!INI)
-                {
-
                     dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga; *jpeg) | *.png;*.jpg;*.bmp;*.tga;*jpeg";
-                }
                 else if (INI)
-                {
                     dialog.Filter = "N64 VC Configuration (*.ini) | *.ini";
-                }
+
                 if (Directory.Exists("SourceFiles"))
-                {
                     dialog.InitialDirectory = "SourceFiles";
-                }
 
                 DialogResult res = dialog.ShowDialog();
                 if (res == DialogResult.OK)
@@ -1716,9 +1552,7 @@ namespace UWUVCI_AIO_WPF
                 else
                 {
                     if (dialog.Filter.Contains("BootImages") || dialog.Filter.Contains("BootSound"))
-                    {
                         ret = "";
-                    }
                 }
             }
             return ret;
@@ -1729,7 +1563,6 @@ namespace UWUVCI_AIO_WPF
             File.Copy(console, $@"bin\bases\{console}");
             File.Delete(console);
         }
-
         private static void DeleteTool(string tool)
         {
             File.Delete($@"bin\Tools\{tool}");
@@ -1783,9 +1616,7 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 using (var client = new WebClient())
-                {
                     await client.DownloadFileTaskAsync(getDownloadLink(name, false), filePath);
-                }
             }
             catch (Exception e)
             {
@@ -1805,16 +1636,6 @@ namespace UWUVCI_AIO_WPF
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", name);
             try
             {
-                /*
-                 if(Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
-                 {
-                     olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
-                 }
-                 else
-                 {
-                     string basePath = olddir + $@"bin\Tools\";
-                 }
-                */
                 do
                 {
                     if (File.Exists(filePath))
@@ -1826,8 +1647,6 @@ namespace UWUVCI_AIO_WPF
                         await client.DownloadFileTaskAsync(getDownloadLink(name, true), filePath);
                     }
                 } while (!Task.Run(() => ToolCheck.IsToolRightAsync(name)).GetAwaiter().GetResult());
-
-
             }
             catch (Exception e)
             {
@@ -1848,60 +1667,39 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 if (tool)
-                {
                     return $"{ToolCheck.backupulr}{toolname}";
-                }
                 else
-                {
                     return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
-                }
-
             }
             catch (Exception)
             {
                 if (tool)
-                {
                     return $"{ToolCheck.backupulr}{toolname}";
-                }
                 else
                 {
                     var name = toolname.Replace("bin\\bases\\", "");
                     return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + name;
                 }
-
             }
         }
         public void InjcttoolCheck()
         {
             if (ToolCheck.DoesToolsFolderExist())
             {
-
                 List<MissingTool> missingTools = new List<MissingTool>();
                 missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
-
-
-
                     foreach (MissingTool m in missingTools)
-                    {
                         Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
 
-                    }
-
-
-
                     InjcttoolCheck();
-
                 }
             }
             else
             {
-                string path = $@"{Directory.GetCurrentDirectory()}bin\\Tools";
-
                 Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
                 InjcttoolCheck();
-
             }
         }
         private void ThreadDownload(List<MissingTool> missingTools)
@@ -1910,19 +1708,15 @@ namespace UWUVCI_AIO_WPF
             {
                 double l = 100 / missingTools.Count;
 
-
                 foreach (MissingTool m in missingTools)
                 {
                     if (m.Name == "blank.ini")
                     {
-
                         StreamWriter sw = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini"));
                         sw.Close();
                     }
                     else
-                    {
                         Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
-                    }
 
                     Progress += Convert.ToInt32(l);
                 }
@@ -1933,14 +1727,10 @@ namespace UWUVCI_AIO_WPF
         }
         private void timer_Tick2(object sender, EventArgs e)
         {
-
-
-            if (Progress == 100)
+            if (Progress >= 100)
             {
                 Injectwait.Close();
-
                 timer.Stop();
-
                 Progress = 0;
             }
         }
@@ -1982,24 +1772,12 @@ namespace UWUVCI_AIO_WPF
                         dw.ShowDialog();
                         Environment.Exit(1);
                     }
-
-
                 }
             }
             else
             {
-                if (Directory.GetCurrentDirectory().Contains("bin/tools"))
-                {
-
-                }
-                else
-                {
-                    Directory.CreateDirectory("bin/Tools");
-                }
-
+                Directory.CreateDirectory("bin/Tools");
                 toolCheckAsync();
-
-
             }
         }
 
@@ -2409,23 +2187,13 @@ namespace UWUVCI_AIO_WPF
         public TKeys getTkey(GameBases bases)
         {
             var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+
             foreach (TKeys t in temp)
-            {
                 if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
-                {
                     if (t.Tkey != null)
-                    {
                         return t;
-                    }
-                }
-            }
+             
             return null;
-
-        }
-        public void ThreadDOwn()
-        {
-
-
         }
         public void Download()
         {
@@ -2443,8 +2211,6 @@ namespace UWUVCI_AIO_WPF
                 dw.ShowDialog();
                 Progress = 0;
             }
-
-
         }
         public GameConsoles GetConsoleOfBase(GameBases gb)
         {
@@ -2539,35 +2305,15 @@ namespace UWUVCI_AIO_WPF
         }
         public List<bool> getInfoOfBase(GameBases gb)
         {
-            List<bool> info = new List<bool>();
-            if (Directory.Exists($@"{Settings.Default.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]"))
+            List<bool> info = new List<bool>()
             {
-                info.Add(true);
-            }
-            else
-            {
-                info.Add(false);
-            }
-            if (isKeySet(gb))
-            {
-                info.Add(true);
-            }
-            else
-            {
-                info.Add(false);
-            }
-            if (isCkeySet())
-            {
-                info.Add(true);
-            }
-            else
-            {
-                info.Add(false);
-            }
+                Directory.Exists($@"{Settings.Default.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]"),
+                isKeySet(gb),
+                isCkeySet()
+            };
+
             return info;
         }
-
-
         public void SetInjectPath()
         {
             using (var dialog = new CommonOpenFileDialog())
@@ -2604,9 +2350,7 @@ namespace UWUVCI_AIO_WPF
 
                             }
                             else
-                            {
                                 SetInjectPath();
-                            }
                         }
                     }
                     catch (Exception e)
@@ -2661,9 +2405,7 @@ namespace UWUVCI_AIO_WPF
 
                             }
                             else
-                            {
                                 SetInjectPath();
-                            }
                         }
                     }
                     catch (Exception e)
@@ -2677,7 +2419,6 @@ namespace UWUVCI_AIO_WPF
                         catch (Exception) { }
                         cm.ShowDialog();
                     }
-
                 }
             }
             ArePathsSet();
@@ -2686,10 +2427,7 @@ namespace UWUVCI_AIO_WPF
         {
             if (ValidatePathsStillExist())
             {
-
                 Settings.Default.PathsSet = true;
-
-
                 Settings.Default.Save();
             }
             UpdatePathSet();
@@ -2698,18 +2436,12 @@ namespace UWUVCI_AIO_WPF
         {
             int fileCount = Directory.GetFiles(path).Length;
             if (fileCount > 0)
-            {
                 return false;
-            }
 
             string[] dirs = Directory.GetDirectories(path);
             foreach (string dir in dirs)
-            {
                 if (!DirectoryIsEmpty(dir))
-                {
                     return false;
-                }
-            }
 
             return true;
         }
@@ -2879,8 +2611,6 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-
-
                         fs.Seek(0x7FC0, SeekOrigin.Begin);
                         procode = new byte[21];
                         fs.Read(procode, 0, 21);
@@ -2898,9 +2628,8 @@ namespace UWUVCI_AIO_WPF
                 do
                 {
                     if (hashonlynumbers.Length < 10)
-                    {
                         hashonlynumbers += 0;
-                    }
+
                 } while (hashonlynumbers.Length < 10);
 
                 string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
@@ -2928,7 +2657,6 @@ namespace UWUVCI_AIO_WPF
                 await GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.NES, repoids);
             }
-
         }
         static string GetMd5Hash(MD5 md5Hash, byte[] input)
         {
@@ -2952,7 +2680,6 @@ namespace UWUVCI_AIO_WPF
 
         static string GetMd5Hash(MD5 md5Hash, string input)
         {
-
             // Convert the input string to a byte array and compute the hash.
             byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
 
@@ -2996,9 +2723,8 @@ namespace UWUVCI_AIO_WPF
                 do
                 {
                     if (hashonlynumbers.Length < 10)
-                    {
                         hashonlynumbers += 0;
-                    }
+
                 } while (hashonlynumbers.Length < 10);
 
                 string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
@@ -3020,7 +2746,7 @@ namespace UWUVCI_AIO_WPF
             {
                 n4 = Convert.ToInt32(ts[6] + ts[7]);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 n4 = Convert.ToInt32(ts[6]);
             }
@@ -3076,7 +2802,6 @@ namespace UWUVCI_AIO_WPF
                 await checkForAdditionalFiles(GameConsoles.NDS, repoids);
 
             }
-
         }
         public async Task getBootIMGN64(string rom)
         {
@@ -3106,7 +2831,6 @@ namespace UWUVCI_AIO_WPF
                 await GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.N64, repoids);
             }
-
         }
         private string ByteArrayToString(byte[] arr)
         {
@@ -3122,10 +2846,10 @@ namespace UWUVCI_AIO_WPF
                 {
                     string TempString = "";
                     string SystemType = "wii/";
+
                     if (gc)
-                    {
                         SystemType = "gcn/";
-                    }
+
                     var repoid = "";
                     reader.BaseStream.Position = 0x00;
                     char TempChar;
@@ -3137,7 +2861,6 @@ namespace UWUVCI_AIO_WPF
                         reader.BaseStream.Position = 0x200;
 
                         reader.BaseStream.Position = 0x218;
-
 
                         reader.BaseStream.Position = 0x220;
                         while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
@@ -3179,8 +2902,6 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
 
             }
-
-
             return ret;
         }
         public async Task<bool> CheckForInternetConnectionAsync()
@@ -3207,10 +2928,7 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     cm.Owner = mw;
-
                 }
-
-
                 catch (Exception) { }
                 cm.ShowDialog();
 
@@ -3230,19 +2948,23 @@ namespace UWUVCI_AIO_WPF
             }
             catch
             {
-                using (var client = new WebClient())
-                using (await client.OpenReadTaskAsync("http://raw.githubusercontent.com"))
-                    return true;
-
-                return false;
+                try
+                {
+                    using (var client = new WebClient())
+                    using (await client.OpenReadTaskAsync("http://raw.githubusercontent.com"))
+                        return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
         private async Task checkForAdditionalFiles(GameConsoles console, List<string> repoids)
         {
             if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
-            {
                 Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
-            }
+
             bool ini = false;
             bool btsnd = false;
             string inip = "";
@@ -3259,9 +2981,7 @@ namespace UWUVCI_AIO_WPF
                         inip = linkbase + repoid + "/game.ini";
                         break;
                     }
-
                 }
-
             }
             string[] ext = { "btsnd" };
             foreach (var e in ext)
@@ -3276,10 +2996,7 @@ namespace UWUVCI_AIO_WPF
                         break;
                     }
                     if (btsnd)
-                    {
                         break;
-                    }
-
                 }
 
             }
@@ -3340,7 +3057,6 @@ namespace UWUVCI_AIO_WPF
                             case GameConsoles.TG16:
                                 (Thing as TurboGrafX).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
-
                         }
                     }
                     addi = false;
@@ -3349,50 +3065,13 @@ namespace UWUVCI_AIO_WPF
         }
         public string GetURL(string console)
         {
-            WebRequest request;
-            //get download link from uwuvciapi
+            console = console.ToLower();
+            if (console == "tg16" || console == "tgcd")
+                console = "tgfx";
 
-            string url = "";
-            switch (console.ToLower())
-            {
-                case "nds":
-                    url = @"https://flumpster.github.io/instructions/nds/nds.html";
-                    break;
-                case "n64":
-
-                    url = @"https://flumpster.github.io/instructions/n64/n64.html";
-                    break;
-                case "nes":
-                    url = @"https://flumpster.github.io/instructions/nes/nes.html";
-                    break;
-                case "snes":
-                    url = @"https://flumpster.github.io/instructions/snes/snes.html";
-                    break;
-                case "gba":
-                    url = @"https://flumpster.github.io/instructions/gba/gba.html";
-                    break;
-                case "tg16":
-                    url = @"https://flumpster.github.io/instructions/tgfx/tgfx.html";
-                    break;
-                case "tgcd":
-                    url = @"https://flumpster.github.io/instructions/tgfx/tgfx.html";
-                    break;
-                case "msx":
-                    url = @"https://flumpster.github.io/instructions/msx/msx.html";
-                    break;
-                case "wii":
-                    url = @"https://flumpster.github.io/instructions/wii/wii.html";
-                    break;
-                case "gcn":
-                    url = @"https://flumpster.github.io/instructions/gcn/gcn.html";
-                    break;
-                default:
-
-                    url = null;
-                    break;
-            }
+            string url = @"https://flumpster.github.io/instructions/" + console + "/" + console + ".html";
+            
             return url;
-
         }
         WaveOutEvent waveOutEvent = new WaveOutEvent();
         AudioFileReader audioFileReader;
@@ -3402,16 +3081,12 @@ namespace UWUVCI_AIO_WPF
         internal bool backupenableWii = true;
         public void PlaySound()
         {
-
             Task ts = new Task(() =>
             {
                 try
                 {
                     t = new System.Timers.Timer(200);
                     t.Elapsed += isDone;
-
-
-
 
                     audioFileReader = new AudioFileReader(BootSound);
 
@@ -3424,7 +3099,6 @@ namespace UWUVCI_AIO_WPF
                 {
 
                 }
-
             });
             ts.Start();
         }
@@ -3439,15 +3113,11 @@ namespace UWUVCI_AIO_WPF
                     audioFileReader.Dispose();
                     t.Stop();
                 }
-
-
-
             }
             catch (Exception)
             {
 
             }
-
         }
         public void isDone(Object source, ElapsedEventArgs e)
         {
@@ -3471,36 +3141,13 @@ namespace UWUVCI_AIO_WPF
             {
 
             }
-
         }
         public void RestartIntoBypass()
         {
             using (Process p = new Process())
             {
                 p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
-                if (debug)
-                {
-                    if (saveworkaround)
-                    {
-                        p.StartInfo.Arguments = "--debug --skip --spacebypass";
-                    }
-                    else
-                    {
-                        p.StartInfo.Arguments = "--debug --skip";
-                    }
-
-                }
-                else
-                {
-                    if (saveworkaround)
-                    {
-                        p.StartInfo.Arguments = "--skip --spacebypass";
-                    }
-                    else
-                    {
-                        p.StartInfo.Arguments = "--skip";
-                    }
-                }
+                p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
                 p.Start();
                 Environment.Exit(0);
             }
