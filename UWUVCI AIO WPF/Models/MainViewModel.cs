@@ -1230,10 +1230,6 @@ namespace UWUVCI_AIO_WPF
                             }
                             Progress = 100;
                         });
-<<<<<<< HEAD
-=======
-
->>>>>>> Asynicify
                         DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                         try
                         {
@@ -1277,10 +1273,6 @@ namespace UWUVCI_AIO_WPF
                         }
                         Progress = 100;
                     });
-<<<<<<< HEAD
-=======
-
->>>>>>> Asynicify
                     DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
                     try
                     {
