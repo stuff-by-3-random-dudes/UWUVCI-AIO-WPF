@@ -2886,8 +2886,8 @@ namespace UWUVCI_AIO_WPF
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
                         repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
 
-                        Task.Run(() => GetRepoImages(SystemType, repoid, repoids)).GetAwaiter();
-                        Task.Run(() => checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids)).GetAwaiter();
+                        GetRepoImages(SystemType, repoid, repoids);
+                        checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids);
                     }
                 }
             }
