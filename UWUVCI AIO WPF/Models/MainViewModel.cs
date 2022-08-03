@@ -472,6 +472,16 @@ namespace UWUVCI_AIO_WPF
                         catch (Exception) { }
                         cm.ShowDialog();
                     }
+                    else
+                    {
+                        var cm = new Custom_Message("No Update Available", "This is currently the latest version.");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
+                    }
                 }
             }
         }
@@ -2576,7 +2586,6 @@ namespace UWUVCI_AIO_WPF
             using (var md5 = MD5.Create())
             {
                 var name = new byte[] { };
-                bool skip = false;
                 using (var fs = new FileStream(path,
                              FileMode.Open,
                              FileAccess.Read))
@@ -2589,27 +2598,18 @@ namespace UWUVCI_AIO_WPF
 
 
                     repoid = rgx.Replace(repoid, "");
-                DOSTUFF:
-                    if (repoid.Length < 4 && !skip)
+                    if (repoid.Length < 4)
                     {
-                        fs.Seek(0xFFB2, SeekOrigin.Begin);
-                        fs.Read(procode, 0, 4);
-
-                        repoid = rgx.Replace(ByteArrayToString(procode), "");
-                        if (repoid.Length < 4)
-                        {
-                            repoid = "Unknown";
-                            skip = true;
-                            goto DOSTUFF;
-                        }
-
                         fs.Seek(0xFFC0, SeekOrigin.Begin);
                         procode = new byte[21];
                         fs.Read(procode, 0, 21);
                         name = procode;
 
+                        repoid = ByteArrayToString(procode);
+                        repoid = rgx.Replace(repoid, "");
                     }
-                    else
+
+                    if (repoid.Length < 4)
                     {
                         fs.Seek(0x7FC0, SeekOrigin.Begin);
                         procode = new byte[21];
