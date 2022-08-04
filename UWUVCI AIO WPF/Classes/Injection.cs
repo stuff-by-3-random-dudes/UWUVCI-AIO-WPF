@@ -1,23 +1,15 @@
 ﻿using GameBaseClassLibrary;
-using GMWare.M2.MArchive;
-using GMWare.M2.Psb;
-using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
@@ -25,7 +17,6 @@ using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
-using Newtonsoft.Json.Linq;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -182,7 +173,7 @@ namespace UWUVCI_AIO_WPF
                     done = true;
                     freeSpaceInBytes = drive.AvailableFreeSpace;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     mvm.saveworkaround = true;
                 }
