@@ -26,7 +26,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "WiiUDownloader.exe",
             "wiiurpxtool.exe",
             "INICreator.exe",
-            "7za.exe",
             "blank.ini",
             "FreeImage.dll",
             "BuildPcePkg.exe",

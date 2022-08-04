@@ -454,23 +454,15 @@ namespace UWUVCI_AIO_WPF
         }
         private static void WiiForwarder(string romPath, MainViewModel mvm)
         {
-            string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Forwarder Base...";
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase")))
+                Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
             Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-            using (Process zip = new Process())
-            {
-                if (!mvm.debug)
-                {
 
-                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                zip.Start();
-                zip.WaitForExit();
-            }
-
+            ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
+            
             DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 20;
             mvvm.msg = "Setting up Forwarder...";
@@ -575,22 +567,13 @@ namespace UWUVCI_AIO_WPF
 
         private static void WiiHomebrew(string romPath, MainViewModel mvm)
         {
-            string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Homebrew Base...";
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
-            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-            using (Process zip = new Process())
-            {
-                if (!mvm.debug)
-                {
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase")))
+                Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
 
-                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                zip.Start();
-                zip.WaitForExit();
-            }
+            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
+
+            ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
 
             DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 20;
@@ -678,7 +661,6 @@ namespace UWUVCI_AIO_WPF
 
         private static void WII(string romPath, MainViewModel mvm)
         {
-            string savedir = Directory.GetCurrentDirectory();
             if (mvm.NKITFLAG || romPath.Contains("nkit"))
             {
                 using (Process toiso = new Process())
@@ -1036,22 +1018,13 @@ namespace UWUVCI_AIO_WPF
         }
         private static void GC(string romPath, MainViewModel mvm, bool force)
         {
-            string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Nintendont Base...";
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
-            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-            using (Process zip = new Process())
-            {
-                if (!mvm.debug)
-                {
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+                Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
 
-                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                zip.Start();
-                zip.WaitForExit();
-            }
+            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
+
+            ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
 
             DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 20;
@@ -1483,12 +1456,13 @@ namespace UWUVCI_AIO_WPF
                 else
                 {
                     mvvm.msg = "Extracting Nintendont Base...";
-                    if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+                    if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+                        Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
                     Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-                    tik.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                    tik.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                    tik.Start();
-                    tik.WaitForExit();
+
+                    ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
+
                     DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
                     mvvm.Progress = 30;
                     mvvm.msg = "Applying Nintendont";
