@@ -206,7 +206,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        neededspace = 35000000000;
+                        neededspace = 25000000000;
                     }
                     if (freeSpaceInBytes < neededspace)
                     {
@@ -299,7 +299,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else if (e.Message.Contains("12G"))
                 {
-                    MessageBox.Show($" Please make sure to have atleast {FormatBytes(35000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($" Please make sure to have atleast {FormatBytes(25000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 else if (e.Message.Contains("nkit"))
                 {
