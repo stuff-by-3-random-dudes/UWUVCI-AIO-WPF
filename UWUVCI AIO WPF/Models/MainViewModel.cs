@@ -1994,7 +1994,7 @@ namespace UWUVCI_AIO_WPF
         }
         private void CreateSettingIfNotExist(List<GameBases> l, GameConsoles console)
         {
-            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            string file = Path.Combine(Directory.GetCurrentDirectory(), $@"bin\keys\{console.ToString().ToLower()}.vck");
             if (!File.Exists(file))
             {
                 List<TKeys> temp = new List<TKeys>();
@@ -2014,7 +2014,7 @@ namespace UWUVCI_AIO_WPF
         }
         private void FixupKeys(List<GameBases> l, GameConsoles console)
         {
-            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"bin\keys\{console.ToString().ToLower()}.vck");
             var save = KeyFile.ReadBasesFromKeyFile(file);
             List<TKeys> temp = new List<TKeys>();
             foreach (TKeys a in save)
@@ -2045,10 +2045,10 @@ namespace UWUVCI_AIO_WPF
         }
         private void UpdateKeyFile(List<GameBases> l, GameConsoles console)
         {
-            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"bin\keys\{console.ToString().ToLower()}.vck");
             if (File.Exists(file))
             {
-                List<TKeys> keys = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{console.ToString().ToLower()}.vck");
+                List<TKeys> keys = KeyFile.ReadBasesFromKeyFile(file);
                 List<TKeys> newTK = new List<TKeys>();
                 foreach (GameBases gb in l)
                 {
@@ -2169,7 +2169,8 @@ namespace UWUVCI_AIO_WPF
         }
         public bool isKeySet(GameBases bases)
         {
-            var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            var temp = KeyFile.ReadBasesFromKeyFile(file);
             foreach (TKeys t in temp)
             {
                 if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
@@ -2215,7 +2216,8 @@ namespace UWUVCI_AIO_WPF
         }
         public TKeys getTkey(GameBases bases)
         {
-            var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
+            var temp = KeyFile.ReadBasesFromKeyFile(file);
 
             foreach (TKeys t in temp)
                 if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
@@ -2229,7 +2231,7 @@ namespace UWUVCI_AIO_WPF
             ValidatePathsStillExist();
             if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
             {
-                Task.Run(() => { Injection.Download(this); });
+                Task.Run(() => Injection.Download(this)).GetAwaiter();
 
                 DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
                 try
