@@ -1349,9 +1349,27 @@ namespace UWUVCI_AIO_WPF
                 Environment.Exit(0);
             }
         }
+        public static int GetDeterministicHashCode(string str)
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < str.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
+        }
         public bool checkSysKey(string key)
         {
-            if (key.GetHashCode() == -589797700)
+            if (GetDeterministicHashCode(key) == -589797700)
             {
                 Properties.Settings.Default.SysKey = key;
                 Properties.Settings.Default.Save();
@@ -1365,7 +1383,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkSysKey1(string key)
         {
-            if (key.GetHashCode() == -1230232583)
+            if (GetDeterministicHashCode(key) == -1230232583)
             {
                 Properties.Settings.Default.SysKey1 = key;
                 Properties.Settings.Default.Save();
@@ -1433,9 +1451,11 @@ namespace UWUVCI_AIO_WPF
             {
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
                 request.Method = "HEAD";
+
                 HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
+                var statusCode = response.StatusCode;
                 response.Close();
-                return (response.StatusCode == HttpStatusCode.OK);
+                return (statusCode == HttpStatusCode.OK);
             }
             catch
             {
@@ -2097,7 +2117,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkcKey(string key)
         {
-            if (1274359530 == key.ToLower().GetHashCode())
+            if (-485504051 == GetDeterministicHashCode(key.ToLower()))
             {
                 Settings.Default.Ckey = key.ToLower();
                 ckeys = true;
@@ -2110,7 +2130,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool isCkeySet()
         {
-            if (Settings.Default.Ckey.ToLower().GetHashCode() == 1274359530)
+            if (GetDeterministicHashCode(Settings.Default.Ckey.ToLower()) == -485504051)
             {
                 ckeys = true;
                 return true;
@@ -2123,7 +2143,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkKey(string key)
         {
-            var thingy = key.ToLower().GetHashCode();
+            var thingy = GetDeterministicHashCode(key.ToLower());
             if (GbTemp.KeyHash == thingy)
             {
                 UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
