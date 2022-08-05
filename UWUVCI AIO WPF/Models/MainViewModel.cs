@@ -28,7 +28,6 @@ using MaterialDesignThemes.Wpf;
 using NAudio.Wave;
 using System.Timers;
 using NAudio.Utils;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Drawing;
 
