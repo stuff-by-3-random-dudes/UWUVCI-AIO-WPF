@@ -1,22 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6A60AB0E-4597-4ECA-AEFB-D63A26CA7B54}</ProjectGuid>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>UWUVCI_AIO_WPF</RootNamespace>
-    <AssemblyName>UWUVCI AIO WPF</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -32,26 +17,10 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -64,359 +33,16 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>UWUVCI_AIO_WPF.App</StartupObject>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoUpdater.NET, Version=1.6.3.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autoupdater.NET.Official.1.6.3\lib\net45\AutoUpdater.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
-    </Reference>
     <Reference Include="GameBaseClassLibrary">
       <HintPath>.\GameBaseClassLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="Json.Net, Version=1.0.33.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Json.Net.1.0.33\lib\netstandard2.0\Json.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="MaterialDesignColors, Version=1.2.7.1979, Culture=neutral, PublicKeyToken=df2a72020bd7962a, processorArchitecture=MSIL">
-      <HintPath>..\packages\MaterialDesignColors.1.2.7\lib\net45\MaterialDesignColors.dll</HintPath>
-    </Reference>
-    <Reference Include="MaterialDesignThemes.Wpf, Version=2.6.0.325, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MaterialDesignThemes.2.6.0\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="McMaster.Extensions.CommandLineUtils, Version=2.4.2.0, Culture=neutral, PublicKeyToken=6f71cb76b82f055d, processorArchitecture=MSIL">
-      <HintPath>..\packages\McMaster.Extensions.CommandLineUtils.2.4.2\lib\net45\McMaster.Extensions.CommandLineUtils.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Octokit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octokit.1.0.0\lib\net46\Octokit.dll</HintPath>
-    </Reference>
-    <Reference Include="Pfim, Version=0.10.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Pfim.0.10.3\lib\netstandard2.0\Pfim.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="Zstandard.Net, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Zstandard.Net.1.1.7\lib\net45\Zstandard.Net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="AssemblyInfo1.cs" />
-    <Compile Include="Classes\BootImage.cs" />
-    <Compile Include="Classes\KeyFile.cs" />
-    <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
-    <Compile Include="Classes\MenuIconImage.cs" />
-    <Compile Include="Classes\TKeys.cs" />
-    <Compile Include="Classes\ToolCheck.cs" />
-    <Compile Include="UI\Done.xaml.cs">
-      <DependentUpon>Done.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren %282%29.xaml.cs">
-      <DependentUpon>OtherConfigs - Kopieren - Kopieren %282%29.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren.xaml.cs">
-      <DependentUpon>OtherConfigs - Kopieren - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren.xaml.cs">
-      <DependentUpon>OtherConfigs - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\WiiConfig.xaml.cs">
-      <DependentUpon>WiiConfig.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\KeyFrame\TKFrame.xaml.cs">
-      <DependentUpon>TKFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\Path\Paths.xaml.cs">
-      <DependentUpon>Paths.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\Teaser.xaml.cs">
-      <DependentUpon>Teaser.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\Custom Message - Kopieren.xaml.cs">
-      <DependentUpon>Custom Message - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\Custom Message.xaml.cs">
-      <DependentUpon>Custom Message.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\DownloadWait - Kopieren.xaml.cs">
-      <DependentUpon>DownloadWait - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\DownloadWait.xaml.cs">
-      <DependentUpon>DownloadWait.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\EnterKey.xaml.cs">
-      <DependentUpon>EnterKey.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml.cs">
-      <DependentUpon>ImageCreator - Kopieren - Kopieren %282%29.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\ImageCreator - Kopieren - Kopieren.xaml.cs">
-      <DependentUpon>ImageCreator - Kopieren - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\ImageCreator - Kopieren.xaml.cs">
-      <DependentUpon>ImageCreator - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\ImageCreator.xaml.cs">
-      <DependentUpon>ImageCreator.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\IMG_Message - Kopieren - Kopieren - Kopieren.xaml.cs">
-      <DependentUpon>IMG_Message - Kopieren - Kopieren - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\IMG_Message - Kopieren - Kopieren.xaml.cs">
-      <DependentUpon>IMG_Message - Kopieren - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\IMG_Message - Kopieren.xaml.cs">
-      <DependentUpon>IMG_Message - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\IMG_Message.xaml.cs">
-      <DependentUpon>IMG_Message.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\TitleKeys - Kopieren.xaml.cs">
-      <DependentUpon>TitleKeys - Kopieren.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\TitleKeys.xaml.cs">
-      <DependentUpon>TitleKeys.xaml</DependentUpon>
-    </Compile>
-    <Page Include="UI\Done.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Bases\BaseContainerFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Bases\CustomBaseFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Bases\NonCustomBaseFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\N64Config.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren %282%29.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\WiiConfig.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\KeyFrame\TKFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\Path\Paths.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\SettingsFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\StartFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\Teaser.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\Custom Message - Kopieren.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\Custom Message.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\DownloadWait - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\DownloadWait.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\EnterKey.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\ImageCreator - Kopieren - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\ImageCreator - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\ImageCreator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\IMG_Message - Kopieren - Kopieren - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\IMG_Message - Kopieren - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\IMG_Message - Kopieren.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\IMG_Message.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\MenuWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Classes\Injection.cs" />
-    <Compile Include="Classes\N64Conf.cs" />
-    <Compile Include="Classes\PNGTGA.cs" />
-    <Compile Include="Classes\GameConfig.cs" />
-    <Compile Include="Models\BaseModel.cs" />
-    <Compile Include="Models\MainViewModel.cs" />
-    <Compile Include="UI\Frames\InjectFrame.xaml.cs">
-      <DependentUpon>InjectFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Bases\BaseContainerFrame.xaml.cs">
-      <DependentUpon>BaseContainerFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Bases\CustomBaseFrame.xaml.cs">
-      <DependentUpon>CustomBaseFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Bases\NonCustomBaseFrame.xaml.cs">
-      <DependentUpon>NonCustomBaseFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\N64Config.xaml.cs">
-      <DependentUpon>N64Config.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs.xaml.cs">
-      <DependentUpon>OtherConfigs.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\SettingsFrame.xaml.cs">
-      <DependentUpon>SettingsFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Frames\StartFrame.xaml.cs">
-      <DependentUpon>StartFrame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\MenuWindow.xaml.cs">
-      <DependentUpon>MenuWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="UI\Windows\TitleKeys - Kopieren.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\TitleKeys.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <Resource Include="Font\font.otf" />
-    <None Include="app.manifest" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\bg maybe wpf.png" />
@@ -490,135 +116,6 @@
     <Resource Include="b.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\GBC.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GCN.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MSX.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\N64.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NDS.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NES.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SNES-PAL.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TG16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TGCD.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GBA.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\newgameboy.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SNES-USA.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SFAM.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WII.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\mario.mp3" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WiiIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Wii2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\WIIWARE.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\homebrew3.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\HBICON.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GCN ICON2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\wii3New.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GCN ICON3.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NDS Alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\N64 alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bootLogoTex.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SNES alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\N64 alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NDS alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SNES alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MSX alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\MSX alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TGFX alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TGFX alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GBA alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GBA alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GB alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GB alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NES alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NES alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GBC alt1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GBC alt2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="UI\Images\rarch.png" />
   </ItemGroup>
   <ItemGroup>
@@ -655,15 +152,29 @@
   <ItemGroup>
     <Resource Include="UI\Images\61e111774d3a2f67c827cd25_Frame 5.png" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
-    <Error Condition="!Exists('..\packages\Fody.6.3.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.3.0\build\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\Zstandard.Net.1.1.7\build\Zstandard.Net.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Zstandard.Net.1.1.7\build\Zstandard.Net.targets'))" />
-  </Target>
-  <Import Project="..\packages\Fody.6.3.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.3.0\build\Fody.targets')" />
-  <Import Project="..\packages\Zstandard.Net.1.1.7\build\Zstandard.Net.targets" Condition="Exists('..\packages\Zstandard.Net.1.1.7\build\Zstandard.Net.targets')" />
+  <ItemGroup>
+    <PackageReference Include="GMWare.M2" Version="1.1.2" />
+    <PackageReference Include="Json.Net" Version="1.0.33" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.2" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Octokit" Version="1.0.0" />
+    <PackageReference Include="Pfim" Version="0.10.3" />
+    <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
+    <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.336902">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.4" />
+    <PackageReference Include="Costura.Fody" Version="5.7.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Settings.cs" />
+  </ItemGroup>
 </Project>
