@@ -40,6 +40,9 @@
       <HintPath>.\GameBaseClassLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
+    <Reference Include="WiiUDownloaderLibrary">
+      <HintPath>WiiUDownloaderLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Font\font.otf" />

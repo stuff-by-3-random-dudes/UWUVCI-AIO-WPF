@@ -17,6 +17,8 @@ using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
+using WiiUDownloaderLibrary;
+using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1716,98 +1718,47 @@ namespace UWUVCI_AIO_WPF
             mvm.msg = "";
         }
 
-        public static void Download(MainViewModel mvm)
-
+        public static async Task Download(MainViewModel mvm)
         {
-
             mvm.InjcttoolCheck();
             GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
 
             //GetKeyOfBase
             TKeys key = mvm.getTkey(b);
+
+            if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
+            Directory.CreateDirectory(tempPath);
+
+            var titleData = new TitleData(b.Tid, key.Tkey, null, null, null);
+            await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
+                    
+            mvm.Progress = 75;
+
+            using (Process decrypt = new Process())
+            {
+                if (!mvm.debug)
+                {
+                    decrypt.StartInfo.UseShellExecute = false;
+                    decrypt.StartInfo.CreateNoWindow = true;
+                }
+
+                decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+
+                decrypt.Start();
+                decrypt.WaitForExit();
+            }
+
             if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
             {
-                using (Process zip = new Process())
-                {
+                mvm.Progress += 10;
+                foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
+                    File.Delete(sFile);
 
-                    if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
-                    Directory.CreateDirectory(tempPath);
-                    using (Process download = new Process())
-                    {
-                        if (!mvm.debug)
-                        {
-                            download.StartInfo.UseShellExecute = false;
-                            download.StartInfo.CreateNoWindow = true;
-                        }
-
-                        download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                        download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
-
-                        download.Start();
-                        download.WaitForExit();
-                    }
-                    mvm.Progress = 75;
-
-                    using (Process decrypt = new Process())
-                    {
-                        if (!mvm.debug)
-                        {
-                            decrypt.StartInfo.UseShellExecute = false;
-                            decrypt.StartInfo.CreateNoWindow = true;
-                        }
-
-                        decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                        decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
-
-                        decrypt.Start();
-                        decrypt.WaitForExit();
-                    }
-                    mvm.Progress += 10;
-                    foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
-                        File.Delete(sFile);
-
-                    mvm.Progress += 15;
-                }
+                mvm.Progress += 15;
             }
             else
-            {
-                if (Directory.Exists(tempPath)) 
-                    Directory.Delete(tempPath, true);
-
-                Directory.CreateDirectory(tempPath);
-                using (Process download = new Process())
-                {
-                    if (!mvm.debug)
-                    {
-                        download.StartInfo.UseShellExecute = false;
-                        download.StartInfo.CreateNoWindow = true;
-                    }
-
-                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
-
-                    download.Start();
-                    download.WaitForExit();
-                }
-                mvm.Progress = 75;
-                using (Process decrypt = new Process())
-                {
-                    if (!mvm.debug)
-                    {
-                        decrypt.StartInfo.UseShellExecute = false;
-                        decrypt.StartInfo.CreateNoWindow = true;
-                    }
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                }
                 mvm.Progress = 100;
-            }
-
-
-            //GetCurrentSelectedBase
 
         }
         public static string ExtractBase(string path, GameConsoles console)
@@ -2250,18 +2201,13 @@ namespace UWUVCI_AIO_WPF
                 if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
-        private static void DownloadSysTitle(MainViewModel mvm)
+        private static async Task DownloadSysTitle(MainViewModel mvm)
         {
             if (mvm.SysKeyset() && mvm.SysKey1set())
             {
-                using (Process download = new Process())
-                {
-                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"0005001010004001 {Properties.Settings.Default.SysKey} \"{Path.Combine(tempPath, "download")}\"";
+                var titleData = new TitleData("0005001010004001", Settings.Default.SysKey, null, null, null);
+                await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
 
-                    download.Start();
-                    download.WaitForExit();
-                }
                 using (Process decrypt = new Process())
                 {
                     decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
@@ -2270,15 +2216,10 @@ namespace UWUVCI_AIO_WPF
                     decrypt.Start();
                     decrypt.WaitForExit();
                 }
-                using (Process download = new Process())
-                {
-                    Directory.Delete(Path.Combine(tempPath, "download"), true);
-                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"0005001010004000 {Properties.Settings.Default.SysKey1} \"{Path.Combine(tempPath, "download")}\"";
 
-                    download.Start();
-                    download.WaitForExit();
-                }
+                titleData = new TitleData("0005001010004000", Settings.Default.SysKey, null, null, null);
+                await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
+
                 using (Process decrypt = new Process())
                 {
                     decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
