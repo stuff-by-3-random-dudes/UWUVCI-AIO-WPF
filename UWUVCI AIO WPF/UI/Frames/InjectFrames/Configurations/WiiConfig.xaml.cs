@@ -2,23 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
+using WiiUDownloaderLibrary;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
@@ -312,7 +305,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.GameConfiguration.GameName = gn.Text;
 
             /*TODO: Make this work
-             * - WiiUDownloader requires titlekey 
              * - C2W_Patcher doesn't work, but idfk what it's supposed to do so /shrug
              * - idfk what this shit is supposed to do
             */ 
@@ -327,28 +319,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
                     var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
                     var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-
-                    string[,] filesToDownload = {
-                        { "0005001010004000 -file /code/deint.txt", "deint.txt" },
-                        { "0005001010004000 -file /code/font.bin", "font.bin" },
-                        { "0005001010004001 -file /code/c2w.img", "c2w.img" },
-                        { "0005001010004001 -file /code/boot.bin", "boot.bin" },
-                        { "0005001010004001 -file /code/dmcu.d.hex", "dmcu.d.hex"}
-                    };
-
-                    for(var i = 0; i < filesToDownload.Length/2; i++)
-                    {
-                        using (Process download = new Process())
-                        {
-                            download.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "WiiUDownloader.exe");
-                            download.StartInfo.Arguments = $"{filesToDownload[i,0]} \"{System.IO.Path.Combine(tempPath, filesToDownload[i,1])}\"";
-
-                            download.Start();
-                            download.WaitForExit();
-                        }
-                    }
-                    string[] ancastKeyCopy = { ancastKey.Text };
                     Directory.CreateDirectory(tempPath + "\\C2W");
+
+                    var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
+
+                    var titleIds = new List<string>()
+                    {
+                        "0005001010004000",
+                        "0005001010004001"
+                    };
+                    
+                    foreach (var titleId in titleIds)
+                        Task.Run(() => Downloader.DownloadAsync(titleId, System.IO.Path.Combine(tempPath, titleId))).GetAwaiter().GetResult();
+                    
+                    
+                    foreach (var titleId in titleIds)
+                        CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(tempPath, titleId, titleId), c2wPath });
+
+
+                    string[] ancastKeyCopy = { ancastKey.Text };
                     File.WriteAllLines(tempPath + "\\C2W\\starbuck_key.txt", ancastKeyCopy);
 
                     using (Process c2w = new Process())
