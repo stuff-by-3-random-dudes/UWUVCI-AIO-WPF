@@ -37,12 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GameBaseClassLibrary">
-      <HintPath>.\GameBaseClassLibrary.dll</HintPath>
+      <HintPath>..\GameBaseClassLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Compression" />
-    <Reference Include="WiiUDownloaderLibrary">
-      <HintPath>WiiUDownloaderLibrary.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Font\font.otf" />
@@ -156,6 +153,8 @@
     <Resource Include="UI\Images\61e111774d3a2f67c827cd25_Frame 5.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CDecryptSharp" Version="1.0.4" />
+    <PackageReference Include="CNUSPACKER" Version="1.0.3" />
     <PackageReference Include="GMWare.M2" Version="1.1.2" />
     <PackageReference Include="Json.Net" Version="1.0.33" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.2" />
@@ -179,5 +178,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Settings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\WiiUDownloaderLibrary\WiiUDownloaderLibrary\WiiUDownloaderLibrary.csproj" />
   </ItemGroup>
 </Project>
