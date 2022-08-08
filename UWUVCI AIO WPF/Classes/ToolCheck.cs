@@ -33,7 +33,7 @@ namespace UWUVCI_AIO_WPF.Classes
             "nintendont.dol",
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
-            "wbfs_file.exe",
+            //"wbfs_file.exe",
             "wit.exe",
             "cygwin1.dll",
             "cygz.dll",
