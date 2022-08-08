@@ -24,12 +24,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
     /// </summary>
     public partial class SettingsFrame : Page, IDisposable
     {
-        MainWindow parent; 
+        MainWindow parent;
         public SettingsFrame(MainWindow mw)
         {
             InitializeComponent();
             parent = mw;
-           // spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
+            // spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
         }
         public void Dispose()
         {
@@ -38,8 +38,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-           /* TitleKeys tk = new TitleKeys();
-            tk.ShowDialog();*/
+            /* TitleKeys tk = new TitleKeys();
+             tk.ShowDialog();*/
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -56,7 +56,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            mvm.UpdateBases();
+            mvm.UpdateBaseAsync();
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
@@ -66,12 +66,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 Process.Start(@"bin\Tools\INICreator.exe");
             }
-                
+
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            Custom_Message cm =  new Custom_Message("Credits", "UWUVCI AIO - NicoAICP, Morilli, ZestyTS\nBeta Testers/Contributors - wowjinxy, Danis, Adolfobenjaminv\n\n7za - Igor Pavlov\nBuildPcePkg & BuildTurboCDPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli\nINICreator - NicoAICP\nN64Converter - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli\nwiiurpxtool - 0CHB0\nGoomba - FluBBa\nDarkFilter Removal N64 - MelonSpeedruns, ZestyTS\nNintendont SD Card Menu - TeconMoon\nwit - Wiimm\nGetExtTypePatcher - Fix94\nnfs2iso2nfs - sabykos, piratesephiroth, Fix94 and many more\nWii-VMC - wanikoko\nIcon/TV Bootimages - Flump, ZestyTS\nNKit - Nanook\nImage Creation Base - Phacox\nWiiGameLanguage Patcher - ReturnerS\nChangeAspectRatio - andot\nvWii Title Forwarder - Fix94");
+            Custom_Message cm = new Custom_Message("Credits", "UWUVCI AIO - NicoAICP, Morilli, ZestyTS\nBeta Testers/Contributors - wowjinxy, Danis, Adolfobenjaminv\n\nBuildPcePkg & BuildTurboCDPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli\nINICreator - NicoAICP\nN64Converter - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli\nwiiurpxtool - 0CHB0\nGoomba - FluBBa\nDarkFilter Removal N64 - MelonSpeedruns, ZestyTS\nNintendont SD Card Menu - TeconMoon\nwit - Wiimm\nGetExtTypePatcher - Fix94\nnfs2iso2nfs - sabykos, piratesephiroth, Fix94 and many more\nWii-VMC - wanikoko\nIcon/TV Bootimages - Flump, ZestyTS\nNKit - Nanook\nImage Creation Base - Phacox\nWiiGameLanguage Patcher - ReturnerS\nChangeAspectRatio - andot\nvWii Title Forwarder - Fix94");
             try
             {
                 cm.Owner = (FindResource("mvm") as MainViewModel).mw;
@@ -86,13 +86,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click_6(object sender, RoutedEventArgs e)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            mvm.Update(true);
+            mvm.UpdateAsync(true);
         }
 
         private void Button_Click_7(object sender, RoutedEventArgs e)
         {
             MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            mvm.UpdateTools();
+            mvm.UpdateToolsAsync();
         }
 
         private void Button_Click_8(object sender, RoutedEventArgs e)
@@ -108,7 +108,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 Process.Start(@"bin\Tools\NintendontConfig.exe");
             }
-                
+
         }
 
         private void Button_Click_10(object sender, RoutedEventArgs e)
