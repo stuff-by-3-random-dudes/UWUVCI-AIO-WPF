@@ -710,8 +710,8 @@ namespace UWUVCI_AIO_WPF
                             toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             // toiso.StartInfo.CreateNoWindow = true;
                         }
-                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
-                        toiso.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\" -t";
+                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        toiso.StartInfo.Arguments = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
 
                         toiso.Start();
                         toiso.WaitForExit();
