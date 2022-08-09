@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
 using WiiUDownloaderLibrary;
 using System.Threading.Tasks;
+using WiiUDownloaderLibrary.Models;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1734,25 +1735,12 @@ namespace UWUVCI_AIO_WPF
                     
             mvm.Progress = 75;
 
-            using (Process decrypt = new Process())
-            {
-                if (!mvm.debug)
-                {
-                    decrypt.StartInfo.UseShellExecute = false;
-                    decrypt.StartInfo.CreateNoWindow = true;
-                }
-
-                decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
-
-                decrypt.Start();
-                decrypt.WaitForExit();
-            }
+            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download"), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
 
             if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
             {
                 mvm.Progress += 10;
-                foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
+                foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]", "content"), "*.nfs"))
                     File.Delete(sFile);
 
                 mvm.Progress += 15;
@@ -1763,28 +1751,20 @@ namespace UWUVCI_AIO_WPF
         }
         public static string ExtractBase(string path, GameConsoles console)
         {
-            if (!Directory.Exists(Path.Combine(Properties.Settings.Default.BasePath, "CustomBases")))
+            if (!Directory.Exists(Path.Combine(Settings.Default.BasePath, "CustomBases")))
             {
-                Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.BasePath, "CustomBases"));
+                Directory.CreateDirectory(Path.Combine(Settings.Default.BasePath, "CustomBases"));
             }
-            string outputPath = Path.Combine(Properties.Settings.Default.BasePath, "CustomBases", $"[{console.ToString()}] Custom");
+            string outputPath = Path.Combine(Settings.Default.BasePath, "CustomBases", $"[{console}] Custom");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.BasePath, $"[{console.ToString()}] Custom_{i}");
+                outputPath = Path.Combine(Settings.Default.BasePath, $"[{console}] Custom_{i}");
                 i++;
             }
-            using (Process decrypt = new Process())
-            {
 
-                decrypt.StartInfo.UseShellExecute = false;
-                decrypt.StartInfo.CreateNoWindow = true;
-                decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{path}\" \"{outputPath}";
+            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, path, outputPath });
 
-                decrypt.Start();
-                decrypt.WaitForExit();
-            }
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
@@ -2205,32 +2185,17 @@ namespace UWUVCI_AIO_WPF
         {
             if (mvm.SysKeyset() && mvm.SysKey1set())
             {
-                var titleData = new TitleData("0005001010004001", Settings.Default.SysKey, null, null, null);
+                var titleData = new TitleData("0005001010004001", Settings.Default.SysKey);
                 await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys") });
 
-                using (Process decrypt = new Process())
-                {
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                }
-
-                titleData = new TitleData("0005001010004000", Settings.Default.SysKey, null, null, null);
+                titleData = new TitleData("0005001010004000", Settings.Default.SysKey);
                 await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download"), Path.Combine(tempPath, "tempd") });
 
-                using (Process decrypt = new Process())
-                {
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(tempPath, "tempd")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                    File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
-                    File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
-                    File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "app.xml"));
-                }
+                File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
+                File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
+                File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "app.xml"));
             }
         }
         private static void NDS(string injectRomPath)

@@ -16,7 +16,6 @@ namespace UWUVCI_AIO_WPF.Classes
         public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
         public static string[] ToolNames =
         {
-            "CDecrypt.exe",
             "CNUSPACKER.exe",
             "N64Converter.exe",
             "png2tga.exe",
