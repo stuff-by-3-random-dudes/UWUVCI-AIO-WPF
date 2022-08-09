@@ -29,7 +29,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "BuildPcePkg.exe",
             "BuildTurboCdPcePkg.exe",
             "goomba.gba",
-            "nfs2iso2nfs.exe",
             "nintendont.dol",
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",

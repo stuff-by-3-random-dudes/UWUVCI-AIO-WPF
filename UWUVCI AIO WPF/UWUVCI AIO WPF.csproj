@@ -18,7 +18,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>True</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
@@ -180,6 +180,7 @@
     <Compile Remove="Settings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\nfs2iso2nfs\nfs2iso2nfs\nfs2iso2nfs.csproj" />
     <ProjectReference Include="..\..\WiiUDownloaderLibrary\WiiUDownloaderLibrary\WiiUDownloaderLibrary.csproj" />
   </ItemGroup>
 </Project>

@@ -540,29 +540,20 @@ namespace UWUVCI_AIO_WPF
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
-            using (Process iso2nfs = new Process())
+            string extra = "";
+            if (mvm.Index == 2)
             {
-                if (!mvm.debug)
-                {
-
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                iso2nfs.StartInfo.FileName = nfsPath;
-                string extra = "";
-                if (mvm.Index == 2)
-                {
-                    extra = "-horizontal ";
-                }
-                if (mvm.Index == 3) { extra = "-wiimote "; }
-                if (mvm.Index == 4) { extra = "-instantcc "; }
-                if (mvm.Index == 5) { extra = "-nocc "; }
-                if (mvm.LR) { extra += "-lrpatch "; }
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}-iso " + gamePath;
-                iso2nfs.Start();
-                iso2nfs.WaitForExit();
-                File.Delete(nfsPath);
-                File.Delete(gamePath);
+                extra = "-horizontal ";
             }
+            if (mvm.Index == 3) { extra = "-wiimote "; }
+            if (mvm.Index == 4) { extra = "-instantcc "; }
+            if (mvm.Index == 5) { extra = "-nocc "; }
+            if (mvm.LR) { extra += "-lrpatch "; }
+
+            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
+
+            File.Delete(nfsPath);
+            File.Delete(gamePath);
             mvm.Progress = 80;
 
 
@@ -638,27 +629,18 @@ namespace UWUVCI_AIO_WPF
             string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
-            using (Process iso2nfs = new Process())
+
+            string pass = "-passthrough ";
+            if (mvm.passtrough != true)
             {
-                if (!mvm.debug)
-                {
-
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                iso2nfs.StartInfo.FileName = nfsPath;
-                string pass = "-passthrough ";
-                if (mvm.passtrough != true)
-                {
-                    pass = "";
-                }
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {pass}-iso " + gamePath;
-                iso2nfs.Start();
-                iso2nfs.WaitForExit();
-                File.Delete(gamePath);
-                File.Delete(nfsPath);
+                pass = "";
             }
-            mvm.Progress = 80;
+            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath });
 
+            File.Delete(gamePath);
+            File.Delete(nfsPath);
+
+            mvm.Progress = 80;
 
         }
 
@@ -994,29 +976,21 @@ namespace UWUVCI_AIO_WPF
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
-            using (Process iso2nfs = new Process())
+            string extra = "";
+            if (mvm.Index == 2)
             {
-                if (!mvm.debug)
-                {
-
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                iso2nfs.StartInfo.FileName = nfsPath;
-                string extra = "";
-                if (mvm.Index == 2)
-                {
-                    extra = "-horizontal ";
-                }
-                if (mvm.Index == 3) { extra = "-wiimote "; }
-                if (mvm.Index == 4) { extra = "-instantcc "; }
-                if (mvm.Index == 5) { extra = "-nocc "; }
-                if (mvm.LR) { extra += "-lrpatch "; }
-                iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso " + gamePath;
-                iso2nfs.Start();
-                iso2nfs.WaitForExit();
-                File.Delete(nfsPath);
-                File.Delete(gamePath);
+                extra = "-horizontal ";
             }
+            if (mvm.Index == 3) { extra = "-wiimote "; }
+            if (mvm.Index == 4) { extra = "-instantcc "; }
+            if (mvm.Index == 5) { extra = "-nocc "; }
+            if (mvm.LR) { extra += "-lrpatch "; }
+
+            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
+
+            File.Delete(nfsPath);
+            File.Delete(gamePath);
+
             mvm.Progress = 80;
         }
         private static void GC(string romPath, MainViewModel mvm, bool force)
@@ -1320,22 +1294,12 @@ namespace UWUVCI_AIO_WPF
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
-            using (Process iso2nfs = new Process())
-            {
-                if (!mvm.debug)
-                {
+            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath });
 
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                iso2nfs.StartInfo.FileName = nfsPath;
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso " + gamePath;
-                iso2nfs.Start();
-                iso2nfs.WaitForExit();
-                File.Delete(nfsPath);
-                File.Delete(gamePath);
-            }
+            File.Delete(nfsPath);
+            File.Delete(gamePath);
+
             mvm.Progress = 80;
-
         }
         private static void WIIold(string romPath, MainViewModel mvm, bool force)
         {
@@ -1771,6 +1735,7 @@ namespace UWUVCI_AIO_WPF
         private static void EditXML(string gameNameOr, int index, string code)
         {
             string gameName = string.Empty;
+            //This line of code gives me cancer
             if (gameNameOr != null || !String.IsNullOrWhiteSpace(gameNameOr))
             {
 
