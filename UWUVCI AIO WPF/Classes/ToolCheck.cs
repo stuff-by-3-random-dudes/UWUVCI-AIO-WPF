@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -16,7 +15,6 @@ namespace UWUVCI_AIO_WPF.Classes
         public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
         public static string[] ToolNames =
         {
-            "CNUSPACKER.exe",
             "N64Converter.exe",
             "png2tga.exe",
             "psb.exe",

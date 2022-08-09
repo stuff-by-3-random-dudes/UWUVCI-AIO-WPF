@@ -1655,25 +1655,24 @@ namespace UWUVCI_AIO_WPF
                 Directory.Delete(Environment.GetEnvironmentVariable("LocalAppData") + @"\temp\.net\CNUSPACKER", true);
             }
             catch { }
-            using (Process cnuspacker = new Process())
+
+
+            if (Environment.Is64BitOperatingSystem)
+                CNUSPACKER.Program.Main(new string[] { "-in", baseRomPath, "-out", outputPath, "-encryptKeyWidth", Settings.Default.Ckey });
+            else
             {
-                if (!mvm.debug)
+                using (Process cnuspacker = new Process())
                 {
-                    cnuspacker.StartInfo.UseShellExecute = false;
-                    cnuspacker.StartInfo.CreateNoWindow = true;
-                }
-                if (Environment.Is64BitOperatingSystem)
-                {
-                    cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
-                }
-                else
-                {
+                    if (!mvm.debug)
+                    {
+                        cnuspacker.StartInfo.UseShellExecute = false;
+                        cnuspacker.StartInfo.CreateNoWindow = true;
+                    }
                     cnuspacker.StartInfo.FileName = "java";
                     cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+                    cnuspacker.Start();
+                    cnuspacker.WaitForExit();
                 }
-                cnuspacker.Start();
-                cnuspacker.WaitForExit();
             }
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
