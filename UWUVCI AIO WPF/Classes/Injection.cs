@@ -1693,12 +1693,13 @@ namespace UWUVCI_AIO_WPF
             if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
             Directory.CreateDirectory(tempPath);
 
-            var titleData = new TitleData(b.Tid, key.Tkey, null, null, null);
-            await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
+            var titleData = new TitleData(b.Tid, key.Tkey);
+            var downloadFolder = Path.Combine(tempPath, "download");
+            await Downloader.DownloadAsync(titleData, downloadFolder);
                     
             mvm.Progress = 75;
 
-            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download"), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
+            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(downloadFolder, b.Tid), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
 
             if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
             {
@@ -2149,13 +2150,17 @@ namespace UWUVCI_AIO_WPF
         {
             if (mvm.SysKeyset() && mvm.SysKey1set())
             {
-                var titleData = new TitleData("0005001010004001", Settings.Default.SysKey);
-                await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
-                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys") });
+                var titleIds = new string[] { "0005001010004001", "0005001010004000" };
+                var paths = new string[] { Path.Combine(Settings.Default.BasePath, $"vwiisys"), Path.Combine(tempPath, "tempd") }; 
+                var downloadFolder = Path.Combine(tempPath, "download");
 
-                titleData = new TitleData("0005001010004000", Settings.Default.SysKey);
-                await Downloader.DownloadAsync(titleData, Path.Combine(tempPath, "download"));
-                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download"), Path.Combine(tempPath, "tempd") });
+                for (var i = 0; i < titleIds.Length; i++)
+                {
+                    var titleData = new TitleData(titleIds[i], Settings.Default.SysKey);
+                    await Downloader.DownloadAsync(titleData, downloadFolder);
+                    CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(downloadFolder, titleIds[i]), paths[i] });
+
+                }
 
                 File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
                 File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
@@ -2164,7 +2169,6 @@ namespace UWUVCI_AIO_WPF
         }
         private static void NDS(string injectRomPath)
         {
-
             string RomName = string.Empty;
             mvvm.msg = "Getting BaseRom Name...";
             var zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
