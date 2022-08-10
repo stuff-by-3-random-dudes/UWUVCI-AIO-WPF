@@ -62,13 +62,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             msgT.Text = mvm.msg;
             pb.Value = mvm.Progress;
-            if(Key.Text.Contains("Downloading Base"))
+            if (Key.Text.Contains("Downloading Base"))
             {
-                if(mvm.Progress < 70)
+                if (mvm.Progress < 70)
                 {
                     mvm.Progress += 1;
                 }
             }
+            else
+                mvm.Progress += 1;
+
             if(mvm.Progress >= 100)
             {
                 timer.Stop();

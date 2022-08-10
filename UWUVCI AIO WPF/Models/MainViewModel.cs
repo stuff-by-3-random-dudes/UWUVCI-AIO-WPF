@@ -1139,7 +1139,6 @@ namespace UWUVCI_AIO_WPF
                                 Task.Run(() => DownloadBaseAsync(s, this)).GetAwaiter();
                                 Progress += Convert.ToInt32(stuff);
                             }
-                            Progress = 100;
                         });
 
                         DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
@@ -1181,7 +1180,6 @@ namespace UWUVCI_AIO_WPF
                             Task.Run(() => DownloadBaseAsync(s, this)).GetAwaiter();
                             Progress += Convert.ToInt32(stuff);
                         }
-                        Progress = 100;
                     });
 
                     DownloadWait dw = new DownloadWait("Downloading needed Data - Please Wait", "", this);
@@ -1732,10 +1730,9 @@ namespace UWUVCI_AIO_WPF
         }
         private void ThreadDownload(List<MissingTool> missingTools)
         {
+            var percentage = 100 / missingTools.Count;
             var thread = new Thread(() =>
             {
-                double l = 100 / missingTools.Count;
-
                 foreach (MissingTool m in missingTools)
                 {
                     if (m.Name == "blank.ini")
@@ -1745,10 +1742,8 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                         Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
-
-                    Progress += Convert.ToInt32(l);
+                    Progress += percentage;
                 }
-                Progress = 100;
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
@@ -1773,7 +1768,6 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
                     {
-                        Task.Run(() => ThreadDownload(missingTools)).GetAwaiter();
                         DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
                         try
                         {
@@ -1783,9 +1777,8 @@ namespace UWUVCI_AIO_WPF
                         {
 
                         }
+                        ThreadDownload(missingTools);
                         dw.ShowDialog();
-                        Thread.Sleep(200);
-                        //Download Tools
                         Progress = 0;
                         toolCheckAsync();
                     }
@@ -2143,7 +2136,7 @@ namespace UWUVCI_AIO_WPF
         public bool checkKey(string key)
         {
             var hashCode = GetDeterministicHashCode(key.ToLower());
-            if (GbTemp.KeyHash == hashCode)
+            if (GbTemp.KeyHash != hashCode)
             {
                 UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
@@ -2230,7 +2223,7 @@ namespace UWUVCI_AIO_WPF
             ValidatePathsStillExist();
             if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
             {
-                Task.Run(() => Injection.Download(this)).GetAwaiter();
+                Task.Run(() => Injection.Download(this)).GetAwaiter().GetResult();
 
                 DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
                 try
