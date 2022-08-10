@@ -341,15 +341,28 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     string[] ancastKeyCopy = { ancastKey.Text };
                     File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
 
-                    File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), System.IO.Path.Combine(c2wPath, "c2w_patcher.exe"));
-                    //File.Copy -> c2w.img to c2wPath
+                    var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
+                    File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile);
+
+                    var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
+                    var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
+                    File.Copy(imgFileCode, imgFile);
+                    File.Delete(imgFileCode);
+                    Directory.Delete(downloadPath, true);
+
                     using (Process c2w = new Process())
                     {
-                        c2w.StartInfo.FileName = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
-                        c2w.StartInfo.Arguments = $"-nc \"{c2wPath}";
+                        c2w.StartInfo.FileName = c2wFile;
+                        c2w.StartInfo.Arguments = $"-nc";
                         c2w.Start();
                         c2w.WaitForExit();
                     }
+
+                    File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode);
+                    File.Delete(c2wFile);
+                    File.Delete(c2wPath + "\\starbuck_key.txt");
+                    File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
+
                 }
                 else
                 {
