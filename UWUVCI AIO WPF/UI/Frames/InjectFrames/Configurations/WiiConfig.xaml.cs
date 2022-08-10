@@ -350,18 +350,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     File.Delete(imgFileCode);
                     Directory.Delete(downloadPath, true);
 
+                    var currentDir = Directory.GetCurrentDirectory();
+                    Directory.SetCurrentDirectory(c2wPath);
                     using (Process c2w = new Process())
                     {
-                        c2w.StartInfo.FileName = c2wFile;
+                        c2w.StartInfo.FileName = "c2w_patcher.exe";
                         c2w.StartInfo.Arguments = $"-nc";
                         c2w.Start();
                         c2w.WaitForExit();
                     }
+                    Directory.SetCurrentDirectory(currentDir);
 
                     File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode);
                     File.Delete(c2wFile);
                     File.Delete(c2wPath + "\\starbuck_key.txt");
                     File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
+                    File.Delete(imgFileCode);
 
                 }
                 else
