@@ -328,22 +328,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         "0005001010004000",
                         "0005001010004001"
                     };
+
+                    var downloadPath = System.IO.Path.Combine(tempPath, "download");
+                    foreach (var titleId in titleIds)
+                        Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                    
                     
                     foreach (var titleId in titleIds)
-                        Task.Run(() => Downloader.DownloadAsync(titleId, System.IO.Path.Combine(tempPath, titleId))).GetAwaiter().GetResult();
-                    
-                    
-                    foreach (var titleId in titleIds)
-                        CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(tempPath, titleId, titleId), c2wPath });
+                        CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
 
 
                     string[] ancastKeyCopy = { ancastKey.Text };
-                    File.WriteAllLines(tempPath + "\\C2W\\starbuck_key.txt", ancastKeyCopy);
+                    File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
 
+                    File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), System.IO.Path.Combine(c2wPath, "c2w_patcher.exe"));
+                    //File.Copy -> c2w.img to c2wPath
                     using (Process c2w = new Process())
                     {
-                        c2w.StartInfo.FileName = System.IO.Path.Combine(toolsPath, "c2w_patcher.exe");
-                        c2w.StartInfo.Arguments = $"-nc \"{System.IO.Path.Combine(tempPath, "C2W")}";
+                        c2w.StartInfo.FileName = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
+                        c2w.StartInfo.Arguments = $"-nc \"{c2wPath}";
                         c2w.Start();
                         c2w.WaitForExit();
                     }
