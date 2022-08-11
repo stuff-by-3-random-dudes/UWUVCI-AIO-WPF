@@ -39,7 +39,6 @@
     <Reference Include="GameBaseClassLibrary">
       <HintPath>..\GameBaseClassLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="System.IO.Compression" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Font\font.otf" />
@@ -157,13 +156,14 @@
     <PackageReference Include="CNUSPACKER" Version="1.0.3" />
     <PackageReference Include="GMWare.M2" Version="1.1.2" />
     <PackageReference Include="Json.Net" Version="1.0.33" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.2" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Octokit" Version="1.0.0" />
+    <PackageReference Include="Octokit" Version="2.0.0" />
     <PackageReference Include="Pfim" Version="0.10.3" />
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
@@ -173,7 +173,7 @@
     </PackageReference>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.4" />
     <PackageReference Include="Costura.Fody" Version="5.7.0" />
-    <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -182,5 +182,18 @@
   <ItemGroup>
     <ProjectReference Include="..\..\nfs2iso2nfs\nfs2iso2nfs\nfs2iso2nfs.csproj" />
     <ProjectReference Include="..\..\WiiUDownloaderLibrary\WiiUDownloaderLibrary\WiiUDownloaderLibrary.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>
