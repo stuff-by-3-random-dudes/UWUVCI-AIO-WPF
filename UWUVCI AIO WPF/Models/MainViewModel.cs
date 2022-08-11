@@ -2223,14 +2223,13 @@ namespace UWUVCI_AIO_WPF
             ValidatePathsStillExist();
             if (Task.Run(() => CheckForInternetConnectionAsync()).GetAwaiter().GetResult())
             {
-                Task.Run(() => Injection.Download(this)).GetAwaiter().GetResult();
-
                 DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
                 try
                 {
                     dw.changeOwner(mw);
                 }
                 catch (Exception) { }
+                Task.Run(() => Injection.Download(this)).GetAwaiter();
                 dw.ShowDialog();
                 Progress = 0;
             }
