@@ -314,7 +314,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 var sourceData = ancastKey.Text;
                 var tempSource = Encoding.ASCII.GetBytes(sourceData);
-                var tmpHash = new MD5CryptoServiceProvider().ComputeHash(tempSource);
+                var tmpHash = MD5.Create().ComputeHash(tempSource); 
                 var hash = BitConverter.ToString(tmpHash);
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
