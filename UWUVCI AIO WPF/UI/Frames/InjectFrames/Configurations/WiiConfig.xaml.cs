@@ -307,73 +307,93 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             /*TODO: Make this work
              * - C2W_Patcher doesn't work, but idfk what it's supposed to do so /shrug
              * - idfk what this shit is supposed to do
-            */ 
+            */
             if (!string.IsNullOrEmpty(ancastKey.Text))
             {
                 ancastKey.Text = ancastKey.Text.ToUpper();
+
                 var sourceData = ancastKey.Text;
-                var tempSource = ASCIIEncoding.ASCII.GetBytes(sourceData);
+                var tempSource = Encoding.ASCII.GetBytes(sourceData);
                 var tmpHash = new MD5CryptoServiceProvider().ComputeHash(tempSource);
                 var hash = BitConverter.ToString(tmpHash);
+
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
-                    var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
-                    var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-                    Directory.CreateDirectory(tempPath + "\\C2W");
-
-                    var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
-
-                    var titleIds = new List<string>()
+                    Task.Run(() =>
                     {
-                        "0005001010004000",
-                        "0005001010004001"
-                    };
+                        mvm.Progress += 5;
+                        var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+                        var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+                        Directory.CreateDirectory(tempPath + "\\C2W");
 
-                    var downloadPath = System.IO.Path.Combine(tempPath, "download");
-                    foreach (var titleId in titleIds)
-                        Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
-                    
-                    
-                    foreach (var titleId in titleIds)
-                        CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
+                        var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
 
+                        var titleIds = new List<string>()
+                        {
+                            "0005001010004000",
+                            "0005001010004001"
+                        };
 
-                    string[] ancastKeyCopy = { ancastKey.Text };
-                    File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
+                        var downloadPath = System.IO.Path.Combine(tempPath, "download");
+                        foreach (var titleId in titleIds)
+                        {
+                            Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            mvm.Progress += 20;
+                        }
 
-                    var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
-                    File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile);
+                        foreach (var titleId in titleIds)
+                        {
+                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
+                            mvm.Progress += 20;
+                        }
 
-                    var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
-                    var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
-                    File.Copy(imgFileCode, imgFile);
-                    File.Delete(imgFileCode);
-                    Directory.Delete(downloadPath, true);
+                        string[] ancastKeyCopy = { ancastKey.Text };
+                        File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
 
-                    var currentDir = Directory.GetCurrentDirectory();
-                    Directory.SetCurrentDirectory(c2wPath);
-                    using (Process c2w = new Process())
-                    {
-                        c2w.StartInfo.FileName = "c2w_patcher.exe";
-                        c2w.StartInfo.Arguments = $"-nc";
-                        c2w.Start();
-                        c2w.WaitForExit();
-                    }
-                    Directory.SetCurrentDirectory(currentDir);
+                        var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
+                        File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile);
 
-                    File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode);
-                    File.Delete(c2wFile);
-                    File.Delete(c2wPath + "\\starbuck_key.txt");
-                    File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
-                    File.Delete(imgFileCode);
+                        var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
+                        var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
+                        File.Copy(imgFileCode, imgFile);
+                        File.Delete(imgFileCode);
+                        Directory.Delete(downloadPath, true);
+                        mvm.Progress += 5;
 
+                        var currentDir = Directory.GetCurrentDirectory();
+                        Directory.SetCurrentDirectory(c2wPath);
+                        using (Process c2w = new Process())
+                        {
+                            c2w.StartInfo.FileName = "c2w_patcher.exe";
+                            c2w.StartInfo.Arguments = $"-nc";
+                            c2w.Start();
+                            c2w.WaitForExit();
+                        }
+                        Directory.SetCurrentDirectory(currentDir);
+
+                        File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode);
+                        File.Delete(c2wFile);
+                        File.Delete(c2wPath + "\\starbuck_key.txt");
+                        File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
+                        File.Delete(imgFileCode);
+                        mvm.Progress = 100;
+                    }).GetAwaiter();
                 }
                 else
                 {
-                    //error 
+                    var cm = new Custom_Message("C2W Error", "Anucast code is incorrect.\nNot continuing with inject.");
+                    cm.ShowDialog();
                     return;
                 }
 
+                var message = new DownloadWait("Setting Up C2W - Please Wait", "", mvm);
+                try
+                {
+                    message.changeOwner(mvm.mw);
+                }
+                catch (Exception) { }
+                message.ShowDialog();
+                mvm.Progress = 0;
             }
 
             mvm.Inject(false);
