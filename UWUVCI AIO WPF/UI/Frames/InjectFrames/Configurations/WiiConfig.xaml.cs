@@ -379,7 +379,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
                 else
                 {
-                    var cm = new Custom_Message("C2W Error", "Anucast code is incorrect.\nNot continuing with inject.");
+                    var cm = new Custom_Message("C2W Error", "Ancast code is incorrect.\nNot continuing with inject.");
                     cm.ShowDialog();
                     return;
                 }
