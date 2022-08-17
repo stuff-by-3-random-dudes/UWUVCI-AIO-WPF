@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shell;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using WiiUDownloaderLibrary;
@@ -312,6 +313,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 ancastKey.Text = ancastKey.Text.ToUpper();
 
+                var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+                var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+                var downloadPath = System.IO.Path.Combine(tempPath, "download");
+                var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
+                var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
+                var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
+                var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
+
                 var sourceData = ancastKey.Text;
                 var tempSource = Encoding.ASCII.GetBytes(sourceData);
                 var tmpHash = MD5.Create().ComputeHash(tempSource); 
@@ -319,14 +328,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
+                    string[] ancastKeyCopy = { ancastKey.Text };
+
                     Task.Run(() =>
                     {
                         mvm.Progress += 5;
-                        var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
-                        var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-                        Directory.CreateDirectory(tempPath + "\\C2W");
 
-                        var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
+                        Directory.CreateDirectory(tempPath + "\\C2W");
 
                         var titleIds = new List<string>()
                         {
@@ -334,30 +342,24 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             "0005001010004001"
                         };
 
-                        var downloadPath = System.IO.Path.Combine(tempPath, "download");
                         foreach (var titleId in titleIds)
                         {
                             Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
-                            mvm.Progress += 20;
+                            mvm.Progress += 5;
                         }
 
                         foreach (var titleId in titleIds)
                         {
                             CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
-                            mvm.Progress += 20;
+                            mvm.Progress += 5;
                         }
 
-                        string[] ancastKeyCopy = { ancastKey.Text };
                         File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
 
-                        var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
-                        File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile);
+                        File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile, true);
 
-                        var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
-                        var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
-                        File.Copy(imgFileCode, imgFile);
-                        File.Delete(imgFileCode);
-                        Directory.Delete(downloadPath, true);
+                        File.Copy(imgFileCode, imgFile, true);
+
                         mvm.Progress += 5;
 
                         var currentDir = Directory.GetCurrentDirectory();
@@ -371,11 +373,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         }
                         Directory.SetCurrentDirectory(currentDir);
 
-                        File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode);
-                        File.Delete(c2wFile);
-                        File.Delete(c2wPath + "\\starbuck_key.txt");
-                        File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
-                        File.Delete(imgFileCode);
+                        File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
                         mvm.Progress = 100;
                     }).GetAwaiter();
                 }
@@ -394,6 +392,21 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 catch (Exception) { }
                 message.ShowDialog();
                 mvm.Progress = 0;
+                File.Delete(imgFileCode);
+                try
+                {
+                    Directory.Delete(downloadPath, true);
+                }
+                catch { }
+                File.Delete(c2wFile);
+                File.Delete(c2wPath + "\\starbuck_key.txt");
+                File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
+                File.Delete(imgFileCode);
+                try
+                {
+                    Directory.Delete(System.IO.Path.Combine(c2wPath, "code"),true);
+                }
+                catch { }
             }
 
             mvm.Inject(false);

@@ -1844,6 +1844,14 @@ namespace UWUVCI_AIO_WPF
             else
             {
                 DirectoryCopy(Path.Combine(Properties.Settings.Default.BasePath, baserom), baseRomPath, true);
+                var c2wPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp", "C2W");
+                if (Directory.Exists(c2wPath))
+                    try
+                    {
+                        File.Copy(Path.Combine(c2wPath, "c2w.img"), Path.Combine(baseRomPath, "code", "c2w.img"), true);
+                        Directory.Delete(c2wPath, true);
+                    }
+                    catch { }
             }
         }
 
