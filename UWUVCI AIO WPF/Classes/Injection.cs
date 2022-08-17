@@ -550,7 +550,7 @@ namespace UWUVCI_AIO_WPF
             if (mvm.Index == 5) { extra = "-nocc "; }
             if (mvm.LR) { extra += "-lrpatch "; }
 
-            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
 
             File.Delete(nfsPath);
             File.Delete(gamePath);
@@ -635,7 +635,7 @@ namespace UWUVCI_AIO_WPF
             {
                 pass = "";
             }
-            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath });
 
             File.Delete(gamePath);
             File.Delete(nfsPath);
@@ -986,7 +986,7 @@ namespace UWUVCI_AIO_WPF
             if (mvm.Index == 5) { extra = "-nocc "; }
             if (mvm.LR) { extra += "-lrpatch "; }
 
-            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
 
             File.Delete(nfsPath);
             File.Delete(gamePath);
@@ -1294,7 +1294,7 @@ namespace UWUVCI_AIO_WPF
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
-            nfs2iso2nfs.Program.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath });
 
             File.Delete(nfsPath);
             File.Delete(gamePath);
