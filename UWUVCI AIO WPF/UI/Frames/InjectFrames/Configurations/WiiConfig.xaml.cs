@@ -259,6 +259,30 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         }
 
+        public string ReadAncastFromOtp()
+        {
+            var ret = "";
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                dialog.Filter = "OTP.bin | otp.bin";
+                var res = dialog.ShowDialog();
+                if (res == System.Windows.Forms.DialogResult.OK)
+                {
+                    var filepath = dialog.FileName;
+                    var test = new byte[16];
+
+                    using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+                    {
+                        fs.Seek(0xE0, SeekOrigin.Begin);
+                        fs.Read(test, 0, 16);
+                    }
+                    foreach (var b in test)
+                        ret += string.Format("{0:X2}", b);
+                }
+            }
+            return ret;
+        }
+
         private void InjectGame(object sender, RoutedEventArgs e)
         {
             if (File.Exists(tv.Text))
@@ -305,10 +329,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             mvm.GameConfiguration.GameName = gn.Text;
 
-            /*TODO: Make this work
-             * - C2W_Patcher doesn't work, but idfk what it's supposed to do so /shrug
-             * - idfk what this shit is supposed to do
-            */
             if (!string.IsNullOrEmpty(ancastKey.Text))
             {
                 ancastKey.Text = ancastKey.Text.ToUpper();
@@ -1048,7 +1068,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void ancast_OTP(object sender, RoutedEventArgs e)
         {
-
+            ancastKey.Text = ReadAncastFromOtp();
         }
     }
 }
