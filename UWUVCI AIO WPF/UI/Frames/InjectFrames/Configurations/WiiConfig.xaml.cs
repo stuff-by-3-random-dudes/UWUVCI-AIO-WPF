@@ -273,7 +273,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                     using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                     {
-                        fs.Seek(0xE0, SeekOrigin.Begin);
+                        fs.Seek(0x90, SeekOrigin.Begin);
                         fs.Read(test, 0, 16);
                     }
                     foreach (var b in test)
