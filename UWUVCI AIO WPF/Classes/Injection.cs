@@ -536,9 +536,7 @@ namespace UWUVCI_AIO_WPF
             }
 
             string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
-            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
             string extra = "";
             if (mvm.Index == 2)
@@ -552,7 +550,6 @@ namespace UWUVCI_AIO_WPF
 
             nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
 
-            File.Delete(nfsPath);
             File.Delete(gamePath);
             mvm.Progress = 80;
 
@@ -626,9 +623,7 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(sFile);
             }
             string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
-            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
             string pass = "-passthrough ";
             if (mvm.passtrough != true)
@@ -636,12 +631,9 @@ namespace UWUVCI_AIO_WPF
                 pass = "";
             }
             nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath });
-
             File.Delete(gamePath);
-            File.Delete(nfsPath);
 
             mvm.Progress = 80;
-
         }
 
         private static void WII(string romPath, MainViewModel mvm)
@@ -972,9 +964,7 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(sFile);
             }
             string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
-            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
             string extra = "";
             if (mvm.Index == 2)
@@ -987,8 +977,6 @@ namespace UWUVCI_AIO_WPF
             if (mvm.LR) { extra += "-lrpatch "; }
 
             nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
-
-            File.Delete(nfsPath);
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -1290,13 +1278,9 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(sFile);
             }
             string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
-            string nfsPath = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsPath);
 
             nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath });
-
-            File.Delete(nfsPath);
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -1490,7 +1474,7 @@ namespace UWUVCI_AIO_WPF
                 mvvm.msg = "Injecting ROM...";
                 Console.WriteLine("Converting Game to NFS format...");
                 string olddir = Directory.GetCurrentDirectory();
-                tik.StartInfo.FileName = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
+
                 if (!mvm.GC)
                 {
                     string extra = "";
@@ -1504,11 +1488,12 @@ namespace UWUVCI_AIO_WPF
                     if (mvm.LR) { extra += "-lrpatch "; }
                     Console.WriteLine(extra);
                     Console.ReadLine();
-                    tik.StartInfo.Arguments = $"-enc {extra}-iso \"{romPath}\"";
+
+                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", extra, "-iso", romPath});
                 }
                 else
                 {
-                    tik.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso \"{romPath}\"";
+                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", romPath});
                 }
                 tik.Start();
                 tik.WaitForExit();
