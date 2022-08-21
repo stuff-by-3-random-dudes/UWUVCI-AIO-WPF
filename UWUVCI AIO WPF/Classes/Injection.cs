@@ -548,7 +548,7 @@ namespace UWUVCI_AIO_WPF
             if (mvm.Index == 5) { extra = "-nocc "; }
             if (mvm.LR) { extra += "-lrpatch "; }
 
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin"), "-output", Path.Combine(baseRomPath, "content") + Path.DirectorySeparatorChar });
 
             File.Delete(gamePath);
             mvm.Progress = 80;
@@ -630,7 +630,8 @@ namespace UWUVCI_AIO_WPF
             {
                 pass = "";
             }
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin"), "-output", Path.Combine(baseRomPath, "content") + Path.DirectorySeparatorChar });
+
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -926,7 +927,6 @@ namespace UWUVCI_AIO_WPF
 
             }
 
-            mvm.Progress = 50;
             mvm.msg = "Replacing TIK and TMD...";
             using (Process extract = new Process())
             {
@@ -947,7 +947,6 @@ namespace UWUVCI_AIO_WPF
                 File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
                 Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
             }
-            mvm.Progress = 60;
             mvm.msg = "Injecting ROM...";
             foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
             {
@@ -966,10 +965,11 @@ namespace UWUVCI_AIO_WPF
             if (mvm.Index == 5) { extra = "-nocc "; }
             if (mvm.LR) { extra += "-lrpatch "; }
 
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath, "-fwimg",  Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin")});
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath, "-fwimg",  Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin"), "-output", Path.Combine(baseRomPath, "content") + Path.DirectorySeparatorChar});
+                
             File.Delete(gamePath);
-
             mvm.Progress = 80;
+
         }
         private static void GC(string romPath, MainViewModel mvm, bool force)
         {
@@ -1270,7 +1270,8 @@ namespace UWUVCI_AIO_WPF
             string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
 
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin"), "-output", Path.Combine(baseRomPath, "content") + Path.DirectorySeparatorChar });
+
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -1479,14 +1480,12 @@ namespace UWUVCI_AIO_WPF
                     Console.WriteLine(extra);
                     Console.ReadLine();
 
-                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", extra, "-iso", romPath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
+                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", extra, "-iso", romPath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin"), "-output", Path.Combine(baseRomPath, "content") + Path.DirectorySeparatorChar });
                 }
                 else
                 {
-                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", romPath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
+                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", romPath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin"), "-output", Path.Combine(baseRomPath, "content") + Path.DirectorySeparatorChar });
                 }
-                tik.Start();
-                tik.WaitForExit();
                 Console.WriteLine("Finished Conversion");
                 mvvm.Progress = 80;
             }
