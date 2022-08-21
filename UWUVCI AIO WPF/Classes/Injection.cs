@@ -548,7 +548,7 @@ namespace UWUVCI_AIO_WPF
             if (mvm.Index == 5) { extra = "-nocc "; }
             if (mvm.LR) { extra += "-lrpatch "; }
 
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
 
             File.Delete(gamePath);
             mvm.Progress = 80;
@@ -630,7 +630,7 @@ namespace UWUVCI_AIO_WPF
             {
                 pass = "";
             }
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", pass, "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -692,9 +692,10 @@ namespace UWUVCI_AIO_WPF
             mvm.msg = "Trying to change the Manual...";
             //READ FIRST 4 BYTES
             byte[] chars = new byte[4];
-            FileStream fstrm = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open);
-            fstrm.Read(chars, 0, 4);
-            fstrm.Close();
+
+            using (FileStream fstrm = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
+                fstrm.Read(chars, 0, 4);
+            
             string procod = ByteArrayToString(chars);
             string neededformanual = procod.ToHex();
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
@@ -709,41 +710,30 @@ namespace UWUVCI_AIO_WPF
             {
                 if (mvm.regionfrii)
                 {
+                    byte[] write1;
+                    byte[] write2;
                     if (mvm.regionfriius)
                     {
-                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
-                        {
-                            fs.Seek(0x4E003, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x01 }, 0, 1);
-                            fs.Seek(0x4E010, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                            fs.Close();
-
-                        }
+                        write1 = new byte[] { 0x01 };
+                        write2 = new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
                     }
                     else if (mvm.regionfriijp)
                     {
-                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
-                        {
-                            fs.Seek(0x4E003, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x00 }, 0, 1);
-                            fs.Seek(0x4E010, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                            fs.Close();
-
-                        }
+                        write1 = new byte[] { 0x00 };
+                        write2 = new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 };
                     }
                     else
                     {
-                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
-                        {
-                            fs.Seek(0x4E003, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x02 }, 0, 1);
-                            fs.Seek(0x4E010, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                            fs.Close();
+                        write1 = new byte[] { 0x02 };
+                        write2 = new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }; 
+                    }
 
-                        }
+                    using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
+                    {
+                        fs.Seek(0x4E003, SeekOrigin.Begin);
+                        fs.Write(write1, 0, 1);
+                        fs.Seek(0x4E010, SeekOrigin.Begin);
+                        fs.Write(write2, 0, 16);
                     }
                 }
                 using (Process trimm = new Process())
@@ -976,7 +966,7 @@ namespace UWUVCI_AIO_WPF
             if (mvm.Index == 5) { extra = "-nocc "; }
             if (mvm.LR) { extra += "-lrpatch "; }
 
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", extra, "-iso", gamePath, "-fwimg",  Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin")});
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -1280,7 +1270,7 @@ namespace UWUVCI_AIO_WPF
             string gamePath = Path.Combine(baseRomPath, "content", "game.iso");
             File.Move(Path.Combine(tempPath, "game.iso"), gamePath);
 
-            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath });
+            nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", gamePath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
             File.Delete(gamePath);
 
             mvm.Progress = 80;
@@ -1489,11 +1479,11 @@ namespace UWUVCI_AIO_WPF
                     Console.WriteLine(extra);
                     Console.ReadLine();
 
-                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", extra, "-iso", romPath});
+                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", extra, "-iso", romPath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
                 }
                 else
                 {
-                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", romPath});
+                    nfs2iso2nfs.Depreciated.Main(new string[] { "-enc", "-homebrew", "-passthrough", "-iso", romPath, "-fwimg", Path.Combine(baseRomPath, "code", "fw.img"), "-key", Path.Combine(baseRomPath, "code", "htk.bin") });
                 }
                 tik.Start();
                 tik.WaitForExit();
