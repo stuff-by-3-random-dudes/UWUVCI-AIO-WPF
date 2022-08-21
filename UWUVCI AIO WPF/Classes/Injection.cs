@@ -1789,7 +1789,16 @@ namespace UWUVCI_AIO_WPF
 
             try
             {
-                doc.Load(appXml);
+                try
+                {
+                    doc.Load(appXml);
+                }
+                catch (Exception)
+                {
+                    if (appXml.Contains("���լ�}�") || appXml.Contains("???լ?}?"))
+                        appXml = appXml[..^7] + ">\r\n</app>";
+                    doc.Load(appXml);
+                }
                 doc.SelectSingleNode("app/title_id").InnerText = $"00050002{ID}";
                 //doc.SelectSingleNode("app/title_id").InnerText = $"0005000247414645";
 
