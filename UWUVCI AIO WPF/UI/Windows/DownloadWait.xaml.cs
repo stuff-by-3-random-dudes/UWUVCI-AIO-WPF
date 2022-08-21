@@ -69,6 +69,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     mvm.Progress += 1;
                 }
             }
+            else if (Key.Text.Contains("Injecting Game")) {
+                if (mvm.Progress < 79)
+                    mvm.Progress += 1;
+            }
             else
                 mvm.Progress += 1;
 
