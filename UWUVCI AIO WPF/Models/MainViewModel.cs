@@ -1246,7 +1246,16 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
 
                 Process p = new Process();
-                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+
+                var fileName = System.Windows.Application.ResourceAssembly.Location;
+                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
+                    if (Path.GetFileName(file).Contains(Path.GetFileNameWithoutExtension(fileName)))
+                    {
+                        fileName = file;
+                        break;
+                    }
+
+                p.StartInfo.FileName = fileName;
                 p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
                 p.Start();
 
@@ -1285,7 +1294,17 @@ namespace UWUVCI_AIO_WPF
             mw.Close();
 
             Process p = new Process();
-            p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+
+            var fileName = System.Windows.Application.ResourceAssembly.Location;
+            foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
+                if (Path.GetFileName(file).Contains(Path.GetFileNameWithoutExtension(fileName)))
+                {
+                    fileName = file;
+                    break;
+                }
+
+            p.StartInfo.FileName = fileName;
+
             p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip";
             p.Start();
 
@@ -1340,7 +1359,17 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
 
                 Process p = new Process();
-                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+
+                var fileName = System.Windows.Application.ResourceAssembly.Location;
+                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
+                    if (Path.GetFileName(file).Contains(Path.GetFileNameWithoutExtension(fileName)))
+                    {
+                        fileName = file;
+                        break;
+                    }
+
+                p.StartInfo.FileName = fileName;
+
                 p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip";
                 p.Start();
 
@@ -3168,7 +3197,16 @@ namespace UWUVCI_AIO_WPF
         {
             using (Process p = new Process())
             {
-                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+                var fileName = System.Windows.Application.ResourceAssembly.Location;
+                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
+                    if (Path.GetFileName(file).Contains(Path.GetFileNameWithoutExtension(fileName)))
+                    {
+                        fileName = file;
+                        break;
+                    }
+
+                p.StartInfo.FileName = fileName;
+
                 p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
                 p.Start();
                 Environment.Exit(0);
