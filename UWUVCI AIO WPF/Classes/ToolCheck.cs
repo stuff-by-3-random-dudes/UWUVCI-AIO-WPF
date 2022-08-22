@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,18 +68,19 @@ namespace UWUVCI_AIO_WPF.Classes
         {
             bool ret = false;
             string md5Name = FolderName + "\\" + name + ".md5";
-            using (WebClient client = new WebClient())
+
+            using (var httpClient = new HttpClient())
             {
-                await client.DownloadFileTaskAsync(backupulr + md5Name, md5Name);
-                using (StreamReader sr = new StreamReader(md5Name))
-                {
-                    var md5 = sr.ReadLine();
-                    if (CalculateMD5(name) == md5)
-                    {
-                        ret = true;
-                    }
-                }
+                using (var response = await httpClient.GetStreamAsync(backupulr + md5Name))
+                    using (var fs = new FileStream(md5Name, FileMode.Create))
+                        await response.CopyToAsync(fs);
+
+                using var sr = new StreamReader(md5Name);
+                var md5 = await sr.ReadLineAsync();
+                if (CalculateMD5(name) == md5)
+                    ret = true;
             }
+
             //Dumb solution but whatever, hopefully this deletes the md5file
             try
             {
@@ -99,14 +101,11 @@ namespace UWUVCI_AIO_WPF.Classes
         }
         static string CalculateMD5(string filename)
         {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filename))
-                {
-                    string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                    return ret;
-                }
-            }
+            using var md5 = MD5.Create();
+            using var stream = File.OpenRead(filename);
+            string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+
+            return ret;
         }
         public static List<MissingTool> CheckForMissingTools()
         {

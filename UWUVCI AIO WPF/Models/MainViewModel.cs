@@ -30,6 +30,7 @@ using System.Timers;
 using NAudio.Utils;
 using System.Security.Cryptography;
 using System.Drawing;
+using System.Net.Http;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1641,8 +1642,10 @@ namespace UWUVCI_AIO_WPF
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "bases", name);
             try
             {
-                using (var client = new WebClient())
-                    await client.DownloadFileTaskAsync(getDownloadLink(name, false), filePath);
+                using var httpClient = new HttpClient();
+                using var response = await httpClient.GetStreamAsync(getDownloadLink(name, false));
+                using var fs = new FileStream(filePath, FileMode.Create);
+                await response.CopyToAsync(fs);
             }
             catch (Exception e)
             {
@@ -1665,13 +1668,13 @@ namespace UWUVCI_AIO_WPF
                 do
                 {
                     if (File.Exists(filePath))
-                    {
                         File.Delete(filePath);
-                    }
-                    using (var client = new WebClient())
-                    {
-                        await client.DownloadFileTaskAsync(getDownloadLink(name, true), filePath);
-                    }
+
+                    using var httpClient = new HttpClient();
+                    using var response = await httpClient.GetStreamAsync(getDownloadLink(name, true));
+                    using var fs = new FileStream(filePath, FileMode.Create);
+                    await response.CopyToAsync(fs);
+
                 } while (!Task.Run(() => ToolCheck.IsToolRightAsync(name)).GetAwaiter().GetResult());
             }
             catch (Exception e)
@@ -2920,16 +2923,16 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                using (var client = new WebClient())
-                using (await client.OpenReadTaskAsync("http://google.com/generate_204"))
+                using (var client = new HttpClient())
+                using (await client.GetAsync("http://google.com/generate_204"))
                     return true;
             }
             catch
             {
                 var googleBlocked = false;
 
-                using (var client = new WebClient())
-                using (await client.OpenReadTaskAsync("https://raw.githubusercontent.com"))
+                using (var client = new HttpClient())
+                using (await client.GetAsync("https://raw.githubusercontent.com"))
                     googleBlocked = true;
 
                 Custom_Message cm;
@@ -2954,16 +2957,16 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                using (var client = new WebClient())
-                using (await client.OpenReadTaskAsync("http://google.com/generate_204"))
+                using (var client = new HttpClient())
+                using (await client.GetAsync("http://google.com/generate_204"))
                     return true;
             }
             catch
             {
                 try
                 {
-                    using (var client = new WebClient())
-                    using (await client.OpenReadTaskAsync("http://raw.githubusercontent.com"))
+                    using (var client = new HttpClient())
+                    using (await client.GetAsync("http://raw.githubusercontent.com"))
                         return true;
                 }
                 catch
@@ -3031,16 +3034,23 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
                 if (addi)
                 {
-                    var client = new WebClient();
+                    var client = new HttpClient();
                     if (ini)
                     {
-                        client.DownloadFile(inip, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
+                        using var response = await client.GetStreamAsync(inip);
+                        using var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"), FileMode.Create);
+                        await response.CopyToAsync(fs);
+                        
                         (Thing as N64Config).ini.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
                         GameConfiguration.N64Stuff.INIPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
                     }
                     if (btsnd)
                     {
-                        client.DownloadFile(btsndp, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
+
+                        using var response = await client.GetStreamAsync(inip);
+                        using var fs = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"), FileMode.Create);
+                        await response.CopyToAsync(fs);
+                        
                         BootSound = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                         switch (console)
                         {
