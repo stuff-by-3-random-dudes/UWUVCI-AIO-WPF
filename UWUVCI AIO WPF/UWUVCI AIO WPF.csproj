@@ -39,6 +39,12 @@
     <Reference Include="GameBaseClassLibrary">
       <HintPath>..\GameBaseClassLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="nfs2iso2nfs">
+      <HintPath>nfs2iso2nfs.dll</HintPath>
+    </Reference>
+    <Reference Include="WiiUDownloaderLibrary">
+      <HintPath>WiiUDownloaderLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Font\font.otf" />
@@ -153,10 +159,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CDecryptSharp" Version="1.0.4" />
-    <PackageReference Include="CNUSPACKER" Version="1.0.3" />
+    <PackageReference Include="CNUSPACKER" Version="1.0.4" />
     <PackageReference Include="GMWare.M2" Version="1.1.2" />
     <PackageReference Include="Json.Net" Version="1.0.33" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="2.5.1" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NAudio" Version="2.1.0" />
@@ -189,10 +195,6 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\nfs2iso2nfs\nfs2iso2nfs\nfs2iso2nfs.csproj" />
-    <ProjectReference Include="..\..\WiiUDownloaderLibrary\WiiUDownloaderLibrary\WiiUDownloaderLibrary.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
