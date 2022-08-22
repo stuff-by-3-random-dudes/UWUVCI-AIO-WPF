@@ -110,15 +110,24 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Folder_Click(object sender, RoutedEventArgs e)
         {
+            var filePath = "";
             try
             {
-                if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
-                Process.Start(path);
+                filePath = path;
+                if (File.Exists(filePath)) 
+                    filePath = new FileInfo(filePath).DirectoryName;
+
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = filePath,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
                 Close();
             }
             catch (Exception)
             {
-                Custom_Message cm = new Custom_Message("An Error occured", "An error occured opening the folder. Please make sure the Output Path exists.");
+                Custom_Message cm = new Custom_Message("An Error occured", "An error occured opening the folder. Please make sure the Output Path exists.\n\nFile path: " + filePath);
                 try
                 {
                     cm.Owner = (FindResource("mvm") as MainViewModel).mw;
