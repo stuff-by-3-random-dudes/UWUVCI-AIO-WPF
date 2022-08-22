@@ -3244,12 +3244,13 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (var id in repoids)
                 {
-                    if (await RemoteFileExists(linkbase + id + $"/iconTex.{e}") == true)
+                    var remoteFile = linkbase + id + $"/iconTex.{e}";
+                    if (await RemoteFileExists(remoteFile) == true)
                     {
 
                         if (e.Contains("tga"))
                         {
-                            var message = new Custom_Message("TGA Extension Warning", "TGA files can't natively be rendered in UWUVCI, instead it will say something along the lines of the image not being able to be shown.\nThis is correct and is normal behavior.\n\nIf there are actual errors then grab the files from \"https://github.com/flumpster/uwuvci-images\", convert them to png, and then manually insert them.");
+                            var message = new Custom_Message("TGA Extension Warning", "It looks to be that the only files we have are in TGA format. TGA files can't natively be rendered in UWUVCI.\n\nYou will have to grab the files, convert them to png, and then manually insert them.\n\nYou can find the files at this URL: \""+ linkbase + id + "\"");
                             try
                             {
                                 message.Owner = mw;
@@ -3259,6 +3260,7 @@ namespace UWUVCI_AIO_WPF
 
                             }
                             message.ShowDialog();
+                            continue;
                         }
 
                         img = new IMG_Message(linkbase + id + $"/iconTex.{e}", linkbase + id + $"/bootTvTex.{e}", id);
