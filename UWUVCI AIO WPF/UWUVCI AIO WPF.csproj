@@ -167,6 +167,7 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="nfs2iso2nfs" Version="1.0.0" />
     <PackageReference Include="Octokit" Version="2.0.0" />
     <PackageReference Include="Pfim" Version="0.10.3" />
     <PackageReference Include="SharpZipLib" Version="1.3.3" />
