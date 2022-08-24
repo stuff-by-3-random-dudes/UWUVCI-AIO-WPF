@@ -166,7 +166,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Close();
             var containNintendont = Message.Content.ToString().ToLower().Contains("nintendont");
 
-            SDSetup sd = new SDSetup(containNintendont ? true : false, path);
+            SDSetup sd = new SDSetup(containNintendont, path);
             try
             {
                 sd.Owner = (FindResource("mvm") as MainViewModel).mw;
