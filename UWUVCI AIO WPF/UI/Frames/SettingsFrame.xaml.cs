@@ -143,7 +143,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_13(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/uwuvci");
+            Process.Start("https://ko-fi.com/zestyts");
         }
     }
 }

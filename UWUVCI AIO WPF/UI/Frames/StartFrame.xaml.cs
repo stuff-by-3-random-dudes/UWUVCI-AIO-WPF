@@ -19,5 +19,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             Process.Start("https://ko-fi.com/uwuvci");
         }
+        private void Button_Click2(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://ko-fi.com/zestyts");
+        }
     }
 }
