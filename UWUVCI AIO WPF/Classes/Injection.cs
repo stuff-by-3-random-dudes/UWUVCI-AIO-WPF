@@ -2410,7 +2410,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        var fileExists = File.Exists(Path.Combine(toolsPath, "bootTvTex.png");
+                        var fileExists = File.Exists(Path.Combine(toolsPath, "bootTvTex.png"));
                         if (fileExists)
                         {
                             CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
