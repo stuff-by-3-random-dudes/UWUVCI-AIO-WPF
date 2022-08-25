@@ -2928,7 +2928,7 @@ namespace UWUVCI_AIO_WPF
         public bool passtrough = true;
         internal bool enableWii = true;
         internal bool backupenableWii = true;
-        private GameConsoles test;
+        public GameConsoles test;
 
         public void PlaySound()
         {
@@ -2995,22 +2995,20 @@ namespace UWUVCI_AIO_WPF
         }
         public void RestartIntoBypass()
         {
-            using (Process p = new Process())
-            {
-                var fileName = System.Windows.Application.ResourceAssembly.Location;
-                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
-                    if (Path.GetFileName(file).Contains(Path.GetFileNameWithoutExtension(fileName)))
-                    {
-                        fileName = file;
-                        break;
-                    }
+            using Process p = new Process();
+            var fileName = System.Windows.Application.ResourceAssembly.Location;
+            foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
+                if (Path.GetFileName(file).Contains(Path.GetFileNameWithoutExtension(fileName)))
+                {
+                    fileName = file;
+                    break;
+                }
 
-                p.StartInfo.FileName = fileName;
+            p.StartInfo.FileName = fileName;
 
-                p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
-                p.Start();
-                Environment.Exit(0);
-            }
+            p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
+            p.Start();
+            Environment.Exit(0);
 
         }
 
