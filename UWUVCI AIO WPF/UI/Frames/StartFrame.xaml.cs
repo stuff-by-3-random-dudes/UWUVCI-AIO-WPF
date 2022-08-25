@@ -17,11 +17,21 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/uwuvci");
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "https://ko-fi.com/uwuvci",
+                UseShellExecute = true,
+                Verb = "open"
+            });
         }
         private void Button_Click2(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/zestyts");
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "https://ko-fi.com/zestyts",
+                UseShellExecute = true,
+                Verb = "open"
+            });
         }
     }
 }

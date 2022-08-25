@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Windows;
+using static System.Net.WebRequestMethods;
 
 
 namespace UWUVCI_AIO_WPF.UI.Frames
@@ -143,7 +144,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_13(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/zestyts");
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "https://ko-fi.com/zestyts",
+                UseShellExecute = true,
+                Verb = "open"
+            });
         }
     }
 }
