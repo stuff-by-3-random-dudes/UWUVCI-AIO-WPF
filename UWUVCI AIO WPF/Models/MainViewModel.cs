@@ -16,7 +16,6 @@ using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
-using AutoUpdaterDotNET;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -1633,7 +1632,7 @@ namespace UWUVCI_AIO_WPF
                     var isToolRight = await ToolCheck.IsToolRightAsync(name);
                     if (isToolRight)
                         break;
-
+                    
                     using var httpClient = new HttpClient();
                     using var response = await httpClient.GetStreamAsync(getDownloadLink(name, true));
                     using var fs = new FileStream(filePath, FileMode.Create);
