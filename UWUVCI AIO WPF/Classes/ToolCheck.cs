@@ -64,44 +64,28 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public static async Task<bool> IsToolRightAsync(string name)
         {
-            bool ret = false;
-            string md5Name = FolderName + "\\" + name + ".md5";
-
+            string md5Name = name + ".md5";
+            string md5Path = FolderName + "\\" + md5Name;
+            
             using (var httpClient = new HttpClient())
             {
-                using (var response = await httpClient.GetStreamAsync(backupulr + md5Name))
-                    using (var fs = new FileStream(md5Name, FileMode.Create))
-                        await response.CopyToAsync(fs);
+                using var response = await httpClient.GetStreamAsync(backupulr + md5Name);
+                using var fs = new FileStream(md5Path, FileMode.Create);
+                await response.CopyToAsync(fs);
+            }
+            
+            var md5 = "";
+            using (var sr = new StreamReader(md5Path))
+                md5 = await sr.ReadToEndAsync();
 
-                using var sr = new StreamReader(md5Name);
-                var md5 = await sr.ReadLineAsync();
-                if (CalculateMD5(name) == md5)
-                    ret = true;
-            }
-
-            //Dumb solution but whatever, hopefully this deletes the md5file
-            try
-            {
-                File.Delete(md5Name);
-            }
-            catch { }
-            try
-            {
-                File.Delete(new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools\\" + md5Name);
-            }
-            catch { }
-            try
-            {
-                File.Delete(new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\bases\\" + md5Name);
-            }
-            catch { }
-            return ret;
+            return CalculateMD5(md5Path) == md5;
         }
         static string CalculateMD5(string filename)
         {
+            var ret = "";
             using var md5 = MD5.Create();
-            using var stream = File.OpenRead(filename);
-            string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+            using (var stream = File.OpenRead(filename))
+                ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
 
             return ret;
         }
