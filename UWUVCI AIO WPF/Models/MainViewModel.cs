@@ -1661,7 +1661,7 @@ namespace UWUVCI_AIO_WPF
                 if (tool)
                     return $"{ToolCheck.backupulr}{toolname}";
                 else
-                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/Net6/" + toolname.Replace("bin\\bases\\", "");
             }
             catch (Exception)
             {
@@ -1670,7 +1670,7 @@ namespace UWUVCI_AIO_WPF
                 else
                 {
                     var name = toolname.Replace("bin\\bases\\", "");
-                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + name;
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/Net6/" + name;
                 }
             }
         }
