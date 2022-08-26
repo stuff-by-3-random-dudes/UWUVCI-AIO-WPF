@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
@@ -13,7 +12,7 @@ namespace UWUVCI_AIO_WPF.Classes
     class ToolCheck
     {
         static string FolderName = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools";
-        public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
+        public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/" + (Environment.Is64BitProcess ? "x64/" : "");
         public static string[] ToolNames =
         {
             "N64Converter.exe",
@@ -31,7 +30,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "nintendont.dol",
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
-            //"wbfs_file.exe",
             "wit.exe",
             "cygwin1.dll",
             "cygz.dll",
