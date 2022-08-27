@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,17 +12,14 @@ namespace UWUVCI_AIO_WPF.Classes
     class ToolCheck
     {
         static string FolderName = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools";
-        public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
+        public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/" + (Environment.Is64BitProcess ? "x64/" : "");
         public static string[] ToolNames =
         {
-            "CDecrypt.exe",
-            "CNUSPACKER.exe",
             "N64Converter.exe",
             "png2tga.exe",
             "psb.exe",
             "RetroInject.exe",
             "tga_verify.exe",
-            "WiiUDownloader.exe",
             "wiiurpxtool.exe",
             "INICreator.exe",
             "blank.ini",
@@ -31,11 +27,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "BuildPcePkg.exe",
             "BuildTurboCdPcePkg.exe",
             "goomba.gba",
-            "nfs2iso2nfs.exe",
             "nintendont.dol",
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
-            //"wbfs_file.exe",
             "wit.exe",
             "cygwin1.dll",
             "cygz.dll",
@@ -70,48 +64,30 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public static async Task<bool> IsToolRightAsync(string name)
         {
-            bool ret = false;
-            string md5Name = FolderName + "\\" + name + ".md5";
-            using (WebClient client = new WebClient())
+            string md5Name = name + ".md5";
+            string md5Path = FolderName + "\\" + md5Name;
+            
+            using (var httpClient = new HttpClient())
             {
-                await client.DownloadFileTaskAsync(backupulr + md5Name, md5Name);
-                using (StreamReader sr = new StreamReader(md5Name))
-                {
-                    var md5 = sr.ReadLine();
-                    if (CalculateMD5(name) == md5)
-                    {
-                        ret = true;
-                    }
-                }
+                using var response = await httpClient.GetStreamAsync(backupulr + md5Name);
+                using var fs = new FileStream(md5Path, FileMode.Create);
+                await response.CopyToAsync(fs);
             }
-            //Dumb solution but whatever, hopefully this deletes the md5file
-            try
-            {
-                File.Delete(md5Name);
-            }
-            catch { }
-            try
-            {
-                File.Delete(new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools\\" + md5Name);
-            }
-            catch { }
-            try
-            {
-                File.Delete(new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\bases\\" + md5Name);
-            }
-            catch { }
-            return ret;
+            
+            var md5 = "";
+            using (var sr = new StreamReader(md5Path))
+                md5 = await sr.ReadToEndAsync();
+
+            return CalculateMD5(md5Path) == md5;
         }
         static string CalculateMD5(string filename)
         {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filename))
-                {
-                    string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                    return ret;
-                }
-            }
+            var ret = "";
+            using var md5 = MD5.Create();
+            using (var stream = File.OpenRead(filename))
+                ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+
+            return ret;
         }
         public static List<MissingTool> CheckForMissingTools()
         {
