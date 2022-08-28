@@ -486,7 +486,7 @@ namespace UWUVCI_AIO_WPF
         }
         public MainViewModel()
         {
-            if (!Environment.Is64BitOperatingSystem)
+            if (true)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
                 Tools.Add("NUSPacker.jar");

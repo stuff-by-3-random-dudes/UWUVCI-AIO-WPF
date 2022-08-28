@@ -21,6 +21,7 @@
     <UseWindowsForms>True</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -33,7 +34,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>UWUVCI_AIO_WPF.App</StartupObject>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GameBaseClassLibrary">
@@ -159,7 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CDecryptSharp" Version="1.0.4" />
-    <PackageReference Include="CNUSPACKER" Version="1.0.4" />
+    <PackageReference Include="CNUSPACKER" Version="1.0.3" />
     <PackageReference Include="GMWare.M2" Version="1.1.2" />
     <PackageReference Include="Json.Net" Version="1.0.33" />
     <PackageReference Include="MaterialDesignThemes" Version="2.5.1" />

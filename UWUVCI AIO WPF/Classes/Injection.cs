@@ -1624,21 +1624,24 @@ namespace UWUVCI_AIO_WPF
             mvm.Progress = 40;
             mvm.msg = "Packing...";
 
-            if (Environment.Is64BitOperatingSystem)
-                CNUSPACKER.Program.Main(new string[] { "-in", baseRomPath, "-out", outputPath, "-encryptKeyWidth", Settings.Default.Ckey });
+            using var cnuspacker = new Process();
+            if (!mvm.debug)
+            {
+                cnuspacker.StartInfo.UseShellExecute = false;
+                cnuspacker.StartInfo.CreateNoWindow = true;
+            }
+            if (false)
+            {
+                cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
+                cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+            }
             else
             {
-                using var cnuspacker = new Process();
-                if (!mvm.debug)
-                {
-                    cnuspacker.StartInfo.UseShellExecute = false;
-                    cnuspacker.StartInfo.CreateNoWindow = true;
-                }
                 cnuspacker.StartInfo.FileName = "java";
-                cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Settings.Default.Ckey}";
-                cnuspacker.Start();
-                cnuspacker.WaitForExit();
+                cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
             }
+            cnuspacker.Start();
+            cnuspacker.WaitForExit();
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
             Clean();
@@ -2165,7 +2168,7 @@ namespace UWUVCI_AIO_WPF
 
             using (var stream = new FileStream(zipLocation, FileMode.Create))
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
-                archive.CreateEntryFromFile(romPath, Path.GetFileNameWithoutExtension(romPath));
+                archive.CreateEntryFromFile(romPath, Path.GetFileName(romPath));
 
             mvvm.Progress = 80;
             File.Delete(RomName);
@@ -2416,7 +2419,7 @@ namespace UWUVCI_AIO_WPF
                             CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
                             usetemp = true;
                         }
-                            Images.Add(fileExists);
+                        Images.Add(fileExists);
                     }
                 }
                 else
@@ -2481,7 +2484,7 @@ namespace UWUVCI_AIO_WPF
 
                                 File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
 
-                                if (File.Exists(Path.Combine(tempPath, "bootTvTex.png"))) 
+                                if (File.Exists(Path.Combine(tempPath, "bootTvTex.png")))
                                     File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
 
                                 if (File.Exists($"bootTvTex.{config.TGATv.extension}"))
@@ -2583,13 +2586,15 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Size"))
+                if (!e.Message.Contains("Could not find"))
                 {
-                    throw e;
+                    if (e.Message.Contains("Size"))
+                    {
+                        throw e;
+                    }
+                    throw new Exception("Images");
                 }
-                throw new Exception("Images");
             }
-
         }
 
         private static void CopyAndConvertImage(string inputPath, string outputPath, bool delete, int widht, int height, int bit, string newname)
