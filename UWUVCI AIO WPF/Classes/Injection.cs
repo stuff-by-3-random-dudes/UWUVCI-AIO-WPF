@@ -2165,7 +2165,7 @@ namespace UWUVCI_AIO_WPF
 
             using (var stream = new FileStream(zipLocation, FileMode.Create))
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
-                archive.CreateEntryFromFile(romPath, Path.GetFileNameWithoutExtension(romPath));
+                archive.CreateEntryFromFile(romPath, Path.GetFileName(romPath));
 
             mvvm.Progress = 80;
             File.Delete(RomName);
