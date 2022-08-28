@@ -170,6 +170,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     gamepad.ItemsSource = gpEmu;
                     mvm.RomPath = path;
                     mvm.RomSet = true;
+                    ancastKey.Text = Settings.Default.Ancast;
                     if (mvm.BaseDownloaded)
                     {
                         mvm.CanInject = true;
@@ -348,6 +349,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
+                    Settings.Default.Ancast = ancastKey.Text;
                     string[] ancastKeyCopy = { ancastKey.Text };
 
                     Task.Run(() =>
