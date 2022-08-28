@@ -12,7 +12,7 @@ namespace UWUVCI_AIO_WPF.Classes
     class ToolCheck
     {
         static string FolderName = new FileInfo(System.Reflection.Assembly.GetEntryAssembly().Location).DirectoryName + "\\bin\\Tools";
-        public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/" + (Environment.Is64BitProcess ? "x64/" : "");
+        public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
         public static string[] ToolNames =
         {
             "N64Converter.exe",
@@ -54,7 +54,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "font2.ttf",
             "forwarder.dol",
             "gba1.zip",
-            "gba2.zip"
+            "gba2.zip",
+            "CNUSPACKER.exe"
         };
 
         public static bool DoesToolsFolderExist()
