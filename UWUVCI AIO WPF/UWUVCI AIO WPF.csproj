@@ -159,7 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CDecryptSharp" Version="1.0.4" />
-    <PackageReference Include="CNUSPACKER" Version="1.0.4" />
+    <PackageReference Include="CNUSPACKER" Version="1.0.3" />
     <PackageReference Include="GMWare.M2" Version="1.1.2" />
     <PackageReference Include="Json.Net" Version="1.0.33" />
     <PackageReference Include="MaterialDesignThemes" Version="2.5.1" />
