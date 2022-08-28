@@ -434,14 +434,24 @@ namespace UWUVCI_AIO_WPF
                         //Someone messed up versioning, so eff it just don't even bother then
                         return;
                     }
-                    if (comparison > 0)
+                    if (comparison < 0)
                     {
                         using (var webClient = new WebClient())
                         {
                             webClient.Headers.Add(HttpRequestHeader.UserAgent, "MyUserAgent");
                             Task.Run(() => webClient.DownloadFileTaskAsync(releases[0].ZipballUrl, "UWUVCI_INSTALLER.exe")).GetAwaiter();
                         }
-                        var cm = new Custom_Message("Update Available!", "Latest version is currently being downloaded!\nPlease look for the file \"UWUVCI_INSTALLER.exe\" in\n" + Directory.GetCurrentDirectory());
+                        var cm = new Custom_Message("Update Available!", "Latest version is currently being downloaded!\nPlease look for the file \"UWUVCI" + "_" + "INSTALLER.exe\" in\n" + Directory.GetCurrentDirectory());
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
+                    }
+                    else if (comparison > 0)
+                    {
+                        var cm = new Custom_Message("Possible Update Available", "It somehow looks like your version is newer than the public release version:\nhttps://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest\n\nNo update attempt will be made.");
                         try
                         {
                             cm.Owner = mw;
@@ -451,6 +461,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
+
                         var cm = new Custom_Message("No Update Available", "This is currently the latest version.");
                         try
                         {
