@@ -1623,25 +1623,21 @@ namespace UWUVCI_AIO_WPF
             }
             mvm.Progress = 40;
             mvm.msg = "Packing...";
-
-            using var cnuspacker = new Process();
-            if (!mvm.debug)
-            {
-                cnuspacker.StartInfo.UseShellExecute = false;
-                cnuspacker.StartInfo.CreateNoWindow = true;
-            }
-            if (false)
-            {
-                cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
-            }
+            if (Environment.Is64BitProcess)
+                CNUSPACKER.Program.Main(new string[] { "-in", baseRomPath, "-out", outputPath, "-encryptKeyWith", Properties.Settings.Default.Ckey });
             else
             {
+                using var cnuspacker = new Process();
+                if (!mvm.debug)
+                {
+                    cnuspacker.StartInfo.UseShellExecute = false;
+                    cnuspacker.StartInfo.CreateNoWindow = true;
+                }
                 cnuspacker.StartInfo.FileName = "java";
                 cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+                cnuspacker.Start();
+                cnuspacker.WaitForExit();
             }
-            cnuspacker.Start();
-            cnuspacker.WaitForExit();
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
             Clean();
@@ -1663,7 +1659,7 @@ namespace UWUVCI_AIO_WPF
 
             var titleData = new TitleData(b.Tid, key.Tkey);
             var downloadFolder = Path.Combine(tempPath, "download");
-            await Downloader.DownloadAsync(titleData, downloadFolder);
+            await WiiUDownloaderLibrary.Downloader.DownloadAsync(titleData, downloadFolder);
                     
             mvm.Progress = 75;
 
@@ -2136,7 +2132,7 @@ namespace UWUVCI_AIO_WPF
                 for (var i = 0; i < titleIds.Length; i++)
                 {
                     var titleData = new TitleData(titleIds[i], Settings.Default.SysKey);
-                    await Downloader.DownloadAsync(titleData, downloadFolder);
+                    await WiiUDownloaderLibrary.Downloader.DownloadAsync(titleData, downloadFolder);
                     CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(downloadFolder, titleIds[i]), paths[i] });
 
                 }
