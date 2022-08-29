@@ -1179,7 +1179,7 @@ namespace UWUVCI_AIO_WPF
                     foreach (string s in bases)
                     {
                         DeleteTool(s);
-                        Task.Run(() => DownloadToolAsync(s, this)).GetAwaiter();
+                        DownloadToolAsync(s, this);
                         Progress += Convert.ToInt32(l);
                     }
 
@@ -1633,21 +1633,19 @@ namespace UWUVCI_AIO_WPF
                 Environment.Exit(1);
             }
         }
-        public static async Task DownloadToolAsync(string name, MainViewModel mvm)
+        public static void DownloadToolAsync(string name, MainViewModel mvm)
         {
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", name);
             try
             {
                 while (true)
                 {
-                    var isToolRight = await ToolCheck.IsToolRightAsync(name);
+                    var isToolRight = ToolCheck.IsToolRightAsync(name);
                     if (isToolRight)
                         break;
-                    
-                    using var httpClient = new HttpClient();
-                    using var response = await httpClient.GetStreamAsync(getDownloadLink(name, true));
-                    using var fs = new FileStream(filePath, FileMode.Create);
-                    await response.CopyToAsync(fs);
+
+                    using (var webClient = new WebClient())
+                        webClient.DownloadFile(getDownloadLink(name, true), filePath);
                 }
             }
             catch (Exception e)
@@ -1693,7 +1691,7 @@ namespace UWUVCI_AIO_WPF
                 if (missingTools.Count > 0)
                 {
                     foreach (MissingTool m in missingTools)
-                        Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
+                        DownloadToolAsync(m.Name, this);
 
                     InjcttoolCheck();
                 }
@@ -1707,6 +1705,7 @@ namespace UWUVCI_AIO_WPF
         private void ThreadDownload(List<MissingTool> missingTools)
         {
             var percentage = 100 / missingTools.Count;
+            Progress = 0;
             var thread = new Thread(() =>
             {
                 foreach (MissingTool m in missingTools)
@@ -1717,9 +1716,10 @@ namespace UWUVCI_AIO_WPF
                         sw.Close();
                     }
                     else
-                        Task.Run(() => DownloadToolAsync(m.Name, this)).GetAwaiter();
+                        DownloadToolAsync(m.Name, this);
                     Progress += percentage;
                 }
+                Progress = 100;
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
