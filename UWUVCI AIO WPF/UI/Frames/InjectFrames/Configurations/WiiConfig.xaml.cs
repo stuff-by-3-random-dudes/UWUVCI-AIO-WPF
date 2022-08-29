@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -366,7 +367,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         foreach (var titleId in titleIds)
                         {
-                            Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            Task.Run(() => WiiUDownloaderLibrary.Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
                             mvm.Progress += 5;
                         }
 
@@ -384,7 +385,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         mvm.Progress += 5;
 
-                        var currentDir = Directory.GetCurrentDirectory();
                         Directory.SetCurrentDirectory(c2wPath);
                         using (Process c2w = new Process())
                         {
@@ -393,7 +393,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             c2w.Start();
                             c2w.WaitForExit();
                         }
-                        Directory.SetCurrentDirectory(currentDir);
+                        Directory.SetCurrentDirectory(new FileInfo(Assembly.GetEntryAssembly().Location).DirectoryName);
 
                         File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
                         mvm.Progress = 100;
