@@ -73,6 +73,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if (mvm.Progress < 79)
                     mvm.Progress += 1;
             }
+            else if (Key.Text.Contains("Downloading Tools")) { }
             else
                 mvm.Progress += 1;
 
