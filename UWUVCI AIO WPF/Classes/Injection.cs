@@ -1623,9 +1623,8 @@ namespace UWUVCI_AIO_WPF
             }
             mvm.Progress = 40;
             mvm.msg = "Packing...";
-
-            if (Environment.Is64BitOperatingSystem)
-                CNUSPACKER.Program.Main(new string[] { "-in", baseRomPath, "-out", outputPath, "-encryptKeyWidth", Settings.Default.Ckey });
+            if (Environment.Is64BitProcess)
+                CNUSPACKER.Program.Main(new string[] { "-in", baseRomPath, "-out", outputPath, "-encryptKeyWith", Properties.Settings.Default.Ckey });
             else
             {
                 using var cnuspacker = new Process();
@@ -1635,7 +1634,7 @@ namespace UWUVCI_AIO_WPF
                     cnuspacker.StartInfo.CreateNoWindow = true;
                 }
                 cnuspacker.StartInfo.FileName = "java";
-                cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Settings.Default.Ckey}";
+                cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
             }
@@ -1660,7 +1659,7 @@ namespace UWUVCI_AIO_WPF
 
             var titleData = new TitleData(b.Tid, key.Tkey);
             var downloadFolder = Path.Combine(tempPath, "download");
-            await Downloader.DownloadAsync(titleData, downloadFolder);
+            await WiiUDownloaderLibrary.Downloader.DownloadAsync(titleData, downloadFolder);
                     
             mvm.Progress = 75;
 
@@ -2133,7 +2132,7 @@ namespace UWUVCI_AIO_WPF
                 for (var i = 0; i < titleIds.Length; i++)
                 {
                     var titleData = new TitleData(titleIds[i], Settings.Default.SysKey);
-                    await Downloader.DownloadAsync(titleData, downloadFolder);
+                    await WiiUDownloaderLibrary.Downloader.DownloadAsync(titleData, downloadFolder);
                     CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(downloadFolder, titleIds[i]), paths[i] });
 
                 }
@@ -2165,7 +2164,7 @@ namespace UWUVCI_AIO_WPF
 
             using (var stream = new FileStream(zipLocation, FileMode.Create))
             using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
-                archive.CreateEntryFromFile(romPath, Path.GetFileNameWithoutExtension(romPath));
+                archive.CreateEntryFromFile(romPath, Path.GetFileName(romPath));
 
             mvvm.Progress = 80;
             File.Delete(RomName);
@@ -2416,7 +2415,7 @@ namespace UWUVCI_AIO_WPF
                             CopyAndConvertImage(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(imgPath), false, 1280, 720, 24, "bootTvTex.tga");
                             usetemp = true;
                         }
-                            Images.Add(fileExists);
+                        Images.Add(fileExists);
                     }
                 }
                 else
@@ -2481,7 +2480,7 @@ namespace UWUVCI_AIO_WPF
 
                                 File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
 
-                                if (File.Exists(Path.Combine(tempPath, "bootTvTex.png"))) 
+                                if (File.Exists(Path.Combine(tempPath, "bootTvTex.png")))
                                     File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
 
                                 if (File.Exists($"bootTvTex.{config.TGATv.extension}"))
@@ -2583,13 +2582,15 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Size"))
+                if (!e.Message.Contains("Could not find"))
                 {
-                    throw e;
+                    if (e.Message.Contains("Size"))
+                    {
+                        throw e;
+                    }
+                    throw new Exception("Images");
                 }
-                throw new Exception("Images");
             }
-
         }
 
         private static void CopyAndConvertImage(string inputPath, string outputPath, bool delete, int widht, int height, int bit, string newname)

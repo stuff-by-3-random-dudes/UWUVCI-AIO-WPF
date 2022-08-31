@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -170,6 +171,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     gamepad.ItemsSource = gpEmu;
                     mvm.RomPath = path;
                     mvm.RomSet = true;
+                    ancastKey.Text = Settings.Default.Ancast;
                     if (mvm.BaseDownloaded)
                     {
                         mvm.CanInject = true;
@@ -348,6 +350,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
+                    Settings.Default.Ancast = ancastKey.Text;
                     string[] ancastKeyCopy = { ancastKey.Text };
 
                     Task.Run(() =>
@@ -364,7 +367,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         foreach (var titleId in titleIds)
                         {
-                            Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            Task.Run(() => WiiUDownloaderLibrary.Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
                             mvm.Progress += 5;
                         }
 
@@ -382,7 +385,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         mvm.Progress += 5;
 
-                        var currentDir = Directory.GetCurrentDirectory();
                         Directory.SetCurrentDirectory(c2wPath);
                         using (Process c2w = new Process())
                         {
@@ -391,7 +393,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             c2w.Start();
                             c2w.WaitForExit();
                         }
-                        Directory.SetCurrentDirectory(currentDir);
+                        Directory.SetCurrentDirectory(new FileInfo(Assembly.GetEntryAssembly().Location).DirectoryName);
 
                         File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
                         mvm.Progress = 100;

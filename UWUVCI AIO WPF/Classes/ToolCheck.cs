@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -54,7 +53,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "font2.ttf",
             "forwarder.dol",
             "gba1.zip",
-            "gba2.zip"
+            "gba2.zip",
+            "c2w_patcher.exe"
         };
 
         public static bool DoesToolsFolderExist()
@@ -62,23 +62,28 @@ namespace UWUVCI_AIO_WPF.Classes
             return Directory.Exists(FolderName);
         }
 
-        public static async Task<bool> IsToolRightAsync(string name)
+        public static bool IsToolRightAsync(string name)
         {
+            var result = false;
             string md5Name = name + ".md5";
             string md5Path = FolderName + "\\" + md5Name;
-            
-            using (var httpClient = new HttpClient())
-            {
-                using var response = await httpClient.GetStreamAsync(backupulr + md5Name);
-                using var fs = new FileStream(md5Path, FileMode.Create);
-                await response.CopyToAsync(fs);
-            }
-            
+            string filePath = FolderName + "\\" + name;
+
+            if (!File.Exists(filePath))
+                return result;
+
+            using (var webClient = new WebClient())
+                webClient.DownloadFile(backupulr + md5Name, md5Path);
+
             var md5 = "";
             using (var sr = new StreamReader(md5Path))
-                md5 = await sr.ReadToEndAsync();
+                md5 = sr.ReadLine();
 
-            return CalculateMD5(md5Path) == md5;
+            result = CalculateMD5(filePath) == md5.ToLower();
+
+            File.Delete(md5Path);
+
+            return result;
         }
         static string CalculateMD5(string filename)
         {
