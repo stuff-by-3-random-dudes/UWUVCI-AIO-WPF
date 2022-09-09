@@ -1429,17 +1429,14 @@ namespace UWUVCI_AIO_WPF
             }
         }
         //I hate everything about this function
-        private async Task<bool> RemoteFileExists(string url)
+        private bool RemoteFileExists(string url)
         {
             try
             {
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
                 request.Method = "HEAD";
-
-                HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
-                var statusCode = response.StatusCode;
-                response.Close();
-                return (statusCode == HttpStatusCode.OK);
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                    return (response.StatusCode == HttpStatusCode.OK);
             }
             catch
             {
@@ -2386,7 +2383,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
 
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.GBA, repoids);
             }
 
@@ -2402,7 +2399,7 @@ namespace UWUVCI_AIO_WPF
 
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.SNES, repoids);
             }
         }
@@ -2417,7 +2414,7 @@ namespace UWUVCI_AIO_WPF
 
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.MSX, repoids);
             }
         }
@@ -2431,7 +2428,7 @@ namespace UWUVCI_AIO_WPF
             };
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.TG16, repoids);
             }
         }
@@ -2539,7 +2536,7 @@ namespace UWUVCI_AIO_WPF
 
             if (await CheckForInternetConnectionWOWarningAsync())
             {
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.NES, repoids);
             }
         }
@@ -2668,7 +2665,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.NDS, repoids);
             }
         }
@@ -2693,7 +2690,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
 
-                await GetRepoImages(SystemType, repoid);
+                GetRepoImages(SystemType, repoid);
                 await checkForAdditionalFiles(GameConsoles.N64, repoids);
             }
         }
@@ -2832,7 +2829,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (string repoid in repoids)
                 {
-                    if (await RemoteFileExists(linkbase + repoid + "/game.ini"))
+                    if (RemoteFileExists(linkbase + repoid + "/game.ini"))
                     {
                         ini = true;
                         inip = linkbase + repoid + "/game.ini";
@@ -2845,7 +2842,7 @@ namespace UWUVCI_AIO_WPF
             {
                 foreach (string repoid in repoids)
                 {
-                    if (await RemoteFileExists(linkbase + repoid + "/BootSound." + e))
+                    if (RemoteFileExists(linkbase + repoid + "/BootSound." + e))
                     {
                         btsnd = true;
                         string btsndp = linkbase + repoid + "/BootSound." + e;
@@ -3025,7 +3022,7 @@ namespace UWUVCI_AIO_WPF
         /// <param name="SystemType"></param>
         /// <param name="repoid"></param>
         /// <param name="repoids"></param>
-        private async Task GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
+        private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
             IMG_Message img = null;
@@ -3053,7 +3050,7 @@ namespace UWUVCI_AIO_WPF
                 foreach (var id in repoids)
                 {
                     var remoteFile = linkbase + id + $"/iconTex.{e}";
-                    if (await RemoteFileExists(remoteFile) == true)
+                    if (RemoteFileExists(remoteFile) == true)
                     {
 
                         if (e.Contains("tga"))
