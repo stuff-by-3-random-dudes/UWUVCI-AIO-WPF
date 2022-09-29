@@ -72,8 +72,11 @@
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
+    <Reference Include="CSharpDecrypt, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CDecryptSharp.1.0.4\lib\CSharpDecrypt.dll</HintPath>
+    </Reference>
     <Reference Include="GameBaseClassLibrary">
-      <HintPath>..\GameBaseClassLibrary.dll</HintPath>
+      <HintPath>..\..\..\uwuvci_installer_creator\{app}\GameBaseClassLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GMWare.M2, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GMWare.M2.1.1.2\lib\netstandard2.0\GMWare.M2.dll</HintPath>
@@ -116,6 +119,7 @@
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
@@ -139,6 +143,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WiiUDownloaderLibrary">
+      <HintPath>..\WiiUDownloaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

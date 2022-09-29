@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -136,8 +137,17 @@ namespace UWUVCI_AIO_WPF.Classes
             if (Frame != null)
                 g.DrawImage(Frame, new Rectangle(0, 0, 1280, 720));
 
-            if (NameLine1 != null && NameLine2 != null)
+            var isNotEnglish = false;
+
+            if (!string.IsNullOrEmpty(NameLine1) || !string.IsNullOrEmpty(NameLine2))
             {
+                var regex = "^[a-zA-Z0-9\\d\\s\\.\\'\\&\\\\(\\)\\-\\:\\;\\.\\,\\?\\^\\¿]*$";
+                var match = Regex.Match(NameLine1, regex);
+                var match2 = Regex.Match(NameLine2, regex);
+                if (!match.Success || !match2.Success)
+                    if (!NameLine1.Contains("é") || !NameLine2.Contains("é"))
+                        isNotEnglish = true;
+
                 Pen outlineBold = new Pen(Color.FromArgb(222, 222, 222), 5.0F);
                 Pen shadowBold = new Pen(Color.FromArgb(190, 190, 190), 7.0F);
                 Rectangle rectangleNL1 = Longname ? new Rectangle(578, 313, 640, 50) : new Rectangle(578, 340, 640, 50);
@@ -171,10 +181,16 @@ namespace UWUVCI_AIO_WPF.Classes
                 }
             }
 
+
             if (Released > 0)
             {
                 GraphicsPath r = new GraphicsPath();
-                r.AddString("Released: " + Released.ToString(), font.FontFamily,
+
+                var releasedString = "Released: " + Released.ToString();
+                if (isNotEnglish)
+                    releasedString = Released.ToString() + "年発売";
+
+                r.AddString(releasedString, font.FontFamily,
                     (int)(FontStyle.Regular),
                     g.DpiY * 25.0F / 72.0F, new Rectangle(586, 450, 600, 40), format);
                 g.DrawPath(shadow, r);
@@ -185,12 +201,18 @@ namespace UWUVCI_AIO_WPF.Classes
             if (Players > 0)
             {
                 string pStr = Players >= 4 ? "1-4" : (Players == 1 ? "1" : "1-" + Players.ToString());
+
+                if (isNotEnglish)
+                    pStr = "プレイ人数　" + pStr + "人";
+                else
+                    pStr = "Players: " + pStr;
+
                 GraphicsPath p = new GraphicsPath();
-                
-                p.AddString("Players: " + pStr, font.FontFamily,
+
+                p.AddString(pStr, font.FontFamily,
                 (int)(FontStyle.Regular),
                 g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
-                
+
                 g.DrawPath(shadow, p);
                 g.DrawPath(outline, p);
                 g.FillPath(brush, p);

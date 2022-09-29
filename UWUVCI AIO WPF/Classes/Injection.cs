@@ -573,20 +573,13 @@ namespace UWUVCI_AIO_WPF
         {
             string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Homebrew Base...";
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
-            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-            using (Process zip = new Process())
-            {
-                if (!mvm.debug)
-                {
 
-                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                zip.Start();
-                zip.WaitForExit();
-            }
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+                Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
+            Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
+
+            ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
 
             DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 20;
@@ -685,8 +678,8 @@ namespace UWUVCI_AIO_WPF
                         toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                         // toiso.StartInfo.CreateNoWindow = true;
                     }
-                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
-                    toiso.StartInfo.Arguments = $"\"{romPath}\"";
+                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    toiso.StartInfo.Arguments = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
 
                     toiso.Start();
                     toiso.WaitForExit();
@@ -1037,20 +1030,13 @@ namespace UWUVCI_AIO_WPF
         {
             string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Nintendont Base...";
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+                Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
             Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-            using (Process zip = new Process()){
-                if (!mvm.debug)
-                {
-                   
-                   zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                zip.Start();
-                zip.WaitForExit();
-            }
-           
+            ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
+
             DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 20;
             mvvm.msg = "Applying Nintendont";
@@ -1479,12 +1465,14 @@ namespace UWUVCI_AIO_WPF
                 else
                 {
                     mvvm.msg = "Extracting Nintendont Base...";
-                    if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
+                    if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+                        Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
                     Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-                    tik.StartInfo.FileName =  Path.Combine(toolsPath, "7za.exe");
-                    tik.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                    tik.Start();
-                    tik.WaitForExit();
+
+                    ZipFile.ExtractToDirectory(Path.Combine(toolsPath, "BASE.zip"), Path.Combine(tempPath));
+
                     DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
                     mvvm.Progress = 30;
                     mvvm.msg = "Applying Nintendont";
@@ -2369,44 +2357,29 @@ namespace UWUVCI_AIO_WPF
         {
             
             string RomName = string.Empty;
-            using (Process getRomName = new Process())
-            {
-                mvvm.msg = "Getting BaseRom Name...";
-                getRomName.StartInfo.UseShellExecute = false;
-                getRomName.StartInfo.CreateNoWindow = false;
-                getRomName.StartInfo.RedirectStandardOutput = true;
-                getRomName.StartInfo.FileName = "cmd.exe";
-                Console.WriteLine(Directory.GetCurrentDirectory());
-                //getRomName.StartInfo.Arguments = $"/c \"Tools\\7za.exe\" l \"temp\\baserom\\content\\0010\\rom.zip\" | findstr \"WUP\"";
-                getRomName.StartInfo.Arguments = "/c bin\\Tools\\7za.exe l bin\\temp\\baserom\\content\\0010\\rom.zip | findstr WUP";
-                getRomName.Start();
-                getRomName.WaitForExit();
-                var s = getRomName.StandardOutput.ReadToEnd();
-                var split = s.Split(' ');
-                RomName = split[split.Length - 1].Replace("\r\n", "");
-                mvvm.Progress = 15;
-            }
-            using (Process RomEdit = new Process())
-            {
-                mvvm.msg = "Removing BaseRom...";
-                RomEdit.StartInfo.UseShellExecute = false;
-                RomEdit.StartInfo.CreateNoWindow = true;
-                RomEdit.StartInfo.RedirectStandardOutput = true;
-                RomEdit.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                //d Path.Combine(baseRomPath, "content", "0010", "rom.zip")
-                RomEdit.StartInfo.Arguments = $"d bin\\temp\\baserom\\content\\0010\\rom.zip";
-                RomEdit.Start();
-                RomEdit.WaitForExit();
-                mvvm.Progress = 40;
-                mvvm.msg = "Injecting ROM...";
-                File.Copy(injectRomPath, $"{RomName}");
-                RomEdit.StartInfo.Arguments = $"u bin\\temp\\baserom\\content\\0010\\rom.zip {RomName}";
-                RomEdit.Start();
-                RomEdit.WaitForExit();
-                mvvm.Progress = 80;
-            }
-            File.Delete(RomName);
+            mvvm.msg = "Getting BaseRom Name...";
+            var zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
+            using (var zip = ZipFile.Open(zipLocation, ZipArchiveMode.Read))
+                foreach (var file in zip.Entries)
+                    if (file.Name.Contains("WUP"))
+                    {
+                        RomName = file.Name;
+                        break;
+                    }
+            mvvm.Progress = 15;
+            var romPath = Directory.GetCurrentDirectory() + "\\" + RomName;
 
+            mvvm.msg = "Removing BaseRom...";
+            File.Delete(romPath);
+            File.Delete(zipLocation);
+            File.Copy(injectRomPath, romPath);
+
+            using (var stream = new FileStream(zipLocation, FileMode.Create))
+            using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                archive.CreateEntryFromFile(romPath, Path.GetFileName(romPath));
+
+            mvvm.Progress = 80;
+            File.Delete(RomName);
         }
 
     

@@ -178,5 +178,19 @@ namespace UWUVCI_AIO_WPF.Properties {
                 this["gczw"] = value;
             }
         }
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Ancast
+        {
+            get
+            {
+                return ((string)(this["ancast"]));
+            }
+            set
+            {
+                this["ancast"] = value;
+            }
+        }
     }
 }

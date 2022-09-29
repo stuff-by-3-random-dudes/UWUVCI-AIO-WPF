@@ -504,6 +504,16 @@ namespace UWUVCI_AIO_WPF
                         catch (Exception) { }
                         cm.ShowDialog();
                     }
+                    else
+                    {
+                        var cm = new Custom_Message("No Update Available", "This is currently the latest version.");
+                        try
+                        {
+                            cm.Owner = mw;
+                        }
+                        catch (Exception) { }
+                        cm.ShowDialog();
+                    }
                 }
             }
 
@@ -1471,9 +1481,27 @@ namespace UWUVCI_AIO_WPF
 
 
         }
+        public static int GetDeterministicHashCode(string str)
+        {
+            unchecked
+            {
+                int hash1 = (5381 << 16) + 5381;
+                int hash2 = hash1;
+
+                for (int i = 0; i < str.Length; i += 2)
+                {
+                    hash1 = ((hash1 << 5) + hash1) ^ str[i];
+                    if (i == str.Length - 1)
+                        break;
+                    hash2 = ((hash2 << 5) + hash2) ^ str[i + 1];
+                }
+
+                return hash1 + (hash2 * 1566083941);
+            }
+        }
         public bool checkSysKey(string key)
         {
-            if (key.GetHashCode() == -589797700)
+            if (GetDeterministicHashCode(key) == -589797700)
             {
                 Properties.Settings.Default.SysKey = key;
                 Properties.Settings.Default.Save();
@@ -1487,7 +1515,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkSysKey1(string key)
         {
-            if (key.GetHashCode() == -1230232583)
+            if (GetDeterministicHashCode(key) == -1230232583)
             {
                 Properties.Settings.Default.SysKey1 = key;
                 Properties.Settings.Default.Save();
@@ -2340,7 +2368,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkcKey(string key)
         {
-            if (1274359530 == key.ToLower().GetHashCode())
+            if (-485504051 == GetDeterministicHashCode(key.ToLower()))
             {
                 Settings.Default.Ckey = key.ToLower();
                 ckeys = true;
@@ -2353,7 +2381,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool isCkeySet()
         {
-            if (Settings.Default.Ckey.ToLower().GetHashCode() == 1274359530)
+            if (GetDeterministicHashCode(Settings.Default.Ckey.ToLower()) == -485504051)
             {
                 ckeys = true;
                 return true;
@@ -2366,7 +2394,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkKey(string key)
         {
-            if (GbTemp.KeyHash == key.ToLower().GetHashCode())
+            if (GbTemp.KeyHash == GetDeterministicHashCode(key.ToLower()))
             {
                 UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
@@ -2873,7 +2901,6 @@ namespace UWUVCI_AIO_WPF
             using (var md5 = MD5.Create())
             {
                 var name = new byte[] { };
-                bool skip = false;
                 using (var fs = new FileStream(path,
                              FileMode.Open,
                              FileAccess.Read))
@@ -2886,30 +2913,19 @@ namespace UWUVCI_AIO_WPF
 
 
                     repoid = rgx.Replace(repoid, "");
-                DOSTUFF:
-                    if (repoid.Length < 4 && !skip)
+                    if (repoid.Length < 4)
                     {
-                        fs.Seek(0xFFB2, SeekOrigin.Begin);
-                        fs.Read(procode, 0, 4);
-
-                        repoid = rgx.Replace(ByteArrayToString(procode), "");
-                        if (repoid.Length < 4)
-                        {
-                            repoid = "Unknown";
-                            skip = true;
-                            goto DOSTUFF;
-                        }
-
                         fs.Seek(0xFFC0, SeekOrigin.Begin);
                         procode = new byte[21];
                         fs.Read(procode, 0, 21);
                         name = procode;
 
+                        repoid = ByteArrayToString(procode);
+                        repoid = rgx.Replace(repoid, "");
                     }
-                    else
+
+                    if (repoid.Length < 4)
                     {
-
-
                         fs.Seek(0x7FC0, SeekOrigin.Begin);
                         procode = new byte[21];
                         fs.Read(procode, 0, 21);

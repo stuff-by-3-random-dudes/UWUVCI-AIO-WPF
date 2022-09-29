@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
+using WiiUDownloaderLibrary;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 {
@@ -256,10 +258,30 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     cm.ShowDialog();
                 }
-
             }
+        }
+        public string ReadAncastFromOtp()
+        {
+            var ret = "";
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                dialog.Filter = "OTP.bin | otp.bin";
+                var res = dialog.ShowDialog();
+                if (res == System.Windows.Forms.DialogResult.OK)
+                {
+                    var filepath = dialog.FileName;
+                    var test = new byte[16];
 
-
+                    using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+                    {
+                        fs.Seek(0x90, SeekOrigin.Begin);
+                        fs.Read(test, 0, 16);
+                    }
+                    foreach (var b in test)
+                        ret += string.Format("{0:X2}", b);
+                }
+            }
+            return ret;
         }
 
         private void InjectGame(object sender, RoutedEventArgs e)
@@ -307,6 +329,108 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.LR = false;
             }
             mvm.GameConfiguration.GameName = gn.Text;
+
+            if (!string.IsNullOrEmpty(ancastKey.Text))
+            {
+                ancastKey.Text = ancastKey.Text.ToUpper();
+
+                var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+                var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+                var downloadPath = System.IO.Path.Combine(tempPath, "download");
+                var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
+                var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
+                var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
+                var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
+
+                var sourceData = ancastKey.Text;
+                var tempSource = Encoding.ASCII.GetBytes(sourceData);
+                var tmpHash = MD5.Create().ComputeHash(tempSource);
+                var hash = BitConverter.ToString(tmpHash);
+
+                if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
+                {
+                    Settings.Default.Ancast = ancastKey.Text;
+                    string[] ancastKeyCopy = { ancastKey.Text };
+
+                    Task.Run(() =>
+                    {
+                        mvm.Progress += 5;
+
+                        Directory.CreateDirectory(tempPath + "\\C2W");
+
+                        var titleIds = new List<string>()
+                        {
+                            "0005001010004000",
+                            "0005001010004001"
+                        };
+
+                        foreach (var titleId in titleIds)
+                        {
+                            Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            mvm.Progress += 5;
+                        }
+
+                        foreach (var titleId in titleIds)
+                        {
+                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
+                            mvm.Progress += 5;
+                        }
+
+                        File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
+
+                        File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile, true);
+
+                        File.Copy(imgFileCode, imgFile, true);
+
+                        mvm.Progress += 5;
+
+                        var currentDir = Directory.GetCurrentDirectory();
+                        Directory.SetCurrentDirectory(c2wPath);
+                        using (Process c2w = new Process())
+                        {
+                            c2w.StartInfo.FileName = "c2w_patcher.exe";
+                            c2w.StartInfo.Arguments = $"-nc";
+                            c2w.Start();
+                            c2w.WaitForExit();
+                        }
+                        Directory.SetCurrentDirectory(currentDir);
+
+                        File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
+                        mvm.Progress = 100;
+                    }).GetAwaiter();
+                }
+                else
+                {
+                    var cm = new Custom_Message("C2W Error", "Ancast code is incorrect.\nNot continuing with inject.");
+                    cm.ShowDialog();
+                    return;
+                }
+
+                var message = new DownloadWait("Setting Up C2W - Please Wait", "", mvm);
+                try
+                {
+                    message.changeOwner(mvm.mw);
+                }
+                catch (Exception) { }
+                message.ShowDialog();
+                mvm.Progress = 0;
+                File.Delete(imgFileCode);
+                try
+                {
+                    Directory.Delete(downloadPath, true);
+                }
+                catch { }
+                File.Delete(c2wFile);
+                File.Delete(c2wPath + "\\starbuck_key.txt");
+                File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
+                File.Delete(imgFileCode);
+                try
+                {
+                    Directory.Delete(System.IO.Path.Combine(c2wPath, "code"), true);
+                }
+                catch { }
+            }
+
             mvm.Inject(false);
         }
 
@@ -942,6 +1066,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
 
             }
+        }
+        private void ancast_OTP(object sender, RoutedEventArgs e)
+        {
+            ancastKey.Text = ReadAncastFromOtp();
         }
     }
 }
