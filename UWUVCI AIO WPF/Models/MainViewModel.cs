@@ -1869,7 +1869,7 @@ namespace UWUVCI_AIO_WPF
                     string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
                     ok = true;
                 }
-                catch (System.Net.WebException ex)
+                catch (System.Net.WebException)
                 {
 
 
@@ -3065,7 +3065,7 @@ namespace UWUVCI_AIO_WPF
             {
                 n4 = Convert.ToInt32(ts[6] + ts[7]);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 n4 = Convert.ToInt32(ts[6]);
             }
@@ -3160,8 +3160,6 @@ namespace UWUVCI_AIO_WPF
         }
         public string getInternalWIIGCNName(string OpenGame, bool gc)
         {
-            //string linkbase = "https://raw.githubusercontent.com/Flumpster/wiivc-bis/master/";
-            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
             string ret = "";
             try
             {
@@ -3381,9 +3379,6 @@ namespace UWUVCI_AIO_WPF
         }
         public string GetURL(string console)
         {
-            WebRequest request;
-            //get download link from uwuvciapi
-
             string url = "";
             switch (console.ToLower())
             {
