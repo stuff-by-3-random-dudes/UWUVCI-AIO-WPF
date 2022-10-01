@@ -3185,9 +3185,9 @@ namespace UWUVCI_AIO_WPF
 
 
                         reader.BaseStream.Position = 0x220;
-                        while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
+                        while ((TempChar = reader.ReadChar()) != 0) ret += TempChar;
                         reader.BaseStream.Position = 0x200;
-                        while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
+                        while ((TempChar = reader.ReadChar()) != 0) TempString += TempChar;
                         repoid = TempString;
                     }
                     else
@@ -3195,9 +3195,9 @@ namespace UWUVCI_AIO_WPF
                         reader.BaseStream.Position = 0x18;
 
                         reader.BaseStream.Position = 0x20;
-                        while ((int)(TempChar = reader.ReadChar()) != 0) ret = ret + TempChar;
+                        while ((TempChar = reader.ReadChar()) != 0) ret += TempChar;
                         reader.BaseStream.Position = 0x00;
-                        while ((int)(TempChar = reader.ReadChar()) != 0) TempString = TempString + TempChar;
+                        while ((TempChar = reader.ReadChar()) != 0) TempString += TempChar;
                         repoid = TempString;
                     }
 
@@ -3379,7 +3379,7 @@ namespace UWUVCI_AIO_WPF
         }
         public string GetURL(string console)
         {
-            string url = "";
+            string url;
             switch (console.ToLower())
             {
                 case "nds":
@@ -3540,7 +3540,6 @@ namespace UWUVCI_AIO_WPF
         private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
-            IMG_Message img = null;
             string[] ext = { "png", "jpg", "jpeg", "tga" };
 
             if (repoids == null || repoids?.Count == 0)
@@ -3579,7 +3578,7 @@ namespace UWUVCI_AIO_WPF
                             }
                             message.ShowDialog();
                         }
-                        img = new IMG_Message(linkbase + id + $"/iconTex.{e}", linkbase + id + $"/bootTvTex.{e}", id);
+                        var img = new IMG_Message(linkbase + id + $"/iconTex.{e}", linkbase + id + $"/bootTvTex.{e}", id);
                         try
                         {
                             img.Owner = mw;
