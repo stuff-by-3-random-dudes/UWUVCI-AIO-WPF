@@ -144,8 +144,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WiiUDownloaderLibrary">
-      <HintPath>..\WiiUDownloaderLibrary.dll</HintPath>
+    <Reference Include="WiiUDownloaderLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiiUDownloader.1.0.6\lib\WiiUDownloaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
