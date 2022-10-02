@@ -703,8 +703,8 @@ namespace UWUVCI_AIO_WPF
                             toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
                             // toiso.StartInfo.CreateNoWindow = true;
                         }
-                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
-                        toiso.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\" -t";
+                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        toiso.StartInfo.Arguments = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
 
                         toiso.Start();
                         toiso.WaitForExit();
@@ -1378,9 +1378,9 @@ namespace UWUVCI_AIO_WPF
                     {
                         mvvm.msg = "Converting WBFS to ISO...";
                         Console.WriteLine("Converting WBFS to ISO...");
-                        
-                            tik.StartInfo.FileName = Path.Combine(toolsPath, "wbfs_file.exe");
-                        tik.StartInfo.Arguments = $"\"{romPath}\" convert \"{Path.Combine(tempPath, "pre.iso")}\"";
+
+                        tik.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        tik.StartInfo.Arguments = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
                         tik.Start();
                         tik.WaitForExit();
                         if (!File.Exists(Path.Combine(tempPath, "pre.iso")))
