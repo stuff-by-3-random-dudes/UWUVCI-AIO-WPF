@@ -1501,7 +1501,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkSysKey(string key)
         {
-            if (GetDeterministicHashCode(key) == -589797700)
+            if (key.GetHashCode() == -589797700)
             {
                 Properties.Settings.Default.SysKey = key;
                 Properties.Settings.Default.Save();
@@ -1515,7 +1515,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkSysKey1(string key)
         {
-            if (GetDeterministicHashCode(key) == -1230232583)
+            if (key.GetHashCode() == -1230232583)
             {
                 Properties.Settings.Default.SysKey1 = key;
                 Properties.Settings.Default.Save();
@@ -2368,7 +2368,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkcKey(string key)
         {
-            if (-485504051 == GetDeterministicHashCode(key.ToLower()))
+            if (1274359530 == key.ToLower().GetHashCode())
             {
                 Settings.Default.Ckey = key.ToLower();
                 ckeys = true;
@@ -2381,7 +2381,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool isCkeySet()
         {
-            if (GetDeterministicHashCode(Settings.Default.Ckey.ToLower()) == -485504051)
+            if (Settings.Default.Ckey.ToLower().GetHashCode() == 1274359530)
             {
                 ckeys = true;
                 return true;
@@ -2394,7 +2394,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkKey(string key)
         {
-            if (GbTemp.KeyHash == GetDeterministicHashCode(key.ToLower()))
+            if (GbTemp.KeyHash == key.ToLower().GetHashCode())
             {
                 UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
