@@ -117,6 +117,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = mvm.GetFilePath(true, false);
+            ancast_Button.IsEnabled = false;
+            ancastKey.Text = "";
+            ancastKey.IsEnabled = false;
             if (!CheckIfNull(path))
 
             {
@@ -203,6 +206,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     else if (path.ToLower().Contains(".dol"))
                     {
+                        ancastKey.IsEnabled = true;
+                        ancast_Button.IsEnabled = true;
                         mvm.NKITFLAG = false;
                         trimn.IsEnabled = false;
                         trimn.IsChecked = false;
