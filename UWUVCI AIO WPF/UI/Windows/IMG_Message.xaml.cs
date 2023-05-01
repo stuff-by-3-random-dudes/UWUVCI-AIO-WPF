@@ -395,7 +395,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             string inip = "";
             string btsndp = "";
             string exten = "";
-            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             if (console == GameConsoles.N64)
             {
                 if (RemoteFileExists(linkbase + repoid + "/game.ini"))
