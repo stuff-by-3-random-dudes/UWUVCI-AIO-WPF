@@ -156,7 +156,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
       
         private void wb_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
         {
-            if (!e.Uri.ToString().Contains("flumpster"))
+            if (!e.Uri.ToString().Contains("UWUVCI-PRIME"))
             {
                 e.Cancel = true;
 

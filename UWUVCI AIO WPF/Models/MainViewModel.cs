@@ -3278,7 +3278,7 @@ namespace UWUVCI_AIO_WPF
             string inip = "";
             string btsndp = "";
             string exten = "";
-            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             if (console == GameConsoles.N64)
             {
                 foreach (string repoid in repoids)
@@ -3383,38 +3383,37 @@ namespace UWUVCI_AIO_WPF
             switch (console.ToLower())
             {
                 case "nds":
-                    url = @"https://flumpster.github.io/instructions/nds/nds.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/nds/nds.html";
                     break;
                 case "n64":
 
-                    url = @"https://flumpster.github.io/instructions/n64/n64.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resourcesn64/n64.html";
                     break;
                 case "nes":
-                    url = @"https://flumpster.github.io/instructions/nes/nes.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/nes/nes.html";
                     break;
                 case "snes":
-                    url = @"https://flumpster.github.io/instructions/snes/snes.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/snes/snes.html";
                     break;
                 case "gba":
-                    url = @"https://flumpster.github.io/instructions/gba/gba.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/gba/gba.html";
                     break;
                 case "tg16":
-                    url = @"https://flumpster.github.io/instructions/tgfx/tgfx.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/tgfx/tgfx.html";
                     break;
                 case "tgcd":
-                    url = @"https://flumpster.github.io/instructions/tgfx/tgfx.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/tgfx/tgfx.html";
                     break;
                 case "msx":
-                    url = @"https://flumpster.github.io/instructions/msx/msx.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/msx/msx.html";
                     break;
                 case "wii":
-                    url = @"https://flumpster.github.io/instructions/wii/wii.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/wii/wii.html";
                     break;
                 case "gcn":
-                    url = @"https://flumpster.github.io/instructions/gcn/gcn.html";
+                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/gcn/gcn.html";
                     break;
                 default:
-
                     url = null;
                     break;
             }
@@ -3539,7 +3538,7 @@ namespace UWUVCI_AIO_WPF
         /// <param name="repoids"></param>
         private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
-            string linkbase = "https://raw.githubusercontent.com/Flumpster/UWUVCI-Images/master/";
+            string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             string[] ext = { "png", "jpg", "jpeg", "tga" };
 
             if (repoids == null || repoids?.Count == 0)
@@ -3567,7 +3566,7 @@ namespace UWUVCI_AIO_WPF
                     {
                         if (e.Contains("tga"))
                         {
-                            var message = new Custom_Message("TGA Extension Warning", "TGA files can't natively be rendered in UWUVCI, instead it will say something along the lines of the image not being able to be shown.\nThis is correct and is normal behavior.\n\nIf there are actual errors then grab the files from \"https://github.com/flumpster/uwuvci-images\", convert them to png, and then manually insert them.");
+                            var message = new Custom_Message("TGA Extension Warning", "TGA files can't natively be rendered in UWUVCI, instead it will say something along the lines of the image not being able to be shown.\nThis is correct and is normal behavior.\n\nIf there are actual errors then grab the files from \"https://github.com/UWUVCI-PRIME/UWUVCI-IMAGES\", convert them to png, and then manually insert them.");
                             try
                             {
                                 message.Owner = mw;
