@@ -31,7 +31,6 @@ using NAudio.Utils;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Drawing;
-using static System.Net.WebRequestMethods;
 using System.Windows.Media.Animation;
 
 namespace UWUVCI_AIO_WPF
@@ -491,7 +490,8 @@ namespace UWUVCI_AIO_WPF
                         //Someone messed up versioning, so eff it just don't even bother then
                         return;
                     }
-                    if (comparison > 0)
+                    //You idiot, when tf did you flip this back?
+                    if (comparison < 0)
                     {
                         using (var webClient = new WebClient())
                         {
