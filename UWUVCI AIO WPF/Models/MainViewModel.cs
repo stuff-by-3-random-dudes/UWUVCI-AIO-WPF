@@ -31,6 +31,7 @@ using NAudio.Utils;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Drawing;
+using static System.Net.WebRequestMethods;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -3379,47 +3380,15 @@ namespace UWUVCI_AIO_WPF
         }
         public string GetURL(string console)
         {
-            string url;
-            switch (console.ToLower())
-            {
-                case "nds":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/nds/nds.html";
-                    break;
-                case "n64":
+            console = console.ToLower();
+            if (console == "tg16" || console == "tgcd")
+                console = "tgfx";
 
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resourcesn64/n64.html";
-                    break;
-                case "nes":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/nes/nes.html";
-                    break;
-                case "snes":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/snes/snes.html";
-                    break;
-                case "gba":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/gba/gba.html";
-                    break;
-                case "tg16":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/tgfx/tgfx.html";
-                    break;
-                case "tgcd":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/tgfx/tgfx.html";
-                    break;
-                case "msx":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/msx/msx.html";
-                    break;
-                case "wii":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/wii/wii.html";
-                    break;
-                case "gcn":
-                    url = @"https://uwuvci-prime.github.io/UWUVCI-Resources/gcn/gcn.html";
-                    break;
-                default:
-                    url = null;
-                    break;
-            }
+            string url = "https://uwuvci-prime.github.io/UWUVCI-Resources/" + console + "/" + console + ".html";
+
             return url;
-
         }
+
         WaveOutEvent waveOutEvent = new WaveOutEvent();
         AudioFileReader audioFileReader;
         public System.Timers.Timer t;
