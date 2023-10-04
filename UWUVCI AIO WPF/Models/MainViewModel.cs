@@ -32,6 +32,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Drawing;
 using static System.Net.WebRequestMethods;
+using System.Windows.Media.Animation;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -2480,19 +2481,29 @@ namespace UWUVCI_AIO_WPF
             return null;
 
         }
-        public void ThreadDOwn()
-        {
-
-
-        }
         public void Download()
         {
             ValidatePathsStillExist();
             if (CheckForInternetConnection())
             {
-                Task.Run(() => { Injection.Download(this); });
+                DownloadWait dw;
+                
+                if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
+                {
+                    double speed = TestDownloadSpeed();  // in MB/s
+                    TimeSpan estimatedTime = CalculateEstimatedTime(speed);
 
-                DownloadWait dw = new DownloadWait("Downloading Base - Please Wait", "", this);
+                    // Start the actual download
+                    Task.Run(() => { Injection.Download(this); });
+
+                    // Display the waiting dialog with the estimated time
+                    dw = new DownloadWait("Downloading Base - Please Wait", estimatedTime, this);
+                }
+                else
+                {
+                    Task.Run(() => { Injection.Download(this); });
+                    dw = new DownloadWait("Downloading Base - Please Wait", "", this);
+                }
                 try
                 {
                     dw.changeOwner(mw);
@@ -2501,9 +2512,47 @@ namespace UWUVCI_AIO_WPF
                 dw.ShowDialog();
                 Progress = 0;
             }
-
-
         }
+
+
+        private double TestDownloadSpeed()
+        {
+            WebClient webClient = new WebClient();
+            Stopwatch sw = new Stopwatch();
+
+            //Using this file as a test file, it's about 16MB which should be small enough to not impact anything.
+            string url = "https://github.com/NicoAICP/UWUVCI-Tools/raw/master/gba2.zip";
+            byte[] data;
+
+            sw.Start();
+            try
+            {
+                data = webClient.DownloadData(url);
+            }
+            catch
+            {
+                return 0; 
+            }
+            sw.Stop();
+
+            double timeTaken = sw.Elapsed.TotalSeconds; // time in seconds
+            double sizeOfData = data.Length / 1024.0 / 1024.0; // size in MB
+
+            return sizeOfData / timeTaken; // returns speed in MB/s
+        }
+
+        private TimeSpan CalculateEstimatedTime(double speedInMbps)
+        {
+            const double fileSize = 8.5 * 1024;  // file size in MB
+
+            if (speedInMbps <= 0) 
+                return TimeSpan.MaxValue;
+
+            double estimatedTimeInSec = fileSize / speedInMbps;
+            return TimeSpan.FromSeconds(estimatedTimeInSec);
+        }
+
+
         public GameConsoles GetConsoleOfBase(GameBases gb)
         {
             GameConsoles ret = new GameConsoles();

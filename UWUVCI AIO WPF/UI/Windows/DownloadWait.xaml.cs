@@ -12,6 +12,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     {
         MainViewModel mvm;
         DispatcherTimer timer = new DispatcherTimer();
+        private TimeSpan remainingTime;
         public DownloadWait(string doing, string msg, MainViewModel mvm)
         {
             try
@@ -54,6 +55,36 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             timer.Tick += timer_Tick;
             
         }
+
+        public DownloadWait(string doing, TimeSpan estimatedTime, MainViewModel mvm)
+        {
+            // Initialization same as original constructor
+            try
+            {
+                if (Owner?.GetType() == typeof(MainWindow))
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                }
+            }
+            catch (Exception)
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
+            this.mvm = mvm;
+            InitializeComponent();
+            Key.Text = doing;
+
+            // Handle estimated time
+            if (estimatedTime != TimeSpan.MaxValue)
+                remainingTime = estimatedTime;
+            else
+                // Can't estimate, just starting with zero
+                remainingTime = TimeSpan.Zero; 
+
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
@@ -64,7 +95,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             pb.Value = mvm.Progress;
             if(Key.Text.Contains("Downloading Base"))
             {
-                if(mvm.Progress < 70)
+                // Check if remainingTime has been initialized (i.e., not zero)
+                if (remainingTime != TimeSpan.Zero)
+                {
+                    msgT.Text += $"\nEstimated time remaining: {remainingTime.Minutes} minutes {remainingTime.Seconds} seconds";
+
+                    if (remainingTime.TotalSeconds > 0)
+                    {
+                        remainingTime = remainingTime.Add(TimeSpan.FromSeconds(-1));
+                    }
+                }
+
+                if (mvm.Progress < 70)
                 {
                     mvm.Progress += 1;
                 }
