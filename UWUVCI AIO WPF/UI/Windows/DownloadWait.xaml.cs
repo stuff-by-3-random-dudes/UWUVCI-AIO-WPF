@@ -13,6 +13,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         MainViewModel mvm;
         DispatcherTimer timer = new DispatcherTimer();
         private TimeSpan remainingTime;
+        private int motion = 1;
         public DownloadWait(string doing, string msg, MainViewModel mvm)
         {
             try
@@ -98,17 +99,33 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 // Check if remainingTime has been initialized (i.e., not zero)
                 if (remainingTime != TimeSpan.Zero)
                 {
-                    msgT.Text += $"\nEstimated time remaining: {remainingTime.Minutes} minutes {remainingTime.Seconds} seconds";
-
                     if (remainingTime.TotalSeconds > 0)
                     {
+                        msgT.Text += $"Estimated time remaining: {remainingTime.Minutes} minutes {remainingTime.Seconds} seconds";
                         remainingTime = remainingTime.Add(TimeSpan.FromSeconds(-1));
                     }
-                }
+                    else
+                    {
+                        msgT.Text += $"Completing download, eta not available";
 
-                if (mvm.Progress < 70)
+                        if (motion == 6)
+                            motion = 1;
+
+                        for (var i = 0; i < motion; i++)
+                            msgT.Text += ".";
+
+
+                        motion++;
+                    }
+                    if (mvm.Progress < 95)
+                        mvm.Progress += 1;
+                }
+                else
                 {
-                    mvm.Progress += 1;
+                    if (mvm.Progress < 75)
+                    {
+                        mvm.Progress += 1;
+                    }
                 }
             }
             if(mvm.Progress == 100)
