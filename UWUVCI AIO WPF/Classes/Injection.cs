@@ -317,6 +317,9 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
+                    var errorMessage = "";
+                    if (e.Message.Contains("meta.xml"))
+                        errorMessage = "Looks to be your meta.xml file is missing from your directory";
                     MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 }
@@ -1758,7 +1761,7 @@ namespace UWUVCI_AIO_WPF
                             download.Start();
                             download.WaitForExit();
                         }
-                        mvm.Progress = 75;
+                        mvm.Progress = 95;
 
                         using (Process decrypt = new Process())
                         {
@@ -1774,7 +1777,7 @@ namespace UWUVCI_AIO_WPF
                             decrypt.Start();
                             decrypt.WaitForExit();
                         }
-                        mvm.Progress += 10;
+                        mvm.Progress += 4;
                         foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
                         {
                             File.Delete(sFile);
@@ -1826,7 +1829,7 @@ namespace UWUVCI_AIO_WPF
                         File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.tmd"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
 
                         Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);*/
-                        mvm.Progress += 15;
+                        mvm.Progress += 1;
                     }
                 }
                 else
