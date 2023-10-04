@@ -103,7 +103,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     throw new Exception();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Custom_Message cm = new Custom_Message("Not Implemented", $"The Helppage for {url.ToUpper()} is not implemented yet");
                 try
