@@ -182,7 +182,7 @@ namespace UWUVCI_AIO_WPF
                     done = true;
                     freeSpaceInBytes = drive.AvailableFreeSpace;
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     mvm.saveworkaround = true;
                 }
