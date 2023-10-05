@@ -1750,7 +1750,7 @@ namespace UWUVCI_AIO_WPF
                             download.Start();
                             download.WaitForExit();
                         }
-                        mvm.Progress = 95;
+                        mvm.Progress = 96;
 
                         using (Process decrypt = new Process())
                         {
@@ -1766,11 +1766,10 @@ namespace UWUVCI_AIO_WPF
                             decrypt.Start();
                             decrypt.WaitForExit();
                         }
-                        mvm.Progress += 4;
+                        mvm.Progress = 99;
                         foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
-                        {
                             File.Delete(sFile);
-                        }
+
                         /* File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
 
                         File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
@@ -1818,7 +1817,7 @@ namespace UWUVCI_AIO_WPF
                         File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.tmd"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
 
                         Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);*/
-                        mvm.Progress += 1;
+                        mvm.Progress = 100;
                     }
                 }
                 else

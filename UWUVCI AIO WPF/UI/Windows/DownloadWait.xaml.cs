@@ -12,8 +12,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     {
         MainViewModel mvm;
         DispatcherTimer timer = new DispatcherTimer();
+
+        //These variables are for handling a better progress bar
         private TimeSpan remainingTime;
         private int motion = 1;
+        private double accumulatedProgress = 0.0;
+        private double progressIncrementPerSecond = 0.0;
         public DownloadWait(string doing, string msg, MainViewModel mvm)
         {
             try
@@ -40,9 +44,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             try
             {
                 if (Owner?.GetType() != typeof(MainWindow))
-                {
                     WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                }
             }
             catch (Exception)
             {
@@ -63,9 +65,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             try
             {
                 if (Owner?.GetType() == typeof(MainWindow))
-                {
                     WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                }
             }
             catch (Exception)
             {
@@ -90,19 +90,49 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             WindowState = WindowState.Minimized;
         }
+
         private void timer_Tick(object sender, EventArgs e)
         {
             msgT.Text = mvm.msg;
             pb.Value = mvm.Progress;
-            if(Key.Text.Contains("Downloading Base"))
+
+            if (Key.Text.Contains("Downloading Base"))
             {
+                if (mvm.Progress >= 96)
+                {
+                    msgT.Text += $"Verifying Base...";
+                    
+                    if (motion == 6)
+                        motion = 1;
+
+                    for (var i = 0; i < motion; i++)
+                        msgT.Text += ".";
+
+                    motion++;
+                }
                 // Check if remainingTime has been initialized (i.e., not zero)
-                if (remainingTime != TimeSpan.Zero)
+                else if (remainingTime != TimeSpan.Zero)
                 {
                     if (remainingTime.TotalSeconds > 0)
                     {
                         msgT.Text += $"Estimated time remaining: {remainingTime.Minutes} minutes {remainingTime.Seconds} seconds";
-                        remainingTime = remainingTime.Add(TimeSpan.FromSeconds(-1));
+
+                        if (mvm.Progress < 95)
+                        {
+                            // Calculate the progress increment if not already calculated
+                            if (progressIncrementPerSecond == 0.0)
+                                progressIncrementPerSecond = (95 - mvm.Progress) / remainingTime.TotalSeconds;
+
+                            accumulatedProgress += progressIncrementPerSecond;
+
+                            while (accumulatedProgress >= 1)
+                            {
+                                mvm.Progress++;
+                                accumulatedProgress--;
+                            }
+
+                            remainingTime = remainingTime.Add(TimeSpan.FromSeconds(-1));
+                        }
                     }
                     else
                     {
@@ -114,27 +144,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                         for (var i = 0; i < motion; i++)
                             msgT.Text += ".";
 
-
                         motion++;
                     }
-                    if (mvm.Progress < 95)
-                        mvm.Progress += 1;
                 }
                 else
                 {
-                    if (mvm.Progress < 75)
-                    {
+                    if (mvm.Progress < 95)
                         mvm.Progress += 1;
-                    }
                 }
             }
-            if(mvm.Progress == 100)
+            if (mvm.Progress == 100)
             {
                 timer.Stop();
                 Close();
-                
             }
         }
+
         public void changeOwner(MainWindow ow)
         {
             Owner = ow;
