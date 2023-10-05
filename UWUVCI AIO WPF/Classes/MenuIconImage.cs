@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -90,7 +91,12 @@ namespace UWUVCI_AIO_WPF.Classes
             Rectangle rectangle;
             try
             {
-                rectangle = (Rectangle)GetType().GetField(_imageVar).GetValue(this);
+                FieldInfo fieldInfo = GetType().GetField(_imageVar, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                rectangle = fieldInfo != null
+                    ? (Rectangle)fieldInfo.GetValue(this)
+                    : _rectangleH4V3;
+
             }
             catch
             {
