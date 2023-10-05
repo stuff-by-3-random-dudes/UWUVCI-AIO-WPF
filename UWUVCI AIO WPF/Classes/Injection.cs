@@ -310,7 +310,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "Looks to be your images are the problem" +
                         "\nFAQ: #28";
 
-                MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file in the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file and on the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 Clean();
                 return false;
