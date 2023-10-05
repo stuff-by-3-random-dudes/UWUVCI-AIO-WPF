@@ -100,7 +100,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if (mvm.Progress >= 96)
                 {
-                    msgT.Text += $"Verifying Base...";
+                    msgT.Text += $"Verifying download...";
                     
                     if (motion == 6)
                         motion = 1;
