@@ -448,18 +448,9 @@ namespace UWUVCI_AIO_WPF
             mvvm.msg = "Extracting Forwarder Base...";
             if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
             Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
-            using (Process zip = new Process())
-            {
-                if (!mvm.debug)
-                {
 
-                    zip.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                }
-                zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "BASE.zip")}\" -o\"{Path.Combine(tempPath)}\"";
-                zip.Start();
-                zip.WaitForExit();
-            }
+            var zipLocation = Path.Combine(toolsPath, "BASE.zip");
+            ZipFile.ExtractToDirectory(zipLocation, Path.Combine(tempPath));
 
             DirectoryCopy(Path.Combine(tempPath, "BASE"), Path.Combine(tempPath, "TempBase"), true);
             mvvm.Progress = 20;
