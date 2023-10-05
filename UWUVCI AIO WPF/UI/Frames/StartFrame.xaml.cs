@@ -17,20 +17,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenKofiLink("uwuvci");
-        }
-        private void Button_Click2(object sender, RoutedEventArgs e)
-        {
-            OpenKofiLink("zestyts");
-        }
-        private void OpenKofiLink(string urlSuffix)
-        {
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = "https://ko-fi.com/" + urlSuffix,
-                UseShellExecute = true,
-                Verb = "open"
-            });
+            Process.Start("https://ko-fi.com/uwuvci");
         }
         private void Button_Click2(object sender, RoutedEventArgs e)
         {
