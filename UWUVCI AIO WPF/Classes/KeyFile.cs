@@ -33,7 +33,7 @@ namespace UWUVCI_AIO_WPF.Classes
         public static void ExportFile(List<TKeys> precomp, GameConsoles console)
         {
             CheckAndFixFolder("bin\\keys");
-            Stream createConfigStream = new FileStream($@"bin\keys\{console.ToString().ToLower()}.vck", FileMode.Create, FileAccess.Write);
+            Stream createConfigStream = new FileStream(Path.Combine(Directory.GetCurrentDirectory(), $@"bin\keys\{console.ToString().ToLower()}.vck"), FileMode.Create, FileAccess.Write);
             GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
             IFormatter formatter = new BinaryFormatter();
             formatter.Serialize(compressedStream, precomp);

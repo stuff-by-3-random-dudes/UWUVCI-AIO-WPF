@@ -479,9 +479,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
                 request.Method = "HEAD";
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                response.Close();
-                return (response.StatusCode == HttpStatusCode.OK);
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+                    return (response.StatusCode == HttpStatusCode.OK);
             }
             catch
             {

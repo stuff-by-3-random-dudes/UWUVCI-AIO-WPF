@@ -511,7 +511,18 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                Process.Start("UWUVCI VWII.exe");
+                var p = new Process();
+                var fileName = Application.ResourceAssembly.Location;
+                foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
+                    if (Path.GetFileName(file).Contains("vWii"))
+                    {
+                        fileName = file;
+                        break;
+                    }
+
+                p.StartInfo.FileName = fileName;
+                p.Start();
+
                 Environment.Exit(0);
             }
             catch
