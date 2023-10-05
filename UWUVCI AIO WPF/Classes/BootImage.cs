@@ -2,7 +2,9 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace UWUVCI_AIO_WPF.Classes
@@ -91,6 +93,18 @@ namespace UWUVCI_AIO_WPF.Classes
             }
         }
 
+        private bool ContainsJapanese(string text)
+        {
+            foreach (char c in text)
+            {
+                UnicodeCategory cat = char.GetUnicodeCategory(c);
+                if (cat == UnicodeCategory.OtherLetter) // this covers Hiragana, Katakana, and Kanji
+                    return true;
+            }
+            return false;
+        }
+
+
         public Bitmap Create(string console)
         {
             Bitmap img = new Bitmap(1280, 720);
@@ -121,7 +135,12 @@ namespace UWUVCI_AIO_WPF.Classes
             Rectangle rectangle;
             try
             {
-                rectangle = (Rectangle)GetType().GetField(_imageVar).GetValue(this);
+                FieldInfo fieldInfo = GetType().GetField(_imageVar, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                rectangle = fieldInfo != null
+                    ? (Rectangle)fieldInfo.GetValue(this)
+                    : _rectangleH4V3;
+
             }
             catch
             {
@@ -141,12 +160,8 @@ namespace UWUVCI_AIO_WPF.Classes
 
             if (!string.IsNullOrEmpty(NameLine1) || !string.IsNullOrEmpty(NameLine2))
             {
-                var regex = "^[a-zA-Z0-9\\d\\s\\.\\'\\&\\\\(\\)\\-\\:\\;\\.\\,\\?\\^\\¿]*$";
-                var match = Regex.Match(NameLine1, regex);
-                var match2 = Regex.Match(NameLine2, regex);
-                if (!match.Success || !match2.Success)
-                    if (!NameLine1.Contains("é") || !NameLine2.Contains("é"))
-                        isNotEnglish = true;
+                if (ContainsJapanese(NameLine1) || ContainsJapanese(NameLine2))
+                    isNotEnglish = true;
 
                 Pen outlineBold = new Pen(Color.FromArgb(222, 222, 222), 5.0F);
                 Pen shadowBold = new Pen(Color.FromArgb(190, 190, 190), 7.0F);
