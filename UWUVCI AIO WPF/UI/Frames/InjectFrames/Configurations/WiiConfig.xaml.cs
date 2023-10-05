@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Shell;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using WiiUDownloaderLibrary;
@@ -112,6 +117,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = mvm.GetFilePath(true, false);
+            ancast_Button.IsEnabled = false;
+            ancastKey.Text = "";
+            ancastKey.IsEnabled = false;
             if (!CheckIfNull(path))
 
             {
@@ -143,9 +151,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         reader.Close();
                     }
                 }
-
-                isok = true;
-
+                
+                
                 if (isok)
                 {
                     motepass.IsEnabled = false;
@@ -171,7 +178,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     gamepad.ItemsSource = gpEmu;
                     mvm.RomPath = path;
                     mvm.RomSet = true;
-                    ancastKey.Text = Settings.Default.Ancast;
                     if (mvm.BaseDownloaded)
                     {
                         mvm.CanInject = true;
@@ -200,6 +206,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     else if (path.ToLower().Contains(".dol"))
                     {
+                        ancastKey.IsEnabled = true;
+                        ancast_Button.IsEnabled = true;
                         mvm.NKITFLAG = false;
                         trimn.IsEnabled = false;
                         trimn.IsChecked = false;
@@ -255,12 +263,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     cm.ShowDialog();
                 }
-
             }
-
-
         }
-
         public string ReadAncastFromOtp()
         {
             var ret = "";
@@ -345,7 +349,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 var sourceData = ancastKey.Text;
                 var tempSource = Encoding.ASCII.GetBytes(sourceData);
-                var tmpHash = MD5.Create().ComputeHash(tempSource); 
+                var tmpHash = MD5.Create().ComputeHash(tempSource);
                 var hash = BitConverter.ToString(tmpHash);
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
@@ -367,7 +371,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         foreach (var titleId in titleIds)
                         {
-                            Task.Run(() => WiiUDownloaderLibrary.Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
                             mvm.Progress += 5;
                         }
 
@@ -385,6 +389,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         mvm.Progress += 5;
 
+                        var currentDir = Directory.GetCurrentDirectory();
                         Directory.SetCurrentDirectory(c2wPath);
                         using (Process c2w = new Process())
                         {
@@ -393,7 +398,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             c2w.Start();
                             c2w.WaitForExit();
                         }
-                        Directory.SetCurrentDirectory(new FileInfo(Assembly.GetEntryAssembly().Location).DirectoryName);
+                        Directory.SetCurrentDirectory(currentDir);
 
                         File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
                         mvm.Progress = 100;
@@ -426,7 +431,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 File.Delete(imgFileCode);
                 try
                 {
-                    Directory.Delete(System.IO.Path.Combine(c2wPath, "code"),true);
+                    Directory.Delete(System.IO.Path.Combine(c2wPath, "code"), true);
                 }
                 catch { }
             }
@@ -1067,7 +1072,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
         }
-
         private void ancast_OTP(object sender, RoutedEventArgs e)
         {
             ancastKey.Text = ReadAncastFromOtp();

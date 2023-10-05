@@ -29,7 +29,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void tb_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //Process.Start("https://www.reddit.com/r/WiiUHacks/comments/jchcls/poc_retroarch_autoboot_starts_rom_automatically/");
             var cm = new Custom_Message("Soon™", "Coming Soon™ to a UWUVCI Prime Near You!");
             cm.ShowDialog();
         }

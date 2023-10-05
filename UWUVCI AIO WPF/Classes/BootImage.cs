@@ -128,7 +128,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 //if rectangle isn't able to get set then H4V3 should be used.
                 rectangle = _rectangleH4V3;
             }
-            
+
             if (TitleScreen != null)
                 g.DrawImage(TitleScreen, rectangle);
             else
@@ -141,11 +141,12 @@ namespace UWUVCI_AIO_WPF.Classes
 
             if (!string.IsNullOrEmpty(NameLine1) || !string.IsNullOrEmpty(NameLine2))
             {
-                var regex= "^[a-zA-Z0-9\\d\\s\\.\\'\\&\\\\(\\)\\-\\:\\;\\.\\,\\?\\^\\¿]*$";
+                var regex = "^[a-zA-Z0-9\\d\\s\\.\\'\\&\\\\(\\)\\-\\:\\;\\.\\,\\?\\^\\¿]*$";
                 var match = Regex.Match(NameLine1, regex);
                 var match2 = Regex.Match(NameLine2, regex);
                 if (!match.Success || !match2.Success)
-                    isNotEnglish = true;
+                    if (!NameLine1.Contains("é") || !NameLine2.Contains("é"))
+                        isNotEnglish = true;
 
                 Pen outlineBold = new Pen(Color.FromArgb(222, 222, 222), 5.0F);
                 Pen shadowBold = new Pen(Color.FromArgb(190, 190, 190), 7.0F);
@@ -207,11 +208,11 @@ namespace UWUVCI_AIO_WPF.Classes
                     pStr = "Players: " + pStr;
 
                 GraphicsPath p = new GraphicsPath();
-                
+
                 p.AddString(pStr, font.FontFamily,
                 (int)(FontStyle.Regular),
                 g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
-                
+
                 g.DrawPath(shadow, p);
                 g.DrawPath(outline, p);
                 g.FillPath(brush, p);

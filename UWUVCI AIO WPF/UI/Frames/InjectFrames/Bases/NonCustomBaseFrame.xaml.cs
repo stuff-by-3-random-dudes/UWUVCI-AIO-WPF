@@ -91,17 +91,26 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases
                 if (info[0])
                 {
                     mvm.BaseDownloaded = true;
-                    if (mvm.RomSet) 
-                        mvm.CanInject = true;
+                    if (mvm.RomSet) mvm.CanInject = true;
                 }
                 else
+                {
                     mvm.BaseDownloaded = false;
-            }   
+                   
+                }
+            }
+            
         }
+
         private void btnDwnlnd_Click(object sender, RoutedEventArgs e)
         {
-            mvm.Download();
-            checkStuff(mvm.getInfoOfBase(Base));
+            
+                mvm.Download();
+            Thread.Sleep(500);
+                checkStuff(mvm.getInfoOfBase(Base));
+         
+           
+            
         }
 
         private void btnDwnlnd_Copy_Click(object sender, RoutedEventArgs e)
