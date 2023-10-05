@@ -281,48 +281,37 @@ namespace UWUVCI_AIO_WPF
                     Clean();
                     return false;
                 }
+
+                var errorMessage = "Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord";
+
                 if (e.Message == "MISSINGF")
-                {
-                    MessageBox.Show("Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base! ", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                   
-                }
-                else if (e.Message.Contains("Images")){
-
-                    MessageBox.Show("Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                    errorMessage = "Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base!";
+                else if (e.Message.Contains("Images"))
+                    errorMessage = "Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit\n\nIf the image/s that's being used is automatically grabbed for you, then don't use them." +
+                        "\nFAQ: #28";
                 else if (e.Message.Contains("Size"))
-                {
-                    MessageBox.Show("Injection Failed due to Image Issues.Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                  
-                }
+                    errorMessage = "Injection Failed due to Image Issues.Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32";
                 else if (e.Message.Contains("retro"))
-                {
-                    MessageBox.Show("The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                    errorMessage = "The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base";
                 else if (e.Message.Contains("BASE"))
-                {
-                    MessageBox.Show("If you import a config you NEED to reselect a base", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                    errorMessage = "If you import a config you NEED to reselect a base";
                 else if (e.Message.Contains("WII"))
-                {
-                    MessageBox.Show( $"{e.Message.Replace("WII", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                    errorMessage = $"{e.Message.Replace("WII", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
                 else if (e.Message.Contains("12G"))
-                {
-                    MessageBox.Show($" Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-                }else if (e.Message.Contains("nkit"))
-                {
-                    MessageBox.Show($"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    errorMessage = $" Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
+                else if (e.Message.Contains("nkit"))
+                    errorMessage = $"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.";
+                else if (e.Message.Contains("meta.xml"))
+                    errorMessage = "Looks to be your meta.xml file isn't missing from your directory. If you downloaded your base, redownload it, if it's a custom base then the folder selected might be wrong or the layout is messed up.";
+                else if (e.Message.Contains("pre.iso"))
+                    errorMessage = "Looks to be that there is something about your game that UWUVCI doesn't like, you are most likely injecting with a wbfs or nkit.iso file, this file has data trimmed." +
+                        "\nFAQ: #17, #27, #29";
+                else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
+                    errorMessage = "Looks to be your images are the problem" +
+                        "\nFAQ: #28";
 
-                }
-                else
-                {
-                    var errorMessage = "";
-                    if (e.Message.Contains("meta.xml"))
-                        errorMessage = "Looks to be your meta.xml file is missing from your directory";
-                    MessageBox.Show("Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file in the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                }
                 Clean();
                 return false;
             }
