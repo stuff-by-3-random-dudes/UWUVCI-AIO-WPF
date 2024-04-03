@@ -92,29 +92,47 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = mvm.GetFilePath(true, false);
-            if (!CheckIfNull(path)) {
-                mvm.RomPath = path;
-                mvm.RomSet = true;
-                if (mvm.BaseDownloaded)
+            try
+            {
+                if (!CheckIfNull(path))
                 {
-                    mvm.CanInject = true;
-                    
+                    mvm.RomPath = path;
+                    mvm.RomSet = true;
+                    if (mvm.BaseDownloaded)
+                    {
+                        mvm.CanInject = true;
+
+                    }
+                    if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS)
+                    {
+                        mvm.getBootIMGNDS(mvm.RomPath);
+                    }
+                    else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES)
+                    {
+                        mvm.getBootIMGNES(mvm.RomPath);
+                    }
+                    else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+                    {
+                        mvm.getBootIMGSNES(mvm.RomPath);
+                    }
+                    else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.MSX)
+                    {
+                        mvm.getBootIMGMSX(mvm.RomPath);
+                    }
                 }
-                if(mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS)
+            }
+            catch(Exception ex)
+            {
+                Custom_Message cm = new Custom_Message("Set_Rom_Path", ex.Message);
+                try
                 {
-                    mvm.getBootIMGNDS(mvm.RomPath);
-                }else if(mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES)
-                {
-                    mvm.getBootIMGNES(mvm.RomPath);
+                    cm.Owner = mvm.mw;
                 }
-                else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+                catch (Exception)
                 {
-                    mvm.getBootIMGSNES(mvm.RomPath);
+
                 }
-                else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.MSX)
-                {
-                    mvm.getBootIMGMSX(mvm.RomPath);
-                }
+                cm.ShowDialog();
             }
             
         }
