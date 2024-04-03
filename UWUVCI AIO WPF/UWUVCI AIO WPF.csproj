@@ -76,7 +76,7 @@
       <HintPath>..\packages\CDecryptSharp.1.0.4\lib\CSharpDecrypt.dll</HintPath>
     </Reference>
     <Reference Include="GameBaseClassLibrary">
-      <HintPath>..\..\..\uwuvci_installer_creator\{app}\GameBaseClassLibrary.dll</HintPath>
+      <HintPath>.\GameBaseClassLibrary.dll</HintPath>
     </Reference>
     <Reference Include="GMWare.M2, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GMWare.M2.1.1.2\lib\netstandard2.0\GMWare.M2.dll</HintPath>
