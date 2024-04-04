@@ -1006,10 +1006,17 @@ namespace UWUVCI_AIO_WPF
         }
         public void Pack(bool loadiine)
         {
+            string consoleName =  GameConfiguration.Console.ToString();
+
+            if (GC)
+            {
+                consoleName = GameConsoles.GCN.ToString();
+            }
+
             ValidatePathsStillExist();
             if (loadiine)
             {
-                Injection.Loadiine(GameConfiguration.GameName);
+                Injection.Loadiine(GameConfiguration.GameName, consoleName);
                 //
             }
             else
@@ -1021,7 +1028,7 @@ namespace UWUVCI_AIO_WPF
                     gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
                 }
 
-                Task.Run(() => { Injection.Packing(GameConfiguration.GameName, this); });
+                Task.Run(() => { Injection.Packing(GameConfiguration.GameName, consoleName, this); });
 
                 DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
                 try

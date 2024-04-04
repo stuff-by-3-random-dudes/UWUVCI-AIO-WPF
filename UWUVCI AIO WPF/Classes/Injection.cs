@@ -1624,19 +1624,19 @@ namespace UWUVCI_AIO_WPF
             }
         }
         [STAThread]
-        public static void Loadiine(string gameName)
+        public static void Loadiine(string gameName, string gameConsole)
         {
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
             gameName = gameName.Replace("|", " ");
             Regex reg = new Regex("[^a-zA-Z0-9 é -]");
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName,"")} [{mvvm.prodcode}]");
-            mvvm.foldername = $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]";
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName,"")} [{mvvm.prodcode}]");
+            mvvm.foldername = $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
-                mvvm.foldername = $"[LOADIINE]{reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
+                mvvm.foldername = $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
                 i++;
             }
             
@@ -1654,7 +1654,7 @@ namespace UWUVCI_AIO_WPF
             Clean();
         }
         [STAThread]
-        public static void Packing(string gameName, MainViewModel mvm)
+        public static void Packing(string gameName, string gameConsole, MainViewModel mvm)
         {
             mvm.msg = "Checking Tools...";
             mvm.InjcttoolCheck();
@@ -1664,14 +1664,14 @@ namespace UWUVCI_AIO_WPF
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
            
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"").Replace("|", " ")}");
+            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}");
             outputPath = outputPath.Replace("|", " ");
-            mvvm.foldername = $"[WUP]{reg.Replace(gameName, "").Replace("|"," ")}";
+            mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|"," ")}";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP]{reg.Replace(gameName,"").Replace("|", " ")}_{i}");
-                mvvm.foldername = $"[WUP]{reg.Replace(gameName, "").Replace("|", " ")}_{i}";
+                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}_{i}");
+                mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|", " ")}_{i}";
                 i++;
             }
             var oldpath = Directory.GetCurrentDirectory();
