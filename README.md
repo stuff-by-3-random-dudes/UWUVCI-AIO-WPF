@@ -19,6 +19,9 @@ Wii U All-in-One Injector.
 Check out our discord:
 * https://discord.gg/mPZpqJJVmZ
 
+Check out the official video guide:
+* https://www.youtube.com/watch?v=I5UdYcVSRSA
+
 ## This repo is no longer in active development
 
 * The lastest version of this writing is 3.Z
