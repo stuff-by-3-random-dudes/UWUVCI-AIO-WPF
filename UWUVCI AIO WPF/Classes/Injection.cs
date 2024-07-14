@@ -26,6 +26,8 @@ using UWUVCI_AIO_WPF.UI.Windows;
 using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
 using Newtonsoft.Json.Linq;
+using Microsoft.Win32;
+using System.Management;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -282,7 +284,7 @@ namespace UWUVCI_AIO_WPF
                     return false;
                 }
 
-                var errorMessage = "Injection Failed due to unknown circumstances, please contact us on the UWUVCI discord";
+                var errorMessage = "Injection Failed due to unknown circumstances. Accent marks in the install path for UWUVCI or in the rom path is known to cause issues. Please contact us on the UWUVCI discord if you need any assistance.";
 
                 if (e.Message == "MISSINGF")
                     errorMessage = "Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base!";
@@ -310,6 +312,9 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "Looks to be your images are the problem" +
                         "\nFAQ: #28";
 
+                if (IsRunningInVirtualMachine() || IsRunningUnderWine())
+                    errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
+
                 MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file and on the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
 
                 Clean();
@@ -325,6 +330,67 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
+
+        private static bool IsRunningUnderWine()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Wine"))
+                {
+                    if (key != null)
+                    {
+                        return true;
+                    }
+                }
+
+                string winePrefix = Environment.GetEnvironmentVariable("WINEPREFIX");
+                if (!string.IsNullOrEmpty(winePrefix))
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception while checking for Wine: {ex.Message}");
+            }
+
+            return false;
+        }
+
+        private static bool IsRunningInVirtualMachine()
+        {
+            try
+            {
+                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS"))
+                {
+                    foreach (ManagementObject bios in searcher.Get())
+                    {
+                        string manufacturer = bios["Manufacturer"]?.ToString() ?? string.Empty;
+                        if (manufacturer.Contains("VMware") || manufacturer.Contains("VirtualBox") || manufacturer.Contains("Parallels"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                string[] virtualizationIndicators = { "Parallels", "VMware", "VirtualBox", "QEMU", "Hyper-V" };
+                foreach (string indicator in virtualizationIndicators)
+                {
+                    if (Environment.OSVersion.VersionString.Contains(indicator))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception while checking for virtual machine: {ex.Message}");
+            }
+
+            return false;
+        }
+
+
         private static bool done = false;
         private static void tick(object sender, EventArgs e)
         {
