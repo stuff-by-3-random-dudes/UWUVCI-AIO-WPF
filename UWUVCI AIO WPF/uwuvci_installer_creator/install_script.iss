@@ -3,7 +3,7 @@
 [Setup]
 AppName=UWUVCI AIO
 AppId=UWUVCI AIO
-AppVersion=3.Z
+AppVersion=3.Z-Again
 DefaultDirName={userdocs}\UWUVCI AIO
 UninstallDisplayIcon={app}\UWUVCI AIO.exe
 OutputBaseFilename=UWUVCI_INSTALLER
@@ -25,7 +25,7 @@ Source: "{app}\bin\vwii\Tools\ThemeMii.exe"; DestDir: "{app}\bin\vwii\Tools"; Mi
 
 [Run]
 Filename: "{app}\Readme.txt"; MinVersion: 0.0,6.0; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait
-Filename: "{app}\UWUVCI AIO.exe"; Description: "{cm:LaunchProgram,UWUVCI AIO v3.Z}"; MinVersion: 0.0,6.0; Flags: postinstall skipifsilent nowait
+Filename: "{app}\UWUVCI AIO.exe"; Description: "{cm:LaunchProgram,UWUVCI AIO v3.Z Again}"; MinVersion: 0.0,6.0; Flags: postinstall skipifsilent nowait
 
 [Icons]
 Name: "{autoprograms}\UWUVCI AIO"; Filename: "{app}\UWUVCI AIO.exe"; MinVersion: 0.0,6.0; 
