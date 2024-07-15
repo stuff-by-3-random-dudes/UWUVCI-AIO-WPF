@@ -1491,7 +1491,7 @@ namespace UWUVCI_AIO_WPF
 
         }
         public static int GetDeterministicHashCode(string str)
-        {
+        { 
             unchecked
             {
                 int hash1 = (5381 << 16) + 5381;
@@ -1803,9 +1803,12 @@ namespace UWUVCI_AIO_WPF
                 string basePath = $@"bin\bases\";
                 Directory.SetCurrentDirectory(basePath);
                 using (var client = new WebClient())
-
                 {
                     var fixname = name.Split('\\');
+
+                    if (Injection.IsRunningInVirtualMachine() || Injection.IsRunningUnderWineOrSimilar())
+                        name = "Net6/" + name;
+
                     client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
                 }
             }
@@ -2395,7 +2398,8 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkKey(string key)
         {
-            if (GbTemp.KeyHash == key.ToLower().GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(key.ToLower()))
+            var hash = GetDeterministicHashCode(key.ToLower());
+            if (GbTemp.KeyHash == hash)
             {
                 UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
