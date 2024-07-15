@@ -195,7 +195,9 @@ I, ZestyTS, have been making this FAQ since I took over UWUVCI-3, so I've done m
 	Download https://github.com/V10lator/SigpatchesModuleWiiU/releases/download/v1.0/01_sigpatches.rpx and place it in sd:/wiiu/environments/aroma/modules/setup
 
 31) Tmd.bin error? Common/Title Key not working?
-	Windows OS is required, Wine/Parallels/etc do not work
+	Wine/Proton/Virtualization are known to be a little wonky.
+	If it's a Title Key problem, try using these bases
+		https://github.com/NicoAICP/UWUVCI-VCB/tree/master/Net6
 
 32) Official Video Guide?
 	https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
