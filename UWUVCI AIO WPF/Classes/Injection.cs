@@ -312,7 +312,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "Looks to be your images are the problem" +
                         "\nFAQ: #28";
 
-                if (IsRunningInVirtualMachine() || IsRunningUnderWine())
+                if (IsRunningInVirtualMachine() || IsRunningUnderWineOrSimilar())
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
 
                 MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file and on the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -331,10 +331,11 @@ namespace UWUVCI_AIO_WPF
 
         }
 
-        private static bool IsRunningUnderWine()
+        public static bool IsRunningUnderWineOrSimilar()
         {
             try
             {
+                // Check for Wine
                 using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Wine"))
                 {
                     if (key != null)
@@ -348,16 +349,87 @@ namespace UWUVCI_AIO_WPF
                 {
                     return true;
                 }
+
+                // Check for Proton
+                string protonPrefix = Environment.GetEnvironmentVariable("STEAM_COMPAT_DATA_PATH");
+                if (!string.IsNullOrEmpty(protonPrefix))
+                {
+                    return true;
+                }
+
+                // Check for CrossOver
+                string crossoverPrefix = Environment.GetEnvironmentVariable("CROSSOVER_PREFIX");
+                if (!string.IsNullOrEmpty(crossoverPrefix))
+                {
+                    return true;
+                }
+
+                // Check for BoxedWine
+                string boxedWinePrefix = Environment.GetEnvironmentVariable("BOXEDWINE_PATH");
+                if (!string.IsNullOrEmpty(boxedWinePrefix))
+                {
+                    return true;
+                }
+
+                // Check for Lutris
+                string lutrisRuntime = Environment.GetEnvironmentVariable("LUTRIS_GAME_UUID");
+                if (!string.IsNullOrEmpty(lutrisRuntime))
+                {
+                    return true;
+                }
+
+                // Check for PlayOnLinux
+                string playOnLinux = Environment.GetEnvironmentVariable("PLAYONLINUX");
+                if (!string.IsNullOrEmpty(playOnLinux))
+                {
+                    return true;
+                }
+
+                // Check for DXVK
+                string dxvk = Environment.GetEnvironmentVariable("DXVK_LOG_LEVEL");
+                if (!string.IsNullOrEmpty(dxvk))
+                {
+                    return true;
+                }
+
+                // Check for ReactOS
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
+                    Environment.OSVersion.VersionString.Contains("ReactOS"))
+                {
+                    return true;
+                }
+
+                // Check for Winetricks
+                string winetricks = Environment.GetEnvironmentVariable("WINETRICKS");
+                if (!string.IsNullOrEmpty(winetricks))
+                {
+                    return true;
+                }
+
+                // Check for Cedega (WineX)
+                string cedega = Environment.GetEnvironmentVariable("CEDEGA_PATH");
+                if (!string.IsNullOrEmpty(cedega))
+                {
+                    return true;
+                }
+
+                // Check for common Wine/Proton files
+                string[] wineFiles = { "/usr/bin/wine", "/usr/local/bin/wine", "/usr/bin/proton", "/usr/local/bin/proton" };
+                if (wineFiles.Any(File.Exists))
+                {
+                    return true;
+                }
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception while checking for Wine: {ex.Message}");
+                Console.WriteLine($"Exception while checking for Wine or similar: {ex.Message}");
             }
 
             return false;
         }
 
-        private static bool IsRunningInVirtualMachine()
+        public static bool IsRunningInVirtualMachine()
         {
             try
             {
@@ -366,17 +438,58 @@ namespace UWUVCI_AIO_WPF
                     foreach (ManagementObject bios in searcher.Get())
                     {
                         string manufacturer = bios["Manufacturer"]?.ToString() ?? string.Empty;
-                        if (manufacturer.Contains("VMware") || manufacturer.Contains("VirtualBox") || manufacturer.Contains("Parallels"))
+                        if (manufacturer.Contains("VMware") || manufacturer.Contains("VirtualBox") || manufacturer.Contains("Parallels") || manufacturer.Contains("Xen") || manufacturer.Contains("KVM") || manufacturer.Contains("Bhyve"))
                         {
                             return true;
                         }
                     }
                 }
 
-                string[] virtualizationIndicators = { "Parallels", "VMware", "VirtualBox", "QEMU", "Hyper-V" };
+                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_ComputerSystem"))
+                {
+                    foreach (ManagementObject cs in searcher.Get())
+                    {
+                        string manufacturer = cs["Manufacturer"]?.ToString() ?? string.Empty;
+                        string model = cs["Model"]?.ToString() ?? string.Empty;
+                        if (manufacturer.Contains("Microsoft Corporation") && model.Contains("Virtual Machine"))
+                        {
+                            return true;
+                        }
+                        if (manufacturer.Contains("QEMU") || manufacturer.Contains("Bochs") || manufacturer.Contains("OpenStack"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                string[] virtualizationIndicators = { "Parallels", "VMware", "VirtualBox", "QEMU", "Hyper-V", "Xen", "KVM", "Bhyve", "Bochs", "OpenStack", "ProxMox", "Virtuozzo" };
                 foreach (string indicator in virtualizationIndicators)
                 {
                     if (Environment.OSVersion.VersionString.Contains(indicator))
+                    {
+                        return true;
+                    }
+                }
+
+                // Check for common VM files
+                string[] vmFiles = { "/usr/bin/vmware", "/usr/bin/virtualbox", "/usr/bin/qemu", "/usr/bin/kvm", "/usr/bin/hyperv" };
+                if (vmFiles.Any(File.Exists))
+                {
+                    return true;
+                }
+
+                // Check for Docker
+                string dockerEnv = Environment.GetEnvironmentVariable("DOCKER_ENV");
+                if (!string.IsNullOrEmpty(dockerEnv) || File.Exists("/.dockerenv"))
+                {
+                    return true;
+                }
+
+                // Check for common VM processes
+                string[] vmProcesses = { "vmware", "virtualbox", "qemu", "kvm", "hyperv" };
+                foreach (var processName in vmProcesses)
+                {
+                    if (Process.GetProcessesByName(processName).Length > 0)
                     {
                         return true;
                     }
