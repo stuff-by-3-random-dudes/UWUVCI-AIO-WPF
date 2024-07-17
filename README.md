@@ -24,6 +24,6 @@ Check out the official video guide:
 
 ## This repo is no longer in active development
 
-* The lastest version of this writing is 3.Z
+* The lastest version of this writing is 3.Z-Again
 * Any future updates will be community driven
 * Repo is still being managed, so feel free to fork/PR
