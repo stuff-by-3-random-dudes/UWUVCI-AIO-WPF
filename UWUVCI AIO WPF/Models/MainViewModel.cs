@@ -2398,8 +2398,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkKey(string key)
         {
-            var hash = GetDeterministicHashCode(key.ToLower());
-            if (GbTemp.KeyHash == hash)
+            if (GbTemp.KeyHash == key.ToLower().GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(key.ToLower()))
             {
                 UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
