@@ -20,7 +20,7 @@ Check out our discord:
 * https://discord.gg/mPZpqJJVmZ
 
 Check out the official video guide:
-* https://www.youtube.com/watch?v=I5UdYcVSRSA
+* https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
 ## This repo is no longer in active development
 
