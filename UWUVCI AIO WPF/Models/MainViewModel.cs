@@ -63,6 +63,8 @@ namespace UWUVCI_AIO_WPF
         public bool regionfrii = false;
         public bool regionfriius = false;
         public bool regionfriijp = false;
+        public bool deflicker = false;
+        public bool dither = false;
 
         public string RomPath
         {
