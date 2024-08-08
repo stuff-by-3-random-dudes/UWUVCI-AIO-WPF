@@ -849,6 +849,53 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 15;
                 }
             }
+
+            if (mvm.RemoveDeflicker || mvm.RemoveDithering)
+            {
+                var isoPath = Path.Combine(tempPath, "pre.iso");
+                var extraction = Path.Combine(tempPath, "extraction");
+                mvm.msg = "Unpacking rom to get main.dol file";
+                mvm.Progress = 16;
+                using (var unpack = new Process())
+                {
+                    if (!mvm.debug)
+                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    unpack.StartInfo.Arguments = $"extract \"{isoPath}\" \"{extraction}\"";
+                    unpack.Start();
+                    unpack.WaitForExit();
+                }
+
+                mvm.msg = "Patching main.dol file";
+                mvm.Progress = 17;
+
+                File.Delete(isoPath);
+                var mainDolPath = Path.Combine(tempPath, "extraction", "sys", "main.dol");
+                var output = Path.Combine(tempPath, "extraction", "sys", "patched.dol");
+
+
+                DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering);
+
+                File.Delete(mainDolPath);
+                File.Move(output, mainDolPath);
+
+                mvm.msg = "Packing rom back up";
+                mvm.Progress = 18;
+                using (var pack = new Process())
+                {
+                    if (!mvm.debug)
+                        pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    pack.StartInfo.Arguments = $"copy \"{extraction}\" \"{isoPath}\"";
+                    pack.Start();
+                    pack.WaitForExit();
+                }
+
+                Directory.Delete(extraction, recursive: true);
+            }
+
             //GET ROMCODE and change it
             mvm.msg = "Trying to change the Manual...";
             //READ FIRST 4 BYTES
