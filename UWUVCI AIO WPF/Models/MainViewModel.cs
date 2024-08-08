@@ -63,8 +63,6 @@ namespace UWUVCI_AIO_WPF
         public bool regionfrii = false;
         public bool regionfriius = false;
         public bool regionfriijp = false;
-        public bool deflicker = false;
-        public bool dither = false;
 
         public string RomPath
         {
@@ -348,7 +346,28 @@ namespace UWUVCI_AIO_WPF
 
         public bool BaseDownloaded { get; set; } = false;
 
+        private bool removeDeflicker = false;
 
+        public bool RemoveDeflicker
+        {
+            get { return removeDeflicker; }
+            set
+            {
+                removeDeflicker = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool removeDithering = false;
+        public bool RemoveDithering
+        {
+            get { return removeDithering; }
+            set
+            {
+                removeDithering = value;
+                OnPropertyChanged();
+            }
+        }
         private bool canInject = false;
 
         public bool CanInject
@@ -997,25 +1016,19 @@ namespace UWUVCI_AIO_WPF
         private static void CheckAndFixConfigFolder()
         {
             if (!Directory.Exists(@"configs"))
-            {
                 Directory.CreateDirectory(@"configs");
-            }
         }
         public void Pack(bool loadiine)
         {
             string consoleName =  GameConfiguration.Console.ToString();
 
             if (GC)
-            {
                 consoleName = GameConsoles.GCN.ToString();
-            }
 
             ValidatePathsStillExist();
             if (loadiine)
-            {
                 Injection.Loadiine(GameConfiguration.GameName, consoleName);
-                //
-            }
+
             else
             {
                 if (gameConfiguration.GameName != null)
@@ -1047,7 +1060,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 gc2rom = "";
 
-                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (example: haxchi or mocha) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", Settings.Default.OutPath); try
+                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", Settings.Default.OutPath); try
                 {
                     cm.Owner = mw;
                 }
@@ -1181,13 +1194,10 @@ namespace UWUVCI_AIO_WPF
             {
                 if (Injection.Inject(GameConfiguration, RomPath, this, force))
                 {
-
                     Injected = true;
                     injected2 = true;
                     if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
-                    {
                         injected2 = false;
-                    }
 
                 }
                 else { Injected = false; injected2 = false; }
@@ -1310,10 +1320,7 @@ namespace UWUVCI_AIO_WPF
                     dw.ShowDialog();
                     Environment.Exit(1);
                 }
-
-
             }
-
         }
         public void UpdateTools()
         {
