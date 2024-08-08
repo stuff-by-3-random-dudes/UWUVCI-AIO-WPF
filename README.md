@@ -24,3 +24,4 @@ Check out my video guide:
 * I'm adding changes that I might feel like making based on how I might want to use UWUVCI.
 * This fork will not contain releases that are installers, the intent will be building from source or dropping the exe in the release onto a current installation
 * I will not be providing support for this repo, since this is for my personal use and those that are savvy enough to use it.
+* This fork starts from release "3.Z-Again" of UWUVCI 3.
