@@ -1,23 +1,15 @@
 ﻿using GameBaseClassLibrary;
-using GMWare.M2.MArchive;
-using GMWare.M2.Psb;
-using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
@@ -25,7 +17,6 @@ using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
-using Newtonsoft.Json.Linq;
 using Microsoft.Win32;
 using System.Management;
 
@@ -158,7 +149,7 @@ namespace UWUVCI_AIO_WPF
                 dblSByte = bytes / 1024.0;
             }
 
-            return String.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
+            return string.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
         }
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
@@ -188,20 +179,12 @@ namespace UWUVCI_AIO_WPF
                 {
                     mvm.saveworkaround = true;
                 }
-
-               
                            
-            }
-            long neededspace = 0;
-            
+            }            
             mvvm = mvm;
-
-
-          
+                      
             Directory.CreateDirectory(tempPath);
-            
-
-            
+                      
             mvm.msg = "Checking Tools...";
             mvm.InjcttoolCheck();
      
@@ -212,19 +195,10 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!mvm.saveworkaround && (Configuration.Console == GameConsoles.WII || Configuration.Console == GameConsoles.GCN))
                 {
+                    long neededspace = mvm.GC ? 10000000000 : 15000000000;
 
-                    if (mvm.GC)
-                    {
-                        neededspace = 10000000000;
-                    }
-                    else
-                    {
-                        neededspace = 15000000000;
-                    }
                     if (freeSpaceInBytes < neededspace)
-                    {
                         throw new Exception("12G");
-                    }
                 }
 
                 if(Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
@@ -234,7 +208,7 @@ namespace UWUVCI_AIO_WPF
                 if (Configuration.BaseRom.Name != "Custom")
                 {
                     //Normal Base functionality here
-                    CopyBase($"{Configuration.BaseRom.Name.Replace(":", "")} [{Configuration.BaseRom.Region.ToString()}]", null);
+                    CopyBase($"{Configuration.BaseRom.Name.Replace(":", "")} [{Configuration.BaseRom.Region}]", null);
                 }
                 else
                 {
@@ -247,14 +221,9 @@ namespace UWUVCI_AIO_WPF
                 }
                 mvm.Progress = 10;
                 mvm.msg = "Injecting ROM...";
-                if (mvm.GC)
-                {
-                    RunSpecificInjection(Configuration, GameConsoles.GCN, RomPath, force, mvm);
-                }
-                else
-                {
-                    RunSpecificInjection(Configuration, Configuration.Console, RomPath, force, mvm);
-                }
+                
+                RunSpecificInjection(Configuration, (mvm.GC ? GameConsoles.GCN : Configuration.Console), RomPath, force, mvm);
+
                 mvm.msg = "Editing XML...";
                 EditXML(Configuration.GameName, mvm.Index, code);
                 mvm.Progress = 90;
@@ -655,7 +624,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
 
-                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -679,7 +648,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!mvm.debug)
                 {
-                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
@@ -707,7 +676,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
 
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 string extra = "";
@@ -755,7 +724,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
 
-                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -779,7 +748,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!mvm.debug)
                 {
-                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
@@ -807,7 +776,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
 
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 string pass = "-passthrough ";
@@ -837,7 +806,7 @@ namespace UWUVCI_AIO_WPF
                     mvm.msg = "Converting NKIT to ISO";
                     if (!mvm.debug)
                     {
-                        toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         // toiso.StartInfo.CreateNoWindow = true;
                     }
                     toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
@@ -862,7 +831,7 @@ namespace UWUVCI_AIO_WPF
                     {
                         if (!mvm.debug)
                         {
-                            toiso.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                             // toiso.StartInfo.CreateNoWindow = true;
                         }
                         toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
@@ -943,7 +912,7 @@ namespace UWUVCI_AIO_WPF
                     if (!mvm.debug)
                     {
 
-                        trimm.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     }
                     mvm.msg = "Trimming ROM...";
                     trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
@@ -1028,7 +997,7 @@ namespace UWUVCI_AIO_WPF
                     if (!mvm.debug)
                     {
 
-                        repack.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     }
                     repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                     repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -1047,7 +1016,7 @@ namespace UWUVCI_AIO_WPF
                         if (!mvm.debug)
                         {
 
-                            trimm.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         }
                         mvm.msg = "Trimming ROM...";
                         trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
@@ -1115,7 +1084,7 @@ namespace UWUVCI_AIO_WPF
                         if (!mvm.debug)
                         {
 
-                            repack.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         }
                         repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                         repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
@@ -1139,7 +1108,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
@@ -1167,7 +1136,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 string extra = "";
@@ -1223,7 +1192,7 @@ namespace UWUVCI_AIO_WPF
                         if (!mvm.debug)
                         {
 
-                            wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         }
                         wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
                         wit.StartInfo.Arguments = $"\"{romPath}\"";
@@ -1247,7 +1216,7 @@ namespace UWUVCI_AIO_WPF
                             if (!mvm.debug)
                             {
 
-                                wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                             }
                             wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
                             wit.StartInfo.Arguments = $"\"{romPath}\"";
@@ -1278,7 +1247,7 @@ namespace UWUVCI_AIO_WPF
                         if (!mvm.debug)
                         {
 
-                            wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                            wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                         }
                         wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
                         wit.StartInfo.Arguments = $"\"{romPath}\"";
@@ -1303,7 +1272,7 @@ namespace UWUVCI_AIO_WPF
                             if (!mvm.debug)
                             {
 
-                                wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                             }
                             wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
                             wit.StartInfo.Arguments = $"\"{romPath}\"";
@@ -1337,7 +1306,7 @@ namespace UWUVCI_AIO_WPF
                              if (!mvm.debug)
                              {
 
-                                 wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                 wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                              }
                              wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
                              wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
@@ -1369,7 +1338,7 @@ namespace UWUVCI_AIO_WPF
                             if (!mvm.debug)
                             {
 
-                                wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                             }
                             wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
                             wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
@@ -1393,7 +1362,7 @@ namespace UWUVCI_AIO_WPF
                                 if (!mvm.debug)
                                 {
 
-                                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                                 }
                                 wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
                                 wit.StartInfo.Arguments = $"\"{romPath}\"";
@@ -1423,7 +1392,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    wit.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
@@ -1464,7 +1433,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!mvm.debug)
                 {
-                    extract.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
@@ -1492,7 +1461,7 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                 {
                    
-                    iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso game.iso";
@@ -1809,12 +1778,12 @@ namespace UWUVCI_AIO_WPF
             gameName = gameName.Replace("|", " ");
             Regex reg = new Regex("[^a-zA-Z0-9 é -]");
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName,"")} [{mvvm.prodcode}]");
+            string outputPath = Path.Combine(Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName,"")} [{mvvm.prodcode}]");
             mvvm.foldername = $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
+                outputPath = Path.Combine(Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
                 mvvm.foldername = $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
                 i++;
             }
@@ -1843,13 +1812,13 @@ namespace UWUVCI_AIO_WPF
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
            
             //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}");
+            string outputPath = Path.Combine(Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}");
             outputPath = outputPath.Replace("|", " ");
             mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|"," ")}";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}_{i}");
+                outputPath = Path.Combine(Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}_{i}");
                 mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|", " ")}_{i}";
                 i++;
             }
@@ -1871,12 +1840,12 @@ namespace UWUVCI_AIO_WPF
                 if (Environment.Is64BitOperatingSystem)
                 {
                     cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Settings.Default.Ckey}";
                 }
                 else
                 {
                     cnuspacker.StartInfo.FileName = "java";
-                    cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Properties.Settings.Default.Ckey}";
+                    cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Settings.Default.Ckey}";
                 }
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
@@ -1931,13 +1900,13 @@ namespace UWUVCI_AIO_WPF
                             }
 
                             decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                            decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+                            decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
 
                             decrypt.Start();
                             decrypt.WaitForExit();
                         }
                         mvm.Progress = 99;
-                        foreach (string sFile in Directory.GetFiles(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
+                        foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
                             File.Delete(sFile);
 
                         /* File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
@@ -2020,7 +1989,7 @@ namespace UWUVCI_AIO_WPF
                             decrypt.StartInfo.CreateNoWindow = true;
                         }
                         decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                        decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+                        decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
 
                         decrypt.Start();
                         decrypt.WaitForExit();
@@ -2034,15 +2003,15 @@ namespace UWUVCI_AIO_WPF
         }
         public static string ExtractBase(string path, GameConsoles console)
         {
-            if(!Directory.Exists(Path.Combine(Properties.Settings.Default.BasePath, "CustomBases")))
+            if(!Directory.Exists(Path.Combine(Settings.Default.BasePath, "CustomBases")))
             {
-                Directory.CreateDirectory(Path.Combine(Properties.Settings.Default.BasePath, "CustomBases"));
+                Directory.CreateDirectory(Path.Combine(Settings.Default.BasePath, "CustomBases"));
             }
-            string outputPath = Path.Combine(Properties.Settings.Default.BasePath, "CustomBases", $"[{console.ToString()}] Custom");
+            string outputPath = Path.Combine(Settings.Default.BasePath, "CustomBases", $"[{console.ToString()}] Custom");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Properties.Settings.Default.BasePath, $"[{console.ToString()}] Custom_{i}");
+                outputPath = Path.Combine(Settings.Default.BasePath, $"[{console.ToString()}] Custom_{i}");
                 i++;
             }
             using (Process decrypt = new Process())
@@ -2051,7 +2020,7 @@ namespace UWUVCI_AIO_WPF
                 decrypt.StartInfo.UseShellExecute = false;
                 decrypt.StartInfo.CreateNoWindow = true;
                 decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{path}\" \"{outputPath}";
+                decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{path}\" \"{outputPath}";
 
                 decrypt.Start();
                 decrypt.WaitForExit();
@@ -2169,7 +2138,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                DirectoryCopy(Path.Combine(Properties.Settings.Default.BasePath, baserom), baseRomPath, true);
+                DirectoryCopy(Path.Combine(Settings.Default.BasePath, baserom), baseRomPath, true);
             }
         }
 
@@ -2479,7 +2448,7 @@ namespace UWUVCI_AIO_WPF
                 using (Process download = new Process())
                 {
                     download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"0005001010004001 {Properties.Settings.Default.SysKey} \"{Path.Combine(tempPath, "download")}\"";
+                    download.StartInfo.Arguments = $"0005001010004001 {Settings.Default.SysKey} \"{Path.Combine(tempPath, "download")}\"";
 
                     download.Start();
                     download.WaitForExit();
@@ -2487,7 +2456,7 @@ namespace UWUVCI_AIO_WPF
                 using (Process decrypt = new Process())
                 {
                     decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys")}\"";
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"vwiisys")}\"";
 
                     decrypt.Start();
                     decrypt.WaitForExit();
@@ -2496,7 +2465,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     Directory.Delete(Path.Combine(tempPath, "download"), true);
                     download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"0005001010004000 {Properties.Settings.Default.SysKey1} \"{Path.Combine(tempPath, "download")}\"";
+                    download.StartInfo.Arguments = $"0005001010004000 {Settings.Default.SysKey1} \"{Path.Combine(tempPath, "download")}\"";
 
                     download.Start();
                     download.WaitForExit();
@@ -2504,13 +2473,13 @@ namespace UWUVCI_AIO_WPF
                 using (Process decrypt = new Process())
                 {
                     decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Properties.Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(tempPath, "tempd")}\"";
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(tempPath, "tempd")}\"";
 
                     decrypt.Start();
                     decrypt.WaitForExit();
-                    File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
-                    File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
-                    File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"vwiisys", "code", "app.xml"));
+                    File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
+                    File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
+                    File.Delete(Path.Combine(Settings.Default.BasePath, $"vwiisys", "code", "app.xml"));
                 }
             }
         }
