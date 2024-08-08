@@ -1,7 +1,6 @@
 ﻿using GameBaseClassLibrary;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -14,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Properties;
-using UWUVCI_AIO_WPF.UI;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -24,14 +22,10 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text.RegularExpressions;
-using MaterialDesignThemes.Wpf;
 using NAudio.Wave;
 using System.Timers;
 using NAudio.Utils;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
-using System.Drawing;
-using System.Windows.Media.Animation;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -69,6 +63,7 @@ namespace UWUVCI_AIO_WPF
         public bool regionfrii = false;
         public bool regionfriius = false;
         public bool regionfriijp = false;
+
         public string RomPath
         {
             get { return romPath; }
