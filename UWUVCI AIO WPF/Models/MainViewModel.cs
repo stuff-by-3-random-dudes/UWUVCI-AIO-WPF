@@ -2562,95 +2562,27 @@ namespace UWUVCI_AIO_WPF
 
         public GameConsoles GetConsoleOfBase(GameBases gb)
         {
-            GameConsoles ret = new GameConsoles();
-            bool cont = false;
-            foreach (GameBases b in lNDS)
+            var consoleMappings = new Dictionary<GameConsoles, List<GameBases>>
             {
-                if (b.Name == gb.Name && b.Region == gb.Region)
-                {
-                    ret = GameConsoles.NDS;
-                    cont = true;
-                }
-            }
-            if (!cont)
+                { GameConsoles.NDS, lNDS },
+                { GameConsoles.N64, lN64 },
+                { GameConsoles.NES, lNES },
+                { GameConsoles.SNES, lSNES },
+                { GameConsoles.GBA, lGBA },
+                { GameConsoles.TG16, lTG16 },
+                { GameConsoles.MSX, lMSX },
+                { GameConsoles.WII, lWii }
+            };
+
+            foreach (var mapping in consoleMappings)
             {
-                foreach (GameBases b in lN64)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.N64;
-                        cont = true;
-                    }
-                }
+                if (mapping.Value.Any(b => b.Name == gb.Name && b.Region == gb.Region))
+                    return mapping.Key;
             }
-            if (!cont)
-            {
-                foreach (GameBases b in lNES)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.NES;
-                        cont = true;
-                    }
-                }
-            }
-            if (!cont)
-            {
-                foreach (GameBases b in lSNES)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.SNES;
-                        cont = true;
-                    }
-                }
-            }
-            if (!cont)
-            {
-                foreach (GameBases b in lGBA)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.GBA;
-                        cont = true;
-                    }
-                }
-            }
-            if (!cont)
-            {
-                foreach (GameBases b in lTG16)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.TG16;
-                        cont = true;
-                    }
-                }
-            }
-            if (!cont)
-            {
-                foreach (GameBases b in lMSX)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.MSX;
-                        cont = true;
-                    }
-                }
-            }
-            if (!cont)
-            {
-                foreach (GameBases b in lWii)
-                {
-                    if (b.Name == gb.Name && b.Region == gb.Region)
-                    {
-                        ret = GameConsoles.WII;
-                        cont = true;
-                    }
-                }
-            }
-            return ret;
+
+            return new GameConsoles(); // Return an uninitialized GameConsoles object (or handle differently)
         }
+
         public List<bool> getInfoOfBase(GameBases gb)
         {
             List<bool> info = new List<bool>();
