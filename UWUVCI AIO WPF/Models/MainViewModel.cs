@@ -3290,40 +3290,69 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 using (var client = new WebClient())
-                using (client.OpenRead("http://google.com/generate_204"))
-                    return true;
-            }
-            catch
-            {
-                Custom_Message cm = new Custom_Message("No Internet Connection", " To Download Tools, Bases or required Files you need to be connected to the Internet. The Program will now terminate. ");
-                try
                 {
-                    cm.Owner = mw;
-
+                    client.Proxy = null;
+                    client.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.BypassCache);
+                    client.DownloadString("http://google.com/generate_204");
                 }
-
-
-                catch (Exception) { }
-                cm.ShowDialog();
+                return true;
+            }
+            catch (WebException)
+            {
+                ShowNoInternetConnectionMessage();
+                Environment.Exit(1);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the unexpected exception
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                ShowNoInternetConnectionMessage();
                 Environment.Exit(1);
                 return false;
             }
         }
+
+        private void ShowNoInternetConnectionMessage()
+        {
+            var cm = new Custom_Message("No Internet Connection",
+                "To download tools, bases, or required files, you need to be connected to the Internet. The program will now terminate.");
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception if setting the owner fails
+                Console.WriteLine($"Failed to set message owner: {ex.Message}");
+            }
+            cm.ShowDialog();
+        }
+
         public bool CheckForInternetConnectionWOWarning()
         {
             try
             {
                 using (var client = new WebClient())
-                using (client.OpenRead("http://google.com/generate_204"))
-                    return true;
+                {
+                    client.Proxy = null;
+                    client.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.BypassCache);
+                    client.DownloadString("http://google.com/generate_204");
+                }
+                return true;
             }
-            catch
+            catch (WebException)
             {
-
-
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the unexpected exception
+                Console.WriteLine($"Unexpected error: {ex.Message}");
                 return false;
             }
         }
+
         /// <summary>
         /// Checks for additional files like INI and BootSound for the given console and repository IDs.
         /// </summary>
