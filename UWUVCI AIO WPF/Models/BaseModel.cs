@@ -14,10 +14,7 @@ namespace UWUVCI_AIO_WPF
         // source property that is being updated.
         protected void OnPropertyChanged([CallerMemberName]string propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

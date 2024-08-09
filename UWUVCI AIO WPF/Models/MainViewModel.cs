@@ -3558,61 +3558,107 @@ namespace UWUVCI_AIO_WPF
 
         }
 
-        /// <param name="SystemType"></param>
-        /// <param name="repoid"></param>
-        /// <param name="repoids"></param>
+        /// <param name="SystemType">The type of system (e.g., "Wii", "N64").</param>
+        /// <param name="repoid">The repository ID for the image.</param>
+        /// <param name="repoids">An optional list of repository IDs to check for images.</param>
         private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
-            string[] ext = { "png", "jpg", "jpeg", "tga" };
+            string[] extensions = { "png", "jpg", "jpeg", "tga" };
 
-            if (repoids == null || repoids?.Count == 0)
+            // If no specific repoids are provided, generate possible repoids based on the given repoid
+            if (repoids == null || repoids.Count == 0)
             {
-                var fakeId = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] });
-                repoids = new List<string>
-                {
-                    SystemType + repoid,
-                    SystemType + repoid.Substring(0, 3) + "E",
-                    SystemType + repoid.Substring(0, 3) + "P",
-                    SystemType + repoid.Substring(0, 3) + "J",
-
-                    SystemType + fakeId,
-                    SystemType + fakeId.Substring(0, 3) + "E",
-                    SystemType + fakeId.Substring(0, 3) + "P",
-                    SystemType + fakeId.Substring(0, 3) + "J"
-                };
+                repoids = GenerateRepoIds(SystemType, repoid);
             }
 
-            foreach (var e in ext)
+            // Iterate through all combinations of repoids and extensions to find an existing image
+            foreach (string extension in extensions)
             {
-                foreach (var id in repoids)
+                foreach (string id in repoids)
                 {
-                    if (RemoteFileExists(linkbase + id + $"/iconTex.{e}") == true)
-                    {
-                        if (e.Contains("tga"))
-                        {
-                            var message = new Custom_Message("TGA Extension Warning", "TGA files can't natively be rendered in UWUVCI, instead it will say something along the lines of the image not being able to be shown.\nThis is correct and is normal behavior.\n\nIf there are actual errors then grab the files from \"https://github.com/UWUVCI-PRIME/UWUVCI-IMAGES\", convert them to png, and then manually insert them.");
-                            try
-                            {
-                                message.Owner = mw;
-                            }
-                            catch (Exception)
-                            {
+                    string imageUrl = $"{linkbase}{id}/iconTex.{extension}";
 
-                            }
-                            message.ShowDialog();
-                        }
-                        var img = new IMG_Message(linkbase + id + $"/iconTex.{e}", linkbase + id + $"/bootTvTex.{e}", id);
-                        try
-                        {
-                            img.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        img.ShowDialog();
+                    if (RemoteFileExists(imageUrl))
+                    {
+                        HandleImageLoading(imageUrl, extension, id);
                         return;
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// Generates a list of possible repository IDs based on the system type and the provided repository ID.
+        /// </summary>
+        /// <param name="SystemType">The type of system (e.g., "Wii", "N64").</param>
+        /// <param name="repoid">The repository ID for the image.</param>
+        /// <returns>A list of possible repository IDs.</returns>
+        private List<string> GenerateRepoIds(string SystemType, string repoid)
+        {
+            string fakeId = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] });
+
+            return new List<string>
+    {
+        SystemType + repoid,
+        SystemType + repoid.Substring(0, 3) + "E",
+        SystemType + repoid.Substring(0, 3) + "P",
+        SystemType + repoid.Substring(0, 3) + "J",
+
+        SystemType + fakeId,
+        SystemType + fakeId.Substring(0, 3) + "E",
+        SystemType + fakeId.Substring(0, 3) + "P",
+        SystemType + fakeId.Substring(0, 3) + "J"
+    };
+        }
+
+        /// <summary>
+        /// Handles the image loading process and displays any necessary messages to the user.
+        /// </summary>
+        /// <param name="imageUrl">The URL of the image to load.</param>
+        /// <param name="extension">The file extension of the image.</param>
+        /// <param name="repoid">The repository ID associated with the image.</param>
+        private void HandleImageLoading(string imageUrl, string extension, string repoid)
+        {
+            if (extension.Equals("tga", StringComparison.OrdinalIgnoreCase))
+            {
+                ShowTgaWarning();
+            }
+
+            var imgMessage = new IMG_Message(imageUrl, imageUrl.Replace("iconTex", "bootTvTex"), repoid);
+            try
+            {
+                imgMessage.Owner = mw;
+            }
+            catch (Exception)
+            {
+                // Swallow exception to prevent crashing when setting the owner fails
+            }
+
+            imgMessage.ShowDialog();
+        }
+
+        /// <summary>
+        /// Displays a warning message when a TGA image is detected.
+        /// </summary>
+        private void ShowTgaWarning()
+        {
+            var message = new Custom_Message("TGA Extension Warning",
+                "TGA files can't natively be rendered in UWUVCI. Instead, the image may show an error. This is normal behavior.\n\n" +
+                "If there are actual errors, please download the files from \"https://github.com/UWUVCI-PRIME/UWUVCI-IMAGES\", convert them to PNG, " +
+                "and then manually insert them.");
+
+            try
+            {
+                message.Owner = mw;
+            }
+            catch (Exception)
+            {
+                // Swallow exception to prevent crashing when setting the owner fails
+            }
+
+            message.ShowDialog();
+        }
+
     }
 }
