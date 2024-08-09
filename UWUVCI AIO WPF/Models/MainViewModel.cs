@@ -2593,149 +2593,87 @@ namespace UWUVCI_AIO_WPF
 
         public void SetInjectPath()
         {
-            using (var dialog = new CommonOpenFileDialog())
+            SetFolderPath(
+                folderPath => Settings.Default.OutPath = folderPath,
+                Settings.Default.SetOutOnce,
+                "Inject Folder");
+        }
+
+        private void SetFolderPath(Action<string> setPathAction, bool setOnceFlag, string folderDescription)
+        {
+            using (var dialog = new CommonOpenFileDialog { IsFolderPicker = true })
             {
-                dialog.IsFolderPicker = true;
-                CommonFileDialogResult result = dialog.ShowDialog();
-                if (result == CommonFileDialogResult.Ok)
-                {
+                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                     try
                     {
                         if (DirectoryIsEmpty(dialog.FileName))
                         {
-                            Settings.Default.OutPath = dialog.FileName;
-                            Settings.Default.SetOutOnce = true;
+                            setPathAction(dialog.FileName);
+                            setOnceFlag = true;
                             Settings.Default.Save();
                             UpdatePathSet();
                         }
                         else
-                        {
-                            Custom_Message cm = new Custom_Message("Information", " Folder contains Files or Subfolders, do you really want to use this folder as the Inject Folder? ");
-                            try
-                            {
-                                cm.Owner = mw;
-                            }
-                            catch (Exception) { }
-                            cm.ShowDialog();
-                            if (choosefolder)
-                            {
-                                choosefolder = false;
-                                Settings.Default.OutPath = dialog.FileName;
-                                Settings.Default.SetOutOnce = true;
-                                Settings.Default.Save();
-                                UpdatePathSet();
-
-                            }
-                            else
-                            {
-                                SetInjectPath();
-                            }
-                        }
+                            PromptUserForFolderSelection(dialog.FileName, setPathAction, setOnceFlag, folderDescription);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.Message);
-                        Custom_Message cm = new Custom_Message("Error", " An Error occured, please try again! ");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
+                        HandleError(e);
                     }
-
-                }
             }
             ArePathsSet();
         }
+
+        private void PromptUserForFolderSelection(string folderPath, Action<string> setPathAction, bool setOnceFlag, string folderDescription)
+        {
+            Custom_Message cm = new Custom_Message("Information", $" Folder contains Files or Subfolders, do you really want to use this folder as the {folderDescription}? ");
+            try { cm.Owner = mw; } catch (Exception) { }
+            cm.ShowDialog();
+            if (choosefolder)
+            {
+                choosefolder = false;
+                setPathAction(folderPath);
+                setOnceFlag = true;
+                Settings.Default.Save();
+                UpdatePathSet();
+            }
+            else
+            {
+                SetFolderPath(setPathAction, setOnceFlag, folderDescription);
+            }
+        }
+
+        private void HandleError(Exception e)
+        {
+            Console.WriteLine(e.Message);
+            Custom_Message cm = new Custom_Message("Error", " An Error occured, please try again! ");
+            try { cm.Owner = mw; } catch (Exception) { }
+            cm.ShowDialog();
+        }
+
         public void SetBasePath()
         {
-            using (var dialog = new CommonOpenFileDialog())
-            {
-                dialog.IsFolderPicker = true;
-                CommonFileDialogResult result = dialog.ShowDialog();
-                if (result == CommonFileDialogResult.Ok)
-                {
-                    try
-                    {
-                        if (DirectoryIsEmpty(dialog.FileName))
-                        {
-                            Settings.Default.BasePath = dialog.FileName;
-                            Settings.Default.SetBaseOnce = true;
-                            Settings.Default.Save();
-                            UpdatePathSet();
-                        }
-                        else
-                        {
-                            Custom_Message cm = new Custom_Message("Information", " Folder contains Files or Subfolders, do you really want to use this folder as the Bases Folder? ");
-                            try
-                            {
-                                cm.Owner = mw;
-                            }
-                            catch (Exception) { }
-                            cm.ShowDialog();
-                            if (choosefolder)
-                            {
-                                choosefolder = false;
-                                Settings.Default.BasePath = dialog.FileName;
-                                Settings.Default.SetBaseOnce = true;
-                                Settings.Default.Save();
-                                UpdatePathSet();
-
-                            }
-                            else
-                            {
-                                SetInjectPath();
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                        Custom_Message cm = new Custom_Message("Error", " An Error occured, please try again! ");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
-                    }
-
-                }
-            }
-            ArePathsSet();
+            SetFolderPath(
+                folderPath => Settings.Default.BasePath = folderPath,
+                Settings.Default.SetBaseOnce,
+                "Bases Folder");
         }
+
         public void ArePathsSet()
         {
             if (ValidatePathsStillExist())
             {
-
                 Settings.Default.PathsSet = true;
-
-
                 Settings.Default.Save();
             }
             UpdatePathSet();
         }
+
         public bool DirectoryIsEmpty(string path)
         {
-            int fileCount = Directory.GetFiles(path).Length;
-            if (fileCount > 0)
-            {
-                return false;
-            }
-
-            string[] dirs = Directory.GetDirectories(path);
-            foreach (string dir in dirs)
-            {
-                if (!DirectoryIsEmpty(dir))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !Directory.EnumerateFileSystemEntries(path).Any();
         }
+
         public void getBootIMGGBA(string rom)
         {
             string repoid = "";
@@ -2756,17 +2694,15 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
-            List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
+            List<string> repoids = new List<string>
             {
-                repoids.Add(SystemType + repoid);
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
+                SystemType + repoid,
+                SystemType + repoid.Substring(0, 3) + "E",
+                SystemType + repoid.Substring(0, 3) + "P",
+                SystemType + repoid.Substring(0, 3) + "J"
+            };
 
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.GBA, repoids);
-            }
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA);
 
         }
         public void getBootIMGSNES(string rom)
@@ -2777,13 +2713,7 @@ namespace UWUVCI_AIO_WPF
             {
                 SystemType + repoid
             };
-
-            if (CheckForInternetConnectionWOWarning())
-            {
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.SNES, repoids);
-
-            }
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES);
 
         }
         public void getBootIMGMSX(string rom)
@@ -2794,13 +2724,7 @@ namespace UWUVCI_AIO_WPF
             {
                 SystemType + repoid
             };
-
-            if (CheckForInternetConnectionWOWarning())
-            {
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.MSX, repoids);
-            }
-
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX);
         }
         public void getBootIMGTG(string rom)
         {
@@ -2810,12 +2734,7 @@ namespace UWUVCI_AIO_WPF
             {
                 SystemType + repoid
             };
-            if (CheckForInternetConnectionWOWarning())
-            {
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.TG16, repoids);
-
-            }
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16);
 
         }
         private string GetFakeMSXTGProdcode(string v, bool msx)
@@ -3001,18 +2920,15 @@ namespace UWUVCI_AIO_WPF
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
             }
-            List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
+            List<string> repoids = new List<string>
             {
-                repoids.Add(SystemType + repoid);
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.NDS, repoids);
+                SystemType + repoid,
+                SystemType + repoid.Substring(0, 3) + "E",
+                SystemType + repoid.Substring(0, 3) + "P",
+                SystemType + repoid.Substring(0, 3) + "J"
+            };
 
-            }
-
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS);
         }
 
         public void getBootIMGN64(string rom)
@@ -3112,26 +3028,21 @@ namespace UWUVCI_AIO_WPF
             string ret = "";
             try
             {
+                string TempString = "";
+                string SystemType = (gc ? "gcn" : "wii") + "/";
+
+                var repoid = "";
+                    
+                char TempChar;
+                //WBFS Check
+                List<string> repoids = new List<string>();
                 using (var reader = new BinaryReader(File.OpenRead(OpenGame)))
                 {
-                    string TempString = "";
-                    string SystemType = "wii/";
-                    if (gc)
-                    {
-                        SystemType = "gcn/";
-                    }
-                    var repoid = "";
                     reader.BaseStream.Position = 0x00;
-                    char TempChar;
-                    //WBFS Check
-                    List<string> repoids = new List<string>();
                     if (new FileInfo(OpenGame).Extension.Contains("wbfs")) //Performs actions if the header indicates a WBFS file
                     {
-
                         reader.BaseStream.Position = 0x200;
-
                         reader.BaseStream.Position = 0x218;
-
 
                         reader.BaseStream.Position = 0x220;
                         while ((TempChar = reader.ReadChar()) != 0) ret += TempChar;
@@ -3149,18 +3060,13 @@ namespace UWUVCI_AIO_WPF
                         while ((TempChar = reader.ReadChar()) != 0) TempString += TempChar;
                         repoid = TempString;
                     }
-
-                    if (CheckForInternetConnectionWOWarning())
-                    {
-                        repoids.Add(SystemType + repoid);
-                        repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
-                        repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
-                        repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
-
-                        GetRepoImages(SystemType, repoid, repoids);
-                        checkForAdditionalFiles(test == GameConsoles.GCN ? GameConsoles.GCN : GameConsoles.WII, repoids);
-                    }
                 }
+                repoids.Add(SystemType + repoid);
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "E" + repoid.Substring(4, 2));
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
+
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII);
             }
             catch (Exception)
             {
@@ -3171,10 +3077,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception) { }
                 cm.ShowDialog();
-
             }
-
-
             return ret;
         }
         public bool CheckForInternetConnection()
