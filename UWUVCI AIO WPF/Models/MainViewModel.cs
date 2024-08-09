@@ -2383,65 +2383,62 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             ek.ShowDialog();
         }
-        public bool checkcKey(string key)
+        public bool CheckCKey(string key)
         {
-            if (1274359530 == key.ToLower().GetHashCode() || -485504051 == GetDeterministicHashCode(key.ToLower()))
+            string lowerKey = key.ToLower();
+            int keyHash = lowerKey.GetHashCode();
+
+            if (keyHash == 1274359530 || GetDeterministicHashCode(lowerKey) == -485504051)
             {
-                Settings.Default.Ckey = key.ToLower();
+                Settings.Default.Ckey = lowerKey;
                 ckeys = true;
                 Settings.Default.Save();
-
                 return true;
             }
             ckeys = false;
             return false;
         }
-        public bool isCkeySet()
+
+        public bool IsCKeySet()
         {
-            ckeys = Settings.Default.Ckey.ToLower().GetHashCode() == 1274359530 || GetDeterministicHashCode(Settings.Default.Ckey.ToLower()) == -485504051;
+            string lowerCKey = Settings.Default.Ckey.ToLower();
+            ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
             return ckeys;
         }
-        public bool checkKey(string key)
+
+        public bool CheckKey(string key)
         {
-            if (GbTemp.KeyHash == key.ToLower().GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(key.ToLower()))
+            string lowerKey = key.ToLower();
+            if (GbTemp.KeyHash == lowerKey.GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(lowerKey))
             {
-                UpdateKeyInFile(key, $@"bin\keys\{GetConsoleOfBase(gbTemp).ToString().ToLower()}.vck", GbTemp, GetConsoleOfBase(gbTemp));
+                string consoleName = GetConsoleOfBase(gbTemp).ToString().ToLower();
+                string keyFilePath = $@"bin\keys\{consoleName}.vck";
+                UpdateKeyInFile(lowerKey, keyFilePath, GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
             }
             return false;
         }
-        public void UpdateKeyInFile(string key, string file, GameBases Base, GameConsoles console)
+
+        public void UpdateKeyInFile(string key, string file, GameBases baseGame, GameConsoles console)
         {
             if (File.Exists(file))
             {
-                var temp = KeyFile.ReadBasesFromKeyFile(file);
-                foreach (TKeys t in temp)
-                {
-                    if (t.Base.Name == Base.Name && t.Base.Region == Base.Region)
-                    {
-                        t.Tkey = key;
-                    }
-                }
-                File.Delete(file);
-                KeyFile.ExportFile(temp, console);
-            }
-        }
-        public bool isKeySet(GameBases bases)
-        {
-            var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
-            foreach (TKeys t in temp)
-            {
-                if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
-                {
-                    if (t.Tkey != null)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+                var keyEntries = KeyFile.ReadBasesFromKeyFile(file);
+                foreach (var entry in keyEntries)
+                    if (entry.Base.Name == baseGame.Name && entry.Base.Region == baseGame.Region)
+                        entry.Tkey = key;
 
+                File.Delete(file);
+                KeyFile.ExportFile(keyEntries, console);
+            }
         }
+
+        public bool isKeySet(GameBases baseGame)
+        {
+            var keyEntries = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(baseGame).ToString().ToLower()}.vck");
+            return keyEntries.Any(entry => entry.Base.Name == baseGame.Name && entry.Base.Region == baseGame.Region && entry.Tkey != null);
+        }
+
         public void ImageWarning()
         {
             Custom_Message cm = new Custom_Message("Image Warning", " Images need to either be in a Bit Depth of 32bit or 24bit. \n If using Tools like paint.net do not choose the Auto function.");
@@ -2456,7 +2453,6 @@ namespace UWUVCI_AIO_WPF
         public bool choosefolder = false;
         public bool CBaseConvertInfo()
         {
-            bool ret = false;
             Custom_Message cm = new Custom_Message("NUS Custom Base", " You seem to have added a NUS format Custom Base. \n Do you want it to be converted to be used with the Injector?");
             try
             {
@@ -2467,27 +2463,17 @@ namespace UWUVCI_AIO_WPF
 
             if (choosefolder)
             {
-                ret = true;
                 choosefolder = false;
+                return true;
             }
-            return ret;
+            return false;
         }
-        public TKeys getTkey(GameBases bases)
+        public TKeys GetTKey(GameBases baseGame)
         {
-            var temp = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(bases).ToString().ToLower()}.vck");
-            foreach (TKeys t in temp)
-            {
-                if (t.Base.Name == bases.Name && t.Base.Region == bases.Region)
-                {
-                    if (t.Tkey != null)
-                    {
-                        return t;
-                    }
-                }
-            }
-            return null;
-
+            var keyEntries = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(baseGame).ToString().ToLower()}.vck");
+            return keyEntries.FirstOrDefault(entry => entry.Base.Name == baseGame.Name && entry.Base.Region == baseGame.Region && entry.Tkey != null);
         }
+
         public void Download()
         {
             ValidatePathsStillExist();
@@ -2521,32 +2507,30 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-
         private double TestDownloadSpeed()
         {
-            WebClient webClient = new WebClient();
-            Stopwatch sw = new Stopwatch();
+            Stopwatch sw = Stopwatch.StartNew();
 
             //Using this file as a test file, it's about 16MB which should be small enough to not impact anything.
             string url = "https://github.com/NicoAICP/UWUVCI-Tools/raw/master/gba2.zip";
             byte[] data;
-
-            sw.Start();
             try
             {
+                using var webClient = new WebClient();
                 data = webClient.DownloadData(url);
             }
             catch
             {
-                return 0; 
+                return 0;
             }
-            sw.Stop();
 
-            double timeTaken = sw.Elapsed.TotalSeconds; // time in seconds
-            double sizeOfData = data.Length / 1024.0 / 1024.0; // size in MB
+            sw.Stop();
+            double timeTaken = sw.Elapsed.TotalSeconds;
+            double sizeOfData = data.Length / (1024.0 * 1024.0); // size in MB
 
             return sizeOfData / timeTaken; // returns speed in MB/s
         }
+
 
         private TimeSpan CalculateEstimatedTime(double speedInMBps)
         {
@@ -2742,146 +2726,134 @@ namespace UWUVCI_AIO_WPF
             Regex rgx = new Regex("[^a-zA-Z0-9 -]");
             Regex rgx2 = new Regex("[^0-9]");
             byte[] procode = new byte[0x210];
-            using (var md5 = MD5.Create())
+            using var md5 = MD5.Create();
+            using (var fs = new FileStream(v,
+                         FileMode.Open,
+                         FileAccess.Read))
             {
-                using (var fs = new FileStream(v,
-                             FileMode.Open,
-                             FileAccess.Read))
-                {
 
-                    fs.Read(procode, 0, 0x210);
+                fs.Read(procode, 0, 0x210);
 
-                    fs.Close();
-                }
-                string hash = GetMd5Hash(md5, procode);
-                //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
-                if (msx) Console.Write("MSX");
-                else Console.Write("TG16");
-                Console.WriteLine(" PRODCODE:");
-                Console.WriteLine("File Name: " + new FileInfo(v).Name);
-                Console.WriteLine("MD5 of Code Snippet: " + hash);
-                string hashonlynumbers = rgx2.Replace(hash, "");
-                do
-                {
-                    if (hashonlynumbers.Length < 10)
-                    {
-                        hashonlynumbers += 0;
-                    }
-                } while (hashonlynumbers.Length < 10);
-
-                string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
-                string prodcode = getCodeOfNumbers(Convert.ToInt32(first10));
-                if (msx) prodcode += "SX";
-                else prodcode += "TG";
-                //Console.WriteLine("NumberHash of GameName: "+ number);
-                Console.WriteLine("Fake ProdCode: " + prodcode);
-                Console.WriteLine("---------------------------------------------------");
-                return prodcode;
+                fs.Close();
             }
+            string hash = GetMd5Hash(md5, procode);
+            //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
+            if (msx) Console.Write("MSX");
+            else Console.Write("TG16");
+            Console.WriteLine(" PRODCODE:");
+            Console.WriteLine("File Name: " + new FileInfo(v).Name);
+            Console.WriteLine("MD5 of Code Snippet: " + hash);
+            string hashonlynumbers = rgx2.Replace(hash, "");
+            do
+            {
+                if (hashonlynumbers.Length < 10)
+                    hashonlynumbers += 0;
+            } while (hashonlynumbers.Length < 10);
+
+            string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
+            string prodcode = getCodeOfNumbers(Convert.ToInt32(first10));
+            if (msx) prodcode += "SX";
+            else prodcode += "TG";
+            //Console.WriteLine("NumberHash of GameName: "+ number);
+            Console.WriteLine("Fake ProdCode: " + prodcode);
+            Console.WriteLine("---------------------------------------------------");
+            return prodcode;
         }
         private string GetFakeSNESProdcode(string path)
         {
             Regex rgx = new Regex("[^a-zA-Z0-9 -]");
             Regex rgx2 = new Regex("[^0-9]");
-            using (var md5 = MD5.Create())
+            using var md5 = MD5.Create();
+            var name = new byte[] { };
+            using (var fs = new FileStream(path,
+                         FileMode.Open,
+                         FileAccess.Read))
             {
-                var name = new byte[] { };
-                using (var fs = new FileStream(path,
-                             FileMode.Open,
-                             FileAccess.Read))
+                byte[] procode = new byte[4];
+                fs.Seek(0x7FB2, SeekOrigin.Begin);
+                fs.Read(procode, 0, 4);
+
+                string repoid = ByteArrayToString(procode);
+
+
+                repoid = rgx.Replace(repoid, "");
+                if (repoid.Length < 4)
                 {
-                    byte[] procode = new byte[4];
-                    fs.Seek(0x7FB2, SeekOrigin.Begin);
-                    fs.Read(procode, 0, 4);
+                    fs.Seek(0xFFC0, SeekOrigin.Begin);
+                    procode = new byte[21];
+                    fs.Read(procode, 0, 21);
+                    name = procode;
 
-                    string repoid = ByteArrayToString(procode);
-
-
+                    repoid = ByteArrayToString(procode);
                     repoid = rgx.Replace(repoid, "");
-                    if (repoid.Length < 4)
-                    {
-                        fs.Seek(0xFFC0, SeekOrigin.Begin);
-                        procode = new byte[21];
-                        fs.Read(procode, 0, 21);
-                        name = procode;
-
-                        repoid = ByteArrayToString(procode);
-                        repoid = rgx.Replace(repoid, "");
-                    }
-
-                    if (repoid.Length < 4)
-                    {
-                        fs.Seek(0x7FC0, SeekOrigin.Begin);
-                        procode = new byte[21];
-                        fs.Read(procode, 0, 21);
-                        name = procode;
-                    }
                 }
-                string gamenameo = ByteArrayToString(name);
-                string gamename = rgx.Replace(gamenameo, "");
-                string hash = GetMd5Hash(md5, gamename);
-                //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
-                Console.WriteLine("SNES PRODCODE:");
-                Console.WriteLine("GameName: " + gamename);
-                Console.WriteLine("MD5 of Name: " + hash);
-                string hashonlynumbers = rgx2.Replace(hash, "");
-                do
+
+                if (repoid.Length < 4)
                 {
-                    if (hashonlynumbers.Length < 10)
-                    {
-                        hashonlynumbers += 0;
-                    }
-                } while (hashonlynumbers.Length < 10);
-
-                string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
-
-                //Console.WriteLine("NumberHash of GameName: "+ number);
-                Console.WriteLine("Fake ProdCode: " + getCodeOfNumbers(Convert.ToInt32(first10)));
-                Console.WriteLine("---------------------------------------------------");
-                return getCodeOfNumbers(Convert.ToInt32(first10));
-                // Console.WriteLine(md5.ComputeHash(name));
-                // Console.WriteLine("NumberCode: "+hash.GetHashCode());
-
+                    fs.Seek(0x7FC0, SeekOrigin.Begin);
+                    procode = new byte[21];
+                    fs.Read(procode, 0, 21);
+                    name = procode;
+                }
             }
+            string gamenameo = ByteArrayToString(name);
+            string gamename = rgx.Replace(gamenameo, "");
+            string hash = GetMd5Hash(md5, gamename);
+            //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
+            Console.WriteLine("SNES PRODCODE:");
+            Console.WriteLine("GameName: " + gamename);
+            Console.WriteLine("MD5 of Name: " + hash);
+            string hashonlynumbers = rgx2.Replace(hash, "");
+            do
+            {
+                if (hashonlynumbers.Length < 10)
+                    hashonlynumbers += 0;
+            } while (hashonlynumbers.Length < 10);
+
+            string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
+
+            //Console.WriteLine("NumberHash of GameName: "+ number);
+            Console.WriteLine("Fake ProdCode: " + getCodeOfNumbers(Convert.ToInt32(first10)));
+            Console.WriteLine("---------------------------------------------------");
+            return getCodeOfNumbers(Convert.ToInt32(first10));
+            // Console.WriteLine(md5.ComputeHash(name));
+            // Console.WriteLine("NumberCode: "+hash.GetHashCode());
+
         }
         private string GetFakeNESProdcode(string path)
         {
             Regex rgx = new Regex("[^a-zA-Z0-9 -]");
             Regex rgx2 = new Regex("[^0-9]");
             byte[] procode = new byte[0xB0];
-            using (var md5 = MD5.Create())
+            using var md5 = MD5.Create();
+            using (var fs = new FileStream(path,
+                         FileMode.Open,
+                         FileAccess.Read))
             {
-                using (var fs = new FileStream(path,
-                             FileMode.Open,
-                             FileAccess.Read))
-                {
 
-                    fs.Seek(0x8000, SeekOrigin.Begin);
-                    fs.Read(procode, 0, 0xB0);
+                fs.Seek(0x8000, SeekOrigin.Begin);
+                fs.Read(procode, 0, 0xB0);
 
-                    fs.Close();
-                }
-                string hash = GetMd5Hash(md5, procode);
-                //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
-                Console.WriteLine("NES PRODCODE:");
-                Console.WriteLine("File Name: " + new FileInfo(path).Name);
-                Console.WriteLine("MD5 of Code Snippet: " + hash);
-                string hashonlynumbers = rgx2.Replace(hash, "");
-                do
-                {
-                    if (hashonlynumbers.Length < 10)
-                    {
-                        hashonlynumbers += 0;
-                    }
-                } while (hashonlynumbers.Length < 10);
-
-                string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
-
-                //Console.WriteLine("NumberHash of GameName: "+ number);
-                Console.WriteLine("Fake ProdCode: " + getCodeOfNumbers(Convert.ToInt32(first10)));
-                Console.WriteLine("---------------------------------------------------");
-                return getCodeOfNumbers(Convert.ToInt32(first10));
+                fs.Close();
             }
+            string hash = GetMd5Hash(md5, procode);
+            //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
+            Console.WriteLine("NES PRODCODE:");
+            Console.WriteLine("File Name: " + new FileInfo(path).Name);
+            Console.WriteLine("MD5 of Code Snippet: " + hash);
+            string hashonlynumbers = rgx2.Replace(hash, "");
+            do
+            {
+                if (hashonlynumbers.Length < 10)
+                    hashonlynumbers += 0;
+            } while (hashonlynumbers.Length < 10);
+
+            string first10 = new string(new char[] { hashonlynumbers[0], hashonlynumbers[1], hashonlynumbers[2], hashonlynumbers[3], hashonlynumbers[4], hashonlynumbers[5], hashonlynumbers[6], hashonlynumbers[7], hashonlynumbers[8] });
+
+            //Console.WriteLine("NumberHash of GameName: "+ number);
+            Console.WriteLine("Fake ProdCode: " + getCodeOfNumbers(Convert.ToInt32(first10)));
+            Console.WriteLine("---------------------------------------------------");
+            return getCodeOfNumbers(Convert.ToInt32(first10));
         }
 
         private void FetchAndProcessRepoImages(string systemType, string repoid, List<string> repoids, GameConsoles console)
@@ -2949,6 +2921,10 @@ namespace UWUVCI_AIO_WPF
 
             fs.Close();
             Console.WriteLine("prodcode after scramble: " + repoid);
+
+            repoids.Add(SystemType + repoid);
+            repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64);
         }
 
         static string GetMd5Hash(MD5 md5Hash, byte[] input)
@@ -2974,9 +2950,7 @@ namespace UWUVCI_AIO_WPF
             // Loop through each byte of the hashed data 
             // and format each one as a hexadecimal string.
             foreach (byte b in data)
-            {
                 hexString.Append(b.ToString("x2"));
-            }
 
             return hexString.ToString();
         }
@@ -3155,9 +3129,7 @@ namespace UWUVCI_AIO_WPF
         {
             string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
             if (!Directory.Exists(repoPath))
-            {
                 Directory.CreateDirectory(repoPath);
-            }
 
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             bool iniFound = false;
@@ -3478,6 +3450,5 @@ namespace UWUVCI_AIO_WPF
 
             message.ShowDialog();
         }
-
     }
 }
