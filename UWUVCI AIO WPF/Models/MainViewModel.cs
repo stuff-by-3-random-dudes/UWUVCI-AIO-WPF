@@ -3384,9 +3384,7 @@ namespace UWUVCI_AIO_WPF
             {
                 fileUrl = linkbase + repoid + filePath;
                 if (RemoteFileExists(fileUrl))
-                {
                     return true;
-                }
             }
             fileUrl = string.Empty;
             return false;
@@ -3470,13 +3468,9 @@ namespace UWUVCI_AIO_WPF
                         break;
                     case GameConsoles.WII:
                         if (test == GameConsoles.GCN)
-                        {
                             (Thing as GCConfig).sound.Text = bootSoundFilePath;
-                        }
                         else
-                        {
                             (Thing as WiiConfig).sound.Text = bootSoundFilePath;
-                        }
                         break;
                     case GameConsoles.TG16:
                         (Thing as TurboGrafX).sound.Text = bootSoundFilePath;
@@ -3487,14 +3481,12 @@ namespace UWUVCI_AIO_WPF
 
         public string GetURL(string console)
         {
-            console = console.ToLower();
-            if (console == "tg16" || console == "tgcd")
-                console = "tgfx";
+            string lowerConsole = console.ToLowerInvariant();
+            string formattedConsole = (lowerConsole == "tg16" || lowerConsole == "tgcd") ? "tgfx" : lowerConsole;
 
-            string url = "https://uwuvci-prime.github.io/UWUVCI-Resources/" + console + "/" + console + ".html";
-
-            return url;
+            return $"https://uwuvci-prime.github.io/UWUVCI-Resources/{formattedConsole}/{formattedConsole}.html";
         }
+
 
         WaveOutEvent waveOutEvent = new WaveOutEvent();
         AudioFileReader audioFileReader;
@@ -3522,7 +3514,6 @@ namespace UWUVCI_AIO_WPF
                 {
 
                 }
-
             });
             ts.Start();
         }
@@ -3537,7 +3528,6 @@ namespace UWUVCI_AIO_WPF
                     audioFileReader.Dispose();
                     t.Stop();
                 }
-
             }
             catch (Exception)
             {
@@ -3587,14 +3577,11 @@ namespace UWUVCI_AIO_WPF
             string[] extensions = { "png", "jpg", "jpeg", "tga" };
 
             // If no specific repoids are provided, generate possible repoids based on the given repoid
-            if (repoids == null || repoids.Count == 0)
-            {
+            if (repoids?.Count == 0)
                 repoids = GenerateRepoIds(SystemType, repoid);
-            }
 
             // Iterate through all combinations of repoids and extensions to find an existing image
             foreach (string extension in extensions)
-            {
                 foreach (string id in repoids)
                 {
                     string imageUrl = $"{linkbase}{id}/iconTex.{extension}";
@@ -3605,7 +3592,7 @@ namespace UWUVCI_AIO_WPF
                         return;
                     }
                 }
-            }
+
         }
 
         /// <summary>
@@ -3619,17 +3606,17 @@ namespace UWUVCI_AIO_WPF
             string fakeId = new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] });
 
             return new List<string>
-    {
-        SystemType + repoid,
-        SystemType + repoid.Substring(0, 3) + "E",
-        SystemType + repoid.Substring(0, 3) + "P",
-        SystemType + repoid.Substring(0, 3) + "J",
+            {
+                SystemType + repoid,
+                SystemType + repoid.Substring(0, 3) + "E",
+                SystemType + repoid.Substring(0, 3) + "P",
+                SystemType + repoid.Substring(0, 3) + "J",
 
-        SystemType + fakeId,
-        SystemType + fakeId.Substring(0, 3) + "E",
-        SystemType + fakeId.Substring(0, 3) + "P",
-        SystemType + fakeId.Substring(0, 3) + "J"
-    };
+                SystemType + fakeId,
+                SystemType + fakeId.Substring(0, 3) + "E",
+                SystemType + fakeId.Substring(0, 3) + "P",
+                SystemType + fakeId.Substring(0, 3) + "J"
+            };
         }
 
         /// <summary>
@@ -3641,9 +3628,7 @@ namespace UWUVCI_AIO_WPF
         private void HandleImageLoading(string imageUrl, string extension, string repoid)
         {
             if (extension.Equals("tga", StringComparison.OrdinalIgnoreCase))
-            {
                 ShowTgaWarning();
-            }
 
             var imgMessage = new IMG_Message(imageUrl, imageUrl.Replace("iconTex", "bootTvTex"), repoid);
             try
