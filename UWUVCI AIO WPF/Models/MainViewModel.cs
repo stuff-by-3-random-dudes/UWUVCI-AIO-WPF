@@ -3504,16 +3504,12 @@ namespace UWUVCI_AIO_WPF
         internal bool backupenableWii = true;
         public void PlaySound()
         {
-
             Task ts = new Task(() =>
             {
                 try
                 {
                     t = new System.Timers.Timer(200);
                     t.Elapsed += isDone;
-
-
-
 
                     audioFileReader = new AudioFileReader(BootSound);
 
@@ -3542,14 +3538,11 @@ namespace UWUVCI_AIO_WPF
                     t.Stop();
                 }
 
-
-
             }
             catch (Exception)
             {
 
             }
-
         }
         public void isDone(object source, ElapsedEventArgs e)
         {
@@ -3577,35 +3570,11 @@ namespace UWUVCI_AIO_WPF
         }
         public void RestartIntoBypass()
         {
-            using (Process p = new Process())
-            {
-                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
-                if (debug)
-                {
-                    if (saveworkaround)
-                    {
-                        p.StartInfo.Arguments = "--debug --skip --spacebypass";
-                    }
-                    else
-                    {
-                        p.StartInfo.Arguments = "--debug --skip";
-                    }
-
-                }
-                else
-                {
-                    if (saveworkaround)
-                    {
-                        p.StartInfo.Arguments = "--skip --spacebypass";
-                    }
-                    else
-                    {
-                        p.StartInfo.Arguments = "--skip";
-                    }
-                }
-                p.Start();
-                Environment.Exit(0);
-            }
+            using Process p = new Process();
+            p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+            p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
+            p.Start();
+            Environment.Exit(0);
 
         }
 
