@@ -1,23 +1,10 @@
 ﻿using GameBaseClassLibrary;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using UWUVCI_AIO_WPF.Properties;
+using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
@@ -35,7 +22,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             sound.ToolTip += "\nWill be cut to 6 seconds of Length";
-            if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
             {
                 snesnes.Visibility = Visibility.Visible;
             }
@@ -47,22 +34,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 case 0:
                     icoIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGAIco = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGAIco = new PNGTGA();
                     ic.Text = null;
                     break;
                 case 1:
                     tvIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGATv = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGATv = new PNGTGA();
                     tv.Text = null;
                     break;
                 case 2:
                     drcIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGADrc = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGADrc = new PNGTGA();
                     drc.Text = null;
                     break;
                 case 3:
                     logIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGALog = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGALog = new PNGTGA();
                     log.Text = null;
                     break;
             }
@@ -75,7 +62,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             sound.ToolTip += "\nWill be cut to 6 seconds of Length";
-            if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES || mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+            if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
             {
                 snesnes.Visibility = Visibility.Visible;
             }
@@ -103,19 +90,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.CanInject = true;
 
                     }
-                    if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NDS)
+                    if (mvm.GameConfiguration.Console == GameConsoles.NDS)
                     {
                         mvm.getBootIMGNDS(mvm.RomPath);
                     }
-                    else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.NES)
+                    else if (mvm.GameConfiguration.Console == GameConsoles.NES)
                     {
                         mvm.getBootIMGNES(mvm.RomPath);
                     }
-                    else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.SNES)
+                    else if (mvm.GameConfiguration.Console == GameConsoles.SNES)
                     {
                         mvm.getBootIMGSNES(mvm.RomPath);
                     }
-                    else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.MSX)
+                    else if (mvm.GameConfiguration.Console == GameConsoles.MSX)
                     {
                         mvm.getBootIMGMSX(mvm.RomPath);
                     }
@@ -273,7 +260,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
                 mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
-                this.ic.Text = path;
+                ic.Text = path;
                 icoIMG.Visibility = Visibility.Visible;
             }
         }
@@ -298,7 +285,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
-                this.log.Text = path;
+                log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
 

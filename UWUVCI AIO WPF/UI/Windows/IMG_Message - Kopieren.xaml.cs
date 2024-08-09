@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using Path = System.IO.Path;
 
@@ -35,16 +24,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             this.drc = drc;
             try
             {
-                if (this.Owner?.GetType() != typeof(MainWindow))
+                if (Owner?.GetType() != typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-            pat = String.Copy(path);
+            pat = string.Copy(path);
             InitializeComponent();
             if (Directory.Exists(Path.Combine(tempPath, "image"))) Directory.Delete(Path.Combine(tempPath, "image"),true);
                 Directory.CreateDirectory(Path.Combine(tempPath, "image"));
@@ -119,7 +108,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void Canc_Click(object sender, RoutedEventArgs e)
         {
             bitmap.UriSource = null;
-            this.Close();
+            Close();
 
         }
 
@@ -166,7 +155,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     (mvm.Thing as TurboGrafX).clearImages(a);
                     break;
             }
-            this.Close();
+            Close();
         }
     }
 }

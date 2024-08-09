@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
 using Microsoft.Win32;
 using System.Management;
+using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -38,15 +39,15 @@ namespace UWUVCI_AIO_WPF
         static extern int SetForegroundWindow(IntPtr point);
         [DllImport("user32.dll")]
         public static extern int SendMessage(
-    int hWnd,     // handle to destination window
-    uint Msg,      // message
-    long wParam,   // first message parameter
-    long lParam    // second message parameter
-  );
+            int hWnd,     // handle to destination window
+            uint Msg,      // message
+            long wParam,   // first message parameter
+            long lParam    // second message parameter
+        );
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("user32.dll", SetLastError = true)]
         static extern bool PostMessage(IntPtr hWnd, int Msg, System.Windows.Forms.Keys wParam, int lParam);
-        private static Int32 WM_KEYUP = 0x101;
+        private static int WM_KEYUP = 0x101;
         private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "temp");
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
         private static readonly string imgPath = Path.Combine(tempPath, "img");
@@ -2078,7 +2079,7 @@ namespace UWUVCI_AIO_WPF
         private static void EditXML(string gameNameOr, int index, string code)
         {
             string gameName = string.Empty;
-            if(gameNameOr != null || !String.IsNullOrWhiteSpace(gameNameOr))
+            if(gameNameOr != null || !string.IsNullOrWhiteSpace(gameNameOr))
             {
 
                 gameName = gameNameOr;

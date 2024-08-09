@@ -2,20 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using WiiUDownloaderLibrary;
@@ -36,22 +30,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 case 0:
                     icoIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGAIco = new Classes.PNGTGA();
-                    ic.Text = null;
+                    mvm.GameConfiguration.TGAIco = new PNGTGA();
+                    ic.Text = null; 
                     break;
                 case 1:
                     tvIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGATv = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGATv = new PNGTGA();
                     tv.Text = null;
                     break;
                 case 2:
                     drcIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGADrc = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGADrc = new PNGTGA();
                     drc.Text = null;
                     break;
                 case 3:
                     logIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGALog = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGALog = new PNGTGA();
                     log.Text = null;
                     break;
             }
@@ -509,7 +503,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGAIco.ImgPath = path;
                 mvm.GameConfiguration.TGAIco.extension = new FileInfo(path).Extension;
-                this.ic.Text = path;
+                ic.Text = path;
                 icoIMG.Visibility = Visibility.Visible;
             }
         }
@@ -534,7 +528,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
-                this.log.Text = path;
+                log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
 

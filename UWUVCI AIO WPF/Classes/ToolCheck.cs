@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -144,9 +143,9 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public MissingTool(string n, string p)
         {
-            this.Name = n;
+            Name = n;
             FileInfo f = new FileInfo(p);
-            this.Path = f.FullName;
+            Path = f.FullName;
         }
     }
 }

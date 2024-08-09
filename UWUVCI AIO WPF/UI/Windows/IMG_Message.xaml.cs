@@ -32,27 +32,28 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if(this.Owner != null)
+                if (this.Owner != null)
                 {
                     if (this.Owner?.GetType() != typeof(MainWindow))
                     {
                         this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
-                    
+
                 }
-                
-               
+
+
             }
-            catch (Exception )
+            catch (Exception)
             {
                 this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
             InitializeComponent();
-            
-                ic = icon;
-                tvs = tv;
-            if (ic.Contains("tga")){
+
+            ic = icon;
+            tvs = tv;
+            if (ic.Contains("tga"))
+            {
                 icb.Visibility = Visibility.Hidden;
                 icl.Visibility = Visibility.Hidden;
                 //tgic.Visibility = Visibility.Visible;
@@ -227,7 +228,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 (mvm.Thing as GCConfig).icoIMG.Visibility = Visibility.Visible;
             }
-            else if(mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
+            else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.WII)
             {
                 (mvm.Thing as WiiConfig).icoIMG.Visibility = Visibility.Visible;
             }
@@ -266,7 +267,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 (mvm.Thing as N64Config).tvIMG.Visibility = Visibility.Visible;
                 (mvm.Thing as N64Config).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
-            
+
             }
             else if (mvm.GameConfiguration.Console == GameBaseClassLibrary.GameConsoles.GBA)
             {
@@ -284,15 +285,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 (mvm.Thing as OtherConfigs).imgpath(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"iconTex.{ic.Split('.')[3]}"), Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootTvTex.{tvs.Split('.')[3]}"));
 
             }
-           /* if(mvm.test == GameConsoles.GCN)
-            {
-                checkForAdditionalFiles(GameConsoles.GCN);
-            }
-            else
-            {
-                checkForAdditionalFiles(mvm.GameConfiguration.Console);
-            }*/
-            
+            /* if(mvm.test == GameConsoles.GCN)
+             {
+                 checkForAdditionalFiles(GameConsoles.GCN);
+             }
+             else
+             {
+                 checkForAdditionalFiles(mvm.GameConfiguration.Console);
+             }*/
+
             this.Close();
         }
         private void checkForAdditionalFiles(GameConsoles console)
@@ -309,14 +310,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             if (console == GameConsoles.N64)
             {
-                if (RemoteFileExists(linkbase+repoid+"/game.ini"))
+                if (RemoteFileExists(linkbase + repoid + "/game.ini"))
                 {
                     ini = true;
                     inip = linkbase + repoid + "/game.ini";
                 }
             }
             string[] ext = { "wav", "mp3", "btsnd" };
-            foreach(var e in ext)
+            foreach (var e in ext)
             {
                 if (RemoteFileExists(linkbase + repoid + "/BootSound." + e))
                 {
@@ -326,14 +327,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     break;
                 }
             }
-           if(ini || btsnd)
+            if (ini || btsnd)
             {
                 string extra = "There are more additional files found. Do you want to download those?";
                 if (ini && !btsnd) { extra = "There is an additional INI file available for Dowload. Do you want to dowload it?"; }
                 if (!ini && btsnd) { extra = "There is an additional BootSound file available for Dowload. Do you want to dowload it?"; }
                 if (ini && btsnd) { extra = "There is an adittional INI and BootSound file available for Dowload. Do you want to download those?"; }
                 MainViewModel mvm = FindResource("mvm") as MainViewModel;
-                Custom_Message cm = new Custom_Message("Found additional Files",extra);
+                Custom_Message cm = new Custom_Message("Found additional Files", extra);
                 try
                 {
                     cm.Owner = mvm.mw;
@@ -368,7 +369,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                                 (mvm.Thing as N64Config).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 break;
                             case GameConsoles.WII:
-                                if(mvm.test == GameConsoles.GCN)
+                                if (mvm.test == GameConsoles.GCN)
                                 {
                                     (mvm.Thing as GCConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
@@ -377,7 +378,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                                     (mvm.Thing as WiiConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
                                 }
                                 break;
-                                
+
                         }
                     }
                     mvm.addi = false;

@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
@@ -87,8 +81,8 @@ namespace UWUVCI_AIO_WPF
 			else
 			{
 				MainWindow wnd = new MainWindow();
-				double height = System.Windows.SystemParameters.PrimaryScreenHeight;
-				double witdh = System.Windows.SystemParameters.PrimaryScreenWidth;
+				double height = SystemParameters.PrimaryScreenHeight;
+				double witdh = SystemParameters.PrimaryScreenWidth;
 				if (witdh < 1150 || height < 700)
 				{
 					t.Elapsed += KillProg;
