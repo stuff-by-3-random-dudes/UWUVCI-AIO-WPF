@@ -2548,14 +2548,14 @@ namespace UWUVCI_AIO_WPF
             return sizeOfData / timeTaken; // returns speed in MB/s
         }
 
-        private TimeSpan CalculateEstimatedTime(double speedInMbps)
+        private TimeSpan CalculateEstimatedTime(double speedInMBps)
         {
             const double fileSize = 8.5 * 1024;  // file size in MB
 
-            if (speedInMbps <= 0) 
+            if (speedInMBps <= 0) 
                 return TimeSpan.MaxValue;
 
-            double estimatedTimeInSec = fileSize / speedInMbps;
+            double estimatedTimeInSec = fileSize / speedInMBps;
             return TimeSpan.FromSeconds(estimatedTimeInSec);
         }
 
