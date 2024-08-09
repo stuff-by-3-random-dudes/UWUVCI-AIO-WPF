@@ -3496,27 +3496,24 @@ namespace UWUVCI_AIO_WPF
         internal bool backupenableWii = true;
         public void PlaySound()
         {
-            Task ts = new Task(() =>
+            try
             {
-                try
-                {
-                    t = new System.Timers.Timer(200);
-                    t.Elapsed += isDone;
+                t = new System.Timers.Timer(200);
+                t.Elapsed += isDone;
 
-                    audioFileReader = new AudioFileReader(BootSound);
+                audioFileReader = new AudioFileReader(BootSound);
+                waveOutEvent.Init(audioFileReader);
 
-                    waveOutEvent.Init(audioFileReader);
-                    t.Start();
-                    Console.WriteLine("Playing file..");
-                    waveOutEvent.Play();
-                }
-                catch (Exception)
-                {
-
-                }
-            });
-            ts.Start();
+                t.Start();
+                Console.WriteLine("Playing file...");
+                waveOutEvent.Play();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error playing sound: {ex.Message}");
+            }
         }
+
         public void isDoneMW()
         {
             try
