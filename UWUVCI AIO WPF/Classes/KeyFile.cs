@@ -3,49 +3,67 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
     class KeyFile
     {
-        public static List<TKeys> ReadBasesFromKeyFile(string Keypath)
+        public static List<TKeys> ReadBasesFromKeyFile(string keyPath)
         {
-            List<TKeys> lRet = new List<TKeys>();
+            List<TKeys> result = new List<TKeys>();
 
-            FileInfo fn = new FileInfo(Keypath);
-            if (fn.Extension.Contains("vck"))
+            try
             {
-                FileStream inputConfigStream = new FileStream(Keypath, FileMode.Open, FileAccess.Read);
-                GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
-                IFormatter formatter = new BinaryFormatter();
-                lRet = (List<TKeys>)formatter.Deserialize(decompressedConfigStream);
-                inputConfigStream.Close();
-                decompressedConfigStream.Close();
+                FileInfo fileInfo = new FileInfo(keyPath);
+                if (fileInfo.Extension.Contains("vck"))
+                {
+                    using (FileStream inputConfigStream = new FileStream(keyPath, FileMode.Open, FileAccess.Read))
+                    using (GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress))
+                    {
+                        IFormatter formatter = new BinaryFormatter();
+                        result = (List<TKeys>)formatter.Deserialize(decompressedConfigStream);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the error appropriately
+                Console.WriteLine($"An error occurred while reading the key file: {ex.Message}");
             }
 
-            return lRet;
+            return result;
         }
-        public static void ExportFile(List<TKeys> precomp, GameConsoles console)
+
+        public static void ExportFile(List<TKeys> keys, GameConsoles console)
         {
-            CheckAndFixFolder("bin\\keys");
-            Stream createConfigStream = new FileStream($@"bin\keys\{console.ToString().ToLower()}.vck", FileMode.Create, FileAccess.Write);
-            GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress);
-            IFormatter formatter = new BinaryFormatter();
-            formatter.Serialize(compressedStream, precomp);
-            compressedStream.Close();
-            createConfigStream.Close();
-        }
-        private static void CheckAndFixFolder(string folder)
-        {
-            if (!Directory.Exists(folder))
+            try
             {
-                Directory.CreateDirectory(folder);
+                string folderPath = Path.Combine("bin", "keys");
+                CheckAndFixFolder(folderPath);
+
+                string filePath = Path.Combine(folderPath, $"{console.ToString().ToLower()}.vck");
+
+                using (FileStream createConfigStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                using (GZipStream compressedStream = new GZipStream(createConfigStream, CompressionMode.Compress))
+                {
+                    IFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(compressedStream, keys);
+                }
             }
+            catch (Exception ex)
+            {
+                // Handle or log the error appropriately
+                Console.WriteLine($"An error occurred while exporting the key file: {ex.Message}");
+            }
+        }
+
+        private static void CheckAndFixFolder(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
         }
     }
 }
