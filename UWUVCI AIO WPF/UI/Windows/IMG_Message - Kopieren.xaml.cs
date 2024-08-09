@@ -24,14 +24,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             this.drc = drc;
             try
             {
-                if (this.Owner?.GetType() != typeof(MainWindow))
+                if (Owner?.GetType() != typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             pat = String.Copy(path);
             InitializeComponent();
@@ -108,7 +108,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void Canc_Click(object sender, RoutedEventArgs e)
         {
             bitmap.UriSource = null;
-            this.Close();
+            Close();
 
         }
 
@@ -155,7 +155,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     (mvm.Thing as TurboGrafX).clearImages(a);
                     break;
             }
-            this.Close();
+            Close();
         }
     }
 }

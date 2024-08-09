@@ -42,7 +42,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void FileSelect_Click(object sender, RoutedEventArgs e)
@@ -126,7 +126,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 b.Save(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             
            
-            this.Close();
+            Close();
         }
 
         private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)

@@ -309,7 +309,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     b = new Bitmap(1280, 720);
                     using (Graphics gfx = Graphics.FromImage(b))
-                    using (SolidBrush brush = new SolidBrush(System.Drawing.Color.FromArgb(0, 0, 0)))
+                    using (SolidBrush brush = new SolidBrush(Color.FromArgb(0, 0, 0)))
                     {
                         gfx.FillRectangle(brush, 0, 0, 1280, 720);
                     }

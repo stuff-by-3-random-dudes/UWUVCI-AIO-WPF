@@ -81,8 +81,8 @@ namespace UWUVCI_AIO_WPF
 			else
 			{
 				MainWindow wnd = new MainWindow();
-				double height = System.Windows.SystemParameters.PrimaryScreenHeight;
-				double witdh = System.Windows.SystemParameters.PrimaryScreenWidth;
+				double height = SystemParameters.PrimaryScreenHeight;
+				double witdh = SystemParameters.PrimaryScreenWidth;
 				if (witdh < 1150 || height < 700)
 				{
 					t.Elapsed += KillProg;

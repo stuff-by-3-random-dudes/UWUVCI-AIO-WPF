@@ -162,7 +162,7 @@
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
     <Compile Include="Classes\MenuIconImage.cs" />
-    <Compile Include="Classes\TKeys.cs" />
+    <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
@@ -351,8 +351,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\Injection.cs" />
-    <Compile Include="Classes\N64Conf.cs" />
-    <Compile Include="Classes\PNGTGA.cs" />
+    <Compile Include="Models\N64Conf.cs" />
+    <Compile Include="Models\PNGTGA.cs" />
     <Compile Include="Classes\GameConfig.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\MainViewModel.cs" />

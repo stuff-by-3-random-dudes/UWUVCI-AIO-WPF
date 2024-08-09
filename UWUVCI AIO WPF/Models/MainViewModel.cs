@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
@@ -466,11 +467,11 @@ namespace UWUVCI_AIO_WPF
                 string version = fvi.FileVersion;
 
                 AutoUpdater.Start("https://raw.githubusercontent.com/Hotbrawl20/testing/master/update.xml");
-                if (Properties.Settings.Default.UpgradeRequired)
+                if (Settings.Default.UpgradeRequired)
                 {
-                    Properties.Settings.Default.Upgrade();
-                    Properties.Settings.Default.UpgradeRequired = false;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.Upgrade();
+                    Settings.Default.UpgradeRequired = false;
+                    Settings.Default.Save();
                 }
                 if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
                 {
@@ -620,11 +621,11 @@ namespace UWUVCI_AIO_WPF
             if (!Directory.Exists("InjectedGames")) Directory.CreateDirectory("InjectedGames");
             if (!Directory.Exists("SourceFiles")) Directory.CreateDirectory("SourceFiles");
             if (!Directory.Exists("bin\\BaseGames")) Directory.CreateDirectory("bin\\BaseGames");
-            if (Properties.Settings.Default.OutPath == "" || Properties.Settings.Default.OutPath == null)
+            if (Settings.Default.OutPath == "" || Settings.Default.OutPath == null)
             {
                 Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
             }
-            if (Settings.Default.BasePath == "" || Properties.Settings.Default.BasePath == null)
+            if (Settings.Default.BasePath == "" || Settings.Default.BasePath == null)
             {
                 Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
             }
@@ -1516,29 +1517,29 @@ namespace UWUVCI_AIO_WPF
         {
             if (key.GetHashCode() == -589797700 || GetDeterministicHashCode(key) == -589797700)
             {
-                Properties.Settings.Default.SysKey = key;
-                Properties.Settings.Default.Save();
+                Settings.Default.SysKey = key;
+                Settings.Default.Save();
                 return true;
             }
             return false;
         }
         public bool SysKey1set()
         {
-            return checkSysKey1(Properties.Settings.Default.SysKey1);
+            return checkSysKey1(Settings.Default.SysKey1);
         }
         public bool checkSysKey1(string key)
         {
             if (key.GetHashCode() == -1230232583 || (GetDeterministicHashCode(key) == -1230232583))
             {
-                Properties.Settings.Default.SysKey1 = key;
-                Properties.Settings.Default.Save();
+                Settings.Default.SysKey1 = key;
+                Settings.Default.Save();
                 return true;
             }
             return false;
         }
         public bool SysKeyset()
         {
-            return checkSysKey(Properties.Settings.Default.SysKey);
+            return checkSysKey(Settings.Default.SysKey);
         }
         public bool GetConsoleOfConfig(string configPath, GameConsoles console)
         {
@@ -1621,7 +1622,7 @@ namespace UWUVCI_AIO_WPF
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        if (!Properties.Settings.Default.ndsw)
+                        if (!Settings.Default.ndsw)
                         {
                             cm.ShowDialog();
                         }
@@ -1635,7 +1636,7 @@ namespace UWUVCI_AIO_WPF
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        if (!Properties.Settings.Default.snesw)
+                        if (!Settings.Default.snesw)
                         {
                             cm.ShowDialog();
                         }
@@ -1729,7 +1730,7 @@ namespace UWUVCI_AIO_WPF
                         {
 
                         }
-                        if (!Properties.Settings.Default.gczw)
+                        if (!Settings.Default.gczw)
                         {
                             cm1.ShowDialog();
                         }

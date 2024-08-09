@@ -56,7 +56,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void FileSelect_Click(object sender, RoutedEventArgs e)
@@ -137,7 +137,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 b.Save(Path.Combine(@"bin\createdIMG", imageName.Content + ".png"));
             
            
-            this.Close();
+            Close();
         }
 
         private void TextBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -180,7 +180,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             using (MemoryStream memory = new MemoryStream())
             {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
+                bitmap.Save(memory, ImageFormat.Bmp);
                 memory.Position = 0;
                 BitmapImage bitmapimage = new BitmapImage();
                 bitmapimage.BeginInit();
@@ -213,7 +213,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 {
                     b = new Bitmap(1280, 720);
                     using (Graphics gfx = Graphics.FromImage(b))
-                    using (SolidBrush brush = new SolidBrush(System.Drawing.Color.FromArgb(0, 0, 0)))
+                    using (SolidBrush brush = new SolidBrush(Color.FromArgb(0, 0, 0)))
                     {
                         gfx.FillRectangle(brush, 0, 0, 128, 128);
                     }

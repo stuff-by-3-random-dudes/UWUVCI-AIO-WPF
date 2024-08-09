@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
 using Microsoft.Win32;
 using System.Management;
+using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF
 {

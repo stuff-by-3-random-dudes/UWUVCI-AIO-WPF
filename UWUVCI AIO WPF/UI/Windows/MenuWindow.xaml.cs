@@ -12,6 +12,7 @@ using UWUVCI_AIO_WPF.UI.Frames.Path;
 using System.IO;
 using NAudio.Wave;
 using System.Diagnostics;
+using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -285,7 +286,7 @@ namespace UWUVCI_AIO_WPF
                             }
                             else
                             {*/
-                            mvm.GameConfiguration.N64Stuff = new Classes.N64Conf();
+                            mvm.GameConfiguration.N64Stuff = new N64Conf();
                             load_frame.Content = new INJECTFRAME(GameConsoles.N64);
 
                             //}

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
@@ -34,22 +35,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 case 0:
                     icoIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGAIco = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGAIco = new PNGTGA();
                     ic.Text = null;
                     break;
                 case 1:
                     tvIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGATv = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGATv = new PNGTGA();
                     tv.Text = null;
                     break;
                 case 2:
                     drcIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGADrc = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGADrc = new PNGTGA();
                     drc.Text = null;
                     break;
                 case 3:
                     logIMG.Visibility = Visibility.Hidden;
-                    mvm.GameConfiguration.TGALog = new Classes.PNGTGA();
+                    mvm.GameConfiguration.TGALog = new PNGTGA();
                     log.Text = null;
                     break;
             }
@@ -314,7 +315,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.TGALog.ImgPath = path;
                 mvm.GameConfiguration.TGALog.extension = new FileInfo(path).Extension;
-                this.log.Text = path;
+                log.Text = path;
                 logIMG.Visibility = Visibility.Visible;
             }
 

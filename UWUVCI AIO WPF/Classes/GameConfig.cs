@@ -1,6 +1,6 @@
 ﻿using GameBaseClassLibrary;
 using System;
-using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -9,7 +9,7 @@ namespace UWUVCI_AIO_WPF
     {
         public GameConfig Clone()
         {
-            return this.MemberwiseClone() as GameConfig;
+            return MemberwiseClone() as GameConfig;
         }
         public GameConsoles Console { get; set; }
         public GameBases BaseRom { get; set; }
