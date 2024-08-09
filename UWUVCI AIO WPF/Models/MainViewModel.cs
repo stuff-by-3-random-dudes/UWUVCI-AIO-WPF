@@ -3518,19 +3518,17 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                if (waveOutEvent != null && audioFileReader != null)
-                {
-                    waveOutEvent.Stop();
-                    waveOutEvent.Dispose();
-                    audioFileReader.Dispose();
-                    t.Stop();
-                }
+                waveOutEvent?.Stop();
+                waveOutEvent?.Dispose();
+                audioFileReader?.Dispose();
+                t?.Stop();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine($"Error during sound cleanup: {ex.Message}");
             }
         }
+
         public void isDone(object source, ElapsedEventArgs e)
         {
             try
