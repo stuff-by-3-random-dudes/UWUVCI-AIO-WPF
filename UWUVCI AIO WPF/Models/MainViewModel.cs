@@ -3128,12 +3128,10 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                using (var client = new WebClient())
-                {
-                    client.Proxy = null;
-                    client.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.BypassCache);
-                    client.DownloadString("http://google.com/generate_204");
-                }
+                using var client = new WebClient();
+                client.Proxy = null;
+                client.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.BypassCache);
+                client.DownloadString("http://google.com/generate_204");
                 return true;
             }
             catch (WebException)
