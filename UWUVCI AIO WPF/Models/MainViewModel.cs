@@ -3550,13 +3550,15 @@ namespace UWUVCI_AIO_WPF
 
         public void RestartIntoBypass()
         {
-            using Process p = new Process();
-            p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
-            p.StartInfo.Arguments = (debug ? "--debug " : "") + "--skip" + (saveworkaround ? " --spacebypass" : "");
-            p.Start();
+            using (Process p = new Process())
+            {
+                p.StartInfo.FileName = System.Windows.Application.ResourceAssembly.Location;
+                p.StartInfo.Arguments = $"{(debug ? "--debug " : string.Empty)}--skip{(saveworkaround ? " --spacebypass" : string.Empty)}";
+                p.Start();
+            }
             Environment.Exit(0);
-
         }
+
 
         /// <param name="SystemType">The type of system (e.g., "Wii", "N64").</param>
         /// <param name="repoid">The repository ID for the image.</param>
