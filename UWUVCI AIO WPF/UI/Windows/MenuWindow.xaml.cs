@@ -362,16 +362,7 @@ namespace UWUVCI_AIO_WPF
 
                             //}
                             break;
-                        /*case 9:
-                            DestroyFrame();
-                            tbTitleBar.Text = "UWUVCI AIO - Retroarch VC Inject";
-                            load_frame.Content = new SettingsFrame(this);
-
-                            break;*/
-                        case 9:
-                            tbTitleBar.Text = "UWUVCI AIO - ???????? ?? ??????";
-                            load_frame.Content = new Teaser();
-
+                        default:
                             break;
                     }
                 }

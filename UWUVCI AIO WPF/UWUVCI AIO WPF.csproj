@@ -185,9 +185,6 @@
     <Compile Include="UI\Frames\Path\Paths.xaml.cs">
       <DependentUpon>Paths.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\Teaser.xaml.cs">
-      <DependentUpon>Teaser.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Windows\Custom Message - Kopieren.xaml.cs">
       <DependentUpon>Custom Message - Kopieren.xaml</DependentUpon>
     </Compile>
@@ -290,10 +287,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Frames\StartFrame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Frames\Teaser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

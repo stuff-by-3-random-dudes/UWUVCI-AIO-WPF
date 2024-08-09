@@ -141,21 +141,6 @@
                             <TextBlock Text="GC VC Inject" VerticalAlignment="Center" Margin="20 10"/>
                         </StackPanel>
                     </ListViewItem>
-                    <!--Retroarch
-                    <ListViewItem Height="60" x:Name="RA" IsEnabled="{Binding PathsSet}" Cursor="Hand" >
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="/UI/Images/rarch.png"></Image>
-                            <TextBlock Text="Retroarch VC Inject" VerticalAlignment="Center" Margin="20 10"/>
-                        </StackPanel>
-                    </ListViewItem>-->
-                    <!--RarchTeaser-->
-                    <ListViewItem Height="60" x:Name="Rarch" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <!--<materialDesign:PackIcon Foreground="White" Kind="SettingsApplications" Height="45" Width="45"/>-->
-                            <Image Source="/UI/Images/teaser.png"></Image>
-                            <TextBlock Text="???????? ?? ??????" VerticalAlignment="Center" Margin="20 10"/>
-                        </StackPanel>
-                    </ListViewItem>
                 </ListView>
 
             </StackPanel>
