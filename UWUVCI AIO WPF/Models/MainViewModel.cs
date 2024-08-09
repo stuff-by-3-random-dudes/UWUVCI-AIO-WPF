@@ -2575,44 +2575,21 @@ namespace UWUVCI_AIO_WPF
             };
 
             foreach (var mapping in consoleMappings)
-            {
                 if (mapping.Value.Any(b => b.Name == gb.Name && b.Region == gb.Region))
                     return mapping.Key;
-            }
 
-            return new GameConsoles(); // Return an uninitialized GameConsoles object (or handle differently)
+            throw new Exception("Console of base is not one of the listed ones to work with UWUVCI, what you do?");
         }
-
         public List<bool> getInfoOfBase(GameBases gb)
         {
-            List<bool> info = new List<bool>();
-            if (Directory.Exists($@"{Settings.Default.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]"))
+            string basePath = $@"{Settings.Default.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]";
+            return new List<bool>
             {
-                info.Add(true);
-            }
-            else
-            {
-                info.Add(false);
-            }
-            if (isKeySet(gb))
-            {
-                info.Add(true);
-            }
-            else
-            {
-                info.Add(false);
-            }
-            if (isCkeySet())
-            {
-                info.Add(true);
-            }
-            else
-            {
-                info.Add(false);
-            }
-            return info;
+                Directory.Exists(basePath),
+                isKeySet(gb),
+                isCkeySet()
+            };
         }
-
 
         public void SetInjectPath()
         {
