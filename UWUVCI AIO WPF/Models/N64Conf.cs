@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UWUVCI_AIO_WPF.Classes
+namespace UWUVCI_AIO_WPF.Models
 
 {
     [Serializable]
