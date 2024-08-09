@@ -2127,99 +2127,28 @@ namespace UWUVCI_AIO_WPF
             return false;
         }
 
-
-
-        public void GetBases(GameConsoles Console)
+        public void GetBases(GameConsoles console)
         {
-            List<GameBases> lTemp = new List<GameBases>();
-            string vcbpath = $@"bin/bases/bases.vcb{Console.ToString().ToLower()}";
-            lTemp = VCBTool.ReadBasesFromVCB(vcbpath);
+            string baseFilePath = $@"bin/bases/bases.vcb{console.ToString().ToLower()}";
+            var tempBases = VCBTool.ReadBasesFromVCB(baseFilePath);
+
             LBases.Clear();
-            GameBases custom = new GameBases();
-            custom.Name = "Custom";
-            custom.Region = Regions.EU;
-            LBases.Add(custom);
-            foreach (GameBases gb in lTemp)
-            {
-                LBases.Add(gb);
-            }
-            lGameBasesString.Clear();
-            foreach (GameBases gb in LBases)
-            {
-                if (gb.Name == "Custom")
-                {
-                    LGameBasesString.Add($"{gb.Name}");
-                }
-                else
-                {
-                    LGameBasesString.Add($"{gb.Name} {gb.Region}");
-                }
+            LBases.Add(new GameBases { Name = "Custom", Region = Regions.EU });
+            LBases.AddRange(tempBases);
 
-            }
+            LGameBasesString.Clear();
+            LGameBasesString.AddRange(LBases.Select(b => b.Name == "Custom" ? b.Name : $"{b.Name} {b.Region}"));
         }
 
-        public GameBases getBasefromName(string Name)
+        public GameBases getBasefromName(string name)
         {
-            string NameWORegion = Name.Remove(Name.Length - 3, 3);
-            string Region = Name.Remove(0, Name.Length - 2);
-            foreach (GameBases b in LNDS)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LN64)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LNES)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LSNES)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LGBA)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LTG16)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LMSX)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            foreach (GameBases b in LWII)
-            {
-                if (b.Name == NameWORegion && b.Region.ToString() == Region)
-                {
-                    return b;
-                }
-            }
-            return null;
+            string nameWithoutRegion = name.Substring(0, name.Length - 3);
+            string region = name.Substring(name.Length - 2);
+
+            return LNDS.Concat(LN64).Concat(LNES).Concat(LSNES).Concat(LGBA).Concat(LTG16).Concat(LMSX).Concat(LWII)
+                       .FirstOrDefault(b => b.Name == nameWithoutRegion && b.Region.ToString() == region);
         }
+
 
         private void GetAllBases()
         {
@@ -2231,6 +2160,7 @@ namespace UWUVCI_AIO_WPF
             LTG16.Clear();
             LMSX.Clear();
             LWII.Clear();
+
             lNDS = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnds");
             lNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbnes");
             lSNES = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbsnes");
@@ -2239,6 +2169,7 @@ namespace UWUVCI_AIO_WPF
             lTG16 = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbtg16");
             lMSX = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbmsx");
             lWii = VCBTool.ReadBasesFromVCB($@"bin/bases/bases.vcbwii");
+
             CreateSettingIfNotExist(lNDS, GameConsoles.NDS);
             CreateSettingIfNotExist(lNES, GameConsoles.NES);
             CreateSettingIfNotExist(lSNES, GameConsoles.SNES);
@@ -2248,118 +2179,64 @@ namespace UWUVCI_AIO_WPF
             CreateSettingIfNotExist(lMSX, GameConsoles.MSX);
             CreateSettingIfNotExist(lWii, GameConsoles.WII);
         }
-        private void CreateSettingIfNotExist(List<GameBases> l, GameConsoles console)
+        private void CreateSettingIfNotExist(List<GameBases> basesList, GameConsoles console)
         {
-            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
-            if (!File.Exists(file))
+            string keyFilePath = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            if (!File.Exists(keyFilePath))
             {
-                List<TKeys> temp = new List<TKeys>();
-                foreach (GameBases gb in l)
-                {
-                    TKeys tempkey = new TKeys();
-                    tempkey.Base = gb;
-                    temp.Add(tempkey);
-                }
-                KeyFile.ExportFile(temp, console);
+                var keyList = basesList.Select(baseGame => new TKeys { Base = baseGame }).ToList();
+                KeyFile.ExportFile(keyList, console);
             }
             else
-            {
-                FixupKeys(l, console);
-            }
+                FixupKeys(basesList, console);
+        }
 
-        }
-        private void FixupKeys(List<GameBases> l, GameConsoles console)
+        private void FixupKeys(List<GameBases> basesList, GameConsoles console)
         {
-            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
-            var save = KeyFile.ReadBasesFromKeyFile(file);
-            List<TKeys> temp = new List<TKeys>();
-            foreach (TKeys a in save)
-            {
-                temp.Add(a);
-            }
-            foreach (GameBases gb in l)
-            {
-                TKeys tempkey = new TKeys();
-                bool check = false;
-                foreach (TKeys a in save)
-                {
-                    if (a.Base.Name == gb.Name && a.Base.Region == gb.Region)
-                    {
-                        check = true;
-                        break;
-                    }
-                }
-                if (!check)
-                {
-                    tempkey.Base = gb;
-                    temp.Add(tempkey);
-                }
+            string keyFilePath = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            var savedKeys = KeyFile.ReadBasesFromKeyFile(keyFilePath);
+            var updatedKeys = savedKeys.Concat(
+                basesList.Where(baseGame => !savedKeys.Any(savedKey => savedKey.Base.Name == baseGame.Name && savedKey.Base.Region == baseGame.Region))
+                         .Select(baseGame => new TKeys { Base = baseGame })
+            ).ToList();
 
-            }
-            File.Delete(file);
-            KeyFile.ExportFile(temp, console);
+            File.Delete(keyFilePath);
+            KeyFile.ExportFile(updatedKeys, console);
         }
-        private void UpdateKeyFile(List<GameBases> l, GameConsoles console)
+
+        private void UpdateKeyFile(List<GameBases> basesList, GameConsoles console)
         {
-            string file = $@"bin\keys\{console.ToString().ToLower()}.vck";
-            if (File.Exists(file))
+            string keyFilePath = $@"bin\keys\{console.ToString().ToLower()}.vck";
+            if (File.Exists(keyFilePath))
             {
-                List<TKeys> keys = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{console.ToString().ToLower()}.vck");
-                List<TKeys> newTK = new List<TKeys>();
-                foreach (GameBases gb in l)
+                var savedKeys = KeyFile.ReadBasesFromKeyFile(keyFilePath);
+                var updatedKeys = basesList.Select(baseGame =>
                 {
-                    bool inOld = false;
-                    foreach (TKeys tk in keys)
-                    {
-                        if (gb.Name == tk.Base.Name && gb.Region == tk.Base.Region)
-                        {
-                            newTK.Add(tk);
-                            inOld = true;
-                        }
-                        if (inOld) break;
-                    }
-                    if (!inOld)
-                    {
-                        TKeys tkn = new TKeys();
-                        tkn.Base = gb;
-                        tkn.Tkey = null;
-                        newTK.Add(tkn);
-                    }
-                }
-                File.Delete($@"bin\keys\{console.ToString().ToLower()}.vck");
-                KeyFile.ExportFile(newTK, console);
+                    var existingKey = savedKeys.FirstOrDefault(savedKey => savedKey.Base.Name == baseGame.Name && savedKey.Base.Region == baseGame.Region);
+                    return existingKey ?? new TKeys { Base = baseGame, Tkey = null };
+                }).ToList();
+
+                File.Delete(keyFilePath);
+                KeyFile.ExportFile(updatedKeys, console);
             }
         }
+
         public void getTempList(GameConsoles console)
         {
-            switch (console)
+            Ltemp = console switch
             {
-                case GameConsoles.NDS:
-                    Ltemp = LNDS;
-                    break;
-                case GameConsoles.N64:
-                    Ltemp = LN64;
-                    break;
-                case GameConsoles.GBA:
-                    Ltemp = LGBA;
-                    break;
-                case GameConsoles.NES:
-                    Ltemp = LNES;
-                    break;
-                case GameConsoles.SNES:
-                    Ltemp = LSNES;
-                    break;
-                case GameConsoles.TG16:
-                    Ltemp = LTG16;
-                    break;
-                case GameConsoles.MSX:
-                    Ltemp = LMSX;
-                    break;
-                case GameConsoles.WII:
-                    Ltemp = LWII;
-                    break;
-            }
+                GameConsoles.NDS => LNDS,
+                GameConsoles.N64 => LN64,
+                GameConsoles.GBA => LGBA,
+                GameConsoles.NES => LNES,
+                GameConsoles.SNES => LSNES,
+                GameConsoles.TG16 => LTG16,
+                GameConsoles.MSX => LMSX,
+                GameConsoles.WII => LWII,
+                _ => throw new ArgumentOutOfRangeException(nameof(console), console, null)
+            };
         }
+
 
         public void EnterKey(bool ck)
         {
@@ -2456,7 +2333,7 @@ namespace UWUVCI_AIO_WPF
             }
             return false;
         }
-        public TKeys GetTKey(GameBases baseGame)
+        public TKeys getTkey(GameBases baseGame)
         {
             var keyEntries = KeyFile.ReadBasesFromKeyFile($@"bin\keys\{GetConsoleOfBase(baseGame).ToString().ToLower()}.vck");
             return keyEntries.FirstOrDefault(entry => entry.Base.Name == baseGame.Name && entry.Base.Region == baseGame.Region && entry.Tkey != null);
