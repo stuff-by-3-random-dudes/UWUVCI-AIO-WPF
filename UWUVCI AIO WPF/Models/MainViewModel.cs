@@ -3324,116 +3324,167 @@ namespace UWUVCI_AIO_WPF
                 return false;
             }
         }
+        /// <summary>
+        /// Checks for additional files like INI and BootSound for the given console and repository IDs.
+        /// </summary>
+        /// <param name="console">The game console type.</param>
+        /// <param name="repoids">List of repository IDs to check for additional files.</param>
         private void checkForAdditionalFiles(GameConsoles console, List<string> repoids)
         {
-            if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo")))
+            string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
+            if (!Directory.Exists(repoPath))
             {
-                Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo"));
+                Directory.CreateDirectory(repoPath);
             }
-            bool ini = false;
-            bool btsnd = false;
-            string inip = "";
-            string btsndp = "";
-            string exten = "";
+
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
+            bool iniFound = false;
+            bool bootSoundFound = false;
+            string iniUrl = "";
+            string bootSoundUrl = "";
+            string bootSoundExtension = "btsnd";
+
+            // Check for INI file
             if (console == GameConsoles.N64)
             {
-                foreach (string repoid in repoids)
-                {
-                    if (RemoteFileExists(linkbase + repoid + "/game.ini"))
-                    {
-                        ini = true;
-                        inip = linkbase + repoid + "/game.ini";
-                        break;
-                    }
-
-                }
-
+                iniFound = TryFindFileInRepo(repoids, linkbase, "/game.ini", out iniUrl);
             }
-            string[] ext = { "btsnd" };
-            foreach (var e in ext)
+
+            // Check for BootSound file
+            bootSoundFound = TryFindFileInRepo(repoids, linkbase, $"/BootSound.{bootSoundExtension}", out bootSoundUrl);
+
+            // Prompt user and download additional files if found
+            if (iniFound || bootSoundFound)
             {
-                foreach (string repoid in repoids)
-                {
-                    if (RemoteFileExists(linkbase + repoid + "/BootSound." + e))
-                    {
-                        btsnd = true;
-                        btsndp = linkbase + repoid + "/BootSound." + e;
-                        exten = e;
-                        break;
-                    }
-                    if (btsnd)
-                    {
-                        break;
-                    }
+                string message = GetAdditionalFilesMessage(iniFound, bootSoundFound);
+                var customMessage = new Custom_Message("Found additional Files", message);
+                SetWindowOwner(customMessage);
 
-                }
+                customMessage.ShowDialog();
 
-            }
-            if (ini || btsnd)
-            {
-                string extra = " There are more additional files found. Do you want to download those? ";
-                if (ini && !btsnd) { extra = " There is an additional INI file available for download. Do you want to download it? "; }
-                if (!ini && btsnd) { extra = " There is an additional BootSound file available for download. Do you want to download it? "; }
-                if (ini && btsnd) { extra = " There is an adittional INI and BootSound file available for download. Do you want to download those? "; }
-
-                Custom_Message cm = new Custom_Message("Found additional Files", extra);
-                try
-                {
-                    cm.Owner = mw;
-                }
-                catch (Exception)
-                {
-
-                }
-                cm.ShowDialog();
                 if (addi)
                 {
-                    var client = new WebClient();
-                    if (ini)
-                    {
-                        client.DownloadFile(inip, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini"));
-                        (Thing as N64Config).ini.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
-                        GameConfiguration.N64Stuff.INIPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", "game.ini");
-                    }
-                    if (btsnd)
-                    {
-                        client.DownloadFile(btsndp, Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}"));
-                        BootSound = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                        switch (console)
-                        {
-                            case GameConsoles.NDS:
-                            case GameConsoles.NES:
-                            case GameConsoles.SNES:
-                            case GameConsoles.MSX:
-                                (Thing as OtherConfigs).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                                break;
-                            case GameConsoles.GBA:
-                                (Thing as GBA).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                                break;
-                            case GameConsoles.N64:
-                                (Thing as N64Config).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                                break;
-                            case GameConsoles.WII:
-                                if (test == GameConsoles.GCN)
-                                {
-                                    (Thing as GCConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                                }
-                                else
-                                {
-                                    (Thing as WiiConfig).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                                }
-                                break;
-                            case GameConsoles.TG16:
-                                (Thing as TurboGrafX).sound.Text = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo", $"bootSound.{exten}");
-                                break;
-
-                        }
-                    }
+                    DownloadAdditionalFiles(iniFound, iniUrl, bootSoundFound, bootSoundUrl, console, bootSoundExtension);
                     addi = false;
                 }
             }
         }
+
+        /// <summary>
+        /// Tries to find a specific file in the repository.
+        /// </summary>
+        /// <param name="repoids">List of repository IDs to search.</param>
+        /// <param name="linkbase">Base URL for the repository.</param>
+        /// <param name="filePath">Specific file path to look for.</param>
+        /// <param name="fileUrl">The found file URL.</param>
+        /// <returns>True if the file is found, otherwise false.</returns>
+        private bool TryFindFileInRepo(List<string> repoids, string linkbase, string filePath, out string fileUrl)
+        {
+            foreach (var repoid in repoids)
+            {
+                fileUrl = linkbase + repoid + filePath;
+                if (RemoteFileExists(fileUrl))
+                {
+                    return true;
+                }
+            }
+            fileUrl = string.Empty;
+            return false;
+        }
+
+        /// <summary>
+        /// Generates the appropriate message for additional files found.
+        /// </summary>
+        /// <param name="iniFound">Whether an INI file was found.</param>
+        /// <param name="bootSoundFound">Whether a BootSound file was found.</param>
+        /// <returns>A message string detailing the additional files found.</returns>
+        private string GetAdditionalFilesMessage(bool iniFound, bool bootSoundFound)
+        {
+            if (iniFound && bootSoundFound)
+                return "There is an additional INI and BootSound file available for download. Do you want to download those?";
+            if (iniFound)
+                return "There is an additional INI file available for download. Do you want to download it?";
+            if (bootSoundFound)
+                return "There is an additional BootSound file available for download. Do you want to download it?";
+
+            return "There are more additional files found. Do you want to download those?";
+        }
+
+        /// <summary>
+        /// Sets the owner of the window to the main window if possible.
+        /// </summary>
+        /// <param name="window">The window to set the owner for.</param>
+        private void SetWindowOwner(Custom_Message window)
+        {
+            try
+            {
+                window.Owner = mw;
+            }
+            catch (Exception)
+            {
+                // Suppress exception when setting owner fails
+            }
+        }
+
+        /// <summary>
+        /// Downloads additional files (INI and BootSound) if they exist.
+        /// </summary>
+        /// <param name="iniFound">Whether an INI file was found.</param>
+        /// <param name="iniUrl">The URL of the INI file.</param>
+        /// <param name="bootSoundFound">Whether a BootSound file was found.</param>
+        /// <param name="bootSoundUrl">The URL of the BootSound file.</param>
+        /// <param name="console">The game console type.</param>
+        /// <param name="bootSoundExtension">The file extension for BootSound.</param>
+        private void DownloadAdditionalFiles(bool iniFound, string iniUrl, bool bootSoundFound, string bootSoundUrl, GameConsoles console, string bootSoundExtension)
+        {
+            var client = new WebClient();
+            string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
+
+            if (iniFound)
+            {
+                string iniFilePath = Path.Combine(repoPath, "game.ini");
+                client.DownloadFile(iniUrl, iniFilePath);
+                (Thing as N64Config).ini.Text = iniFilePath;
+                GameConfiguration.N64Stuff.INIPath = iniFilePath;
+            }
+
+            if (bootSoundFound)
+            {
+                string bootSoundFilePath = Path.Combine(repoPath, $"bootSound.{bootSoundExtension}");
+                client.DownloadFile(bootSoundUrl, bootSoundFilePath);
+                BootSound = bootSoundFilePath;
+
+                switch (console)
+                {
+                    case GameConsoles.NDS:
+                    case GameConsoles.NES:
+                    case GameConsoles.SNES:
+                    case GameConsoles.MSX:
+                        (Thing as OtherConfigs).sound.Text = bootSoundFilePath;
+                        break;
+                    case GameConsoles.GBA:
+                        (Thing as GBA).sound.Text = bootSoundFilePath;
+                        break;
+                    case GameConsoles.N64:
+                        (Thing as N64Config).sound.Text = bootSoundFilePath;
+                        break;
+                    case GameConsoles.WII:
+                        if (test == GameConsoles.GCN)
+                        {
+                            (Thing as GCConfig).sound.Text = bootSoundFilePath;
+                        }
+                        else
+                        {
+                            (Thing as WiiConfig).sound.Text = bootSoundFilePath;
+                        }
+                        break;
+                    case GameConsoles.TG16:
+                        (Thing as TurboGrafX).sound.Text = bootSoundFilePath;
+                        break;
+                }
+            }
+        }
+
         public string GetURL(string console)
         {
             console = console.ToLower();
