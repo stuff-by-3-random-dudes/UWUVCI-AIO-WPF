@@ -2017,14 +2017,10 @@ namespace UWUVCI_AIO_WPF
         }
         private void timer_Tick2(object sender, EventArgs e)
         {
-
-
             if (Progress == 100)
             {
                 Injectwait.Close();
-
                 timer.Stop();
-
                 Progress = 0;
             }
         }
@@ -2089,57 +2085,49 @@ namespace UWUVCI_AIO_WPF
 
         public void UpdatePathSet()
         {
-
             PathsSet = Settings.Default.PathsSet;
 
             if (BaseStore != Settings.Default.BasePath)
-            {
                 BaseStore = Settings.Default.BasePath;
-            }
+
             if (InjectStore != Settings.Default.BasePath)
-            {
                 InjectStore = Settings.Default.OutPath;
-            }
         }
 
         public bool ValidatePathsStillExist()
         {
-            bool ret = false;
-            bool basep = false;
-            try
+            string basePath = Settings.Default.BasePath;
+            string outPath = Settings.Default.OutPath;
+
+            bool baseExists = EnsureDirectoryExists(ref basePath, "bin/BaseGames");
+            bool injectExists = EnsureDirectoryExists(ref outPath, "InjectedGames");
+
+            if (baseExists && injectExists)
             {
-                if (Directory.Exists(Settings.Default.BasePath))
-                {
-                    basep = true;
-                }
-                else
-                {
-                    if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames"))) Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames"));
-                    Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
-                    Settings.Default.PathsSet = true;
-                    Settings.Default.Save();
-                }
-                if (Directory.Exists(Settings.Default.OutPath))
-                {
-                    if (basep)
-                    {
-                        ret = true;
-                    }
-                }
-                else
-                {
-                    if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames"))) Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames"));
-                    Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
-                    Settings.Default.PathsSet = true;
-                    Settings.Default.Save();
-                }
+                Settings.Default.BasePath = basePath;
+                Settings.Default.OutPath = outPath;
+                Settings.Default.PathsSet = true;
+                Settings.Default.Save();
+                return true;
             }
-            catch (Exception)
-            {
-                ret = false;
-            }
-            return ret;
+
+            return false;
         }
+
+        private bool EnsureDirectoryExists(ref string path, string defaultSubDir)
+        {
+            if (Directory.Exists(path))
+            {
+                return true;
+            }
+
+            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), defaultSubDir);
+            Directory.CreateDirectory(fullPath);
+            path = fullPath;
+            return false;
+        }
+
+
 
         public void GetBases(GameConsoles Console)
         {
@@ -2383,7 +2371,7 @@ namespace UWUVCI_AIO_WPF
             catch (Exception) { }
             ek.ShowDialog();
         }
-        public bool CheckCKey(string key)
+        public bool checkcKey(string key)
         {
             string lowerKey = key.ToLower();
             int keyHash = lowerKey.GetHashCode();
@@ -2399,14 +2387,14 @@ namespace UWUVCI_AIO_WPF
             return false;
         }
 
-        public bool IsCKeySet()
+        public bool isCkeySet()
         {
             string lowerCKey = Settings.Default.Ckey.ToLower();
             ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
             return ckeys;
         }
 
-        public bool CheckKey(string key)
+        public bool checkKey(string key)
         {
             string lowerKey = key.ToLower();
             if (GbTemp.KeyHash == lowerKey.GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(lowerKey))
@@ -2530,7 +2518,6 @@ namespace UWUVCI_AIO_WPF
 
             return sizeOfData / timeTaken; // returns speed in MB/s
         }
-
 
         private TimeSpan CalculateEstimatedTime(double speedInMBps)
         {
