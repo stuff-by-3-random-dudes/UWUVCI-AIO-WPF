@@ -764,10 +764,10 @@ namespace UWUVCI_AIO_WPF
             string iccp = null;
             string lgcp = null;
             string incp = null;
-            if (GameConfiguration.TGADrc.ImgPath != null || GameConfiguration.TGADrc.ImgPath == "") drcp = String.Copy(GameConfiguration.TGADrc.ImgPath);
-            if (GameConfiguration.TGATv.ImgPath != null || GameConfiguration.TGATv.ImgPath == "") tvcp = String.Copy(GameConfiguration.TGATv.ImgPath);
-            if (GameConfiguration.TGAIco.ImgPath != null || GameConfiguration.TGAIco.ImgPath == "") iccp = String.Copy(GameConfiguration.TGAIco.ImgPath);
-            if (GameConfiguration.TGALog.ImgPath != null || GameConfiguration.TGALog.ImgPath == "") lgcp = String.Copy(GameConfiguration.TGALog.ImgPath);
+            if (GameConfiguration.TGADrc.ImgPath != null || GameConfiguration.TGADrc.ImgPath == "") drcp = string.Copy(GameConfiguration.TGADrc.ImgPath);
+            if (GameConfiguration.TGATv.ImgPath != null || GameConfiguration.TGATv.ImgPath == "") tvcp = string.Copy(GameConfiguration.TGATv.ImgPath);
+            if (GameConfiguration.TGAIco.ImgPath != null || GameConfiguration.TGAIco.ImgPath == "") iccp = string.Copy(GameConfiguration.TGAIco.ImgPath);
+            if (GameConfiguration.TGALog.ImgPath != null || GameConfiguration.TGALog.ImgPath == "") lgcp = string.Copy(GameConfiguration.TGALog.ImgPath);
             GameConfiguration.pixelperfect = pixelperfect;
             GameConfiguration.lr = LR;
             GameConfiguration.pokepatch = PokePatch;
@@ -789,7 +789,7 @@ namespace UWUVCI_AIO_WPF
                 GameConfiguration.disgamepad = true;
             }
             GameConfiguration.fourbythree = cd;
-            if (GameConfiguration.N64Stuff.INIPath != null || GameConfiguration.N64Stuff.INIPath == "") incp = String.Copy(GameConfiguration.N64Stuff.INIPath);
+            if (GameConfiguration.N64Stuff.INIPath != null || GameConfiguration.N64Stuff.INIPath == "") incp = string.Copy(GameConfiguration.N64Stuff.INIPath);
             ReadBootSoundIntoConfig();
             ReadImagesIntoConfig();
             if (GameConfiguration.Console == GameConsoles.N64)
@@ -3500,7 +3500,7 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void isDone(Object source, ElapsedEventArgs e)
+        public void isDone(object source, ElapsedEventArgs e)
         {
             try
             {

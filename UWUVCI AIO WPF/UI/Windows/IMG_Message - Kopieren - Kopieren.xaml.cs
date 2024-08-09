@@ -31,7 +31,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
-            pat = String.Copy(path);
+            pat = string.Copy(path);
 
             InitializeComponent();
             if (Directory.Exists(Path.Combine(tempPath, "image"))) Directory.Delete(Path.Combine(tempPath, "image"), true);
