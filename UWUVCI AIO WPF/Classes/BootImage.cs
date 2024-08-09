@@ -3,9 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace UWUVCI_AIO_WPF.Classes
 {

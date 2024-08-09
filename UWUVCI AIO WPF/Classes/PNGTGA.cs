@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
-	[Serializable]
+    [Serializable]
     public class PNGTGA
     {
 		private string imgPath = null;

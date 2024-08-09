@@ -1,27 +1,13 @@
-﻿using GameBaseClassLibrary;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Classes;
-using UWUVCI_AIO_WPF.Properties;
 using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -29,7 +15,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// <summary>
     /// Interaktionslogik für ImageCreator.xaml
     /// </summary>  
-    
+
     public partial class LogoCreator : Window, IDisposable
     {
         private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
