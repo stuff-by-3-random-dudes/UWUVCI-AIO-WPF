@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Drawing.Text;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
@@ -12,36 +13,38 @@ namespace UWUVCI_AIO_WPF.Classes
         private Bitmap _frame;
         private Bitmap _titleScreen;
 
+        private static readonly string FontPath = @"bin\Tools\font2.ttf";
+        private static readonly PrivateFontCollection PrivateFonts = new PrivateFontCollection();
+
+        static BootLogoImage()
+        {
+            PrivateFonts.AddFontFile(FontPath);
+        }
+
         public Bitmap Frame
         {
+            get => _frame;
             set
             {
-                if (_frame != null)
-                    _frame.Dispose();
+                _frame?.Dispose();
                 _frame = value;
             }
-            get { return _frame; }
         }
+
         public Bitmap TitleScreen
         {
+            get => _titleScreen;
             set
             {
-                if (_titleScreen != null)
-                    _titleScreen.Dispose();
+                _titleScreen?.Dispose();
                 _titleScreen = value;
             }
-            get { return _titleScreen; }
         }
 
         public BootLogoImage()
         {
             _frame = null;
             _titleScreen = null;
-        }
-
-        ~BootLogoImage()
-        {
-            Dispose(false);
         }
 
         public void Dispose()
@@ -52,20 +55,12 @@ namespace UWUVCI_AIO_WPF.Classes
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
                 {
-                    if (Frame != null)
-                    {
-                        Frame.Dispose();
-                        Frame = null;
-                    }
-                    if (TitleScreen != null)
-                    {
-                        TitleScreen.Dispose();
-                        TitleScreen = null;
-                    }
+                    _frame?.Dispose();
+                    _titleScreen?.Dispose();
                 }
                 disposed = true;
             }
@@ -74,33 +69,28 @@ namespace UWUVCI_AIO_WPF.Classes
         public Bitmap Create(string text, float fontsize)
         {
             Bitmap img = new Bitmap(170, 42);
-            Graphics g = Graphics.FromImage(img);
-            StringFormat format1 = new StringFormat();
-            format1.Alignment = StringAlignment.Center;
-            format1.LineAlignment = StringAlignment.Center;
-            g.PixelOffsetMode = PixelOffsetMode.Half;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.CompositingMode = CompositingMode.SourceOver;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            g.Clear(System.Drawing.Color.FromArgb(30, 30, 30));
-            g.DrawImage(Frame, 0, 0, 170, 42);
-            Rectangle rectangletxt = new Rectangle(18, 5, 134, 32);
+            using (Graphics g = Graphics.FromImage(img))
+            {
+                StringFormat format1 = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                };
 
-            System.Drawing.Text.PrivateFontCollection privateFonts = new System.Drawing.Text.PrivateFontCollection();
-            privateFonts.AddFontFile(@"bin\Tools\font2.ttf");
+                g.PixelOffsetMode = PixelOffsetMode.Half;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.CompositingMode = CompositingMode.SourceOver;
+                g.CompositingQuality = CompositingQuality.HighQuality;
+                g.Clear(Color.FromArgb(30, 30, 30));
+                g.DrawImage(Frame, 0, 0, 170, 42);
 
-            Font font = new Font(privateFonts.Families[0], fontsize, System.Drawing.FontStyle.Bold, GraphicsUnit.Pixel);
+                Rectangle rectangletxt = new Rectangle(18, 5, 134, 32);
 
-            /*g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;*/
-            // g.DrawString(text, font, new SolidBrush(System.Drawing.Color.FromArgb(180, 180, 180)), rectangletxt, format1);
-            SizeF size = g.MeasureString(text, font);
-            // g.DrawString(text, font, new SolidBrush(System.Drawing.Color.FromArgb(180, 180, 180)), (rectangletxt.Width - size.Width) / 2, (rectangletxt.Height - size.Height) / 2);
-            TextRenderer.DrawText(g, text, font, rectangletxt, System.Drawing.Color.FromArgb(180, 180, 180), Color.White, TextFormatFlags.HorizontalCenter |
-   TextFormatFlags.VerticalCenter |
-   TextFormatFlags.GlyphOverhangPadding);
+                Font font = new Font(PrivateFonts.Families[0], fontsize, FontStyle.Bold, GraphicsUnit.Pixel);
+
+                TextRenderer.DrawText(g, text, font, rectangletxt, Color.FromArgb(180, 180, 180), Color.White,
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.GlyphOverhangPadding);
+            }
             return img;
         }
     }
