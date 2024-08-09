@@ -3016,62 +3016,6 @@ namespace UWUVCI_AIO_WPF
 
             }
         }
-        public void getBootIMGNES(string rom)
-        {
-            string SystemType = "nes/";
-            var repoid = GetFakeNESProdcode(rom);
-            List<string> repoids = new List<string>
-            {
-                SystemType + repoid
-            };
-
-            if (CheckForInternetConnectionWOWarning())
-            {
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.NES, repoids);
-            }
-
-        }
-        static string GetMd5Hash(MD5 md5Hash, byte[] input)
-        {
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = md5Hash.ComputeHash(input);
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            StringBuilder sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data 
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
-        }
-
-        static string GetMd5Hash(MD5 md5Hash, string input)
-        {
-
-            // Convert the input string to a byte array and compute the hash.
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-
-            // Create a new Stringbuilder to collect the bytes
-            // and create a string.
-            StringBuilder sBuilder = new StringBuilder();
-
-            // Loop through each byte of the hashed data 
-            // and format each one as a hexadecimal string.
-            for (int i = 0; i < data.Length; i++)
-            {
-                sBuilder.Append(data[i].ToString("x2"));
-            }
-
-            // Return the hexadecimal string.
-            return sBuilder.ToString();
-        }
         private string GetFakeNESProdcode(string path)
         {
             Regex rgx = new Regex("[^a-zA-Z0-9 -]");
@@ -3111,6 +3055,107 @@ namespace UWUVCI_AIO_WPF
                 return getCodeOfNumbers(Convert.ToInt32(first10));
             }
         }
+
+        private void FetchAndProcessRepoImages(string systemType, string repoid, List<string> repoids, GameConsoles console)
+        {
+            if (CheckForInternetConnectionWOWarning())
+            {
+                GetRepoImages(systemType, repoid, repoids);
+                checkForAdditionalFiles(console, repoids);
+            }
+        }
+
+        public void getBootIMGNES(string rom)
+        {
+            string SystemType = "nes/";
+            string repoid = GetFakeNESProdcode(rom);
+            List<string> repoids = new List<string> { SystemType + repoid };
+            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES);
+        }
+        public void getBootIMGNDS(string rom)
+        {
+            string repoid = "";
+            string SystemType = "nds/";
+            using (var fs = new FileStream(rom,
+                                 FileMode.Open,
+                                 FileAccess.Read))
+            {
+
+                byte[] procode = new byte[4];
+                fs.Seek(0xC, SeekOrigin.Begin);
+                fs.Read(procode, 0, 4);
+                repoid = ByteArrayToString(procode);
+                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                repoid = rgx.Replace(repoid, "");
+                Console.WriteLine("prodcode before scramble: " + repoid);
+
+                fs.Close();
+                Console.WriteLine("prodcode after scramble: " + repoid);
+            }
+            List<string> repoids = new List<string>();
+            if (CheckForInternetConnectionWOWarning())
+            {
+                repoids.Add(SystemType + repoid);
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
+                repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
+                GetRepoImages(SystemType, repoid);
+                checkForAdditionalFiles(GameConsoles.NDS, repoids);
+
+            }
+
+        }
+
+        public void getBootIMGN64(string rom)
+        {
+            string repoid = "";
+            string SystemType = "n64/";
+            List<string> repoids = new List<string>();
+            using var fs = new FileStream(rom,
+                                 FileMode.Open,
+                                 FileAccess.Read);
+            byte[] procode = new byte[6];
+            fs.Seek(0x3A, SeekOrigin.Begin);
+            fs.Read(procode, 0, 6);
+            repoid = ByteArrayToString(procode);
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            repoid = rgx.Replace(repoid, "");
+            Console.WriteLine("prodcode before scramble: " + repoid);
+
+            fs.Close();
+            Console.WriteLine("prodcode after scramble: " + repoid);
+        }
+
+        static string GetMd5Hash(MD5 md5Hash, byte[] input)
+        {
+            // Compute the hash from the byte array input.
+            byte[] hashData = md5Hash.ComputeHash(input);
+            // Convert the byte array to a hexadecimal string.
+            return ConvertByteArrayToHexString(hashData);
+        }
+
+        static string GetMd5Hash(MD5 md5Hash, string input)
+        {
+            // Compute the hash from the string input.
+            byte[] hashData = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
+            // Convert the byte array to a hexadecimal string.
+            return ConvertByteArrayToHexString(hashData);
+        }
+
+        private static string ConvertByteArrayToHexString(byte[] data)
+        {
+            StringBuilder hexString = new StringBuilder(data.Length * 2);
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            foreach (byte b in data)
+            {
+                hexString.Append(b.ToString("x2"));
+            }
+
+            return hexString.ToString();
+        }
+
         static string getCodeOfNumbers(int number)
         {
             string ts = number.ToString();
@@ -3147,74 +3192,12 @@ namespace UWUVCI_AIO_WPF
             var toret = new char[] { letters[n1], letters[n2], letters[n3], letters[n4] };
             return new string(toret).ToUpper();
         }
-        public void getBootIMGNDS(string rom)
-        {
-            string repoid = "";
-            string SystemType = "nds/";
-            using (var fs = new FileStream(rom,
-                                 FileMode.Open,
-                                 FileAccess.Read))
-            {
 
-                byte[] procode = new byte[4];
-                fs.Seek(0xC, SeekOrigin.Begin);
-                fs.Read(procode, 0, 4);
-                repoid = ByteArrayToString(procode);
-                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-                repoid = rgx.Replace(repoid, "");
-                Console.WriteLine("prodcode before scramble: " + repoid);
-
-                fs.Close();
-                Console.WriteLine("prodcode after scramble: " + repoid);
-            }
-            List<string> repoids = new List<string>();
-            if (CheckForInternetConnectionWOWarning())
-            {
-                repoids.Add(SystemType + repoid);
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "E");
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "P");
-                repoids.Add(SystemType + repoid.Substring(0, 3) + "J");
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.NDS, repoids);
-
-            }
-
-        }
-        public void getBootIMGN64(string rom)
-        {
-            string repoid = "";
-            string SystemType = "n64/";
-            List<string> repoids = new List<string>();
-            using (var fs = new FileStream(rom,
-                                 FileMode.Open,
-                                 FileAccess.Read))
-            {
-                byte[] procode = new byte[6];
-                fs.Seek(0x3A, SeekOrigin.Begin);
-                fs.Read(procode, 0, 6);
-                repoid = ByteArrayToString(procode);
-                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-                repoid = rgx.Replace(repoid, "");
-                Console.WriteLine("prodcode before scramble: " + repoid);
-
-                fs.Close();
-                Console.WriteLine("prodcode after scramble: " + repoid);
-            }
-            if (CheckForInternetConnectionWOWarning())
-            {
-                repoids.Add(SystemType + repoid);
-                repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
-
-                GetRepoImages(SystemType, repoid);
-                checkForAdditionalFiles(GameConsoles.N64, repoids);
-            }
-
-        }
         private string ByteArrayToString(byte[] arr)
         {
-            System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-            return enc.GetString(arr);
+            return new ASCIIEncoding().GetString(arr);
         }
+
         public string getInternalWIIGCNName(string OpenGame, bool gc)
         {
             string ret = "";
