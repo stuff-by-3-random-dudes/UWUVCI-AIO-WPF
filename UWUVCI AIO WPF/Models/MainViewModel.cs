@@ -3569,7 +3569,7 @@ namespace UWUVCI_AIO_WPF
             string[] extensions = { "png", "jpg", "jpeg", "tga" };
 
             // If no specific repoids are provided, generate possible repoids based on the given repoid
-            if (repoids?.Count == 0)
+            if (repoids == null || repoids?.Count == 0)
                 repoids = GenerateRepoIds(SystemType, repoid);
 
             // Iterate through all combinations of repoids and extensions to find an existing image
