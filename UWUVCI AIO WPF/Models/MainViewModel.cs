@@ -3533,13 +3533,8 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                if (waveOutEvent.PlaybackState == PlaybackState.Stopped)
-                {
-                    waveOutEvent.Dispose();
-                    audioFileReader.Dispose();
-                    t.Stop();
-                }
-                if (waveOutEvent.GetPositionTimeSpan() > TimeSpan.FromSeconds(6))
+                if (waveOutEvent.PlaybackState == PlaybackState.Stopped ||
+                    waveOutEvent.GetPositionTimeSpan() > TimeSpan.FromSeconds(6))
                 {
                     waveOutEvent.Stop();
                     waveOutEvent.Dispose();
@@ -3547,12 +3542,12 @@ namespace UWUVCI_AIO_WPF
                     t.Stop();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine($"Error during playback check: {ex.Message}");
             }
-
         }
+
         public void RestartIntoBypass()
         {
             using Process p = new Process();
