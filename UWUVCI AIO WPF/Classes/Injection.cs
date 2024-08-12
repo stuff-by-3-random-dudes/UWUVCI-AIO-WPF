@@ -1276,25 +1276,17 @@ namespace UWUVCI_AIO_WPF
         private static void ConvertToIso(string romPath, string tempBasePath, string destFileName = "game.iso", string outputFileName = "out.iso")
         {
             if (romPath.ToLower().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
-            {
                 RunProcess("ConvertToIso.exe", $"\"{romPath}\"", toolsPath, tempBasePath, outputFileName, destFileName, "nkit");
-            }
             else
-            {
                 File.Copy(romPath, Path.Combine(tempBasePath, "files", destFileName));
-            }
         }
 
         private static void ConvertToNKit(string romPath, string tempBasePath, string destFileName = "game.iso", string outputFileName = "out.nkit.iso")
         {
             if (romPath.ToLower().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
-            {
                 RunProcess("ConvertToNKit.exe", $"\"{romPath}\"", toolsPath, tempBasePath, outputFileName, destFileName, "nkit");
-            }
             else
-            {
                 File.Copy(romPath, Path.Combine(tempBasePath, "files", destFileName));
-            }
         }
 
         private static void CreateIso(string tempBasePath, bool debug)
