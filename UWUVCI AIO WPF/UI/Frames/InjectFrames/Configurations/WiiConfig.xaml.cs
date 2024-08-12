@@ -365,7 +365,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         foreach (var titleId in titleIds)
                         {
-                            Task.Run(() => Downloader.DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+
+                            Task.Run(() => new Downloader(null,null).DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
                             mvm.Progress += 5;
                         }
 

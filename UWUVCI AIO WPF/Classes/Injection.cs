@@ -20,6 +20,7 @@ using MessageBox = System.Windows.MessageBox;
 using Microsoft.Win32;
 using System.Management;
 using UWUVCI_AIO_WPF.Models;
+using WiiUDownloaderLibrary.Models;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1906,96 +1907,76 @@ namespace UWUVCI_AIO_WPF
             
             mvm.msg = "";
         }
-
+        
         public static void Download(MainViewModel mvm)
         {
-                mvm.InjcttoolCheck();
-                GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
+            mvm.InjcttoolCheck();
+            GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
 
-                //GetKeyOfBase
-                TKeys key = mvm.getTkey(b);
-                if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
+            //GetKeyOfBase
+            TKeys key = mvm.getTkey(b);
+            if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
+            {
+              //  if (Directory.Exists(tempPath)) 
+               //     Directory.Delete(tempPath, true);
+
+              //  Directory.CreateDirectory(tempPath);
+
+                // Call the download method with progress reporting
+                var downloader = new WiiUDownloaderLibrary.Downloader(null, null);
+                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
+
+
+                using (Process decrypt = new Process())
                 {
-                        if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
-                        Directory.CreateDirectory(tempPath);
-                        using (Process download = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-                                download.StartInfo.UseShellExecute = false;
-                                download.StartInfo.CreateNoWindow = true;
-                            }
+                    if (!mvm.debug)
+                    {
+                        decrypt.StartInfo.UseShellExecute = false;
+                        decrypt.StartInfo.CreateNoWindow = true;
+                    }
 
-                            download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                            download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download", b.Tid)}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
 
-                            download.Start();
-                            download.WaitForExit();
-                        }
-                        mvm.Progress = 96;
-
-                        using (Process decrypt = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-                                decrypt.StartInfo.UseShellExecute = false;
-                                decrypt.StartInfo.CreateNoWindow = true;
-                            }
-
-                            decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                            decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
-
-                            decrypt.Start();
-                            decrypt.WaitForExit();
-                        }
-                        mvm.Progress = 99;
-                        foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
-                            File.Delete(sFile);
-
-                        mvm.Progress = 100;
+                    decrypt.Start();
+                    decrypt.WaitForExit();
                 }
-                else
+                mvm.Progress = 99;
+                foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
+                    File.Delete(sFile);
+
+                mvm.Progress = 100;
+            }
+            else
+            {
+                if (Directory.Exists(tempPath))
+                    Directory.Delete(tempPath, true);
+
+                Directory.CreateDirectory(tempPath);
+
+                // Call the download method with progress reporting
+                var downloader = new WiiUDownloaderLibrary.Downloader(null, null);
+                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
+
+                mvm.Progress = 75;
+
+                using (Process decrypt = new Process())
                 {
-                    if (Directory.Exists(tempPath)) 
-                        Directory.Delete(tempPath, true);
-
-
-                    Directory.CreateDirectory(tempPath);
-                    using (Process download = new Process())
+                    if (!mvm.debug)
                     {
-                        if (!mvm.debug)
-                        {
-                            download.StartInfo.UseShellExecute = false;
-                            download.StartInfo.CreateNoWindow = true;
-                        }
-
-                        download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                        download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
-
-                        download.Start();
-                        download.WaitForExit();
+                        decrypt.StartInfo.UseShellExecute = false;
+                        decrypt.StartInfo.CreateNoWindow = true;
                     }
-                    mvm.Progress = 75;
-                    using (Process decrypt = new Process())
-                    {
-                        if (!mvm.debug)
-                        {
-                            decrypt.StartInfo.UseShellExecute = false;
-                            decrypt.StartInfo.CreateNoWindow = true;
-                        }
-                        decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                        decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
 
-                        decrypt.Start();
-                        decrypt.WaitForExit();
-                    }
-                    mvm.Progress = 100;
+                    decrypt.Start();
+                    decrypt.WaitForExit();
                 }
-            
-           
-            //GetCurrentSelectedBase
-            
+                mvm.Progress = 100;
+            }
         }
+
         public static string ExtractBase(string path, GameConsoles console)
         {
             if(!Directory.Exists(Path.Combine(Settings.Default.BasePath, "CustomBases")))
@@ -2436,6 +2417,7 @@ namespace UWUVCI_AIO_WPF
                 if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
+        /*
         private static void DownloadSysTitle(MainViewModel mvm)
         {
             if (mvm.SysKeyset() && mvm.SysKey1set())
@@ -2478,6 +2460,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
         }
+        */
         private static void NDS(string injectRomPath)
         {
             

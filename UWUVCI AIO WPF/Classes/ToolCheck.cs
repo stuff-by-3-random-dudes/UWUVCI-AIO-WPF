@@ -21,7 +21,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "psb.exe",
             "RetroInject.exe",
             "tga_verify.exe",
-            "WiiUDownloader.exe",
             "wiiurpxtool.exe",
             "INICreator.exe",
             "blank.ini",
