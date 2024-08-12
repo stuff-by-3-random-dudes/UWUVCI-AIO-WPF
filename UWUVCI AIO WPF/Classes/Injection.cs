@@ -1908,9 +1908,7 @@ namespace UWUVCI_AIO_WPF
         }
 
         public static void Download(MainViewModel mvm)
-
         {
-            
                 mvm.InjcttoolCheck();
                 GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
 
@@ -1918,9 +1916,6 @@ namespace UWUVCI_AIO_WPF
                 TKeys key = mvm.getTkey(b);
                 if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
                 {
-                    using (Process zip = new Process())
-                    {
-
                         if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
                         Directory.CreateDirectory(tempPath);
                         using (Process download = new Process())
@@ -1957,62 +1952,14 @@ namespace UWUVCI_AIO_WPF
                         foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
                             File.Delete(sFile);
 
-                        /* File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
-
-                        File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
-
-                        if (Directory.Exists(Path.Combine(toolsPath, "IKVM"))) { Directory.Delete(Path.Combine(toolsPath, "IKVM"), true); }
-                        if (!mvm.debug)
-                        {
-                            zip.StartInfo.UseShellExecute = false;
-                            zip.StartInfo.CreateNoWindow = true;
-                        }
-
-                        zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                        zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "IKVM.zip")}\" -o\"{Path.Combine(toolsPath, "IKVM")}\"";
-                        zip.Start();
-                        zip.WaitForExit();
-                        mvm.Progress += 10;
-                        string[] JNUSToolConfig = { "http://ccs.cdn.wup.shop.nintendo.net/ccs/download", Properties.Settings.Default.Ckey };
-                        string savedir = Directory.GetCurrentDirectory();
-                        File.WriteAllLines(Path.Combine(toolsPath, "IKVM", "config"), JNUSToolConfig);
-                        Directory.SetCurrentDirectory(Path.Combine(toolsPath, "IKVM"));
-                        zip.StartInfo.FileName = "JNUSTool.exe";
-                        zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file /code/fw.img";
-                        zip.Start();
-                        zip.WaitForExit();
-
-                        zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file /code/fw.tmd";
-                        zip.Start();
-                        zip.WaitForExit();
-
-                        Directory.SetCurrentDirectory(savedir);
-                        var directories = Directory.GetDirectories(Path.Combine(toolsPath, "IKVM"));
-                        string name = "";
-                        foreach (var s in directories)
-                        {
-                            if (s.Contains(b.Name))
-                            {
-                                var split = s.Split('\\');
-                                name = split[split.Length - 1];
-
-                            }
-
-                        }
-                        File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.img"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
-
-                        File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.tmd"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
-
-                        Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);*/
                         mvm.Progress = 100;
-                    }
                 }
                 else
                 {
+                    if (Directory.Exists(tempPath)) 
+                        Directory.Delete(tempPath, true);
 
 
-
-                    if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
                     Directory.CreateDirectory(tempPath);
                     using (Process download = new Process())
                     {
