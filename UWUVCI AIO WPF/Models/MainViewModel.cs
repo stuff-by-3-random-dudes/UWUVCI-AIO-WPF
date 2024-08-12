@@ -466,28 +466,10 @@ namespace UWUVCI_AIO_WPF
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
                 string version = fvi.FileVersion;
 
-                AutoUpdater.Start("https://raw.githubusercontent.com/Hotbrawl20/testing/master/update.xml");
-                if (Settings.Default.UpgradeRequired)
-                {
-                    Settings.Default.Upgrade();
-                    Settings.Default.UpgradeRequired = false;
-                    Settings.Default.Save();
-                }
-                if (button && Convert.ToInt32(version.Split('.')[3]) >= GetNewVersion())
-                {
-                    Custom_Message cm = new Custom_Message("No Updates available", " You are currently using the newest version of UWUVCI AIO ");
-                    try
-                    {
-                        cm.Owner = mw;
-                    }
-                    catch (Exception) { }
-                    cm.ShowDialog();
-
-                }
-                else if (button)
+                if (button)
                 {
                     var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
-                    var releases = Task.Run(() => client.Repository.Release.GetAll("stuff-by-3-random-dudes", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
+                    var releases = Task.Run(() => client.Repository.Release.GetAll("ZestyTS", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
                     int comparison;
                     try
                     {
@@ -510,12 +492,7 @@ namespace UWUVCI_AIO_WPF
                     //You idiot, when tf did you flip this back?
                     if (comparison < 0)
                     {
-                        using (var webClient = new WebClient())
-                        {
-                            webClient.Headers.Add(HttpRequestHeader.UserAgent, "MyUserAgent");
-                            webClient.DownloadFile(releases[0].ZipballUrl, "UWUVCI_INSTALLER.exe");
-                        }
-                        var cm = new Custom_Message("Update Available!", "Latest version is currently being downloaded!\nPlease look for the file \"UWUVCI_INSTALLER.exe\" in\n" + Directory.GetCurrentDirectory());
+                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/ZestyTS/UWUVCI-AIO-WPF/releases/latest");
                         try
                         {
                             cm.Owner = mw;

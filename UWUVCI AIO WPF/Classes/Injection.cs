@@ -20,6 +20,8 @@ using MessageBox = System.Windows.MessageBox;
 using Microsoft.Win32;
 using System.Management;
 using UWUVCI_AIO_WPF.Models;
+using WiiUDownloaderLibrary.Models;
+using WiiUDownloaderLibrary;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1878,8 +1880,9 @@ namespace UWUVCI_AIO_WPF
                 Directory.Delete(Environment.GetEnvironmentVariable("LocalAppData") + @"\temp\.net\CNUSPACKER", true);
             }
             catch { }
-            using (Process cnuspacker = new Process())
+            try
             {
+                using Process cnuspacker = new Process();
                 if (!mvm.debug)
                 {
                     cnuspacker.StartInfo.UseShellExecute = false;
@@ -1898,6 +1901,9 @@ namespace UWUVCI_AIO_WPF
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
                 Directory.SetCurrentDirectory(oldpath);
+            } catch(Exception ex )
+            {
+                throw ex;
             }
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
@@ -1906,165 +1912,94 @@ namespace UWUVCI_AIO_WPF
             
             mvm.msg = "";
         }
-
+        
         public static void Download(MainViewModel mvm)
-
         {
-            
-                mvm.InjcttoolCheck();
-                GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
+            mvm.InjcttoolCheck();
+            GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
 
-                //GetKeyOfBase
-                TKeys key = mvm.getTkey(b);
-                if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
+            //GetKeyOfBase
+            TKeys key = mvm.getTkey(b);
+            if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
+            {
+                if (Directory.Exists(tempPath)) 
+                    Directory.Delete(tempPath, true);
+
+                Directory.CreateDirectory(tempPath);
+
+                // Call the download method with progress reporting
+                var downloader = new WiiUDownloaderLibrary.Downloader(null, null);
+                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
+
+
+                using (Process decrypt = new Process())
                 {
-                    using (Process zip = new Process())
+                    if (!mvm.debug)
                     {
-
-                        if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
-                        Directory.CreateDirectory(tempPath);
-                        using (Process download = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-                                download.StartInfo.UseShellExecute = false;
-                                download.StartInfo.CreateNoWindow = true;
-                            }
-
-                            download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                            download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
-
-                            download.Start();
-                            download.WaitForExit();
-                        }
-                        mvm.Progress = 96;
-
-                        using (Process decrypt = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-                                decrypt.StartInfo.UseShellExecute = false;
-                                decrypt.StartInfo.CreateNoWindow = true;
-                            }
-
-                            decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                            decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
-
-                            decrypt.Start();
-                            decrypt.WaitForExit();
-                        }
-                        mvm.Progress = 99;
-                        foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "content"), "*.nfs"))
-                            File.Delete(sFile);
-
-                        /* File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
-
-                        File.Delete(Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
-
-                        if (Directory.Exists(Path.Combine(toolsPath, "IKVM"))) { Directory.Delete(Path.Combine(toolsPath, "IKVM"), true); }
-                        if (!mvm.debug)
-                        {
-                            zip.StartInfo.UseShellExecute = false;
-                            zip.StartInfo.CreateNoWindow = true;
-                        }
-
-                        zip.StartInfo.FileName = Path.Combine(toolsPath, "7za.exe");
-                        zip.StartInfo.Arguments = $"x \"{Path.Combine(toolsPath, "IKVM.zip")}\" -o\"{Path.Combine(toolsPath, "IKVM")}\"";
-                        zip.Start();
-                        zip.WaitForExit();
-                        mvm.Progress += 10;
-                        string[] JNUSToolConfig = { "http://ccs.cdn.wup.shop.nintendo.net/ccs/download", Properties.Settings.Default.Ckey };
-                        string savedir = Directory.GetCurrentDirectory();
-                        File.WriteAllLines(Path.Combine(toolsPath, "IKVM", "config"), JNUSToolConfig);
-                        Directory.SetCurrentDirectory(Path.Combine(toolsPath, "IKVM"));
-                        zip.StartInfo.FileName = "JNUSTool.exe";
-                        zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file /code/fw.img";
-                        zip.Start();
-                        zip.WaitForExit();
-
-                        zip.StartInfo.Arguments = $"{b.Tid} {key.Tkey} -file /code/fw.tmd";
-                        zip.Start();
-                        zip.WaitForExit();
-
-                        Directory.SetCurrentDirectory(savedir);
-                        var directories = Directory.GetDirectories(Path.Combine(toolsPath, "IKVM"));
-                        string name = "";
-                        foreach (var s in directories)
-                        {
-                            if (s.Contains(b.Name))
-                            {
-                                var split = s.Split('\\');
-                                name = split[split.Length - 1];
-
-                            }
-
-                        }
-                        File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.img"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.img"));
-
-                        File.Copy(Path.Combine(toolsPath, "IKVM", name, "code", "fw.tmd"), Path.Combine(Properties.Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]", "code", "fw.tmd"));
-
-                        Directory.Delete(Path.Combine(toolsPath, "IKVM"), true);*/
-                        mvm.Progress = 100;
+                        decrypt.StartInfo.UseShellExecute = false;
+                        decrypt.StartInfo.CreateNoWindow = true;
                     }
+
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download", b.Tid)}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]")}\"";
+
+                    decrypt.Start();
+                    decrypt.WaitForExit();
                 }
-                else
+                mvm.Progress = 99;
+                foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]", "content"), "*.nfs"))
+                    File.Delete(sFile);
+
+                mvm.Progress = 100;
+            }
+            else
+            {
+                if (Directory.Exists(tempPath))
+                    Directory.Delete(tempPath, true);
+
+                Directory.CreateDirectory(tempPath);
+
+                // Call the download method with progress reporting
+                var downloader = new WiiUDownloaderLibrary.Downloader(null, null);
+                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
+
+                mvm.Progress = 75;
+                try
                 {
-
-
-
-                    if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
-                    Directory.CreateDirectory(tempPath);
-                    using (Process download = new Process())
+                    using Process decrypt = new Process();
+                    if (!mvm.debug)
                     {
-                        if (!mvm.debug)
-                        {
-                            download.StartInfo.UseShellExecute = false;
-                            download.StartInfo.CreateNoWindow = true;
-                        }
-
-                        download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                        download.StartInfo.Arguments = $"{b.Tid} {key.Tkey} \"{Path.Combine(tempPath, "download")}\"";
-
-                        download.Start();
-                        download.WaitForExit();
+                        decrypt.StartInfo.UseShellExecute = false;
+                        decrypt.StartInfo.CreateNoWindow = true;
                     }
-                    mvm.Progress = 75;
-                    using (Process decrypt = new Process())
-                    {
-                        if (!mvm.debug)
-                        {
-                            decrypt.StartInfo.UseShellExecute = false;
-                            decrypt.StartInfo.CreateNoWindow = true;
-                        }
-                        decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                        decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download", b.Tid)}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]")}\"";
 
-                        decrypt.Start();
-                        decrypt.WaitForExit();
-                    }
-                    mvm.Progress = 100;
+                    decrypt.Start();
+                    decrypt.WaitForExit();
+                } catch(Exception ex)
+                {
+                    throw ex;
                 }
-            
-           
-            //GetCurrentSelectedBase
-            
+                mvm.Progress = 100;
+            }
         }
+
         public static string ExtractBase(string path, GameConsoles console)
         {
             if(!Directory.Exists(Path.Combine(Settings.Default.BasePath, "CustomBases")))
-            {
                 Directory.CreateDirectory(Path.Combine(Settings.Default.BasePath, "CustomBases"));
-            }
-            string outputPath = Path.Combine(Settings.Default.BasePath, "CustomBases", $"[{console.ToString()}] Custom");
+
+            string outputPath = Path.Combine(Settings.Default.BasePath, "CustomBases", $"[{console}] Custom");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Settings.Default.BasePath, $"[{console.ToString()}] Custom_{i}");
+                outputPath = Path.Combine(Settings.Default.BasePath, $"[{console}] Custom_{i}");
                 i++;
             }
-            using (Process decrypt = new Process())
+            try
             {
-                
+                using Process decrypt = new Process();
                 decrypt.StartInfo.UseShellExecute = false;
                 decrypt.StartInfo.CreateNoWindow = true;
                 decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
@@ -2072,6 +2007,10 @@ namespace UWUVCI_AIO_WPF
 
                 decrypt.Start();
                 decrypt.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             return outputPath;
         }
@@ -2090,8 +2029,6 @@ namespace UWUVCI_AIO_WPF
                 }
             }
 
-            
-            
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
             Random random = new Random();
@@ -2100,56 +2037,56 @@ namespace UWUVCI_AIO_WPF
             string ID2 = $"{random.Next(0x3000, 0x10000):X4}";
             mvvm.prodcode = ID2;
             XmlDocument doc = new XmlDocument();
-                try
+            try
+            {
+                doc.Load(metaXml);
+                if (gameName != null && gameName != string.Empty)
                 {
-                    doc.Load(metaXml);
-                    if (gameName != null && gameName != string.Empty)
-                    {
-                        doc.SelectSingleNode("menu/longname_ja").InnerText = gameName.Replace(",", "\n" );
-                        doc.SelectSingleNode("menu/longname_en").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_fr").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_de").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_it").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_es").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_ko").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_nl").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_pt").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_ru").InnerText = gameName.Replace(",", "\n");
-                        doc.SelectSingleNode("menu/longname_zht").InnerText = gameName.Replace(",", "\n");
-                    }
+                    doc.SelectSingleNode("menu/longname_ja").InnerText = gameName.Replace(",", "\n" );
+                    doc.SelectSingleNode("menu/longname_en").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_fr").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_de").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_it").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_es").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_zhs").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_ko").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_nl").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_pt").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_ru").InnerText = gameName.Replace(",", "\n");
+                    doc.SelectSingleNode("menu/longname_zht").InnerText = gameName.Replace(",", "\n");
+                }
 
-                   /* if(code != null)
-                    {
-                        doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{code}";
-                    }
-                    else
-                    {*/
-                        doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID2}";
-                    //}
-                     if (index > 0)
-                    {
+                /* if(code != null)
+                {
+                    doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{code}";
+                }
+                else
+                {*/
+                    doc.SelectSingleNode("menu/product_code").InnerText = $"WUP-N-{ID2}";
+                //}
+                if (index > 0)
+                {
                     doc.SelectSingleNode("menu/drc_use").InnerText = "65537";
-                    }
+                }
                 doc.SelectSingleNode("menu/title_id").InnerText = $"00050002{ID}";
-                    doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID2}";
-                    if (gameName != null && gameName != string.Empty)
-                    {
-                        doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_de").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_en").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_it").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_es").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName.Split(',')[0];
-                        doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName.Split(',')[0];
-                    }
+                doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID2}";
+                if (gameName != null && gameName != string.Empty)
+                {
+                    doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_de").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_en").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_it").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_es").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName.Split(',')[0];
+                }
 
-                    doc.Save(metaXml);
+                doc.Save(metaXml);
                 }
                 catch (NullReferenceException)
                 {
@@ -2159,7 +2096,7 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     doc.Load(appXml);
-                doc.SelectSingleNode("app/title_id").InnerText = $"00050002{ID}";
+                    doc.SelectSingleNode("app/title_id").InnerText = $"00050002{ID}";
                 //doc.SelectSingleNode("app/title_id").InnerText = $"0005000247414645";
                 
                     doc.SelectSingleNode("app/group_id").InnerText = $"0000{ID2}";
@@ -2169,25 +2106,18 @@ namespace UWUVCI_AIO_WPF
                 {
                   
                 }
-            
-            
         }
 
         //This function copies the custom or normal Base to the working directory
         private static void CopyBase(string baserom, string customPath)
         {
             if (Directory.Exists(baseRomPath)) // sanity check
-            {
                 Directory.Delete(baseRomPath, true);
-            }
+
             if (baserom == "Custom")
-            {
                 DirectoryCopy(customPath, baseRomPath, true);
-            }
             else
-            {
                 DirectoryCopy(Path.Combine(Settings.Default.BasePath, baserom), baseRomPath, true);
-            }
         }
 
         private static void TG16(string injectRomPath)
@@ -2241,22 +2171,18 @@ namespace UWUVCI_AIO_WPF
             mvvm.Progress = 20;
             if (mvvm.pixelperfect)
             {
-                using (Process retroinject = new Process())
-                {
-                    mvvm.msg = "Applying Pixel Perfect Patches...";
-                    retroinject.StartInfo.UseShellExecute = false;
-                    retroinject.StartInfo.CreateNoWindow = true;
-                    retroinject.StartInfo.RedirectStandardOutput = true;
-                    retroinject.StartInfo.RedirectStandardError = true;
-                    retroinject.StartInfo.FileName = Path.Combine(toolsPath, "ChangeAspectRatio.exe");
-                    retroinject.StartInfo.Arguments = $"\"{rpxFile}\"";
+                using Process retroinject = new Process();
+                mvvm.msg = "Applying Pixel Perfect Patches...";
+                retroinject.StartInfo.UseShellExecute = false;
+                retroinject.StartInfo.CreateNoWindow = true;
+                retroinject.StartInfo.RedirectStandardOutput = true;
+                retroinject.StartInfo.RedirectStandardError = true;
+                retroinject.StartInfo.FileName = Path.Combine(toolsPath, "ChangeAspectRatio.exe");
+                retroinject.StartInfo.Arguments = $"\"{rpxFile}\"";
 
-                    retroinject.Start();
-                    retroinject.WaitForExit();
-                    mvvm.Progress = 30;
-
-
-                }
+                retroinject.Start();
+                retroinject.WaitForExit();
+                mvvm.Progress = 30;
             }
             using (Process retroinject = new Process())
             {
@@ -2489,6 +2415,7 @@ namespace UWUVCI_AIO_WPF
                 if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
+        /*
         private static void DownloadSysTitle(MainViewModel mvm)
         {
             if (mvm.SysKeyset() && mvm.SysKey1set())
@@ -2531,6 +2458,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
         }
+        */
         private static void NDS(string injectRomPath)
         {
             
@@ -2559,8 +2487,7 @@ namespace UWUVCI_AIO_WPF
             mvvm.Progress = 80;
             File.Delete(RomName);
         }
-
-    
+            
         private static void N64(string injectRomPath, N64Conf config)
         {
             string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
@@ -2576,7 +2503,6 @@ namespace UWUVCI_AIO_WPF
                 n64convert.Start();
                 n64convert.WaitForExit();
                 mvvm.Progress = 60;
-
             }
 
             if (config.WideScreen || config.DarkFilter)
@@ -2718,9 +2644,6 @@ namespace UWUVCI_AIO_WPF
                 File.Move("custom.ini", mainIni);
             }
             mvvm.Progress = 80;
-            
-
-            
         }
 
         //Compressed or decompresses the RPX using wiiurpxtool
@@ -2740,16 +2663,14 @@ namespace UWUVCI_AIO_WPF
 
         private static void RPXcomp(string rpxpath)
         {
-            using (Process rpxtool = new Process())
-            {
-                rpxtool.StartInfo.UseShellExecute = false;
-                rpxtool.StartInfo.CreateNoWindow = true;
-                rpxtool.StartInfo.FileName = Path.Combine(toolsPath, "wiiurpxtool.exe");
-                rpxtool.StartInfo.Arguments = $"-c \"{rpxpath}\"";
+            using Process rpxtool = new Process();
+            rpxtool.StartInfo.UseShellExecute = false;
+            rpxtool.StartInfo.CreateNoWindow = true;
+            rpxtool.StartInfo.FileName = Path.Combine(toolsPath, "wiiurpxtool.exe");
+            rpxtool.StartInfo.Arguments = $"-c \"{rpxpath}\"";
 
-                rpxtool.Start();
-                rpxtool.WaitForExit();
-            }
+            rpxtool.Start();
+            rpxtool.WaitForExit();
         }
 
         private static void ReadFileFromBin(byte[] bin, string output)
@@ -2762,14 +2683,11 @@ namespace UWUVCI_AIO_WPF
             bool readbin = false;
             try
             {
-
-
                 //is an image embedded? yes => export them and check for issues
                 //no => using path
                 if (Directory.Exists(imgPath)) // sanity check
-                {
                     Directory.Delete(imgPath, true);
-                }
+
                 Directory.CreateDirectory(imgPath);
                 //ICON
                 List<bool> Images = new List<bool>();
@@ -2790,9 +2708,7 @@ namespace UWUVCI_AIO_WPF
                             Images.Add(true);
                         }
                         else
-                        {
                             Images.Add(false);
-                        }
                       
                     }
                 }
@@ -2821,9 +2737,7 @@ namespace UWUVCI_AIO_WPF
                             
                         }
                         else
-                        {
                             Images.Add(false);
-                        }
                     }
                 }
                 else
@@ -2848,59 +2762,57 @@ namespace UWUVCI_AIO_WPF
                     {
                         if (Images[1])
                         {
-                            using(Process conv = new Process())
+                            using Process conv = new Process();
+
+                            if (!mvvm.debug)
                             {
-                               
-                               if (!mvvm.debug)
+                                conv.StartInfo.UseShellExecute = false;
+                                conv.StartInfo.CreateNoWindow = true;
+                            }
+                            if (usetemp)
+                                File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                            else
+                            {
+
+                                conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                                if (!readbin)
                                 {
-                                    conv.StartInfo.UseShellExecute = false;
-                                    conv.StartInfo.CreateNoWindow = true;
-                                }
-                                if (usetemp)
-                                {
-                                    File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                                    conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
                                 }
                                 else
                                 {
-
-                                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
-                                    if (!readbin)
+                                    if (config.TGATv.extension.Contains("tga"))
                                     {
-                                        conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
+                                        ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
+                                        conv.StartInfo.Arguments = $"-i \"bootTvTex.{config.TGATv.extension}\" -o \"{Path.Combine(tempPath)}\"";
                                     }
                                     else
                                     {
-                                        if (config.TGATv.extension.Contains("tga"))
-                                            {
-                                            ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
-                                            conv.StartInfo.Arguments = $"-i \"bootTvTex.{config.TGATv.extension}\" -o \"{Path.Combine(tempPath)}\"";
-                                        }
-                                        else
-                                        {
-                                            ReadFileFromBin(config.TGATv.ImgBin, Path.Combine(tempPath, "bootTvTex.png"));
-                                        }
-                                       
+                                        ReadFileFromBin(config.TGATv.ImgBin, Path.Combine(tempPath, "bootTvTex.png"));
                                     }
-                                    if (!readbin || config.TGATv.extension.Contains("tga"))
-                                    {
-                                        conv.Start();
-                                        conv.WaitForExit();
-                                    }
-                                    
-                                    File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
-                                    if(File.Exists(Path.Combine(tempPath, "bootTvTex.png"))) File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
-                                    if (File.Exists($"bootTvTex.{config.TGATv.extension}")) File.Delete($"bootTvTex.{config.TGATv.extension}");
+
                                 }
-                                
-                                
-                                CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
-                                Images.Add(true);
+                                if (!readbin || config.TGATv.extension.Contains("tga"))
+                                {
+                                    conv.Start();
+                                    conv.WaitForExit();
+                                }
+
+                                File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+
+                                if (File.Exists(Path.Combine(tempPath, "bootTvTex.png"))) 
+                                    File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
+
+                                if (File.Exists($"bootTvTex.{config.TGATv.extension}")) 
+                                    File.Delete($"bootTvTex.{config.TGATv.extension}");
                             }
+
+
+                            CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
+                            Images.Add(true);
                         }
                         else
-                        {
                             Images.Add(false);
-                        }
                         
                     }
                 }
@@ -2925,9 +2837,7 @@ namespace UWUVCI_AIO_WPF
                         CopyAndConvertImage(config.TGALog.ImgPath, Path.Combine(imgPath), false, 170,42,32, "bootLogoTex.tga");
                     }
                     else
-                    {
                         Images.Add(false);
-                    }
                 }
                 else
                 {
@@ -2951,15 +2861,14 @@ namespace UWUVCI_AIO_WPF
                         checkIfIssue.Start();
                         checkIfIssue.WaitForExit();
                         var s = checkIfIssue.StandardOutput.ReadToEnd();
+
                         if (s.Contains("width") || s.Contains("height") || s.Contains("depth"))
-                        {
                             throw new Exception("Size");
-                        }
+
                         var e = checkIfIssue.StandardError.ReadToEnd();
                         if (e.Contains("width") || e.Contains("height") || e.Contains("depth"))
-                        {
                             throw new Exception("Size");
-                        }
+
                         if (e.Contains("TRUEVISION") || s.Contains("TRUEVISION"))
                         {
                             checkIfIssue.StartInfo.UseShellExecute = false;
@@ -3000,9 +2909,7 @@ namespace UWUVCI_AIO_WPF
             catch(Exception e)
             {
                 if (e.Message.Contains("Size"))
-                {
                     throw e;
-                }
                 throw new Exception("Images");
             }
 
@@ -3011,9 +2918,7 @@ namespace UWUVCI_AIO_WPF
         private static void CopyAndConvertImage(string inputPath, string outputPath, bool delete, int widht, int height, int bit, string newname)
         {
             if (inputPath.EndsWith(".tga"))
-            {
                 File.Copy(inputPath, Path.Combine(outputPath,newname));
-            }
             else
             {
                 using (Process png2tga = new Process())
@@ -3052,24 +2957,22 @@ namespace UWUVCI_AIO_WPF
         private static string RemoveHeader(string filePath)
         {
             // logic taken from snesROMUtil
-            using (FileStream inStream = new FileStream(filePath, FileMode.Open))
+            using FileStream inStream = new FileStream(filePath, FileMode.Open);
+            byte[] header = new byte[512];
+            inStream.Read(header, 0, 512);
+            string string1 = BitConverter.ToString(header, 8, 3);
+            string string2 = Encoding.ASCII.GetString(header, 0, 11);
+            string string3 = BitConverter.ToString(header, 30, 16);
+            if (string1 != "AA-BB-04" && string2 != "GAME DOCTOR" && string3 != "00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00")
+                return filePath;
+
+            string newFilePath = Path.Combine(tempPath, Path.GetFileName(filePath));
+            using (FileStream outStream = new FileStream(newFilePath, FileMode.OpenOrCreate))
             {
-                byte[] header = new byte[512];
-                inStream.Read(header, 0, 512);
-                string string1 = BitConverter.ToString(header, 8, 3);
-                string string2 = Encoding.ASCII.GetString(header, 0, 11);
-                string string3 = BitConverter.ToString(header, 30, 16);
-                if (string1 != "AA-BB-04" && string2 != "GAME DOCTOR" && string3 != "00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00")
-                    return filePath;
-
-                string newFilePath = Path.Combine(tempPath, Path.GetFileName(filePath));
-                using (FileStream outStream = new FileStream(newFilePath, FileMode.OpenOrCreate))
-                {
-                    inStream.CopyTo(outStream);
-                }
-
-                return newFilePath;
+                inStream.CopyTo(outStream);
             }
+
+            return newFilePath;
         }
 
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
