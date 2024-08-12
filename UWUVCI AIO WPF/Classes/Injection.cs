@@ -21,6 +21,7 @@ using Microsoft.Win32;
 using System.Management;
 using UWUVCI_AIO_WPF.Models;
 using WiiUDownloaderLibrary.Models;
+using WiiUDownloaderLibrary;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1968,7 +1969,7 @@ namespace UWUVCI_AIO_WPF
                         decrypt.StartInfo.CreateNoWindow = true;
                     }
                     decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
+                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download", b.Tid)}\" \"{Path.Combine(Settings.Default.BasePath, $"{ b.Name.Replace(":", "")} [{b.Region.ToString()}]")}\"";
 
                     decrypt.Start();
                     decrypt.WaitForExit();
