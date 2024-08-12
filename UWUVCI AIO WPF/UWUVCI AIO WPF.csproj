@@ -185,6 +185,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WiiUDownloaderLibrary">
+      <HintPath>.\WiiUDownloaderLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -699,12 +702,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Images\61e111774d3a2f67c827cd25_Frame 5.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\WiiUDownloaderLibrary\WiiUDownloaderLibrary\WiiUDownloaderLibrary.csproj">
-      <Project>{a78a5236-be82-4423-9bc7-f26192657eaa}</Project>
-      <Name>WiiUDownloaderLibrary</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
