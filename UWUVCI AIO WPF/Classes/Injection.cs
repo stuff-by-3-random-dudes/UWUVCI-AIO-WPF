@@ -74,14 +74,14 @@ namespace UWUVCI_AIO_WPF
         static List<int> fiind(this byte[] buffer, byte[] pattern, int startIndex)
         {
             List<int> positions = new List<int>();
-            int i = Array.IndexOf<byte>(buffer, pattern[0], startIndex);
+            int i = Array.IndexOf(buffer, pattern[0], startIndex);
             while (i >= 0 && i <= buffer.Length - pattern.Length)
             {
                 byte[] segment = new byte[pattern.Length];
                 Buffer.BlockCopy(buffer, i, segment, 0, pattern.Length);
-                if (segment.SequenceEqual<byte>(pattern))
+                if (segment.SequenceEqual(pattern))
                     positions.Add(i);
-                i = Array.IndexOf<byte>(buffer, pattern[0], i + 1);
+                i = Array.IndexOf(buffer, pattern[0], i + 1);
             }
             return positions;
         }
@@ -590,7 +590,7 @@ namespace UWUVCI_AIO_WPF
         }
         private static string ByteArrayToString(byte[] arr)
         {
-            System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+            ASCIIEncoding enc = new ASCIIEncoding();
             return enc.GetString(arr);
         }
         private static void WiiForwarder(string romPath, MainViewModel mvm)
@@ -1554,7 +1554,7 @@ namespace UWUVCI_AIO_WPF
                 Directory.CreateDirectory(tempPath);
 
                 // Call the download method with progress reporting
-                var downloader = new WiiUDownloaderLibrary.Downloader(null, null);
+                var downloader = new Downloader(null, null);
                 downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
 
                 using (Process decrypt = new Process())
@@ -1585,7 +1585,7 @@ namespace UWUVCI_AIO_WPF
                 Directory.CreateDirectory(tempPath);
 
                 // Call the download method with progress reporting
-                var downloader = new WiiUDownloaderLibrary.Downloader(null, null);
+                var downloader = new Downloader(null, null);
                 downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
 
                 mvm.Progress = 75;
@@ -2040,83 +2040,96 @@ namespace UWUVCI_AIO_WPF
                 if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
-        /*
-        private static void DownloadSysTitle(MainViewModel mvm)
-        {
-            if (mvm.SysKeyset() && mvm.SysKey1set())
-            {
-                using (Process download = new Process())
-                {
-                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"0005001010004001 {Settings.Default.SysKey} \"{Path.Combine(tempPath, "download")}\"";
-
-                    download.Start();
-                    download.WaitForExit();
-                }
-                using (Process decrypt = new Process())
-                {
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(Settings.Default.BasePath, $"vwiisys")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                }
-                using (Process download = new Process())
-                {
-                    Directory.Delete(Path.Combine(tempPath, "download"), true);
-                    download.StartInfo.FileName = Path.Combine(toolsPath, "WiiUDownloader.exe");
-                    download.StartInfo.Arguments = $"0005001010004000 {Settings.Default.SysKey1} \"{Path.Combine(tempPath, "download")}\"";
-
-                    download.Start();
-                    download.WaitForExit();
-                }
-                using (Process decrypt = new Process())
-                {
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download")}\" \"{Path.Combine(tempPath, "tempd")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                    File.Copy(Path.Combine(tempPath, "tempd", "code", "font.bin"), Path.Combine(Settings.Default.BasePath, $"vwiisys", "code", "font.bin"));
-                    File.Copy(Path.Combine(tempPath, "tempd", "code", "deint.txt"), Path.Combine(Settings.Default.BasePath, $"vwiisys", "code", "deint.txt"));
-                    File.Delete(Path.Combine(Settings.Default.BasePath, $"vwiisys", "code", "app.xml"));
-                }
-            }
-        }
-        */
         private static void NDS(string injectRomPath)
         {
-            
-            string RomName = string.Empty;
-            mvvm.msg = "Getting BaseRom Name...";
-            var zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
-            using (var zip = ZipFile.Open(zipLocation, ZipArchiveMode.Read))
-                foreach (var file in zip.Entries)
-                    if (file.Name.Contains("WUP"))
-                    {
-                        RomName = file.Name;
-                        break;
-                    }
-            mvvm.Progress = 15;
-            var romPath = Directory.GetCurrentDirectory() + "\\" + RomName;
+            try
+            {
+                string romName = GetRomNameFromZip();
+                mvvm.msg = "Removing BaseRom...";
+                ReplaceRomWithInjected(romName, injectRomPath);
+                RecompressRom(romName);
+                mvvm.Progress = 80;
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                Console.WriteLine($"An error occurred in NDS method: {ex.Message}");
+                throw;
+            }
+        }
 
-            mvvm.msg = "Removing BaseRom...";
-            File.Delete(romPath);
-            File.Delete(zipLocation);
+        private static string GetRomNameFromZip()
+        {
+            mvvm.msg = "Getting BaseRom Name...";
+            string zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
+            string romName = string.Empty;
+
+            using (var zip = ZipFile.Open(zipLocation, ZipArchiveMode.Read))
+            {
+                var entry = zip.Entries.FirstOrDefault(file => file.Name.Contains("WUP"));
+                if (entry != null)
+                    romName = entry.Name;
+            }
+            mvvm.Progress = 15;
+
+            if (string.IsNullOrEmpty(romName))
+                throw new InvalidOperationException("ROM name not found in the zip archive.");
+
+            return romName;
+        }
+
+        private static void ReplaceRomWithInjected(string romName, string injectRomPath)
+        {
+            string romPath = Path.Combine(Directory.GetCurrentDirectory(), romName);
+
+            if (File.Exists(romPath))
+                File.Delete(romPath);
+
+            string zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
+
+            if (File.Exists(zipLocation))
+                File.Delete(zipLocation);
+
             File.Copy(injectRomPath, romPath);
+        }
+
+        private static void RecompressRom(string romName)
+        {
+            string zipLocation = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
+            string romPath = Path.Combine(Directory.GetCurrentDirectory(), romName);
 
             using (var stream = new FileStream(zipLocation, FileMode.Create))
-            using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
-                archive.CreateEntryFromFile(romPath, Path.GetFileName(romPath));
+                using (var archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                    archive.CreateEntryFromFile(romPath, Path.GetFileName(romPath));
 
-            mvvm.Progress = 80;
-            File.Delete(RomName);
+            File.Delete(romPath);
         }
-            
+
+
         private static void N64(string injectRomPath, N64Conf config)
         {
+            try
+            {
+                InjectRom(injectRomPath);
+                if (config.WideScreen || config.DarkFilter)
+                {
+                    ApplyCustomSettings(config);
+                }
+                ApplyIniSettings(config);
+                mvvm.Progress = 80;
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                Console.WriteLine($"An error occurred in N64 method: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static void InjectRom(string injectRomPath)
+        {
             string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
-            string mainIni = Path.Combine(baseRomPath, "content", "config", $"{Path.GetFileName(mainRomPath)}.ini");
+
             using (Process n64convert = new Process())
             {
                 mvvm.msg = "Injecting ROM...";
@@ -2124,132 +2137,112 @@ namespace UWUVCI_AIO_WPF
                 n64convert.StartInfo.CreateNoWindow = true;
                 n64convert.StartInfo.FileName = Path.Combine(toolsPath, "N64Converter.exe");
                 n64convert.StartInfo.Arguments = $"\"{injectRomPath}\" \"{mainRomPath}\"";
-
                 n64convert.Start();
                 n64convert.WaitForExit();
                 mvvm.Progress = 60;
             }
+        }
 
-            if (config.WideScreen || config.DarkFilter)
+        private static void ApplyCustomSettings(N64Conf config)
+        {
+            string frameLayoutPath = Path.Combine(baseRomPath, "content", "FrameLayout.arc");
+
+            using (var fileStream = File.Open(frameLayoutPath, FileMode.Open))
             {
-                using (var fileStream = File.Open(Path.Combine(baseRomPath, "content", "FrameLayout.arc"), FileMode.Open))
+                // I would love to modularize this code, but idfk how it works exactly
+                uint offset = 0;
+                uint size = 0;
+                byte[] offsetB = new byte[4];
+                byte[] sizeB = new byte[4];
+                byte[] nameB = new byte[0x18];
+                var header = new byte[4];
+
+                byte[] oneOut = BitConverter.GetBytes((float)1);
+                byte[] zeroOut = BitConverter.GetBytes((float)0);
+
+                byte darkFilter = (byte)(config.DarkFilter ? 0 : 1);
+                byte[] wideScreen = config.WideScreen ? new byte[] { 0x44, 0xF0, 0, 0 } : new byte[] { 0x44, 0xB4, 0, 0 };
+
+                fileStream.Read(header, 0, 4);
+
+                if (header.SequenceEqual(new byte[] { (byte)'S', (byte)'A', (byte)'R', (byte)'C' }))
                 {
-                    uint offset = 0;
-                    uint size = 0;
-                    byte[] offsetB = new byte[4];
-                    byte[] sizeB = new byte[4];
-                    byte[] nameB = new byte[0x18];
-                    var header = new byte[4];
+                    fileStream.Position = 0x0C;
+                    fileStream.Read(offsetB, 0, 4);
+                    offset = BitConverter.ToUInt32(offsetB.Reverse().ToArray(), 0);
 
-                    byte[] oneOut = BitConverter.GetBytes((float)1);
-                    byte[] zeroOut = BitConverter.GetBytes((float)0);
+                    fileStream.Position = 0x38;
+                    fileStream.Read(offsetB, 0, 4);
+                    offset += BitConverter.ToUInt32(offsetB.Reverse().ToArray(), 0);
 
-                    byte darkFilter = (byte)(config.DarkFilter ? 0 : 1);
-                    byte[] wideScreen = config.WideScreen ? new byte[] { 0x44, 0xF0, 0, 0 } : new byte[] { 0x44, 0xB4, 0, 0 };
-
+                    fileStream.Position = offset;
                     fileStream.Read(header, 0, 4);
 
-                    if (header[0] == 'S' && header[1] == 'A' && header[2] == 'R' && header[3] == 'C')
+                    if (header.SequenceEqual(new byte[] { (byte)'F', (byte)'L', (byte)'Y', (byte)'T' }))
                     {
-                        fileStream.Position = 0x0C;
+                        fileStream.Position = offset + 0x04;
                         fileStream.Read(offsetB, 0, 4);
 
-                        offset = (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
-
-                        fileStream.Position = 0x38;
-                        fileStream.Read(offsetB, 0, 4);
-                        offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+                        offset += BitConverter.ToUInt32(offsetB.Skip(2).Reverse().ToArray(), 0);
 
                         fileStream.Position = offset;
-                        fileStream.Read(header, 0, 4);
 
-                        if (header[0] == 'F' && header[1] == 'L' && header[2] == 'Y' && header[3] == 'T')
+                        while (offset < fileStream.Length)
                         {
-                            fileStream.Position = offset + 0x04;
-                            fileStream.Read(offsetB, 0, 4);
+                            fileStream.Read(header, 0, 4);
+                            fileStream.Read(sizeB, 0, 4);
+                            size = BitConverter.ToUInt32(sizeB.Reverse().ToArray(), 0);
 
-                            offsetB[0] = 0;
-                            offsetB[1] = 0;
+                            fileStream.Read(nameB, 0, 0x18);
+                            string name = Encoding.ASCII.GetString(nameB.TakeWhile(b => b != 0).ToArray());
 
-                            offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+                            if (name == "frame")
+                                WriteFrameData(fileStream, offset, zeroOut, oneOut, wideScreen);
+                            else if (name == "frame_mask")
+                                WriteDarkFilterData(fileStream, offset, darkFilter);
+                            else if (name == "power_save_bg")
+                                break; // End the loop as the required modifications are done
 
+                            offset += size;
                             fileStream.Position = offset;
-
-                            while (true)
-                            {
-                                fileStream.Read(header, 0, 4);
-                                fileStream.Read(sizeB, 0, 4);
-                                size = (uint)(sizeB[0] << 24 | sizeB[1] << 16 | sizeB[2] << 8 | sizeB[3]);
-
-                                if (header[0] == 'p' && header[1] == 'i' && header[2] == 'c' && header[3] == '1')
-                                {
-                                    fileStream.Position = offset + 0x0C;
-                                    fileStream.Read(nameB, 0, 0x18);
-                                    int count = Array.IndexOf(nameB, (byte)0);
-                                    string name = Encoding.ASCII.GetString(nameB, 0, count);
-
-                                    if (name == "frame")
-                                    {
-                                        fileStream.Position = offset + 0x2C;
-                                        fileStream.WriteByte(zeroOut[3]);
-                                        fileStream.WriteByte(zeroOut[2]);
-                                        fileStream.WriteByte(zeroOut[1]);
-                                        fileStream.WriteByte(zeroOut[0]);
-
-                                        fileStream.Position = offset + 0x30;//TranslationX
-                                        fileStream.WriteByte(zeroOut[3]);
-                                        fileStream.WriteByte(zeroOut[2]);
-                                        fileStream.WriteByte(zeroOut[1]);
-                                        fileStream.WriteByte(zeroOut[0]);
-
-                                        fileStream.Position = offset + 0x44;//ScaleX
-                                        fileStream.WriteByte(oneOut[3]);
-                                        fileStream.WriteByte(oneOut[2]);
-                                        fileStream.WriteByte(oneOut[1]);
-                                        fileStream.WriteByte(oneOut[0]);
-
-                                        fileStream.Position = offset + 0x48;//ScaleY
-                                        fileStream.WriteByte(oneOut[3]);
-                                        fileStream.WriteByte(oneOut[2]);
-                                        fileStream.WriteByte(oneOut[1]);
-                                        fileStream.WriteByte(oneOut[0]);
-
-                                        fileStream.Position = offset + 0x4C;//Widescreen
-                                        fileStream.Write(wideScreen, 0, 4);
-                                    }
-                                    else if (name == "frame_mask")
-                                    {
-                                        fileStream.Position = offset + 0x08;//Dark filter
-                                        fileStream.WriteByte(darkFilter);
-                                    }
-                                    else if (name == "power_save_bg")
-                                    {
-                                        //This means we finished frame_mask and frame edits so we can end the loop
-                                        break;
-                                    }
-
-                                    offset += size;
-                                    fileStream.Position = offset;
-                                }
-                                else if (offset + size >= fileStream.Length)
-                                {
-                                    //do nothing
-                                }
-                                else
-                                {
-                                    offset += size;
-                                    fileStream.Position = offset;
-                                }
-                            }
                         }
                     }
-                    fileStream.Close();
                 }
-                mvvm.Progress = 70;
             }
+            mvvm.Progress = 70;
+        }
 
+        private static void WriteFrameData(FileStream fileStream, uint offset, byte[] zeroOut, byte[] oneOut, byte[] wideScreen)
+        {
+            fileStream.Position = offset + 0x2C;
+            fileStream.Write(zeroOut, 0, zeroOut.Length);
+
+            fileStream.Position = offset + 0x30; // TranslationX
+            fileStream.Write(zeroOut, 0, zeroOut.Length);
+
+            fileStream.Position = offset + 0x44; // ScaleX
+            fileStream.Write(oneOut, 0, oneOut.Length);
+
+            fileStream.Position = offset + 0x48; // ScaleY
+            fileStream.Write(oneOut, 0, oneOut.Length);
+
+            fileStream.Position = offset + 0x4C; // Widescreen
+            fileStream.Write(wideScreen, 0, wideScreen.Length);
+        }
+
+        private static void WriteDarkFilterData(FileStream fileStream, uint offset, byte darkFilter)
+        {
+            fileStream.Position = offset + 0x08; // Dark filter
+            fileStream.WriteByte(darkFilter);
+        }
+
+        private static void ApplyIniSettings(N64Conf config)
+        {
             mvvm.msg = "Copying INI...";
-            if(config.INIBin == null)
+            string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
+            string mainIni = Path.Combine(baseRomPath, "content", "config", $"{Path.GetFileName(mainRomPath)}.ini");
+
+            if (config.INIBin == null)
             {
                 if (config.INIPath == null)
                 {
@@ -2268,22 +2261,20 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(mainIni);
                 File.Move("custom.ini", mainIni);
             }
-            mvvm.Progress = 80;
         }
+
 
         //Compressed or decompresses the RPX using wiiurpxtool
         private static void RPXdecomp(string rpxpath)
         {
-            using (Process rpxtool = new Process())
-            {
-                rpxtool.StartInfo.UseShellExecute = false;
-                rpxtool.StartInfo.CreateNoWindow = true;
-                rpxtool.StartInfo.FileName = Path.Combine(toolsPath, "wiiurpxtool.exe");
-                rpxtool.StartInfo.Arguments = $"-d \"{rpxpath}\"";
+            using Process rpxtool = new Process();
+            rpxtool.StartInfo.UseShellExecute = false;
+            rpxtool.StartInfo.CreateNoWindow = true;
+            rpxtool.StartInfo.FileName = Path.Combine(toolsPath, "wiiurpxtool.exe");
+            rpxtool.StartInfo.Arguments = $"-d \"{rpxpath}\"";
 
-                rpxtool.Start();
-                rpxtool.WaitForExit();
-            }
+            rpxtool.Start();
+            rpxtool.WaitForExit();
         }
 
         private static void RPXcomp(string rpxpath)
