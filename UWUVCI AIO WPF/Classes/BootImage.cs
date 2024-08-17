@@ -73,6 +73,9 @@ namespace UWUVCI_AIO_WPF.Classes
 
         private bool ContainsJapanese(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return false;
+
             foreach (char c in text)
             {
                 if (char.GetUnicodeCategory(c) == UnicodeCategory.OtherLetter) // this covers Hiragana, Katakana, and Kanji
@@ -122,59 +125,133 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public Bitmap Create(string console)
         {
-            using (var img = new Bitmap(1280, 720))
-            using (var g = Graphics.FromImage(img))
+            Bitmap img = new Bitmap(1280, 720);
+            Graphics g = Graphics.FromImage(img);
+            g.PixelOffsetMode = PixelOffsetMode.Half;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.CompositingMode = CompositingMode.SourceOver;
+            g.CompositingQuality = CompositingQuality.HighQuality;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            g.Clear(Color.White);
+            try
             {
-                g.PixelOffsetMode = PixelOffsetMode.Half;
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                g.CompositingMode = CompositingMode.SourceOver;
-                g.CompositingQuality = CompositingQuality.HighQuality;
-                g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-                g.Clear(Color.White);
+                PrivateFontCollection privateFonts = new PrivateFontCollection();
+                privateFonts.AddFontFile(@"bin\Tools\font.otf");
+                font = new Font(privateFonts.Families[0], 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+            }
+            catch (Exception)
+            {
+                font = new Font("Trebuchet MS", 10.0F, FontStyle.Bold, GraphicsUnit.Point);
+            }
 
-                font = GetFont();
-                using (var brush = new SolidBrush(Color.FromArgb(32, 32, 32)))
-                using (var outline = new Pen(Color.FromArgb(222, 222, 222), 4.0F))
-                using (var shadow = new Pen(Color.FromArgb(190, 190, 190), 6.0F))
+            SolidBrush brush = new SolidBrush(Color.FromArgb(32, 32, 32));
+            Pen outline = new Pen(Color.FromArgb(222, 222, 222), 4.0F);
+            Pen shadow = new Pen(Color.FromArgb(190, 190, 190), 6.0F);
+            StringFormat format = new StringFormat();
+
+            _imageVar = "_rectangle" + console;
+            Rectangle rectangle;
+            try
+            {
+                FieldInfo fieldInfo = GetType().GetField(_imageVar, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+                rectangle = fieldInfo != null
+                    ? (Rectangle)fieldInfo.GetValue(this)
+                    : _rectangleH4V3;
+
+            }
+            catch
+            {
+                //if rectangle isn't able to get set then H4V3 should be used.
+                rectangle = _rectangleH4V3;
+            }
+
+            if (TitleScreen != null)
+                g.DrawImage(TitleScreen, rectangle);
+            else
+                g.FillRectangle(new SolidBrush(Color.Black), rectangle);
+
+            if (Frame != null)
+                g.DrawImage(Frame, new Rectangle(0, 0, 1280, 720));
+
+            var isNotEnglish = false;
+
+            if (!string.IsNullOrEmpty(NameLine1) || !string.IsNullOrEmpty(NameLine2))
+            {
+                if (ContainsJapanese(NameLine1) || ContainsJapanese(NameLine2))
+                    isNotEnglish = true;
+
+                Pen outlineBold = new Pen(Color.FromArgb(222, 222, 222), 5.0F);
+                Pen shadowBold = new Pen(Color.FromArgb(190, 190, 190), 7.0F);
+                Rectangle rectangleNL1 = Longname ? new Rectangle(578, 313, 640, 50) : new Rectangle(578, 340, 640, 50);
+                Rectangle rectangleNL2 = new Rectangle(578, 368, 640, 50);
+                GraphicsPath nl1 = new GraphicsPath();
+                GraphicsPath nl2 = new GraphicsPath();
+
+                if (Longname)
                 {
-                    var rectangle = GetRectangleForConsole(console);
-
-                    if (TitleScreen != null)
-                        g.DrawImage(TitleScreen, rectangle);
-                    else
-                        g.FillRectangle(Brushes.Black, rectangle);
-
-                    if (Frame != null)
-                        g.DrawImage(Frame, new Rectangle(0, 0, 1280, 720));
-
-                    bool isNotEnglish = ContainsJapanese(NameLine1) || ContainsJapanese(NameLine2);
-
-                    if (!string.IsNullOrEmpty(NameLine1))
-                    {
-                        DrawText(g, NameLine1, font, Longname ? new Rectangle(578, 313, 640, 50) : new Rectangle(578, 340, 640, 50), shadow, outline, brush);
-                    }
-
-                    if (!string.IsNullOrEmpty(NameLine2))
-                    {
-                        DrawText(g, NameLine2, font, new Rectangle(578, 368, 640, 50), shadow, outline, brush);
-                    }
-
-                    if (Released > 0)
-                    {
-                        var releasedString = isNotEnglish ? Released.ToString() + "年発売" : "Released: " + Released;
-                        DrawText(g, releasedString, font, new Rectangle(586, 450, 600, 40), shadow, outline, brush);
-                    }
-
-                    if (Players > 0)
-                    {
-                        string pStr = Players >= 4 ? "1-4" : (Players == 1 ? "1" : "1-" + Players);
-                        pStr = isNotEnglish ? "プレイ人数　" + pStr + "人" : "Players: " + pStr;
-                        DrawText(g, pStr, font, new Rectangle(586, 496, 600, 40), shadow, outline, brush);
-                    }
-
-                    return img;
+                    nl1.AddString(NameLine1, font.FontFamily,
+                        (int)(FontStyle.Bold),
+                        g.DpiY * 37.0F / 72.0F, rectangleNL1, format);
+                    g.DrawPath(shadowBold, nl1);
+                    g.DrawPath(outlineBold, nl1);
+                    g.FillPath(brush, nl1);
+                    nl2.AddString(NameLine2, font.FontFamily,
+                        (int)(FontStyle.Bold),
+                        g.DpiY * 37.0F / 72.0F, rectangleNL2, format);
+                    g.DrawPath(shadowBold, nl2);
+                    g.DrawPath(outlineBold, nl2);
+                    g.FillPath(brush, nl2);
+                }
+                else
+                {
+                    nl1.AddString(NameLine1, font.FontFamily,
+                        (int)(FontStyle.Bold),
+                        g.DpiY * 37.0F / 72.0F, rectangleNL1, format);
+                    g.DrawPath(shadowBold, nl1);
+                    g.DrawPath(outlineBold, nl1);
+                    g.FillPath(brush, nl1);
                 }
             }
+
+
+            if (Released > 0)
+            {
+                GraphicsPath r = new GraphicsPath();
+
+                var releasedString = "Released: " + Released.ToString();
+                if (isNotEnglish)
+                    releasedString = Released.ToString() + "年発売";
+
+                r.AddString(releasedString, font.FontFamily,
+                    (int)(FontStyle.Regular),
+                    g.DpiY * 25.0F / 72.0F, new Rectangle(586, 450, 600, 40), format);
+                g.DrawPath(shadow, r);
+                g.DrawPath(outline, r);
+                g.FillPath(brush, r);
+            }
+
+            if (Players > 0)
+            {
+                string pStr = Players >= 4 ? "1-4" : (Players == 1 ? "1" : "1-" + Players.ToString());
+
+                if (isNotEnglish)
+                    pStr = "プレイ人数　" + pStr + "人";
+                else
+                    pStr = "Players: " + pStr;
+
+                GraphicsPath p = new GraphicsPath();
+
+                p.AddString(pStr, font.FontFamily,
+                (int)(FontStyle.Regular),
+                g.DpiY * 25.0F / 72.0F, new Rectangle(586, 496, 600, 40), format);
+
+                g.DrawPath(shadow, p);
+                g.DrawPath(outline, p);
+                g.FillPath(brush, p);
+            }
+
+            return img;
         }
     }
 }
