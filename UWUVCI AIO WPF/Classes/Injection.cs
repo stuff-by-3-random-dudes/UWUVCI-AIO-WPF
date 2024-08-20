@@ -22,6 +22,7 @@ using System.Management;
 using UWUVCI_AIO_WPF.Models;
 using WiiUDownloaderLibrary.Models;
 using WiiUDownloaderLibrary;
+using Newtonsoft.Json.Linq;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -2047,6 +2048,22 @@ namespace UWUVCI_AIO_WPF
                 string romName = GetRomNameFromZip();
                 mvvm.msg = "Removing BaseRom...";
                 ReplaceRomWithInjected(romName, injectRomPath);
+
+
+                if (mvvm.DSLayout) {
+                    mvvm.msg = "Adding additional DS layout screens...";
+
+                    using (var zip = ZipFile.Open(Path.Combine(toolsPath, "DSLayoutScreens.zip"), ZipArchiveMode.Read))
+                        zip.ExtractToDirectory(Path.Combine(tempPath, "DSLayoutScreens"));
+
+                    DirectoryCopy(Path.Combine(tempPath, "DSLayoutScreens", (mvvm.STLayout ? "Phantom Hourglass" : "All")), baseRomPath, true);
+                }
+                if (mvvm.RendererScale || mvvm.Brightness != 80 || mvvm.PixelArtUpscaler != 0)
+                {
+                    mvvm.msg = "Updating configuration_cafe.json...";
+                    UpdateConfigurationCafeJson();
+                }
+
                 RecompressRom(romName);
                 mvvm.Progress = 80;
             }
@@ -2056,6 +2073,25 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine($"An error occurred in NDS method: {ex.Message}");
                 throw;
             }
+        }
+
+        private static void UpdateConfigurationCafeJson()
+        {
+            var configurationCafe = Path.Combine(baseRomPath, "content", "0010", "configuration_cafe.json");
+
+            // Load the JSON file
+            string jsonContent = File.ReadAllText(configurationCafe);
+
+            // Parse the JSON content
+            var jsonObject = JObject.Parse(jsonContent);
+
+            // Update the values
+            jsonObject["configuration"]["3DRendering"]["RenderScale"] = (mvvm.RendererScale ? 0 : 1);
+            jsonObject["configuration"]["Display"]["Brightness"] = mvvm.Brightness;
+            jsonObject["configuration"]["Display"]["PixelArtUpscaler"] = mvvm.PixelArtUpscaler;
+
+            // Write the updated JSON back to the file
+            File.WriteAllText(configurationCafe, jsonObject.ToString());
         }
 
         private static string GetRomNameFromZip()
@@ -2761,30 +2797,20 @@ namespace UWUVCI_AIO_WPF
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
             if (!dir.Exists)
-            {
                 throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
-            }
 
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(destDirName))
-            {
                 Directory.CreateDirectory(destDirName);
-            }
 
             // Get the files in the directory and copy them to the new location.
             foreach (FileInfo file in dir.EnumerateFiles())
-            {
-                file.CopyTo(Path.Combine(destDirName, file.Name), false);
-            }
+                file.CopyTo(Path.Combine(destDirName, file.Name), true);
 
             // If copying subdirectories, copy them and their contents to new location.
             if (copySubDirs)
-            {
                 foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
-                {
                     DirectoryCopy(subdir.FullName,  Path.Combine(destDirName, subdir.Name), copySubDirs);
-                }
-            }
         }
         
     }

@@ -12,14 +12,45 @@
     <Grid DataContext="{StaticResource mvm}" Focusable="False">
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" Name="snesnes" Visibility="Hidden">
             <CheckBox Content="Enable Pixel Perfect Mode" ToolTip="May not work with every Base" Margin="0,0,0,26"  IsTabStop="False" Click="CheckBox_Click" Name="pixp"/>
-
+        </StackPanel>
+        <StackPanel Margin="10,20,81,444" Orientation="Horizontal" Name="nds" Visibility="Hidden">
+            <!-- RenderingScale -->
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="RenderingScale:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="May cause issues, doesn't work for every base. Here are base titles that work: &#x0a;Big Brain Academy&#x0a;WarioWare: Touched&#x0a;Yoshi's Island DS&#x0a;Mario Kart DS&#x0a;New Super Mario Bros.&#x0a;Brain Age: Train Your Brain in Minutes a Day (aka Dr. Kawashima's Brain Training)&#x0a;Yoshi Touch &amp; Go&#x0a;Mario &amp; Luigi: Partners in Time&#x0a;Star Fox Command&#x0a;Kirby Squeak Squad&#x0a;DK: Jungle Climber&#x0a;Wario: Master of Disguise"/>
+                <RadioButton VerticalAlignment="Center" Content="1" GroupName="RenderingScale" IsChecked="True" ToolTip="1 is the default amount set by Nintendo." Checked="RendererScale1_Checked"/>
+                <RadioButton VerticalAlignment="Center" Content="2" GroupName="RenderingScale" ToolTip="Setting it to 2 may cause slowdown, possibility of injects outright not working, hang on exit and softlock. To close out you'll have to power the Wii U off completely." Checked="RendererScale2_Checked"/>
+            </StackPanel>
+            <!-- Brightness -->
+            <StackPanel Orientation="Horizontal" Margin="65,0,0,0">
+                <TextBlock Text="Brightness:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Width="29" Text="{Binding Brightness}" VerticalAlignment="Center" ToolTip="80% is the normal (darkfilter) amount released officially for VC titles."/>
+                <TextBlock Text="%" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </StackPanel>
+            <!-- PixelArtUpScaler -->
+            <StackPanel Orientation="Horizontal" Margin="65,0,0,0">
+                <TextBlock Text="PixelArtUpScaler:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Width="26" Text="{Binding PixelArtUpscaler}" VerticalAlignment="Center" ToolTip="This might lead to graphical artifacts if pushed too high. Up to 32 has been confirmed safe."/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Name="ndsLayout" Orientation="Horizontal" Visibility="Hidden">
+            <!-- DSLayout -->
+            <StackPanel Orientation="Horizontal" Margin="10,-225,0,0" Height="50">
+                <TextBlock Text="More DS Layout Screens:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="Adds additional layout screens to help customize the way you can play."/>
+                <RadioButton VerticalAlignment="Center" Content="False" GroupName="DSLayout" IsChecked="True"  Checked="DSLayoutFalse_Checked" ToolTip="Default layout screens from Nintendo" Margin="0,0,10,0"/>
+                <RadioButton VerticalAlignment="Center" Content="True" GroupName="DSLayout" Checked="DSLayoutTrue_Checked" ToolTip="Adds additional layouts done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/."/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin= "40,-225,0,0" Height="50" Width="334">
+                <TextBlock Text="Are you using a Phantom Hourglass base?" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="Selecting this only matters if 'More DS Layout Screens' is set as 'True'"/>
+                <RadioButton VerticalAlignment="Center" Content="False" GroupName="STLayout" IsChecked="True"  Checked="STLayoutFalse_Checked"  Margin="0,0,10,0"/>
+                <RadioButton VerticalAlignment="Center" Content="True" GroupName="STLayout" Checked="STLayoutTrue_Checked" ToolTip="Phantom Hourglass screen layout done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/."/>
+            </StackPanel>
         </StackPanel>
         <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name="rp" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,406" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"  IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="ICON IMAGE" ToolTip="Also known as IconTex" Name="ic" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,181,157,283" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGAIco.ImgPath}" Cursor="Help"  IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="GAMEPAD IMAGE (OPTIONAL)" ToolTip="Also known as bootDrcTex" Name="drc" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,272,157,193" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGADrc.ImgPath}" Cursor="Help" IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="TV IMAGE" Name="tv" ToolTip="Also known as bootTvTex" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,227,157,238" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help" IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="LOGO IMAGE (OPTIONAL)" ToolTip="Also known as bootLogoTex" Name="log"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,317,157,149" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Cursor="Help" Text="{Binding GameConfiguration.TGALog.ImgPath}" IsTabStop="False"/>
-        <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,413,157,52" Background="{x:Null}" TextChanged="gn_TextChanged" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" Name="gn" KeyUp="gn_KeyUp" MaxLength="250" IsTabStop="False"/>
+        <TextBox materialDesign:HintAssist.Hint="GAME NAME" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,413,157,52" Background="{x:Null}" TextChanged="gn_TextChanged" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameName}" Name="gn" MaxLength="250" IsTabStop="False"/>
         <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame" IsTabStop="False"/>
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,327,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex" IsTabStop="False"/>
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,238,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex" IsTabStop="False"/>
