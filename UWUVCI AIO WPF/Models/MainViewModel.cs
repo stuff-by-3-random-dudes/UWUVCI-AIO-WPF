@@ -359,6 +359,58 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        private bool rendererScale = false;
+        private int brightness = 80;
+        private int pixelArtUpscaler = 0;
+        private bool dsLayout = false;
+        private bool stLayout = false;
+
+        public bool RendererScale
+        {
+            get { return rendererScale; }
+            set
+            {
+                rendererScale = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool DSLayout
+        {
+            get { return dsLayout; }
+            set
+            {
+                dsLayout = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool STLayout
+        {
+            get { return stLayout; }
+            set
+            {
+                stLayout = value;
+                OnPropertyChanged();
+            }
+        }
+        public int Brightness
+        {
+            get { return brightness; }
+            set
+            {
+                brightness = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int PixelArtUpscaler
+        {
+            get { return pixelArtUpscaler; }
+            set
+            {
+                pixelArtUpscaler = value;
+                OnPropertyChanged();
+            }
+        }
         private bool removeDithering = false;
         public bool RemoveDithering
         {
