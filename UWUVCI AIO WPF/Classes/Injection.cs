@@ -2052,22 +2052,17 @@ namespace UWUVCI_AIO_WPF
 
                 if (mvvm.DSLayout) {
                     mvvm.msg = "Adding additional DS layout screens...";
-                    if (mvvm.STLayout)
-                    {
 
-                    }
-                    else
-                    {
+                    using (var zip = ZipFile.Open(Path.Combine(toolsPath, "DSLayoutScreens.zip"), ZipArchiveMode.Read))
+                        zip.ExtractToDirectory(Path.Combine(tempPath, "DSLayoutScreens"));
 
-                    }
-
+                    DirectoryCopy(Path.Combine(tempPath, "DSLayoutScreens", (mvvm.STLayout ? "Phantom Hourglass" : "All")), baseRomPath, true);
                 }
                 if (mvvm.RendererScale || mvvm.Brightness != 80 || mvvm.PixelArtUpscaler != 0)
                 {
                     mvvm.msg = "Updating configuration_cafe.json...";
                     UpdateConfigurationCafeJson();
                 }
-
 
                 RecompressRom(romName);
                 mvvm.Progress = 80;
@@ -2802,30 +2797,20 @@ namespace UWUVCI_AIO_WPF
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
             if (!dir.Exists)
-            {
                 throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
-            }
 
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(destDirName))
-            {
                 Directory.CreateDirectory(destDirName);
-            }
 
             // Get the files in the directory and copy them to the new location.
             foreach (FileInfo file in dir.EnumerateFiles())
-            {
-                file.CopyTo(Path.Combine(destDirName, file.Name), false);
-            }
+                file.CopyTo(Path.Combine(destDirName, file.Name), true);
 
             // If copying subdirectories, copy them and their contents to new location.
             if (copySubDirs)
-            {
                 foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
-                {
                     DirectoryCopy(subdir.FullName,  Path.Combine(destDirName, subdir.Name), copySubDirs);
-                }
-            }
         }
         
     }
