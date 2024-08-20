@@ -22,6 +22,7 @@ using System.Management;
 using UWUVCI_AIO_WPF.Models;
 using WiiUDownloaderLibrary.Models;
 using WiiUDownloaderLibrary;
+using Newtonsoft.Json.Linq;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -2047,6 +2048,27 @@ namespace UWUVCI_AIO_WPF
                 string romName = GetRomNameFromZip();
                 mvvm.msg = "Removing BaseRom...";
                 ReplaceRomWithInjected(romName, injectRomPath);
+
+
+                if (mvvm.DSLayout) {
+                    mvvm.msg = "Adding additional DS layout screens...";
+                    if (mvvm.STLayout)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+                if (mvvm.RendererScale || mvvm.Brightness != 80 || mvvm.PixelArtUpscaler != 0)
+                {
+                    mvvm.msg = "Updating configuration_cafe.json...";
+                    UpdateConfigurationCafeJson();
+                }
+
+
                 RecompressRom(romName);
                 mvvm.Progress = 80;
             }
@@ -2056,6 +2078,25 @@ namespace UWUVCI_AIO_WPF
                 Console.WriteLine($"An error occurred in NDS method: {ex.Message}");
                 throw;
             }
+        }
+
+        private static void UpdateConfigurationCafeJson()
+        {
+            var configurationCafe = Path.Combine(baseRomPath, "content", "0010", "configuration_cafe.json");
+
+            // Load the JSON file
+            string jsonContent = File.ReadAllText(configurationCafe);
+
+            // Parse the JSON content
+            var jsonObject = JObject.Parse(jsonContent);
+
+            // Update the values
+            jsonObject["configuration"]["3DRendering"]["RenderScale"] = (mvvm.RendererScale ? 0 : 1);
+            jsonObject["configuration"]["Display"]["Brightness"] = mvvm.Brightness;
+            jsonObject["configuration"]["Display"]["PixelArtUpscaler"] = mvvm.PixelArtUpscaler;
+
+            // Write the updated JSON back to the file
+            File.WriteAllText(configurationCafe, jsonObject.ToString());
         }
 
         private static string GetRomNameFromZip()
