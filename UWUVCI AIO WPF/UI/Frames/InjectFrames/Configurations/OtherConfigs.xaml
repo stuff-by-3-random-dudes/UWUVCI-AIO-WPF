@@ -32,14 +32,14 @@
                 <TextBox Width="26" Text="{Binding PixelArtUpscaler}" VerticalAlignment="Center" ToolTip="This might lead to graphical artifacts if pushed too high. Up to 32 has been confirmed safe."/>
             </StackPanel>
         </StackPanel>
-        <StackPanel Name="ndsLayout" Orientation="Horizontal">
+        <StackPanel Name="ndsLayout" Orientation="Horizontal" Visibility="Hidden">
             <!-- DSLayout -->
             <StackPanel Orientation="Horizontal" Margin="10,-225,0,0" Height="50">
                 <TextBlock Text="More DS Layout Screens:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="Adds additional layout screens to help customize the way you can play."/>
                 <RadioButton VerticalAlignment="Center" Content="False" GroupName="DSLayout" IsChecked="True"  Checked="DSLayoutFalse_Checked" ToolTip="Default layout screens from Nintendo" Margin="0,0,10,0"/>
                 <RadioButton VerticalAlignment="Center" Content="True" GroupName="DSLayout" Checked="DSLayoutTrue_Checked" ToolTip="Adds additional layouts done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/."/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin= "60,-225,0,0" Height="50" Width="334">
+            <StackPanel Orientation="Horizontal" Margin= "40,-225,0,0" Height="50" Width="334">
                 <TextBlock Text="Are you using a Phantom Hourglass base?" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="Selecting this only matters if 'More DS Layout Screens' is set as 'True'"/>
                 <RadioButton VerticalAlignment="Center" Content="False" GroupName="STLayout" IsChecked="True"  Checked="STLayoutFalse_Checked"  Margin="0,0,10,0"/>
                 <RadioButton VerticalAlignment="Center" Content="True" GroupName="STLayout" Checked="STLayoutTrue_Checked" ToolTip="Phantom Hourglass screen layout done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/."/>
