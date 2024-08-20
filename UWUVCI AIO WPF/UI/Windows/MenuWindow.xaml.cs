@@ -214,6 +214,12 @@ namespace UWUVCI_AIO_WPF
             mvm.regionfriius = false;
             mvm.pixelperfect = false;
             mvm.injected2 = false;
+            mvm.Brightness = 80;
+            mvm.RendererScale = false;
+            mvm.RemoveDeflicker = false;
+            mvm.RemoveDithering = false;
+            mvm.PixelArtUpscaler = 0;
+            mvm.DSLayout = false;
 
             mvm.RemoveCreatedIMG();
             mvm.isDoneMW();
