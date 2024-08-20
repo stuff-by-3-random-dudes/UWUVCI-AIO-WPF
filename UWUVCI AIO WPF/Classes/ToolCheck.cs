@@ -57,7 +57,8 @@ namespace UWUVCI_AIO_WPF.Classes
             "forwarder.dol",
             "gba1.zip",
             "gba2.zip",
-            "c2w_patcher.exe"
+            "c2w_patcher.exe",
+            "DSLayoutScreens.zip"
         };
 
         public static bool DoesToolsFolderExist()
