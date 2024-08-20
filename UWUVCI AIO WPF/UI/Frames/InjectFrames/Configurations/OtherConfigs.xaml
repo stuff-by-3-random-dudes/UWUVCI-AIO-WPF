@@ -12,8 +12,27 @@
     <Grid DataContext="{StaticResource mvm}" Focusable="False">
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" Name="snesnes" Visibility="Hidden">
             <CheckBox Content="Enable Pixel Perfect Mode" ToolTip="May not work with every Base" Margin="0,0,0,26"  IsTabStop="False" Click="CheckBox_Click" Name="pixp"/>
-
         </StackPanel>
+            <StackPanel Margin="10,20,81,444" Orientation="Horizontal" Name="nds" >
+            <!-- RenderingScale -->
+            <StackPanel Orientation="Horizontal" Visibility="Hidden" Name="renderScale">
+                <TextBlock Text="RenderingScale:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="May cause issues, and doesn't work for every base. Please double-check the base and game before advancing."/>
+                <RadioButton VerticalAlignment="Center" Content="1" GroupName="RenderingScale" IsChecked="True" ToolTip="1 is the default amount set by Nintendo."/>
+                <RadioButton VerticalAlignment="Center" Content="2" GroupName="RenderingScale" ToolTip="Setting it to 2 may cause slowdown, possibility of injects outright not working, hang on exit and softlock. To close out you'll have to power the Wii U off completely."/>
+            </StackPanel>
+            <!-- Brightness -->
+            <StackPanel Orientation="Horizontal" Margin="65,0,0,0">
+                <TextBlock Text="Brightness:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Width="29" Text="80" VerticalAlignment="Center" ToolTip="80% is the normal (darkfilter) amount released officially for VC titles."/>
+                <TextBlock Text="%" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            </StackPanel>
+            <!-- PixelArtUpScaler -->
+            <StackPanel Orientation="Horizontal" Margin="65,0,0,0">
+                <TextBlock Text="PixelArtUpScaler:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Width="26" Text="1" VerticalAlignment="Center" ToolTip="This might lead to graphical artifacts if pushed too high. Up to 32 has been confirmed safe."/>
+            </StackPanel>
+        </StackPanel>
+        
         <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name="rp" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,406" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"  IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="ICON IMAGE" ToolTip="Also known as IconTex" Name="ic" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,181,157,283" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGAIco.ImgPath}" Cursor="Help"  IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="GAMEPAD IMAGE (OPTIONAL)" ToolTip="Also known as bootDrcTex" Name="drc" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,272,157,193" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGADrc.ImgPath}" Cursor="Help" IsTabStop="False"/>

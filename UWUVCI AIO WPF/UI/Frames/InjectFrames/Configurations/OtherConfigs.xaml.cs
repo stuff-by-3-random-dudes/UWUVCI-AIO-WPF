@@ -22,10 +22,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             sound.ToolTip += "\nWill be cut to 6 seconds of Length";
+
             if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
-            {
                 snesnes.Visibility = Visibility.Visible;
-            }
+            else if (mvm.GameConfiguration.Console == GameConsoles.NDS)
+                nds.Visibility = Visibility.Visible;
         }
         public void clearImages(int i)
         {
@@ -62,10 +63,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
             sound.ToolTip += "\nWill be cut to 6 seconds of Length";
+
             if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
-            {
                 snesnes.Visibility = Visibility.Visible;
-            }
+            else if (mvm.GameConfiguration.Console == GameConsoles.NDS)
+                nds.Visibility = Visibility.Visible;
         }
         public void Dispose()
         {
