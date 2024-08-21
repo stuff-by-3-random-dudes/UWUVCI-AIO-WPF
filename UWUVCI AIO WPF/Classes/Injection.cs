@@ -2013,7 +2013,8 @@ namespace UWUVCI_AIO_WPF
                     using (var zip = ZipFile.Open(Path.Combine(toolsPath, "DSLayoutScreens.zip"), ZipArchiveMode.Read))
                         zip.ExtractToDirectory(Path.Combine(tempPath, "DSLayoutScreens"));
 
-                    DirectoryCopy(Path.Combine(tempPath, "DSLayoutScreens", (mvvm.STLayout ? "Phantom Hourglass" : "All")), baseRomPath, true);
+                    // Yes this is a typo but it's becuase I fucked up when I uploaded the original file.
+                    DirectoryCopy(Path.Combine(tempPath, "DSLayoutScreens", (mvvm.STLayout ? "Phatnom Hourglass" : "All")), baseRomPath, true);
                 }
                 if (mvvm.RendererScale || mvvm.Brightness != 80 || mvvm.PixelArtUpscaler != 0)
                 {
