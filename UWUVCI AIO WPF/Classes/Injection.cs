@@ -1558,20 +1558,7 @@ namespace UWUVCI_AIO_WPF
                 var downloader = new Downloader(null, null);
                 downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
 
-                using (Process decrypt = new Process())
-                {
-                    if (!mvm.debug)
-                    {
-                        decrypt.StartInfo.UseShellExecute = false;
-                        decrypt.StartInfo.CreateNoWindow = true;
-                    }
-
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download", b.Tid)}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                }
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
                 mvm.Progress = 99;
                 foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]", "content"), "*.nfs"))
                     File.Delete(sFile);
@@ -1590,23 +1577,7 @@ namespace UWUVCI_AIO_WPF
                 downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
 
                 mvm.Progress = 75;
-                try
-                {
-                    using Process decrypt = new Process();
-                    if (!mvm.debug)
-                    {
-                        decrypt.StartInfo.UseShellExecute = false;
-                        decrypt.StartInfo.CreateNoWindow = true;
-                    }
-                    decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                    decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{Path.Combine(tempPath, "download", b.Tid)}\" \"{Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]")}\"";
-
-                    decrypt.Start();
-                    decrypt.WaitForExit();
-                } catch(Exception ex)
-                {
-                    throw ex;
-                }
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
                 mvm.Progress = 100;
             }
         }
@@ -1623,21 +1594,7 @@ namespace UWUVCI_AIO_WPF
                 outputPath = Path.Combine(Settings.Default.BasePath, $"[{console}] Custom_{i}");
                 i++;
             }
-            try
-            {
-                using Process decrypt = new Process();
-                decrypt.StartInfo.UseShellExecute = false;
-                decrypt.StartInfo.CreateNoWindow = true;
-                decrypt.StartInfo.FileName = Path.Combine(toolsPath, "Cdecrypt.exe");
-                decrypt.StartInfo.Arguments = $"{Settings.Default.Ckey} \"{path}\" \"{outputPath}";
-
-                decrypt.Start();
-                decrypt.WaitForExit();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, path, outputPath);
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
