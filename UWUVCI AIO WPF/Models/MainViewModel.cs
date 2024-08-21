@@ -2553,65 +2553,116 @@ namespace UWUVCI_AIO_WPF
 
         public void getBootIMGGBA(string rom)
         {
-            string repoid = "";
-            string SystemType = "gba/";
-            using (var fs = new FileStream(rom,
-                                 FileMode.Open,
-                                 FileAccess.Read))
+            try
             {
+                string repoid = "";
+                string SystemType = "gba/";
+                using (var fs = new FileStream(rom,
+                                     FileMode.Open,
+                                     FileAccess.Read))
+                {
 
-                byte[] procode = new byte[4];
-                fs.Seek(0xAC, SeekOrigin.Begin);
-                fs.Read(procode, 0, 4);
-                repoid = ByteArrayToString(procode);
-                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-                repoid = rgx.Replace(repoid, "");
-                Console.WriteLine("prodcode before scramble: " + repoid);
+                    byte[] procode = new byte[4];
+                    fs.Seek(0xAC, SeekOrigin.Begin);
+                    fs.Read(procode, 0, 4);
+                    repoid = ByteArrayToString(procode);
+                    Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                    repoid = rgx.Replace(repoid, "");
+                    Console.WriteLine("prodcode before scramble: " + repoid);
 
-                fs.Close();
-                Console.WriteLine("prodcode after scramble: " + repoid);
+                    fs.Close();
+                    Console.WriteLine("prodcode after scramble: " + repoid);
+                }
+                List<string> repoids = new List<string>
+                {
+                    SystemType + repoid,
+                    SystemType + repoid.Substring(0, 3) + "E",
+                    SystemType + repoid.Substring(0, 3) + "P",
+                    SystemType + repoid.Substring(0, 3) + "J"
+                };
+
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA);
             }
-            List<string> repoids = new List<string>
+            catch (Exception e)
             {
-                SystemType + repoid,
-                SystemType + repoid.Substring(0, 3) + "E",
-                SystemType + repoid.Substring(0, 3) + "P",
-                SystemType + repoid.Substring(0, 3) + "J"
-            };
-
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA);
-
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
         }
         public void getBootIMGSNES(string rom)
         {
-            string SystemType = "snes/";
-            var repoid = GetFakeSNESProdcode(rom);
-            List<string> repoids = new List<string>
+            try
             {
-                SystemType + repoid
-            };
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES);
+                string SystemType = "snes/";
+                var repoid = GetFakeSNESProdcode(rom);
+                List<string> repoids = new List<string>
+                {
+                    SystemType + repoid
+                };
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES);
+            } 
+            catch (Exception e)
+            {
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
 
         }
         public void getBootIMGMSX(string rom)
         {
-            string SystemType = "msx/";
-            var repoid = GetFakeMSXTGProdcode(rom, true);
-            List<string> repoids = new List<string>
+            try
             {
-                SystemType + repoid
-            };
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX);
+                string SystemType = "msx/";
+                var repoid = GetFakeMSXTGProdcode(rom, true);
+                List<string> repoids = new List<string>
+                {
+                    SystemType + repoid
+                };
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX);
+            }
+            catch (Exception e)
+            {
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
         }
         public void getBootIMGTG(string rom)
         {
-            string SystemType = "tg16/";
-            var repoid = GetFakeMSXTGProdcode(rom, false);
-            List<string> repoids = new List<string>
+            try
             {
-                SystemType + repoid
-            };
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16);
+                string SystemType = "tg16/";
+                var repoid = GetFakeMSXTGProdcode(rom, false);
+                List<string> repoids = new List<string>
+                {
+                    SystemType + repoid
+                };
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16);
+            }
+            catch (Exception e)
+            {
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
 
         }
         private string GetFakeMSXTGProdcode(string v, bool msx)
@@ -2760,23 +2811,81 @@ namespace UWUVCI_AIO_WPF
 
         public void getBootIMGNES(string rom)
         {
-            string SystemType = "nes/";
-            string repoid = GetFakeNESProdcode(rom);
-            List<string> repoids = new List<string> { SystemType + repoid };
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES);
+            try
+            {
+                string SystemType = "nes/";
+                string repoid = GetFakeNESProdcode(rom);
+                List<string> repoids = new List<string> { SystemType + repoid };
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES);
+            }
+            catch (Exception e)
+            {
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
         }
         public void getBootIMGNDS(string rom)
         {
-            string repoid = "";
-            string SystemType = "nds/";
-            using (var fs = new FileStream(rom,
-                                 FileMode.Open,
-                                 FileAccess.Read))
+            try
             {
+                string repoid = "";
+                string SystemType = "nds/";
+                using (var fs = new FileStream(rom,
+                                     FileMode.Open,
+                                     FileAccess.Read))
+                {
 
-                byte[] procode = new byte[4];
-                fs.Seek(0xC, SeekOrigin.Begin);
-                fs.Read(procode, 0, 4);
+                    byte[] procode = new byte[4];
+                    fs.Seek(0xC, SeekOrigin.Begin);
+                    fs.Read(procode, 0, 4);
+                    repoid = ByteArrayToString(procode);
+                    Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                    repoid = rgx.Replace(repoid, "");
+                    Console.WriteLine("prodcode before scramble: " + repoid);
+
+                    fs.Close();
+                    Console.WriteLine("prodcode after scramble: " + repoid);
+                }
+                List<string> repoids = new List<string>
+                {
+                    SystemType + repoid,
+                    SystemType + repoid.Substring(0, 3) + "E",
+                    SystemType + repoid.Substring(0, 3) + "P",
+                    SystemType + repoid.Substring(0, 3) + "J"
+                };
+
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS);
+            }
+            catch (Exception e)
+            {
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
+        }
+
+        public void getBootIMGN64(string rom)
+        {
+            try
+            {
+                string repoid = "";
+                string SystemType = "n64/";
+                List<string> repoids = new List<string>();
+                using var fs = new FileStream(rom,
+                                     FileMode.Open,
+                                     FileAccess.Read);
+                byte[] procode = new byte[6];
+                fs.Seek(0x3A, SeekOrigin.Begin);
+                fs.Read(procode, 0, 6);
                 repoid = ByteArrayToString(procode);
                 Regex rgx = new Regex("[^a-zA-Z0-9 -]");
                 repoid = rgx.Replace(repoid, "");
@@ -2784,40 +2893,21 @@ namespace UWUVCI_AIO_WPF
 
                 fs.Close();
                 Console.WriteLine("prodcode after scramble: " + repoid);
+
+                repoids.Add(SystemType + repoid);
+                repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64);
             }
-            List<string> repoids = new List<string>
+            catch (Exception e)
             {
-                SystemType + repoid,
-                SystemType + repoid.Substring(0, 3) + "E",
-                SystemType + repoid.Substring(0, 3) + "P",
-                SystemType + repoid.Substring(0, 3) + "J"
-            };
-
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS);
-        }
-
-        public void getBootIMGN64(string rom)
-        {
-            string repoid = "";
-            string SystemType = "n64/";
-            List<string> repoids = new List<string>();
-            using var fs = new FileStream(rom,
-                                 FileMode.Open,
-                                 FileAccess.Read);
-            byte[] procode = new byte[6];
-            fs.Seek(0x3A, SeekOrigin.Begin);
-            fs.Read(procode, 0, 6);
-            repoid = ByteArrayToString(procode);
-            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-            repoid = rgx.Replace(repoid, "");
-            Console.WriteLine("prodcode before scramble: " + repoid);
-
-            fs.Close();
-            Console.WriteLine("prodcode after scramble: " + repoid);
-
-            repoids.Add(SystemType + repoid);
-            repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
-            FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64);
+                var cm = new Custom_Message("Missing Required Header Data", "Rom has missing some binary in the header used to determine the name, fetching images and other configuration files will not be possible.\nError Message: " + e.Message);
+                try
+                {
+                    cm.Owner = mw;
+                }
+                catch (Exception) { }
+                cm.ShowDialog();
+            }
         }
 
         static string GetMd5Hash(MD5 md5Hash, byte[] input)
