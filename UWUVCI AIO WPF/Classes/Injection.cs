@@ -1594,7 +1594,7 @@ namespace UWUVCI_AIO_WPF
                 outputPath = Path.Combine(Settings.Default.BasePath, $"[{console}] Custom_{i}");
                 i++;
             }
-            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, path, outputPath);
+            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, path, outputPath });
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
