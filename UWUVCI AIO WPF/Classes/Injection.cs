@@ -854,7 +854,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
 
-            if (mvm.RemoveDeflicker || mvm.RemoveDithering)
+            if (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter)
             {
                 var isoPath = Path.Combine(tempPath, "pre.iso");
                 var extraction = Path.Combine(tempPath, "extraction");
@@ -878,8 +878,7 @@ namespace UWUVCI_AIO_WPF
                 var mainDolPath = Path.Combine(tempPath, "extraction", "sys", "main.dol");
                 var output = Path.Combine(tempPath, "extraction", "sys", "patched.dol");
 
-
-                DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering);
+                DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
 
                 File.Delete(mainDolPath);
                 File.Move(output, mainDolPath);
