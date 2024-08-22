@@ -218,6 +218,7 @@ namespace UWUVCI_AIO_WPF
             mvm.RendererScale = false;
             mvm.RemoveDeflicker = false;
             mvm.RemoveDithering = false;
+            mvm.HalfVFilter = false;
             mvm.PixelArtUpscaler = 0;
             mvm.DSLayout = false;
 

@@ -421,6 +421,18 @@ namespace UWUVCI_AIO_WPF
                 OnPropertyChanged();
             }
         }
+
+        private bool halfVFilter = false;
+        public bool HalfVFilter
+        {
+            get { return halfVFilter; }
+            set
+            {
+                halfVFilter = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool canInject = false;
 
         public bool CanInject
