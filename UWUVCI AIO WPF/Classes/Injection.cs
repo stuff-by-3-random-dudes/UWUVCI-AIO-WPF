@@ -1257,9 +1257,7 @@ namespace UWUVCI_AIO_WPF
         public static void DeleteDirectory(string path)
         {
             foreach (string directory in Directory.GetDirectories(path))
-            {
                 DeleteDirectory(directory);
-            }
 
             try
             {
@@ -1278,9 +1276,7 @@ namespace UWUVCI_AIO_WPF
         public static void Clean()
         {
             if (Directory.Exists(tempPath))
-            {
                 DeleteDirectory(tempPath);
-            }
         }
         [STAThread]
         public static void Loadiine(string gameName, string gameConsole)
