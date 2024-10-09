@@ -1640,15 +1640,11 @@ namespace UWUVCI_AIO_WPF
                 {
                     // Copy goomba.gba into goombamenu.gba
                     using (FileStream goombaGbaStream = new FileStream(goombaGbaPath, FileMode.Open))
-                    {
                         goombaGbaStream.CopyTo(output);
-                    }
 
                     // Append the injectRomPath (GB/GBC ROM) to goombamenu.gba
-                    using (FileStream injectRomStream = new FileStream(injectRomPath, FileMode.Open))
-                    {
-                        injectRomStream.CopyTo(output);
-                    }
+                    using FileStream injectRomStream = new FileStream(injectRomPath, FileMode.Open);
+                    injectRomStream.CopyTo(output);
                 }
 
                 mvvm.Progress = 20;
