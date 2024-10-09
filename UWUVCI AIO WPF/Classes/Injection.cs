@@ -1772,24 +1772,22 @@ namespace UWUVCI_AIO_WPF
         // Stupid me complaining, function to create and run the process
         private static void RunProcess(string fileName, string arguments, bool indefiniteWait = false, int waitTime = 3000)
         {
-            using (var process = new Process())
+            using var process = new Process();
+            var startInfo = new ProcessStartInfo
             {
-                var startInfo = new ProcessStartInfo
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    Arguments = arguments,
-                    FileName = fileName
-                };
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                Arguments = arguments,
+                FileName = fileName
+            };
 
-                process.StartInfo = startInfo;
-                process.Start();
+            process.StartInfo = startInfo;
+            process.Start();
 
-                if (indefiniteWait)
-                    process.WaitForExit();
-                else
-                    process.WaitForExit(waitTime);
-            }
+            if (indefiniteWait)
+                process.WaitForExit();
+            else
+                process.WaitForExit(waitTime);
         }
 
         private static void NDS(string injectRomPath)
@@ -1900,9 +1898,8 @@ namespace UWUVCI_AIO_WPF
             {
                 InjectRom(injectRomPath);
                 if (config.WideScreen || config.DarkFilter)
-                {
                     ApplyCustomSettings(config);
-                }
+
                 ApplyIniSettings(config);
                 mvvm.Progress = 80;
             }
@@ -2087,14 +2084,11 @@ namespace UWUVCI_AIO_WPF
             bool readbin = false;
             try
             {
-
-
                 //is an image embedded? yes => export them and check for issues
                 //no => using path
                 if (Directory.Exists(imgPath)) // sanity check
-                {
                     Directory.Delete(imgPath, true);
-                }
+
                 Directory.CreateDirectory(imgPath);
                 //ICON
                 List<bool> Images = new List<bool>();
@@ -2111,13 +2105,10 @@ namespace UWUVCI_AIO_WPF
                         if (File.Exists(Path.Combine(toolsPath, "iconTex.tga")))
                         {
                             CopyAndConvertImage(Path.Combine(toolsPath, "iconTex.tga"), Path.Combine(imgPath), false, 128, 128, 32, "iconTex.tga");
-
                             Images.Add(true);
                         }
                         else
-                        {
                             Images.Add(false);
-                        }
 
                     }
                 }
