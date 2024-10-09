@@ -1627,33 +1627,49 @@ namespace UWUVCI_AIO_WPF
         private static void GBA(string injectRomPath, N64Conf config)
         {
             bool delete = false;
-            if(!new FileInfo(injectRomPath).Extension.Contains("gba"))
+            if (!new FileInfo(injectRomPath).Extension.Contains("gba"))
             {
-                //it's a GBC or GB rom so it needs to be copied into goomba.gba and then padded to 32Mb (16 would work too but just ot be save)
-                using (Process goomba = new Process())
-                {
-                    mvvm.msg = "Injecting GB/GBC ROM into goomba...";
-                    goomba.StartInfo.UseShellExecute = false;
-                    goomba.StartInfo.CreateNoWindow = true;
-                    goomba.StartInfo.FileName = "cmd.exe";
-                    goomba.StartInfo.Arguments = $"/c copy /b \"{Path.Combine(toolsPath, "goomba.gba")}\"+\"{injectRomPath}\" \"{Path.Combine(toolsPath, "goombamenu.gba")}\"";
+                mvvm.msg = "Injecting GB/GBC ROM into goomba...";
 
-                    goomba.Start();
-                    goomba.WaitForExit();
-                    mvvm.Progress = 20;
+                // Concatenate goomba.gba and the ROM into goombamenu.gba
+                string goombaGbaPath = Path.Combine(toolsPath, "goomba.gba");
+                string goombaMenuPath = Path.Combine(toolsPath, "goombamenu.gba");
+
+                // Read both files and concatenate them
+                using (FileStream output = new FileStream(goombaMenuPath, FileMode.Create))
+                {
+                    // Copy goomba.gba into goombamenu.gba
+                    using (FileStream goombaGbaStream = new FileStream(goombaGbaPath, FileMode.Open))
+                    {
+                        goombaGbaStream.CopyTo(output);
+                    }
+
+                    // Append the injectRomPath (GB/GBC ROM) to goombamenu.gba
+                    using (FileStream injectRomStream = new FileStream(injectRomPath, FileMode.Open))
+                    {
+                        injectRomStream.CopyTo(output);
+                    }
                 }
+
+                mvvm.Progress = 20;
+
                 mvvm.msg = "Padding goomba ROM...";
-                //padding
+
+                // Padding to 32MB (33554432 bytes)
                 byte[] rom = new byte[33554432];
-                FileStream fs = new FileStream(Path.Combine(toolsPath, "goombamenu.gba"), FileMode.Open);
+                FileStream fs = new FileStream(goombaMenuPath, FileMode.Open);
                 fs.Read(rom, 0, (int)fs.Length);
                 fs.Close();
-                File.WriteAllBytes(Path.Combine(toolsPath, "goombaPadded.gba"), rom);
-                Console.ReadLine();
-                injectRomPath = Path.Combine(toolsPath, "goombaPadded.gba");
+
+                // Write the padded ROM to goombaPadded.gba
+                string goombaPaddedPath = Path.Combine(toolsPath, "goombaPadded.gba");
+                File.WriteAllBytes(goombaPaddedPath, rom);
+
+                injectRomPath = goombaPaddedPath; // Set the injectRomPath to the padded ROM
                 delete = true;
                 mvvm.Progress = 40;
             }
+
             if (mvvm.PokePatch)
             {
                 mvvm.msg = "Applying PokePatch";
