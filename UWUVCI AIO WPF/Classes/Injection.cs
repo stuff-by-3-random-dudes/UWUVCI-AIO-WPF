@@ -285,8 +285,6 @@ namespace UWUVCI_AIO_WPF
                 else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
                     errorMessage = "Looks to be your images are the problem" +
                         "\nFAQ: #28";
-                else if (e.Message.Contains("\\extraction\\sys\\main.dol") || e.Message.Contains("extraction/sys/main.dol"))
-                    errorMessage = "The tool 'WIT' did not like something about your rom. If possible, please remove all non alphanumeric characters from the path or the filename.";
 
                 if (IsRunningInVirtualMachine() || IsRunningUnderWineOrSimilar())
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
@@ -847,8 +845,10 @@ namespace UWUVCI_AIO_WPF
                 mvm.Progress = 17;
 
                 File.Delete(isoPath);
-                var mainDolPath = Path.Combine(tempPath, "extraction", "sys", "main.dol");
-                var output = Path.Combine(tempPath, "extraction", "sys", "patched.dol");
+
+                var extractionFolder = Path.Combine(tempPath, "extraction");
+                var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
+                var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
 
                 DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
 
