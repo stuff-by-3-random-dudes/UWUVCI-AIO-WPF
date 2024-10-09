@@ -726,74 +726,113 @@ namespace UWUVCI_AIO_WPF
 
         private static void WII(string romPath, MainViewModel mvm)
         {
-            var witArgs = new List<string>();
+            var witArgs = "";
             string savedir = Directory.GetCurrentDirectory();
-            if (mvm.NKITFLAG || romPath.Contains("nkit"))
+            try
             {
-                using Process toiso = new Process();
-                mvm.msg = "Converting NKIT to ISO";
-                if (!mvm.debug)
+                if (mvm.NKITFLAG || romPath.Contains("nkit"))
                 {
-                    toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    // toiso.StartInfo.CreateNoWindow = true;
-                }
-                witArgs.Add($"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I");
-                toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                toiso.StartInfo.Arguments = witArgs[0];
-
-                toiso.Start();
-                toiso.WaitForExit();
-                if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                {
-                    throw new Exception("nkit");
-                }
-                File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "pre.iso"));
-                mvm.Progress = 15;
-            }
-            else
-            {
-                if (new FileInfo(romPath).Extension.Contains("wbfs"))
-                {
-                    mvm.msg = "Converting WBFS to ISO...";
                     using Process toiso = new Process();
+                    mvm.msg = "Converting NKIT to ISO";
+
                     if (!mvm.debug)
-                    {
                         toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        // toiso.StartInfo.CreateNoWindow = true;
-                    }
-                    witArgs.Add($"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I");
+
+                    witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
                     toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    toiso.StartInfo.Arguments = witArgs[0];
+                    toiso.StartInfo.Arguments = witArgs;
 
                     toiso.Start();
                     toiso.WaitForExit();
+                    if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                    {
+                        throw new Exception("nkit");
+                    }
+                    File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "pre.iso"));
                     mvm.Progress = 15;
                 }
-                else if (new FileInfo(romPath).Extension.Contains("iso"))
+                else
                 {
-                    mvm.msg = "Copying ROM...";
-                    File.Copy(romPath, Path.Combine(tempPath, "pre.iso"));
-                    mvm.Progress = 15;
+                    if (new FileInfo(romPath).Extension.Contains("wbfs"))
+                    {
+                        mvm.msg = "Converting WBFS to ISO...";
+                        using Process toiso = new Process();
+
+                        if (!mvm.debug)
+                            toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                        witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
+                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        toiso.StartInfo.Arguments = witArgs;
+
+                        toiso.Start();
+                        toiso.WaitForExit();
+                        mvm.Progress = 15;
+                    }
+                    else if (new FileInfo(romPath).Extension.Contains("iso"))
+                    {
+                        mvm.msg = "Copying ROM...";
+                        File.Copy(romPath, Path.Combine(tempPath, "pre.iso"));
+                        mvm.Progress = 15;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                if (!IsRunningUnderWineOrSimilar())
+                    throw ex;
 
+
+                MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                    "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                    "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                    "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                if (result != MessageBoxResult.OK)
+                {
+                    MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                    return;
+                }
+            }
             if (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter)
             {
                 var isoPath = Path.Combine(tempPath, "pre.iso");
                 var extraction = Path.Combine(tempPath, "extraction");
                 mvm.msg = "Unpacking rom to get main.dol file";
                 mvm.Progress = 16;
-                using (var unpack = new Process())
+                try
                 {
+                    using var unpack = new Process();
                     if (!mvm.debug)
                         unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                    witArgs.Add($"extract \"{isoPath}\" \"{extraction}\"");
+                    witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
 
                     unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    unpack.StartInfo.Arguments = $"extract \"{isoPath}\" \"{extraction}\"";
+                    unpack.StartInfo.Arguments = witArgs;
                     unpack.Start();
                     unpack.WaitForExit();
+                }
+                catch (Exception ex)
+                {
+                    if (!IsRunningUnderWineOrSimilar())
+                        throw ex;
+
+
+                    MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                    var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                        "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                        "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                        "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                    if (result != MessageBoxResult.OK)
+                    {
+                        MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                        return;
+                    }
                 }
 
                 mvm.msg = "Patching main.dol file";
@@ -812,8 +851,9 @@ namespace UWUVCI_AIO_WPF
 
                 mvm.msg = "Packing rom back up";
                 mvm.Progress = 18;
-                using (var pack = new Process())
+                try
                 {
+                    using var pack = new Process();
                     if (!mvm.debug)
                         pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
@@ -822,7 +862,25 @@ namespace UWUVCI_AIO_WPF
                     pack.Start();
                     pack.WaitForExit();
                 }
+                catch (Exception ex)
+                {
+                    if (!IsRunningUnderWineOrSimilar())
+                        throw ex;
 
+
+                    MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                    var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                        "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                        "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                        "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                    if (result != MessageBoxResult.OK)
+                    {
+                        MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                        return;
+                    }
+                }
                 Directory.Delete(extraction, recursive: true);
             }
 
@@ -855,7 +913,7 @@ namespace UWUVCI_AIO_WPF
                         fs.Seek(0x4E010, SeekOrigin.Begin);
                         fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
                     }
-                    else if(mvm.regionfriijp)
+                    else if (mvm.regionfriijp)
                     {
                         fs.Write(new byte[] { 0x00 }, 0, 1);
                         fs.Seek(0x4E010, SeekOrigin.Begin);
@@ -869,17 +927,38 @@ namespace UWUVCI_AIO_WPF
                     }
                     fs.Close();
                 }
-                using (Process trimm = new Process())
+                try
                 {
-                    if (!mvm.debug)
-                        trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    using (Process trimm = new Process())
+                    {
+                        if (!mvm.debug)
+                            trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                    mvm.msg = "Trimming ROM...";
-                    trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
-                    trimm.Start();
-                    trimm.WaitForExit();
-                    mvm.Progress = 30;
+                        mvm.msg = "Trimming ROM...";
+                        trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                        trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
+                        trimm.Start();
+                        trimm.WaitForExit();
+                        mvm.Progress = 30;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (!IsRunningUnderWineOrSimilar())
+                        throw ex;
+
+                    MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                    var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                        "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                        "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                        "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                    if (result != MessageBoxResult.OK)
+                    {
+                        MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                        return;
+                    }
                 }
                 if (mvm.Index == 4)
                 {
@@ -900,11 +979,11 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 if (mvm.jppatch)
-                {   
+                {
                     mvm.msg = "Language Patching ROM...";
                     using (BinaryWriter writer = new BinaryWriter(new FileStream(Path.Combine(tempPath, "TEMP", "sys", "main.dol"), FileMode.Open)))
                     {
-                        byte[] stuff = new byte[] { 0x38, 0x60};
+                        byte[] stuff = new byte[] { 0x38, 0x60 };
                         writer.Seek(0x4CBDAC, SeekOrigin.Begin);
                         writer.Write(stuff);
                         writer.Seek(0x4CBDAF, SeekOrigin.Begin);
@@ -915,7 +994,7 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 37;
                 }
                 if (mvm.Patch)
-                {                   
+                {
                     mvm.msg = "Video Patching ROM...";
                     File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
                     Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
@@ -944,35 +1023,76 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 mvm.msg = "Creating ISO from trimmed ROM...";
+                try
+                {
+                    using Process repack = new Process();
+                    if (!mvm.debug)
+                        repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                using Process repack = new Process();
-                if (!mvm.debug)
-                    repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
 
-                repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
-                repack.Start();
-                repack.WaitForExit();
-                Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
-                File.Delete(Path.Combine(tempPath, "pre.iso"));
+                    repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    repack.StartInfo.Arguments = witArgs;
+                    repack.Start();
+                    repack.WaitForExit();
+                    Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
+                    File.Delete(Path.Combine(tempPath, "pre.iso"));
+                }
+                catch (Exception ex)
+                {
+                    if (!IsRunningUnderWineOrSimilar())
+                        throw ex;
+
+                    MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                    var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                        "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                        "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                        "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                    if (result != MessageBoxResult.OK)
+                    {
+                        MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                        return;
+                    }
+                }
             }
             else
             {
-                if(mvm.Index == 4 || mvm.Patch)
+                if (mvm.Index == 4 || mvm.Patch)
                 {
-                    using (Process trimm = new Process())
+                    try
                     {
+                        using Process trimm = new Process();
                         if (!mvm.debug)
-                        {
-
                             trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        }
+
                         mvm.msg = "Trimming ROM...";
+                        witArgs = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
+
                         trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                        trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
+                        trimm.StartInfo.Arguments = witArgs;
                         trimm.Start();
                         trimm.WaitForExit();
                         mvm.Progress = 30;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (!IsRunningUnderWineOrSimilar())
+                            throw ex;
+
+                        MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                        var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                            "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                            "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                            "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                        if (result != MessageBoxResult.OK)
+                        {
+                            MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                            return;
+                        }
                     }
                     if (mvm.Index == 4)
                     {
@@ -981,7 +1101,7 @@ namespace UWUVCI_AIO_WPF
                         using (Process tik = new Process())
                         {
                             tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                            tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP","DATA", "sys", "main.dol")}\" -nc";
+                            tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "DATA", "sys", "main.dol")}\" -nc";
                             tik.StartInfo.UseShellExecute = false;
                             tik.StartInfo.CreateNoWindow = true;
                             tik.StartInfo.RedirectStandardOutput = true;
@@ -1028,55 +1148,93 @@ namespace UWUVCI_AIO_WPF
 
                     }
                     mvm.msg = "Creating ISO from patched ROM...";
-                    using (Process repack = new Process())
+                    try
                     {
+                        using Process repack = new Process();
                         if (!mvm.debug)
-                        {
-
                             repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        }
+
+                        witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
+
                         repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                        repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
+                        repack.StartInfo.Arguments = witArgs;
                         repack.Start();
                         repack.WaitForExit();
-                        Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
-                        File.Delete(Path.Combine(tempPath, "pre.iso"));
                     }
+                    catch (Exception ex)
+                    {
+                        if (!IsRunningUnderWineOrSimilar())
+                            throw ex;
+
+                        MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                        var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                            "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                            "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                            "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                        if (result != MessageBoxResult.OK)
+                        {
+                            MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                            return;
+                        }
+                    }
+                    Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
+                    File.Delete(Path.Combine(tempPath, "pre.iso"));
                 }
                 else
                 {
                     File.Move(Path.Combine(tempPath, "pre.iso"), Path.Combine(tempPath, "game.iso"));
-               }
-               
+                }
+
             }
-            
+
             mvm.Progress = 50;
             mvm.msg = "Replacing TIK and TMD...";
-            using (Process extract = new Process())
+            try
             {
+                using Process extract = new Process();
                 if (!mvm.debug)
-                {
-                   
                     extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                }
+
+                witArgs = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
+
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
+                extract.StartInfo.Arguments = witArgs;
                 extract.Start();
                 extract.WaitForExit();
-                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
-                {
-                    File.Delete(sFile);
-                }
-                File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
-                File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
-                Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
             }
+            catch (Exception ex)
+            {
+                if (!IsRunningUnderWineOrSimilar())
+                    throw ex;
+
+                MacLinuxHelper.WriteFailedStepToJson("Wii", "wit", witArgs, string.Empty);
+
+                var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                    "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                    "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                    "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                if (result != MessageBoxResult.OK)
+                {
+                    MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                    return;
+                }
+            }
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
+                File.Delete(sFile);
+
+            File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
+            File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
+            Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
+
             mvm.Progress = 60;
             mvm.msg = "Injecting ROM...";
+
             foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
-            {
                 File.Delete(sFile);
-            }
+
             File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
             Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
