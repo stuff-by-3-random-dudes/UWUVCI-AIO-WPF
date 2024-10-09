@@ -23,6 +23,7 @@ using UWUVCI_AIO_WPF.Models;
 using WiiUDownloaderLibrary.Models;
 using WiiUDownloaderLibrary;
 using Newtonsoft.Json.Linq;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -314,86 +315,62 @@ namespace UWUVCI_AIO_WPF
                 using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Wine"))
                 {
                     if (key != null)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
 
                 string winePrefix = Environment.GetEnvironmentVariable("WINEPREFIX");
                 if (!string.IsNullOrEmpty(winePrefix))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for Proton
                 string protonPrefix = Environment.GetEnvironmentVariable("STEAM_COMPAT_DATA_PATH");
                 if (!string.IsNullOrEmpty(protonPrefix))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for CrossOver
                 string crossoverPrefix = Environment.GetEnvironmentVariable("CROSSOVER_PREFIX");
                 if (!string.IsNullOrEmpty(crossoverPrefix))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for BoxedWine
                 string boxedWinePrefix = Environment.GetEnvironmentVariable("BOXEDWINE_PATH");
                 if (!string.IsNullOrEmpty(boxedWinePrefix))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for Lutris
                 string lutrisRuntime = Environment.GetEnvironmentVariable("LUTRIS_GAME_UUID");
                 if (!string.IsNullOrEmpty(lutrisRuntime))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for PlayOnLinux
                 string playOnLinux = Environment.GetEnvironmentVariable("PLAYONLINUX");
                 if (!string.IsNullOrEmpty(playOnLinux))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for DXVK
                 string dxvk = Environment.GetEnvironmentVariable("DXVK_LOG_LEVEL");
                 if (!string.IsNullOrEmpty(dxvk))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for ReactOS
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
                     Environment.OSVersion.VersionString.Contains("ReactOS"))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for Winetricks
                 string winetricks = Environment.GetEnvironmentVariable("WINETRICKS");
                 if (!string.IsNullOrEmpty(winetricks))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for Cedega (WineX)
                 string cedega = Environment.GetEnvironmentVariable("CEDEGA_PATH");
                 if (!string.IsNullOrEmpty(cedega))
-                {
-                    return true;
-                }
+                return true;
 
                 // Check for common Wine/Proton files
                 string[] wineFiles = { "/usr/bin/wine", "/usr/local/bin/wine", "/usr/bin/proton", "/usr/local/bin/proton" };
                 if (wineFiles.Any(File.Exists))
-                {
-                    return true;
-                }
+                return true;
 
             }
             catch (Exception ex)
@@ -409,65 +386,46 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS"))
-                {
-                    foreach (ManagementObject bios in searcher.Get())
-                    {
-                        string manufacturer = bios["Manufacturer"]?.ToString() ?? string.Empty;
-                        if (manufacturer.Contains("VMware") || manufacturer.Contains("VirtualBox") || manufacturer.Contains("Parallels") || manufacturer.Contains("Xen") || manufacturer.Contains("KVM") || manufacturer.Contains("Bhyve"))
-                        {
-                            return true;
-                        }
-                    }
-                }
+                    foreach (var _ in from ManagementObject bios in searcher.Get()
+                                      let manufacturer = bios["Manufacturer"]?.ToString() ?? string.Empty
+                                      where manufacturer.Contains("VMware") || manufacturer.Contains("VirtualBox") || manufacturer.Contains("Parallels") || manufacturer.Contains("Xen") || manufacturer.Contains("KVM") || manufacturer.Contains("Bhyve")
+                                      select new { })
+                        return true;
 
                 using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_ComputerSystem"))
-                {
-                    foreach (ManagementObject cs in searcher.Get())
+                    foreach (var (manufacturer, model) in from ManagementObject cs in searcher.Get()
+                                                          let manufacturer = cs["Manufacturer"]?.ToString() ?? string.Empty
+                                                          let model = cs["Model"]?.ToString() ?? string.Empty
+                                                          select (manufacturer, model))
                     {
-                        string manufacturer = cs["Manufacturer"]?.ToString() ?? string.Empty;
-                        string model = cs["Model"]?.ToString() ?? string.Empty;
                         if (manufacturer.Contains("Microsoft Corporation") && model.Contains("Virtual Machine"))
-                        {
                             return true;
-                        }
+
                         if (manufacturer.Contains("QEMU") || manufacturer.Contains("Bochs") || manufacturer.Contains("OpenStack"))
-                        {
                             return true;
-                        }
                     }
-                }
 
                 string[] virtualizationIndicators = { "Parallels", "VMware", "VirtualBox", "QEMU", "Hyper-V", "Xen", "KVM", "Bhyve", "Bochs", "OpenStack", "ProxMox", "Virtuozzo" };
                 foreach (string indicator in virtualizationIndicators)
-                {
                     if (Environment.OSVersion.VersionString.Contains(indicator))
-                    {
                         return true;
-                    }
-                }
-
+        
                 // Check for common VM files
                 string[] vmFiles = { "/usr/bin/vmware", "/usr/bin/virtualbox", "/usr/bin/qemu", "/usr/bin/kvm", "/usr/bin/hyperv" };
                 if (vmFiles.Any(File.Exists))
-                {
                     return true;
-                }
 
                 // Check for Docker
                 string dockerEnv = Environment.GetEnvironmentVariable("DOCKER_ENV");
                 if (!string.IsNullOrEmpty(dockerEnv) || File.Exists("/.dockerenv"))
-                {
                     return true;
-                }
 
                 // Check for common VM processes
                 string[] vmProcesses = { "vmware", "virtualbox", "qemu", "kvm", "hyperv" };
                 foreach (var processName in vmProcesses)
                 {
                     if (Process.GetProcessesByName(processName).Length > 0)
-                    {
                         return true;
-                    }
                 }
             }
             catch (Exception ex)
@@ -483,9 +441,8 @@ namespace UWUVCI_AIO_WPF
         private static void tick(object sender, EventArgs e)
         {
             if (!done)
-            {
                 mvvm.failed = true;
-            }
+
             throw new Exception("Failed this shit");
         }
 
@@ -525,23 +482,18 @@ namespace UWUVCI_AIO_WPF
         {
             // credits to the original creator of wav2btsnd for the general logic
             byte[] buffer = File.ReadAllBytes(inputWav);
-            using (FileStream output = new FileStream(outputBtsnd, FileMode.OpenOrCreate))
-            using (BinaryWriter writer = new BinaryWriter(output))
-            {
-                writer.Write(new byte[] {0x0, 0x0, 0x0, 0x2, 0x0, 0x0, 0x0, 0x0});
-                for (int i = 0x2C; i < buffer.Length; i += 2)
-                {
-                    writer.Write(new[] {buffer[i+1], buffer[i]});
-                }
-            }
+            using FileStream output = new FileStream(outputBtsnd, FileMode.OpenOrCreate);
+            using BinaryWriter writer = new BinaryWriter(output);
+
+            writer.Write(new byte[] { 0x0, 0x0, 0x0, 0x2, 0x0, 0x0, 0x0, 0x0 });
+            for (int i = 0x2C; i < buffer.Length; i += 2)
+                writer.Write(new[] { buffer[i + 1], buffer[i] });
         }
 
         static void timer_Tick(object sender, EventArgs e)
         {
             if(mvvm.Progress < 50)
-            {
                 mvvm.Progress += 1;
-            }
             
         }
         private static void RunSpecificInjection(GameConfig cfg, GameConsoles console, string RomPath, bool force, MainViewModel mvm)
@@ -574,17 +526,11 @@ namespace UWUVCI_AIO_WPF
                     break;
                 case GameConsoles.WII:
                     if (RomPath.ToLower().EndsWith(".dol"))
-                    {
                         WiiHomebrew(RomPath, mvm);
-                    }else if (RomPath.ToLower().EndsWith(".wad"))
-                    {
+                    else if (RomPath.ToLower().EndsWith(".wad"))
                         WiiForwarder(RomPath, mvm);
-                    }
                     else
-                    {
                         WII(RomPath, mvm);
-                    }
-                    
                     break;
                 case GameConsoles.GCN:
                     GC(RomPath, mvm, force);
@@ -725,33 +671,31 @@ namespace UWUVCI_AIO_WPF
             File.Copy(romPath, Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
             mvm.Progress = 30;
             mvvm.msg = "Creating Injectable file...";
-            using (Process wit = new Process())
+            try
             {
-                if (!mvm.debug)
+                using (Process wit = new Process())
                 {
+                    if (!mvm.debug)
+                        wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                    wit.Start();
+                    wit.WaitForExit();
                 }
-                wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
-                wit.Start();
-                wit.WaitForExit();
-            }
 
-            Thread.Sleep(6000);
-            if (!File.Exists(Path.Combine(tempPath, "game.iso")))
-            {
-                Console.Clear();
+                Thread.Sleep(6000);
+                if (!File.Exists(Path.Combine(tempPath, "game.iso")))
+                {
+                    Console.Clear();
 
-                throw new Exception("WIIAn error occured while Creating the ISO");
-            }
-            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
-            romPath = Path.Combine(tempPath, "game.iso");
-            mvvm.Progress = 50;
+                    throw new Exception("Wii: An error occured while Creating the ISO");
+                }
 
-            mvm.msg = "Replacing TIK and TMD...";
-            using (Process extract = new Process())
-            {
+                mvvm.Progress = 50;
+
+                mvm.msg = "Replacing TIK and TMD...";
+                using Process extract = new Process();
                 if (!mvm.debug)
                 {
                     extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -760,14 +704,41 @@ namespace UWUVCI_AIO_WPF
                 extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
                 extract.Start();
                 extract.WaitForExit();
-                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
-                {
-                    File.Delete(sFile);
-                }
-                File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
-                File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
-                Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
             }
+            catch (Exception ex)
+            {
+                if (!IsRunningUnderWineOrSimilar())
+                    throw ex;
+
+                string[] args = {
+                    $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso",
+                    $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1"
+                };
+
+                foreach(var arg in args)
+                    MacLinuxHelper.WriteFailedStepToJson("WiiHomebrew", "wit", arg, string.Empty);
+
+                var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
+                    "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
+                    "\n\nOnce that program finishes running, it'll tell you, then click the 'OK' button on this MessageBox." +
+                    "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.", "UWUVCI Helper Program Required To Continue!", MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
+
+                if (result  != MessageBoxResult.OK)
+                {
+                    MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                    return;
+                }
+            }
+
+            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
+
+            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
+                File.Delete(sFile);
+
+            File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
+            File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
+            Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
+
             mvm.Progress = 60;
             mvm.msg = "Injecting ROM...";
             foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
@@ -798,55 +769,52 @@ namespace UWUVCI_AIO_WPF
             }
             Directory.SetCurrentDirectory(savedir);
             mvm.Progress = 80;
-
-        
-    }
+        }
 
         private static void WII(string romPath, MainViewModel mvm)
         {
+            var witArgs = new List<string>();
             string savedir = Directory.GetCurrentDirectory();
             if (mvm.NKITFLAG || romPath.Contains("nkit"))
             {
-                using (Process toiso = new Process())
+                using Process toiso = new Process();
+                mvm.msg = "Converting NKIT to ISO";
+                if (!mvm.debug)
                 {
-                    mvm.msg = "Converting NKIT to ISO";
-                    if (!mvm.debug)
-                    {
-                        toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        // toiso.StartInfo.CreateNoWindow = true;
-                    }
-                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    toiso.StartInfo.Arguments = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
-
-                    toiso.Start();
-                    toiso.WaitForExit();
-                    if(!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                    {
-                        throw new Exception("nkit");
-                    }
-                    File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "pre.iso"));
-                    mvm.Progress = 15;
+                    toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    // toiso.StartInfo.CreateNoWindow = true;
                 }
+                witArgs.Add($"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I");
+                toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                toiso.StartInfo.Arguments = witArgs[0];
+
+                toiso.Start();
+                toiso.WaitForExit();
+                if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
+                {
+                    throw new Exception("nkit");
+                }
+                File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "pre.iso"));
+                mvm.Progress = 15;
             }
             else
             {
                 if (new FileInfo(romPath).Extension.Contains("wbfs"))
                 {
                     mvm.msg = "Converting WBFS to ISO...";
-                    using (Process toiso = new Process())
+                    using Process toiso = new Process();
+                    if (!mvm.debug)
                     {
-                        if (!mvm.debug)
-                        {
-                            toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                            // toiso.StartInfo.CreateNoWindow = true;
-                        }
-                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                        toiso.StartInfo.Arguments = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
-
-                        toiso.Start();
-                        toiso.WaitForExit();
-                        mvm.Progress = 15;
+                        toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                        // toiso.StartInfo.CreateNoWindow = true;
                     }
+                    witArgs.Add($"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I");
+                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    toiso.StartInfo.Arguments = witArgs[0];
+
+                    toiso.Start();
+                    toiso.WaitForExit();
+                    mvm.Progress = 15;
                 }
                 else if (new FileInfo(romPath).Extension.Contains("iso"))
                 {
@@ -866,6 +834,8 @@ namespace UWUVCI_AIO_WPF
                 {
                     if (!mvm.debug)
                         unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    witArgs.Add($"extract \"{isoPath}\" \"{extraction}\"");
 
                     unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                     unpack.StartInfo.Arguments = $"extract \"{isoPath}\" \"{extraction}\"";
@@ -922,50 +892,33 @@ namespace UWUVCI_AIO_WPF
             {
                 if (mvm.regionfrii)
                 {
+                    using FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open);
+                    fs.Seek(0x4E003, SeekOrigin.Begin);
                     if (mvm.regionfriius)
                     {
-                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
-                        {
-                            fs.Seek(0x4E003, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x01 },0,1);
-                            fs.Seek(0x4E010, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 },0,16);
-                            fs.Close();
-
-                        }
+                        fs.Write(new byte[] { 0x01 }, 0, 1);
+                        fs.Seek(0x4E010, SeekOrigin.Begin);
+                        fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
                     }
                     else if(mvm.regionfriijp)
                     {
-                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
-                        {
-                            fs.Seek(0x4E003, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x00 }, 0, 1);
-                            fs.Seek(0x4E010, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 },0, 16);
-                            fs.Close();
-
-                        }
+                        fs.Write(new byte[] { 0x00 }, 0, 1);
+                        fs.Seek(0x4E010, SeekOrigin.Begin);
+                        fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
                     }
                     else
                     {
-                        using (FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open))
-                        {
-                            fs.Seek(0x4E003, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x02 }, 0, 1);
-                            fs.Seek(0x4E010, SeekOrigin.Begin);
-                            fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                            fs.Close();
-
-                        }
+                        fs.Write(new byte[] { 0x02 }, 0, 1);
+                        fs.Seek(0x4E010, SeekOrigin.Begin);
+                        fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
                     }
+                    fs.Close();
                 }
                 using (Process trimm = new Process())
                 {
                     if (!mvm.debug)
-                    {
-
                         trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    }
+
                     mvm.msg = "Trimming ROM...";
                     trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                     trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
@@ -977,25 +930,22 @@ namespace UWUVCI_AIO_WPF
                 {
                     mvvm.msg = "Patching ROM (Force CC)...";
                     Console.WriteLine("Patching the ROM to force Classic Controller input");
-                    using (Process tik = new Process())
-                    {
-                        tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                        tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "sys", "main.dol")}\" -nc";
-                        tik.StartInfo.UseShellExecute = false;
-                        tik.StartInfo.CreateNoWindow = true;
-                        tik.StartInfo.RedirectStandardOutput = true;
-                        tik.StartInfo.RedirectStandardInput = true;
-                        tik.Start();
-                        Thread.Sleep(2000);
-                        tik.StandardInput.WriteLine();
-                        tik.WaitForExit();
-                        mvm.Progress = 35;
-                    }
+                    using Process tik = new Process();
+                    tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                    tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "sys", "main.dol")}\" -nc";
+                    tik.StartInfo.UseShellExecute = false;
+                    tik.StartInfo.CreateNoWindow = true;
+                    tik.StartInfo.RedirectStandardOutput = true;
+                    tik.StartInfo.RedirectStandardInput = true;
+                    tik.Start();
+                    Thread.Sleep(2000);
+                    tik.StandardInput.WriteLine();
+                    tik.WaitForExit();
+                    mvm.Progress = 35;
 
                 }
                 if (mvm.jppatch)
-                {
-                    
+                {   
                     mvm.msg = "Language Patching ROM...";
                     using (BinaryWriter writer = new BinaryWriter(new FileStream(Path.Combine(tempPath, "TEMP", "sys", "main.dol"), FileMode.Open)))
                     {
@@ -1010,58 +960,50 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 37;
                 }
                 if (mvm.Patch)
-                {
-                   
+                {                   
                     mvm.msg = "Video Patching ROM...";
-                    using (Process vmc = new Process())
-                    {
+                    File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
+                    Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
 
-                        File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
+                    using Process vmc = new Process();
+                    vmc.StartInfo.FileName = "wii-vmc.exe";
+                    vmc.StartInfo.Arguments = "main.dol";
+                    vmc.StartInfo.UseShellExecute = false;
+                    vmc.StartInfo.CreateNoWindow = true;
+                    vmc.StartInfo.RedirectStandardOutput = true;
+                    vmc.StartInfo.RedirectStandardInput = true;
 
-                        Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
-                        vmc.StartInfo.FileName = "wii-vmc.exe";
-                        vmc.StartInfo.Arguments = "main.dol";
-                        vmc.StartInfo.UseShellExecute = false;
-                        vmc.StartInfo.CreateNoWindow = true;
-                        vmc.StartInfo.RedirectStandardOutput = true;
-                        vmc.StartInfo.RedirectStandardInput = true;
+                    vmc.Start();
+                    Thread.Sleep(1000);
+                    vmc.StandardInput.WriteLine("a");
+                    Thread.Sleep(2000);
+                    if (mvm.toPal) vmc.StandardInput.WriteLine("1");
+                    else vmc.StandardInput.WriteLine("2");
+                    Thread.Sleep(2000);
+                    vmc.StandardInput.WriteLine();
+                    vmc.WaitForExit();
+                    File.Delete("wii-vmc.exe");
 
-                        vmc.Start();
-                        Thread.Sleep(1000);
-                        vmc.StandardInput.WriteLine("a");
-                        Thread.Sleep(2000);
-                        if (mvm.toPal) vmc.StandardInput.WriteLine("1");
-                        else vmc.StandardInput.WriteLine("2");
-                        Thread.Sleep(2000);
-                        vmc.StandardInput.WriteLine();
-                        vmc.WaitForExit();
-                        File.Delete("wii-vmc.exe");
-
-
-                        Directory.SetCurrentDirectory(savedir);
-                        mvm.Progress = 40;
-                    }
+                    Directory.SetCurrentDirectory(savedir);
+                    mvm.Progress = 40;
 
                 }
                 mvm.msg = "Creating ISO from trimmed ROM...";
-                using (Process repack = new Process())
-                {
-                    if (!mvm.debug)
-                    {
 
-                        repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    }
-                    repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
-                    repack.Start();
-                    repack.WaitForExit();
-                    Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
-                    File.Delete(Path.Combine(tempPath, "pre.iso"));
-                }
+                using Process repack = new Process();
+                if (!mvm.debug)
+                    repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                repack.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                repack.Start();
+                repack.WaitForExit();
+                Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
+                File.Delete(Path.Combine(tempPath, "pre.iso"));
             }
             else
             {
-              if(mvm.Index == 4 || mvm.Patch)
+                if(mvm.Index == 4 || mvm.Patch)
                 {
                     using (Process trimm = new Process())
                     {
