@@ -26,10 +26,31 @@
         <Label Content="Use GamePad as:" HorizontalAlignment="Left" Margin="6,113,0,0" VerticalAlignment="Top" FontSize="14"/>
         <CheckBox Content="Swap L/R and ZL/ZR" HorizontalAlignment="Left" Margin="506,142,0,0" VerticalAlignment="Top" Width="137" x:Name="LR" IsEnabled="False" IsChecked="False" IsTabStop="False"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="135,39,0,0">
-            <CheckBox Content="Remove Deflicker" Name="deflickerCheckBox" IsChecked="{Binding RemoveDeflicker}" Margin="0,0,20,0"/>
-            <CheckBox Content="Remove Dithering" Name="ditheringCheckBox" IsChecked="{Binding RemoveDithering}" Margin="0,0,20,0"/>
-            <CheckBox Content="Half VFilter Strength" Name="vFilterCheckBox" IsChecked="{Binding HalfVFilter}" Margin="0,0,10,0"/>
+            <!-- Deflicker Checkbox -->
+            <CheckBox Content="Remove Deflicker" 
+              Name="deflickerCheckBox" 
+              IsChecked="{Binding RemoveDeflicker}" 
+              Checked="CheckBox_Checked" 
+              ToolTip="Removes screen flickering for smoother visuals." 
+              Margin="0,0,20,0"/>
+
+            <!-- Dithering Checkbox -->
+            <CheckBox Content="Remove Dithering" 
+              Name="ditheringCheckBox" 
+              IsChecked="{Binding RemoveDithering}" 
+              Checked="CheckBox_Checked" 
+              ToolTip="Removes dithering for better color accuracy." 
+              Margin="0,0,20,0"/>
+
+            <!-- VFilter Checkbox -->
+            <CheckBox Content="Half VFilter Strength" 
+              Name="vFilterCheckBox" 
+              IsChecked="{Binding HalfVFilter}" 
+              Checked="CheckBox_Checked" 
+              ToolTip="Reduces vertical filter strength for sharper images." 
+              Margin="0,0,10,0"/>
         </StackPanel>
+
 
         <StackPanel Margin="10,3,34,453" Orientation="Horizontal">
             <ComboBox VerticalAlignment="Stretch" Width="107" Margin="0,0,0,25" Name="selectionDB" SelectionChanged="selectionDB_SelectionChanged" IsTabStop="False"/>

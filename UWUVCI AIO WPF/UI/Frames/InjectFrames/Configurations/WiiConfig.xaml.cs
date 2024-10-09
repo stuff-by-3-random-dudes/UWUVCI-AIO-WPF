@@ -50,6 +50,24 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     break;
             }
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            // Cast sender to a CheckBox
+            var checkBox = sender as CheckBox;
+
+            // Uncheck other checkboxes if this one is checked
+            if (checkBox.IsChecked == true)
+            {
+                if (checkBox != deflickerCheckBox) 
+                    deflickerCheckBox.IsChecked = false;
+                if (checkBox != ditheringCheckBox) 
+                    ditheringCheckBox.IsChecked = false;
+                if (checkBox != vFilterCheckBox) 
+                    vFilterCheckBox.IsChecked = false;
+            }
+        }
+
         public void imgpath(string icon, string tv)
         {
             ic.Text = icon;
