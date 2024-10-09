@@ -272,7 +272,7 @@ namespace UWUVCI_AIO_WPF
                 else if (e.Message.Contains("BASE"))
                     errorMessage = "If you import a config you NEED to reselect a base";
                 else if (e.Message.Contains("WII"))
-                    errorMessage = $"{e.Message.Replace("WII", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
+                    errorMessage = $"{e.Message.Replace("Wii", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
                 else if (e.Message.Contains("12G"))
                     errorMessage = $" Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
                 else if (e.Message.Contains("nkit"))
@@ -283,7 +283,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "Looks to be that there is something about your game that UWUVCI doesn't like, you are most likely injecting with a wbfs or nkit.iso file, this file has data trimmed." +
                         "\nFAQ: #17, #27, #29";
                 else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
-                    errorMessage = "Looks to be your images are the problem" +
+                    errorMessage = "Looks to be tthe images are the problem" +
                         "\nFAQ: #28";
 
                 if (IsRunningInVirtualMachine() || IsRunningUnderWineOrSimilar())
@@ -1085,6 +1085,42 @@ namespace UWUVCI_AIO_WPF
             Directory.SetCurrentDirectory(savedir);
             mvm.Progress = 80;
         }
+        private static void ConvertToIso(string sourcePath, string outputFileName, bool debugMode)
+        {
+            using Process process = new Process();
+            if (!debugMode)
+                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            process.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
+            process.StartInfo.Arguments = $"\"{sourcePath}\"";
+            process.Start();
+            process.WaitForExit();
+
+            string isoPath = Path.Combine(toolsPath, outputFileName);
+            if (!File.Exists(isoPath))
+                throw new Exception("ISO conversion failed.");
+
+            File.Move(isoPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
+        }
+
+        // Function to handle NKit conversion
+        private static void ConvertToNKit(string sourcePath, string outputFileName, bool debugMode)
+        {
+            using Process process = new Process();
+            if (debugMode)
+                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            process.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
+            process.StartInfo.Arguments = $"\"{sourcePath}\"";
+            process.Start();
+            process.WaitForExit();
+
+            string nkitIsoPath = Path.Combine(toolsPath, outputFileName);
+            if (!File.Exists(nkitIsoPath))
+                throw new Exception("NKit conversion failed.");
+
+            File.Move(nkitIsoPath, Path.Combine(tempPath, "TempBase", "files", outputFileName));
+        }
         private static void GC(string romPath, MainViewModel mvm, bool force)
         {
             string savedir = Directory.GetCurrentDirectory();
@@ -1113,209 +1149,38 @@ namespace UWUVCI_AIO_WPF
             mvvm.msg = "Injecting GameCube Game into NintendontBase...";
             if (mvm.donttrim)
             {
-                if (romPath.ToLower().Contains("nkit.iso"))
-                {
-                    using (Process wit = new Process())
-                    {
-                        if (!mvm.debug)
-                        {
-
-                            wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        }
-                        wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
-                        wit.StartInfo.Arguments = $"\"{romPath}\"";
-                        wit.Start();
-                        wit.WaitForExit();
-                        if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                        {
-                            throw new Exception("nkit");
-                        }
-                        File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-
-                    }
-                }
+                if (romPath.ToLower().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
+                    ConvertToIso(romPath, "out.iso", mvm.debug);
                 else
-                {
-                    if (romPath.ToLower().Contains("gcz"))
-                    {
-                        //Convert to nkit.iso
-                        using (Process wit = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-
-                                wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                            }
-                            wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
-                            wit.StartInfo.Arguments = $"\"{romPath}\"";
-                            wit.Start();
-                            wit.WaitForExit();
-                            if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                            {
-                                throw new Exception("nkit");
-                            }
-                            File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-
-                        }
-                    }
-                    else
-                    {
-                        File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-                    }
-                   
-                }
+                    File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
             }
             else
             {
-                if (romPath.ToLower().Contains("iso") || romPath.ToLower().Contains("gcm"))
-                {
-                    //convert to nkit
-                    using (Process wit = new Process())
-                    {
-                        if (!mvm.debug)
-                        {
-
-                            wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        }
-                        wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
-                        wit.StartInfo.Arguments = $"\"{romPath}\"";
-                        wit.Start();
-                        wit.WaitForExit();
-                        if (!File.Exists(Path.Combine(toolsPath, "out.nkit.iso")))
-                        {
-                            throw new Exception("nkit");
-                        }
-                        File.Move(Path.Combine(toolsPath, "out.nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-
-                    }
-                    
-                }
+                if (romPath.ToLower().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
+                    ConvertToNKit(romPath, "out.nkit.iso", mvm.debug);
                 else
-                {
-                    if (romPath.ToLower().Contains("gcz"))
-                    {
-                        //Convert to nkit.iso
-                        using (Process wit = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-
-                                wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                            }
-                            wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
-                            wit.StartInfo.Arguments = $"\"{romPath}\"";
-                            wit.Start();
-                            wit.WaitForExit();
-                            if (!File.Exists(Path.Combine(toolsPath, "out.nkit.iso")))
-                            {
-                                throw new Exception("nkit");
-                            }
-                            File.Move(Path.Combine(toolsPath, "out.nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-
-                        }
-                    }
-                    else
-                    {
-                        File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
-                    }
-                    
-                }
-
+                    File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
             }
 
-            if (mvm.gc2rom != "" && File.Exists(mvm.gc2rom))
+            // Handle the second game (disc2.iso)
+            if (!string.IsNullOrEmpty(mvm.gc2rom) && File.Exists(mvm.gc2rom))
             {
                 if (mvm.donttrim)
                 {
                     if (mvm.gc2rom.Contains("nkit"))
-                     {
-                         using (Process wit = new Process())
-                         {
-                             if (!mvm.debug)
-                             {
-
-                                 wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                             }
-                             wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToIso.exe");
-                             wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
-                             wit.Start();
-                             wit.WaitForExit();
-                             if (!File.Exists(Path.Combine(toolsPath, "out(Disc 1).iso")))
-                             {
-                                 throw new Exception("nkit");
-                             }
-                             File.Move(Path.Combine(toolsPath, "out(Disc 1).iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-
-                         }
-                     }
-                     else
-                     {
-                        
-                        
-                            File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-                        
-                        
-                    }
-                }
-                else{
-                    if (mvm.gc2rom.ToLower().Contains("iso") || mvm.gc2rom.ToLower().Contains("gcm"))
-                    {
-                        //convert to nkit
-                        using (Process wit = new Process())
-                        {
-                            if (!mvm.debug)
-                            {
-
-                                wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                            }
-                            wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
-                            wit.StartInfo.Arguments = $"\"{mvm.gc2rom}\"";
-                            wit.Start();
-                            wit.WaitForExit();
-                            if (!File.Exists(Path.Combine(toolsPath, "out(Disc 1).nkit.iso")))
-                            {
-                                throw new Exception("nkit");
-                            }
-                            File.Move(Path.Combine(toolsPath, "out(Disc 1).nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-
-                        }
-                    }
+                        ConvertToIso(mvm.gc2rom, "out(Disc 1).iso", mvm.debug);
                     else
-                    {
-                        if (romPath.ToLower().Contains("gcz"))
-                        {
-                            //Convert to nkit.iso
-                            using (Process wit = new Process())
-                            {
-                                if (!mvm.debug)
-                                {
-
-                                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                }
-                                wit.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
-                                wit.StartInfo.Arguments = $"\"{romPath}\"";
-                                wit.Start();
-                                wit.WaitForExit();
-                                if (!File.Exists(Path.Combine(toolsPath, "out(Disc 1).nkit.iso")))
-                                {
-                                    throw new Exception("nkit");
-                                }
-                                File.Move(Path.Combine(toolsPath, "out(Disc 1).nkit.iso"), Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-
-                            }
-                        }
-                        else
-                        {
-                            File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
-                        }
-                    }
-                    
+                        File.Copy(mvm.gc2rom, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
                 }
-               
-                
-                
+                else
+                {
+                    if (mvm.gc2rom.ToLower().Contains("iso") || mvm.gc2rom.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
+                        ConvertToNKit(mvm.gc2rom, "out(Disc 1).nkit.iso", mvm.debug);
+                    else
+                        File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
+                }
             }
-            using(Process wit = new Process())
+            using (Process wit = new Process())
             {
                 if (!mvm.debug)
                 {
@@ -1339,22 +1204,6 @@ namespace UWUVCI_AIO_WPF
             romPath = Path.Combine(tempPath, "game.iso");
             mvvm.Progress = 50;
 
-            //GET ROMCODE and change it
-            mvm.msg = "Trying to save rom code...";
-            //READ FIRST 4 BYTES
-            byte[] chars = new byte[4];
-            FileStream fstrm = new FileStream(Path.Combine(tempPath, "TempBase", "files", "game.iso"), FileMode.Open);
-            fstrm.Read(chars, 0, 4);
-            fstrm.Close();
-            string procod = ByteArrayToString(chars);
-            string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
-            XmlDocument doc = new XmlDocument();
-            doc.Load(metaXml);
-            doc.SelectSingleNode("menu/reserved_flag2").InnerText = procod.ToHex();
-            doc.Save(metaXml);
-            //edit emta.xml
-            Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
-            mvvm.Progress = 55;
 
             mvm.msg = "Replacing TIK and TMD...";
             using (Process extract = new Process())
