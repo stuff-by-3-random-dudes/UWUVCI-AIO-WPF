@@ -135,7 +135,7 @@ public static class DeflickerDitheringRemover
                 return false;
         return true;
     }
-
+    // This is dev code to quickly check to see how the applying went.
     public static bool AreFilesDifferent(string filePath1, string filePath2)
     {
         byte[] file1 = File.ReadAllBytes(filePath1);
