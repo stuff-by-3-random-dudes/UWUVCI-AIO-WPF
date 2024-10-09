@@ -206,6 +206,8 @@
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
     <Compile Include="Classes\MenuIconImage.cs" />
+    <Compile Include="Helpers\MacLinuxHelper.cs" />
+    <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
     <Compile Include="UI\Done.xaml.cs">
