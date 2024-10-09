@@ -1690,68 +1690,34 @@ namespace UWUVCI_AIO_WPF
 
             if (config.DarkFilter == false)
             {
-                //For how often we are making new processes here, there should be a function that just creates the bases that's used and has a signature
-                //that takes in a fileName and arguments, with some optional for if we want to capture the error/output
-                //But this works for now, so I'm not going to edit it anymore
                 var mArchiveExePath = Path.Combine(toolsPath, "MArchiveBatchTool.exe");
                 var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
-                using (var mArchive = new Process())
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = $"archive extract \"{allDataPath}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80",
-                        FileName = mArchiveExePath
-                    };
 
-                    mArchive.StartInfo = startInfo;
-                    mArchive.Start();
+                // Step 1: Extract all data (longer wait time)
+                RunProcess(mArchiveExePath, $"archive extract \"{allDataPath}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80", true);
+                mvvm.Progress += 5;
 
-                    mArchive.WaitForExit();
-                    mvvm.Progress += 5;
-                }
+                var lastModDirect = new DirectoryInfo(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"))
+                    .GetDirectories()
+                    .OrderByDescending(d => d.LastWriteTimeUtc)
+                    .LastOrDefault();
 
-                var lastModDirect = new DirectoryInfo(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")).GetDirectories().OrderByDescending(d => d.LastWriteTimeUtc).LastOrDefault();
                 var titleprofPsbM = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.m");
-                using (var mArchive = new Process())
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = $"m unpack \"{titleprofPsbM}\" zlib MX8wgGEJ2+M47 80",
-                        FileName = mArchiveExePath
-                    };
 
-                    mArchive.StartInfo = startInfo;
-                    mArchive.Start();
-
-                    mArchive.WaitForExit(3000);
-                    mvvm.Progress += 5;
-                }
+                // Step 2: Unpack title_prof.psb.m
+                RunProcess(mArchiveExePath, $"m unpack \"{titleprofPsbM}\" zlib MX8wgGEJ2+M47 80", true);
+                mvvm.Progress += 5;
 
                 var titleprofPsb = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb");
-                using (var mArchive = new Process())
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = $"psb deserialize \"{titleprofPsb}\"",
-                        FileName = mArchiveExePath
-                    };
 
-                    mArchive.StartInfo = startInfo;
-                    mArchive.Start();
-
-                    mArchive.WaitForExit(3000);
-                    mvvm.Progress += 5;
-                }
+                // Step 3: Deserialize title_prof.psb
+                RunProcess(mArchiveExePath, $"psb deserialize \"{titleprofPsb}\"", true);
+                mvvm.Progress += 5;
 
                 var titleprofPsbJson = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.json");
                 var titleprofPsbJson_Modified = Path.Combine(lastModDirect.FullName, "config", "modified_title_prof.psb.json");
 
+                // Step 4: Modify the JSON
                 using (StreamReader sr = File.OpenText(titleprofPsbJson))
                 {
                     var json = sr.ReadToEnd();
@@ -1765,60 +1731,22 @@ namespace UWUVCI_AIO_WPF
                 File.Delete(titleprofPsbJson);
                 File.Move(titleprofPsbJson_Modified, titleprofPsbJson);
 
-                using (var mArchive = new Process())
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = $"psb serialize \"{titleprofPsbJson}\"",
-                        FileName = mArchiveExePath
-                    };
+                // Step 5: Serialize the JSON back to PSB
+                RunProcess(mArchiveExePath, $"psb serialize \"{titleprofPsbJson}\"", true);
+                mvvm.Progress += 5;
 
-                    mArchive.StartInfo = startInfo;
-                    mArchive.Start();
-
-                    mArchive.WaitForExit(3000);
-                    mvvm.Progress += 5;
-                }
-
-                using (var mArchive = new Process())
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = $"m pack \"{titleprofPsb}\" zlib MX8wgGEJ2+M47 80",
-                        FileName = mArchiveExePath
-                    };
-
-                    mArchive.StartInfo = startInfo;
-                    mArchive.Start();
-
-                    mArchive.WaitForExit(3000);
-                    mvvm.Progress += 5;
-                }
+                // Step 6: Pack the modified PSB back to a file
+                RunProcess(mArchiveExePath, $"m pack \"{titleprofPsb}\" zlib MX8wgGEJ2+M47 80", true);
+                mvvm.Progress += 5;
 
                 File.Delete(titleprofPsbJson);
 
-                using (var mArchive = new Process())
-                {
-                    var startInfo = new ProcessStartInfo
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        Arguments = $"archive build --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80 \"{Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")}\" \"{Path.Combine(baseRomPath, "content", "alldata")}\"",
-                        FileName = mArchiveExePath
-                    };
+                // Step 7: Rebuild the archive (longer wait time)
+                RunProcess(mArchiveExePath, $"archive build --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80 \"{Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")}\" \"{Path.Combine(baseRomPath, "content", "alldata")}\"", true);
+                mvvm.Progress += 15;
 
-                    mArchive.StartInfo = startInfo;
-                    mArchive.Start();
-
-                    mArchive.WaitForExit(100000);
-                    mvvm.Progress += 15;
-                }
-
-                Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"),true);
+                // Clean up extracted data
+                Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"), true);
                 File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
             }
 
@@ -1828,6 +1756,30 @@ namespace UWUVCI_AIO_WPF
                 if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
             }
         }
+
+        // Stupid me complaining, function to create and run the process
+        private static void RunProcess(string fileName, string arguments, bool indefiniteWait = false, int waitTime = 3000)
+        {
+            using (var process = new Process())
+            {
+                var startInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    Arguments = arguments,
+                    FileName = fileName
+                };
+
+                process.StartInfo = startInfo;
+                process.Start();
+
+                if (indefiniteWait)
+                    process.WaitForExit();
+                else
+                    process.WaitForExit(waitTime);
+            }
+        }
+
         private static void NDS(string injectRomPath)
         {
             try
