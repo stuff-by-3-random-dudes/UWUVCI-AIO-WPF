@@ -570,10 +570,10 @@ namespace UWUVCI_AIO_WPF
             File.Copy(Path.Combine(toolsPath, "forwarder.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
             mvm.Progress = 40;
             mvvm.msg = "Creating Injectable file...";
-            WiiHomebrewForwarder(savedir, mvm);
+            SharedWitAndNFS2ISO2NFS(savedir, mvm, "WiiForwarder");
         }
 
-        private static void WiiHomebrewForwarder (string savedir, MainViewModel mvm)
+        private static void SharedWitAndNFS2ISO2NFS (string savedir, MainViewModel mvm, string functionName)
         {
             try
             {
@@ -619,7 +619,7 @@ namespace UWUVCI_AIO_WPF
                 };
 
                 foreach (var arg in args)
-                    MacLinuxHelper.WriteFailedStepToJson("WiiHomebrewForwarder", "wit", arg, string.Empty);
+                    MacLinuxHelper.WriteFailedStepToJson(functionName, "wit", arg, string.Empty);
 
                 var result = MessageBox.Show("Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
                     "\n\nGo to the folder where UWUVCI is, you should see a file called 'UWUVCI Helper' please run the one meant for your system. Don't use Wine or any form of virtualization, that is a program that you can run natively." +
@@ -631,6 +631,24 @@ namespace UWUVCI_AIO_WPF
                     MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
                     return;
                 }
+            }
+
+            if (functionName == "GCN")
+            {
+                //GET ROMCODE and change it
+                mvm.msg = "Trying to save rom code...";
+                //READ FIRST 4 BYTES
+                byte[] chars = new byte[4];
+                FileStream fstrm = new FileStream(Path.Combine(tempPath, "TempBase", "files", "game.iso"), FileMode.Open);
+                fstrm.Read(chars, 0, 4);
+                fstrm.Close();
+                string procod = ByteArrayToString(chars);
+                string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
+                XmlDocument doc = new XmlDocument();
+                doc.Load(metaXml);
+                doc.SelectSingleNode("menu/reserved_flag2").InnerText = procod.ToHex();
+                doc.Save(metaXml);
+                mvvm.Progress = 55;
             }
 
             Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
@@ -659,19 +677,22 @@ namespace UWUVCI_AIO_WPF
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 string pass = "-passthrough ";
                 string extra = "";
-                if (mvm.passtrough != true)
-                    pass = "";
-                if (mvm.Index == 2)
-                    extra = "-horizontal ";
-                if (mvm.Index == 3) extra = "-wiimote ";
-                if (mvm.Index == 4) 
-                    extra = "-instantcc ";
-                if (mvm.Index == 5) 
-                    extra = "-nocc ";
-                if (mvm.LR)
-                    extra += "-lrpatch ";
+                if (functionName != "GCN")
+                {
+                    if (mvm.passtrough != true)
+                        pass = "";
+                    if (mvm.Index == 2)
+                        extra = "-horizontal ";
+                    if (mvm.Index == 3) extra = "-wiimote ";
+                    if (mvm.Index == 4)
+                        extra = "-instantcc ";
+                    if (mvm.Index == 5)
+                        extra = "-nocc ";
+                    if (mvm.LR)
+                        extra += "-lrpatch ";
+                }
 
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {pass}-iso game.iso";
+                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}{pass}-iso game.iso";
                 iso2nfs.Start();
                 iso2nfs.WaitForExit();
                 File.Delete("nfs2iso2nfs.exe");
@@ -700,7 +721,7 @@ namespace UWUVCI_AIO_WPF
             File.Copy(romPath, Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
             mvm.Progress = 30;
             mvvm.msg = "Creating Injectable file...";
-            WiiHomebrewForwarder(savedir,mvm);
+            SharedWitAndNFS2ISO2NFS(savedir,mvm, "WiiHomebrew");
         }
 
         private static void WII(string romPath, MainViewModel mvm)
@@ -1180,76 +1201,8 @@ namespace UWUVCI_AIO_WPF
                         File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
                 }
             }
-            using (Process wit = new Process())
-            {
-                if (!mvm.debug)
-                {
-                   
-                    wit.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                }
-                wit.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                wit.StartInfo.Arguments = $"copy \"{Path.Combine(tempPath, "TempBase")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
-                wit.Start();
-                wit.WaitForExit();
-            }
 
-            Thread.Sleep(6000);
-            if (!File.Exists(Path.Combine(tempPath, "game.iso")))
-            {
-                Console.Clear();
-
-                throw new Exception("WIIAn error occured while Creating the ISO");
-            }
-            //Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
-            romPath = Path.Combine(tempPath, "game.iso");
-            mvvm.Progress = 50;
-
-
-            mvm.msg = "Replacing TIK and TMD...";
-            using (Process extract = new Process())
-            {
-                if (!mvm.debug)
-                {
-                    extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                }
-                extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                extract.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
-                extract.Start();
-                extract.WaitForExit();
-                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
-                {
-                    File.Delete(sFile);
-                }
-                File.Copy(Path.Combine(tempPath, "TIKTMD", "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"));
-                File.Copy(Path.Combine(tempPath, "TIKTMD", "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"));
-                Directory.Delete(Path.Combine(tempPath, "TIKTMD"), true);
-            }
-            mvm.Progress = 60;
-            mvm.msg = "Injecting ROM...";
-            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
-            {
-                File.Delete(sFile);
-            }
-            File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
-            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
-            using (Process iso2nfs = new Process())
-            {
-                if (!mvm.debug)
-                {
-                   
-                    iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                }
-                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso game.iso";
-                iso2nfs.Start();
-                iso2nfs.WaitForExit();
-                File.Delete("nfs2iso2nfs.exe");
-                File.Delete("game.iso");
-            }
-            Directory.SetCurrentDirectory(savedir);
-            mvm.Progress = 80;
-            
+            SharedWitAndNFS2ISO2NFS(savedir, mvm, "GCN");
         }
         private static void WIIold(string romPath, MainViewModel mvm, bool force)
         {
