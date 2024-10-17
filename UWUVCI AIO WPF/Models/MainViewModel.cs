@@ -27,6 +27,7 @@ using NAudio.Wave;
 using System.Timers;
 using NAudio.Utils;
 using System.Security.Cryptography;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1848,15 +1849,13 @@ namespace UWUVCI_AIO_WPF
             {
                 string basePath = $@"bin\bases\";
                 Directory.SetCurrentDirectory(basePath);
-                using (var client = new WebClient())
-                {
-                    var fixname = name.Split('\\');
+                using var client = new WebClient();
+                var fixname = name.Split('\\');
 
-                    if (Injection.IsRunningInVirtualMachine() || Injection.IsRunningUnderWineOrSimilar())
-                        name = "Net6/" + name;
+                if (MacLinuxHelper.IsRunningInVirtualMachine() || MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                    name = "Net6/" + name;
 
-                    client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
-                }
+                client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
             }
             catch (Exception e)
             {

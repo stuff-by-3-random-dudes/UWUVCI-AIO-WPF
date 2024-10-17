@@ -284,7 +284,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "Looks to be that there is something about your game that UWUVCI doesn't like, you are most likely injecting with a wbfs or nkit.iso file, this file has data trimmed." +
                         "\nFAQ: #17, #27, #29";
                 else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
-                    errorMessage = "Looks to be tthe images are the problem" +
+                    errorMessage = "The images are most likely the culprit, try changing them around." +
                         "\nFAQ: #28";
 
                 if (MacLinuxHelper.IsRunningInVirtualMachine() || MacLinuxHelper.IsRunningUnderWineOrSimilar())
@@ -489,7 +489,9 @@ namespace UWUVCI_AIO_WPF
                 foreach (var arg in args)
                     MacLinuxHelper.WriteFailedStepToJson(functionName, "wit", arg, string.Empty);
 
-                MacLinuxHelper.DisplayMessageBoxAboutTheHelper();
+                //MacLinuxHelper.DisplayMessageBoxAboutTheHelper();
+                MacLinuxHelper.LaunchHelperApp();
+
             }
 
             if (functionName == "GCN")
@@ -498,7 +500,7 @@ namespace UWUVCI_AIO_WPF
                 mvm.msg = "Trying to save rom code...";
                 //READ FIRST 4 BYTES
                 byte[] chars = new byte[4];
-                FileStream fstrm = new FileStream(Path.Combine(tempPath, "TempBase", "files", "game.iso"), FileMode.Open);
+                FileStream fstrm = new FileStream(Path.Combine(tempPath, "game.iso"), FileMode.Open);
                 fstrm.Read(chars, 0, 4);
                 fstrm.Close();
                 string procod = ByteArrayToString(chars);
@@ -522,9 +524,8 @@ namespace UWUVCI_AIO_WPF
             mvm.Progress = 60;
             mvm.msg = "Injecting ROM...";
             foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
-            {
                 File.Delete(sFile);
-            }
+
             File.Move(Path.Combine(tempPath, "game.iso"), Path.Combine(baseRomPath, "content", "game.iso"));
             File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"));
             Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
@@ -639,7 +640,14 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
                 else
+                {
+                    if (mvm.NKITFLAG || romPath.Contains("nkit"))
+                        witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
+                    else
+                        witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
+
                     MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                }
             }
 
             if (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter)
@@ -648,13 +656,12 @@ namespace UWUVCI_AIO_WPF
                 var extraction = Path.Combine(tempPath, "extraction");
                 mvm.msg = "Unpacking rom to get main.dol file";
                 mvm.Progress = 16;
-                if(IsNativeWindows)
+                witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
+                if (IsNativeWindows)
                 {
                     using var unpack = new Process();
                     if (!mvm.debug)
                         unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
 
                     unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                     unpack.StartInfo.Arguments = witArgs;
@@ -680,6 +687,7 @@ namespace UWUVCI_AIO_WPF
 
                 mvm.msg = "Packing rom back up";
                 mvm.Progress = 18;
+                witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
                 if (IsNativeWindows)
                 {
                     using var pack = new Process();
@@ -687,7 +695,7 @@ namespace UWUVCI_AIO_WPF
                         pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
                     pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    pack.StartInfo.Arguments = $"copy \"{extraction}\" \"{isoPath}\"";
+                    pack.StartInfo.Arguments = witArgs;
                     pack.Start();
                     pack.WaitForExit();
                 }
@@ -740,6 +748,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     fs.Close();
                 }
+                witArgs = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
                 if (IsNativeWindows)
                 {
                     using Process trimm = new Process();
@@ -748,7 +757,7 @@ namespace UWUVCI_AIO_WPF
 
                     mvm.msg = "Trimming ROM...";
                     trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    trimm.StartInfo.Arguments = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
+                    trimm.StartInfo.Arguments = witArgs;
                     trimm.Start();
                     trimm.WaitForExit();
                     mvm.Progress = 30;
@@ -819,13 +828,12 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 mvm.msg = "Creating ISO from trimmed ROM...";
+                witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
                 if (IsNativeWindows)
                 {
                     using Process repack = new Process();
                     if (!mvm.debug)
                         repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
 
                     repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                     repack.StartInfo.Arguments = witArgs;
@@ -841,6 +849,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (mvm.Index == 4 || mvm.Patch)
                 {
+                    witArgs = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
                     if (IsNativeWindows)
                     {
                         using Process trimm = new Process();
@@ -848,8 +857,7 @@ namespace UWUVCI_AIO_WPF
                             trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
                         mvm.msg = "Trimming ROM...";
-                        witArgs = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
-
+                       
                         trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                         trimm.StartInfo.Arguments = witArgs;
                         trimm.Start();
@@ -909,13 +917,12 @@ namespace UWUVCI_AIO_WPF
 
                     }
                     mvm.msg = "Creating ISO from patched ROM...";
+                    witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
                     if (IsNativeWindows)
                     {
                         using Process repack = new Process();
                         if (!mvm.debug)
                             repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                        witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
 
                         repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                         repack.StartInfo.Arguments = witArgs;
@@ -934,13 +941,14 @@ namespace UWUVCI_AIO_WPF
 
             mvm.Progress = 50;
             mvm.msg = "Replacing TIK and TMD...";
+
+            witArgs = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
+
             if (IsNativeWindows)
             {
                 using Process extract = new Process();
                 if (!mvm.debug)
                     extract.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                witArgs = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
 
                 extract.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 extract.StartInfo.Arguments = witArgs;
