@@ -16,12 +16,14 @@ namespace UWUVCI_AIO_WPF
     {
 		
 		Timer t = new Timer(5000);
-		private void Application_Startup(object sender, StartupEventArgs e)
+        private StartupEventArgs _startupArgs;
+        private void Application_Startup(object sender, StartupEventArgs e)
 		{
+            _startupArgs = e; // Store the StartupEventArgs
             if (IsFirstLaunch())
             {
                 // Proceed with the regular application startup
-                LaunchMainApplication(e);
+                LaunchMainApplication(_startupArgs);
                 return;
             }
 
@@ -35,7 +37,11 @@ namespace UWUVCI_AIO_WPF
 
             return Directory.Exists(@"bin");
         }
-        public void LaunchMainApplication(StartupEventArgs e=null)
+        public void LaunchMainApplication()
+        {
+            LaunchMainApplication(_startupArgs);
+        }
+        private void LaunchMainApplication(StartupEventArgs e)
 		{
             if (Directory.Exists(@"custom"))
                 if (File.Exists(@"custom\main.dol"))

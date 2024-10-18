@@ -46,7 +46,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 // Save settings
                 Settings.Default.Save();
 
-                new App().LaunchMainApplication();
+                // Call the LaunchMainApplication method directly from the current application instance
+                ((App)Application.Current).LaunchMainApplication();
             }
             
             Close();
