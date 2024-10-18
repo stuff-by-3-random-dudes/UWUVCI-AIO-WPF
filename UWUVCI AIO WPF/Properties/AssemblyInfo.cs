@@ -5,11 +5,11 @@ using System.Windows;
 // Allgemeine Informationen über eine Assembly werden über die folgenden
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
-[assembly: AssemblyTitle("UWUVCI AIO OT")]
-[assembly: AssemblyDescription("Ultimate Wii U Virtual Console Injector - OT")]
+[assembly: AssemblyTitle("UWUVCI AIO")]
+[assembly: AssemblyDescription("Ultimate Wii U Virtual Console Injector")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ZestyTS")]
-[assembly: AssemblyProduct("UWUVCI AIO OT")]
+[assembly: AssemblyProduct("UWUVCI AIO")]
 [assembly: AssemblyCopyright("Copyright © 2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
