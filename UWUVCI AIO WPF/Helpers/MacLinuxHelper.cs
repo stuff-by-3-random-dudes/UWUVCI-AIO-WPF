@@ -114,6 +114,7 @@ namespace UWUVCI_AIO_WPF.Helpers
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to launch helper app: {ex.Message}");
+                DisplayMessageBoxAboutTheHelper();
             }
         }
 
