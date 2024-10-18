@@ -9,7 +9,7 @@
       Title="SettingsFrame" >
 
     <Grid>
-        <TextBlock x:Name="tb" TextWrapping="Wrap" Text="Welcome to UWUVCI AIO V3.ZB To start Injecting select a Console to your left." FontSize="20" Height="183" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="1110" />
+        <TextBlock x:Name="tb" TextWrapping="Wrap" Text="Welcome to UWUVCI AIO V3.ZB To start Injecting select a Console to your left. Want to go through the tutorial again? Click on the gear icon, and click 'Tutorial'" FontSize="20" Height="183" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Width="1110" />
         <TextBlock Margin="15,505,15,0" HorizontalAlignment="Right" VerticalAlignment="Top" Text="Support MAC Development" TextAlignment="Right"></TextBlock>
         <Button HorizontalAlignment="Right" Margin="15,525,15,0" VerticalAlignment="Top" Width="74" Click="Button_Click" IsTabStop="False" Height="58" ToolTip="Support UWUVCI MAC Development on Ko-Fi">
             <Image HorizontalAlignment="Left" Height="46" VerticalAlignment="Top" Width="46" Source="/UI/Images/61e111774d3a2f67c827cd25_Frame 5.png" />

@@ -30,6 +30,7 @@
         <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden" IsTabStop="False"/>
         <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="617,226,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3" IsTabStop="False"/>
         <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="337,357,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4" IsTabStop="False"/>
+        <Button Content="Show Tutorial Screens" HorizontalAlignment="Left" Margin="337,402,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" IsTabStop="False" Click="ShowTutorialScreens_Click" x:Name="ShowTutorialScreens"/>
         <Button Content="Credits" HorizontalAlignment="Left" Margin="1022,548,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5" IsTabStop="False"/>
         <Button Content="Update Tools" HorizontalAlignment="Left" Margin="495,226,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7" IsTabStop="False"/>
         <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="337,226,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6" IsTabStop="False"/>
@@ -38,7 +39,7 @@
         <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="337,314,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9" IsTabStop="False"/>
         <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="337,270,0,0" VerticalAlignment="Top" Width="275" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10" IsTabStop="False"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="337,422,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_11"  IsTabStop="False" Visibility="Hidden"/>
-        <Grid Margin="0,0,5,0"/>
+        <Grid Margin="0,0,5,10"/>
         <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="12,7,0,0" VerticalAlignment="Top" Width="1108"/>
         <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="1103,6,0,0" VerticalAlignment="Top" Width="17"/>
         <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="12,17,0,0" VerticalAlignment="Top" Width="1108"/>

@@ -37,20 +37,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            // Close the tutorial by marking the first launch as false
-            Settings.Default.IsFirstLaunch = false;
+            //Clicked button to see tutorial
+            if (Settings.Default.IsFirstLaunch)
+            {
+                // Close the tutorial by marking the first launch as false
+                Settings.Default.IsFirstLaunch = false;
 
-            // Save settings
-            Settings.Default.Save();
-         
-            // Get the current process path
-            string applicationPath = Process.GetCurrentProcess().MainModule.FileName;
+                // Save settings
+                Settings.Default.Save();
 
-            // Start a new instance of the program
-            Process.Start(applicationPath);
-
-            // Shut down the current application instance
-            Application.Current.Shutdown();
+                new App().LaunchMainApplication();
+            }
+            
+            Close();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)

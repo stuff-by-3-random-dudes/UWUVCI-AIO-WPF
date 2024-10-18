@@ -133,5 +133,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             Process.Start("https://ko-fi.com/zestyts");
         }
+
+        private void ShowTutorialScreens_Click(object sender, RoutedEventArgs e)
+        {
+            new IntroductionWindow().ShowDialog();
+        }
     }
 }
