@@ -32,11 +32,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if (this.Owner != null)
+                if (Owner != null)
                 {
-                    if (this.Owner?.GetType() != typeof(MainWindow))
+                    if (Owner?.GetType() != typeof(MainWindow))
                     {
-                        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
 
                 }
@@ -45,7 +45,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
             InitializeComponent();
@@ -203,12 +203,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Canc_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
 
         }
 
@@ -294,7 +294,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                  checkForAdditionalFiles(mvm.GameConfiguration.Console);
              }*/
 
-            this.Close();
+            Close();
         }
         private void checkForAdditionalFiles(GameConsoles console)
         {
