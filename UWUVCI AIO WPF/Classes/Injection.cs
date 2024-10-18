@@ -655,7 +655,7 @@ namespace UWUVCI_AIO_WPF
                 var isoPath = Path.Combine(tempPath, "pre.iso");
                 var extraction = Path.Combine(tempPath, "extraction");
                 mvm.msg = "Unpacking rom to get main.dol file";
-                mvm.Progress = 16;
+                mvm.Progress = 19;
                 witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
                 if (IsNativeWindows)
                 {
@@ -672,7 +672,7 @@ namespace UWUVCI_AIO_WPF
                     MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
 
                 mvm.msg = "Patching main.dol file";
-                mvm.Progress = 17;
+                mvm.Progress = 21;
 
                 File.Delete(isoPath);
 
@@ -686,7 +686,86 @@ namespace UWUVCI_AIO_WPF
                 File.Move(output, mainDolPath);
 
                 mvm.msg = "Packing rom back up";
-                mvm.Progress = 18;
+                mvm.Progress = 23;
+                witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
+                if (IsNativeWindows)
+                {
+                    using var pack = new Process();
+                    if (!mvm.debug)
+                        pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    pack.StartInfo.Arguments = witArgs;
+                    pack.Start();
+                    pack.WaitForExit();
+                }
+                else
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+
+                Directory.Delete(extraction, recursive: true);
+            }
+
+            if (!string.IsNullOrEmpty(mvm.GctPath))
+            {
+                var isoPath = Path.Combine(tempPath, "pre.iso");
+                var extraction = Path.Combine(tempPath, "extraction");
+                mvm.msg = "Unpacking rom to get main.dol file";
+                mvm.Progress = 25;
+                witArgs = $"extract --psel=data \"{isoPath}\" \"{extraction}\"";
+                if (IsNativeWindows)
+                {
+                    using var unpack = new Process();
+                    if (!mvm.debug)
+                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    unpack.StartInfo.Arguments = witArgs;
+                    unpack.Start();
+                    unpack.WaitForExit();
+                }
+                else
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+
+                mvm.msg = "Patching main.dol with gct file";
+                mvm.Progress = 27;
+
+                File.Delete(isoPath);
+
+                var extractionFolder = Path.Combine(tempPath, "extraction");
+                var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
+                //var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
+
+                var stringBuilder = new StringBuilder();
+
+                // Split the existing file paths in gctPath.Text by new lines
+                var filePaths = mvm.gctPath.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Iterate over each file path and append the corresponding "--add-section" argument
+                foreach (var path in filePaths)
+                    stringBuilder.Append($" --add-section \"{path}\"");
+
+                // Convert the StringBuilder to a string and return it
+                witArgs = $"patch \"{mainDolPath}\"" + stringBuilder.ToString();
+
+                if (IsNativeWindows)
+                {
+                    using var unpack = new Process();
+                    if (!mvm.debug)
+                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wstrt.exe");
+                    unpack.StartInfo.Arguments = witArgs;
+                    unpack.Start();
+                    unpack.WaitForExit();
+                }
+                else
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wstrt", witArgs, string.Empty);
+
+                //File.Delete(mainDolPath);
+                //File.Move(output, mainDolPath);
+
+                mvm.msg = "Packing rom back up";
+                mvm.Progress = 29;
                 witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
                 if (IsNativeWindows)
                 {
@@ -720,7 +799,7 @@ namespace UWUVCI_AIO_WPF
             doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
             doc.Save(metaXml);
             //edit emta.xml
-            mvm.Progress = 20;
+            mvm.Progress = 31;
 
             if (!mvm.donttrim)
             {
@@ -760,7 +839,7 @@ namespace UWUVCI_AIO_WPF
                     trimm.StartInfo.Arguments = witArgs;
                     trimm.Start();
                     trimm.WaitForExit();
-                    mvm.Progress = 30;
+                    mvm.Progress = 33;
                 }
                 else                  
                     MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);

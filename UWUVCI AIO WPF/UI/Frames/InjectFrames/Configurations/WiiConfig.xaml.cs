@@ -133,38 +133,30 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             ancastKey.Text = "";
             ancastKey.IsEnabled = false;
             if (!CheckIfNull(path))
-
             {
                 int TitleIDInt = 0;
                 bool isok = false;
                 if (path.ToLower().Contains(".gcz") || path.ToLower().Contains(".dol") || path.ToLower().Contains(".wad"))
-                {
                     isok = true;
-                }
                 else
                 {
-                    using (var reader = new BinaryReader(File.OpenRead(path)))
+                    using var reader = new BinaryReader(File.OpenRead(path));
+                    reader.BaseStream.Position = 0x00;
+                    TitleIDInt = reader.ReadInt32();
+                    if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
+                    { isok = true; }
+                    else if (TitleIDInt != 65536)
                     {
-                        reader.BaseStream.Position = 0x00;
-                        TitleIDInt = reader.ReadInt32();
-                        if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
-                        { isok = true; }
-                        else if (TitleIDInt != 65536)
-                        {
-                            long GameType = 0;
-                            reader.BaseStream.Position = 0x18;
-                            GameType = reader.ReadInt64();
-                            if (GameType == 2745048157)
-                            {
-                                isok = true;
-                            }
+                        long GameType = 0;
+                        reader.BaseStream.Position = 0x18;
+                        GameType = reader.ReadInt64();
+                        if (GameType == 2745048157)
+                            isok = true;
 
-                        }
-                        reader.Close();
                     }
+                    reader.Close();
                 }
-                
-                
+
                 if (isok)
                 {
                     motepass.IsEnabled = false;
@@ -258,9 +250,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         motepass.IsEnabled = false;
 
                         trimn.IsEnabled = true;
-                    }
-                       
-                   
+                    } 
                 }
                 else
                 {
@@ -304,48 +294,29 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void InjectGame(object sender, RoutedEventArgs e)
         {
             if (File.Exists(tv.Text))
-            {
                 mvm.GameConfiguration.TGATv.ImgPath = tv.Text;
-            }
             else if (!tv.Text.Equals("Added via Config") && !tv.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGATv.ImgPath = null;
-            }
+
             if (File.Exists(ic.Text))
-            {
                 mvm.GameConfiguration.TGAIco.ImgPath = ic.Text;
-            }
             else if (!ic.Text.Equals("Added via Config") && !ic.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGAIco.ImgPath = null;
 
-            }
             if (File.Exists(log.Text))
-            {
                 mvm.GameConfiguration.TGALog.ImgPath = log.Text;
-            }
             else if (!log.Text.Equals("Added via Config") && !log.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGALog.ImgPath = null;
-            }
+
             if (File.Exists(drc.Text))
-            {
                 mvm.GameConfiguration.TGADrc.ImgPath = drc.Text;
-            }
             else if (!drc.Text.Equals("Added via Config") && !drc.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
-            }
+
             mvm.Index = gamepad.SelectedIndex;
-            if (LR.IsChecked == true)
-            {
-                mvm.LR = true;
-            }
-            else
-            {
-                mvm.LR = false;
-            }
+            mvm.LR = (bool)LR.IsChecked;
             mvm.GameConfiguration.GameName = gn.Text;
+            mvm.GctPath = gctPath.Text;
 
             if (!string.IsNullOrEmpty(ancastKey.Text))
             {
@@ -663,28 +634,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private bool CheckIfNull(string s)
         {
-            if (s == null || s.Equals(string.Empty))
-            {
-                return true;
-            }
-            return false;
+            return string.IsNullOrEmpty(s);
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
         {
-
             /*Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-       string backup = string.Copy(gn.Text);
-       gn.Text = reg.Replace(gn.Text, string.Empty);
-       gn.CaretIndex = gn.Text.Length;
-       if (gn.Text != backup)
-       {
-           gn.ScrollToHorizontalOffset(double.MaxValue);
-       }*/
-
-
-
-
+           string backup = string.Copy(gn.Text);
+           gn.Text = reg.Replace(gn.Text, string.Empty);
+           gn.CaretIndex = gn.Text.Length;
+           if (gn.Text != backup)
+           {
+               gn.ScrollToHorizontalOffset(double.MaxValue);
+           }*/
         }
 
         private void gn_KeyUp_1(object sender, KeyEventArgs e)
@@ -696,9 +658,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             mvm.Index = gamepad.SelectedIndex;
             if (gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
-            {
                 LR.IsEnabled = true;
-            }
             else
             {
                 LR.IsChecked = false;
@@ -730,8 +690,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gn.Text = "";
             ic.Text = "";
             log.Text = "";
-
-
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -773,7 +731,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
             t.ShowDialog();
-
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -792,51 +749,22 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void ic_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ic.Text.Length > 0)
-            {
-                icoIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                icoIMG.Visibility = Visibility.Hidden;
-            }
+            icoIMG.Visibility = ic.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void drc_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (drc.Text.Length > 0)
-            {
-                drcIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-
-                drcIMG.Visibility = Visibility.Hidden;
-            }
+            drcIMG.Visibility = drc.Text.Length > 0 ? Visibility.Visible: Visibility.Hidden;
         }
 
         private void tv_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (tv.Text.Length > 0)
-            {
-                tvIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                tvIMG.Visibility = Visibility.Hidden;
-            }
+            tvIMG.Visibility = tv.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void log_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (log.Text.Length > 0)
-            {
-                logIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                logIMG.Visibility = Visibility.Hidden;
-            }
+            logIMG.Visibility = log.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void gn_KeyDown(object sender, KeyEventArgs e)
@@ -853,11 +781,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             if (!CheckIfNull(path))
             {
                 if (new FileInfo(path).Extension.Contains("wav"))
-                {
                     if (mvm.ConfirmRiffWave(path))
-                    {
                         mvm.BootSound = path;
-                    }
                     else
                     {
                         Custom_Message cm = new Custom_Message("Incompatible WAV file", "Your WAV file needs to be a RIFF WAVE file which is 16 bit stereo and also 48000khz");
@@ -871,22 +796,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         }
                         cm.ShowDialog();
                     }
-                }
                 else
-                {
-
                     mvm.BootSound = path;
-                }
             }
             else
-            {
                 if (path == "")
                 {
                     mvm.BootSound = null;
                     sound.Text = "";
                    
                 }
-            }
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -904,26 +823,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             try
             {
                 if (File.Exists(mvm.BootSound))
-                {
-                    if (!new FileInfo(mvm.BootSound).Extension.Contains("btsnd"))
-                    {
-                        SoundImg.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        SoundImg.Visibility = Visibility.Hidden;
-                    }
-                }
+                    SoundImg.Visibility = !new FileInfo(mvm.BootSound).Extension.Contains("btsnd") ? Visibility.Visible : Visibility.Hidden;
             }
             catch (Exception)
             {
 
             }
-            
-            
         }
-
-        
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -1004,14 +910,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void jppatch_Click(object sender, RoutedEventArgs e)
         {
-            if (mvm.jppatch)
-            {
-                mvm.jppatch = false;
-            }
-            else
-            {
-                mvm.jppatch = true;
-            }
+            mvm.jppatch = !mvm.jppatch;
         }
 
         private void selectionDB_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1088,6 +987,52 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void ancast_OTP(object sender, RoutedEventArgs e)
         {
             ancastKey.Text = ReadAncastFromOtp();
+        }
+
+        private void SelectGctile(object sender, RoutedEventArgs e)
+        {
+            // Get the new selected GCT files as a single string
+            var newFiles = GetGCTFilePaths();
+            if (string.IsNullOrEmpty(newFiles))
+                return;
+
+            // Split newFiles by new lines into a list of file paths
+            var newFileList = newFiles.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Use a HashSet to store unique file paths (it avoids duplicates automatically)
+            var uniqueFiles = new HashSet<string>(gctPath.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+
+            // Add the new files to the HashSet
+            foreach (var file in newFileList)
+                uniqueFiles.Add(file); // HashSet ensures no duplicates are added
+
+            // Update the TextBox with the combined list of files, separated by new lines
+            gctPath.Text = string.Join(Environment.NewLine, uniqueFiles);
+        }
+
+        private string GetGCTFilePaths()
+        {
+            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                dialog.Multiselect = true;
+                dialog.DefaultExt = ".gct";
+                dialog.Filter = "GCT Files (*.gct)|*.gct";
+
+                if (Directory.Exists("SourceFiles"))
+                {
+                    dialog.InitialDirectory = "SourceFiles";
+                }
+
+                System.Windows.Forms.DialogResult res = dialog.ShowDialog();
+                if (res == System.Windows.Forms.DialogResult.OK)
+                {
+                    // Join the selected files into a single string separated by commas or newlines
+                    return string.Join(Environment.NewLine, dialog.FileNames);
+                }
+            }
+
+            // Return an empty string if the dialog was cancelled
+            return string.Empty;
         }
     }
 }

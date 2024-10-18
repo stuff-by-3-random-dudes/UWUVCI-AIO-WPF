@@ -32,6 +32,7 @@ namespace UWUVCI_AIO_WPF.Classes
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
             "wit.exe",
+            //"wstrt.exe",
             "cygwin1.dll",
             "cygz.dll",
             "cyggcc_s-1.dll",
@@ -62,11 +63,7 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public static bool DoesToolsFolderExist()
         {
-            if (Directory.Exists(FolderName))
-            {
-                return true;
-            }
-            return false;
+            return Directory.Exists(FolderName);
         }
 
         public static bool IsToolRight(string name)
@@ -76,29 +73,22 @@ namespace UWUVCI_AIO_WPF.Classes
             using (WebClient client = new WebClient())
             {
                 client.DownloadFile(backupulr + name + ".md5", name + ".md5");
-                using (StreamReader sr = new StreamReader(name + ".md5"))
-                    md5 = sr.ReadLine();
+                using StreamReader sr = new StreamReader(name + ".md5");
+                md5 = sr.ReadLine();
             }
 
-            if(CalculateMD5(name) == md5)
-            {
-                ret = true;
-            }
+            ret = CalculateMD5(name) == md5;
 
             File.Delete(name + ".md5");
             return ret;
         }
         static string CalculateMD5(string filename)
         {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filename))
-                {
-                    string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-                    stream.Close();
-                    return ret;
-                }
-            }
+            using var md5 = MD5.Create();
+            using var stream = File.OpenRead(filename);
+            string ret = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
+            stream.Close();
+            return ret;
         }
         public static List<MissingTool> CheckForMissingTools()
         {
@@ -107,9 +97,7 @@ namespace UWUVCI_AIO_WPF.Classes
             {
                 string path = $@"{FolderName}\{s}";
                 if (!DoesToolExist(path))
-                {
                     ret.Add(new MissingTool(s, path));
-                }
             }
             return ret;
         }
@@ -133,7 +121,6 @@ namespace UWUVCI_AIO_WPF.Classes
 
             return true;
         }
-
     }
     class MissingTool
     {
