@@ -5,6 +5,7 @@ using System.Timers;
 using System.Windows;
 using UWUVCI_AIO_WPF.UI.Windows;
 using UWUVCI_AIO_WPF.Properties;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -17,7 +18,7 @@ namespace UWUVCI_AIO_WPF
 		Timer t = new Timer(5000);
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-            if (!Settings.Default.IsFirstLaunch)
+            if (IsFirstLaunch())
             {
                 // Proceed with the regular application startup
                 LaunchMainApplication(e);
@@ -27,8 +28,14 @@ namespace UWUVCI_AIO_WPF
             // Show the introductory window sequence
             new IntroductionWindow().ShowDialog();
         }
+        private bool IsFirstLaunch()
+        {
+            if (Settings.Default.IsFirstLaunch && !MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                return true;
 
-        private void LaunchMainApplication(StartupEventArgs e)
+            return Directory.Exists(@"bin");
+        }
+        public void LaunchMainApplication(StartupEventArgs e=null)
 		{
             if (Directory.Exists(@"custom"))
                 if (File.Exists(@"custom\main.dol"))
