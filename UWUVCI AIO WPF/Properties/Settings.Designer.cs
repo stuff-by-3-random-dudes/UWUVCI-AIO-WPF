@@ -190,5 +190,20 @@ namespace UWUVCI_AIO_WPF.Properties {
                 this["Ancast"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsFirstLaunch
+        {
+            get
+            {
+                return ((bool)(this["IsFirstLaunch"]));
+            }
+            set
+            {
+                this["IsFirstLaunch"] = value;
+            }
+        }
     }
 }

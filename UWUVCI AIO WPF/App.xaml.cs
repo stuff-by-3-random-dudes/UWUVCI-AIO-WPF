@@ -4,6 +4,7 @@ using System.IO;
 using System.Timers;
 using System.Windows;
 using UWUVCI_AIO_WPF.UI.Windows;
+using UWUVCI_AIO_WPF.Properties;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -16,14 +17,22 @@ namespace UWUVCI_AIO_WPF
 		Timer t = new Timer(5000);
 		private void Application_Startup(object sender, StartupEventArgs e)
 		{
-            // Proceed with the regular application startup
-            LaunchMainApplication(e);
+            if (!Settings.Default.IsFirstLaunch)
+            {
+                // Proceed with the regular application startup
+                LaunchMainApplication(e);
+                return;
+            }
+
+            // Show the introductory window sequence
+            new IntroductionWindow().ShowDialog();
         }
 
-		private void LaunchMainApplication(StartupEventArgs e)
+        private void LaunchMainApplication(StartupEventArgs e)
 		{
             if (Directory.Exists(@"custom"))
                 if (File.Exists(@"custom\main.dol"))
+                {
                     if (File.Exists(@"bin\Tools\nintendont.dol"))
                     {
                         File.Delete(@"bin\Tools\nintendont.dol");
@@ -40,13 +49,14 @@ namespace UWUVCI_AIO_WPF
                         File.Copy(@"custom\main.dol", @"bin\Tools\nintendont.dol");
                     }
 
-            if (File.Exists(@"bin\Tools\nintendont_force.dol"))
-            {
-                File.Delete(@"bin\Tools\nintendont_force.dol");
-                File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol");
-            }
-            else
-                File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol");
+                    if (File.Exists(@"bin\Tools\nintendont_force.dol"))
+                    {
+                        File.Delete(@"bin\Tools\nintendont_force.dol");
+                        File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol");
+                    }
+                    else
+                        File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol");
+                }
 
             bool check = true;
             bool bypass = false;
