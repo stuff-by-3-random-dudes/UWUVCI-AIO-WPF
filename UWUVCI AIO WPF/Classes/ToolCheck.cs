@@ -32,7 +32,7 @@ namespace UWUVCI_AIO_WPF.Classes
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
             "wit.exe",
-            //"wstrt.exe",
+            "wstrt.zip",
             "cygwin1.dll",
             "cygz.dll",
             "cyggcc_s-1.dll",
@@ -109,6 +109,17 @@ namespace UWUVCI_AIO_WPF.Classes
 
             if (path.ToLower().Contains("gba1.zip") || path.ToLower().Contains("gba2.zip"))
                 if (!File.Exists(Path.Combine(FolderName, "MArchiveBatchTool.exe")) || !File.Exists(Path.Combine(FolderName, "ucrtbase.dll")))
+                    try
+                    {
+                        ZipFile.ExtractToDirectory(path, FolderName);
+                    }
+                    catch (Exception)
+                    {
+                        Thread.Sleep(200);
+                        DoesToolExist(path);
+                    }
+            if (path.ToLower().Contains("wstrt.zip"))
+                if (!File.Exists(Path.Combine(FolderName, "wstrt.exe")))
                     try
                     {
                         ZipFile.ExtractToDirectory(path, FolderName);
