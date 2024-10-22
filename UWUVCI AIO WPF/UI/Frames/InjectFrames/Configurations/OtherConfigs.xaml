@@ -33,17 +33,20 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Name="ndsLayout" Orientation="Horizontal" Visibility="Hidden">
-            <!-- DSLayout -->
+            <!-- DSLayout RadioButtons -->
             <StackPanel Orientation="Horizontal" Margin="10,-225,0,0" Height="50">
                 <TextBlock Text="More DS Layout Screens:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="Adds additional layout screens to help customize the way you can play."/>
-                <RadioButton VerticalAlignment="Center" Content="False" GroupName="DSLayout" IsChecked="True"  Checked="DSLayoutFalse_Checked" ToolTip="Default layout screens from Nintendo" Margin="0,0,10,0"/>
-                <RadioButton VerticalAlignment="Center" Content="True" GroupName="DSLayout" Checked="DSLayoutTrue_Checked" ToolTip="Adds additional layouts done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/."/>
+                <RadioButton x:Name="DSLayoutFalseRadioButton" VerticalAlignment="Center" Content="False" GroupName="DSLayout" IsChecked="True" Checked="DSLayoutFalse_Checked" ToolTip="Default layout screens from Nintendo" Margin="0,0,10,0"/>
+                <RadioButton x:Name="DSLayoutTrueRadioButton" VerticalAlignment="Center" Content="True" GroupName="DSLayout" Checked="DSLayoutTrue_Checked" ToolTip="Adds additional layouts done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin= "40,-225,0,0" Height="50" Width="334">
+
+            <!-- Phantom Hourglass Section -->
+            <StackPanel x:Name="PhantomHourglassSection" Orientation="Horizontal" Margin="40,-225,0,0" Height="50" Width="334" IsEnabled="{Binding ElementName=DSLayoutTrueRadioButton, Path=IsChecked}">
                 <TextBlock Text="Are you injecting Phantom Hourglass?" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="Selecting this only matters if 'More DS Layout Screens' is set as 'True'"/>
                 <RadioButton VerticalAlignment="Center" Content="False" GroupName="STLayout" IsChecked="True"  Checked="STLayoutFalse_Checked"  Margin="0,0,10,0"/>
-                <RadioButton VerticalAlignment="Center" Content="True" GroupName="STLayout" Checked="STLayoutTrue_Checked" ToolTip="Phantom Hourglass screen layout done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/."/>
+                <RadioButton VerticalAlignment="Center" Content="True" GroupName="STLayout" Checked="STLayoutTrue_Checked" ToolTip="Phantom Hourglass screen layout done by MikaDubbz found here: https://gbatemp.net/threads/add-many-more-screen-layout-options-in-ds-virtual-console-games.574254/"/>
             </StackPanel>
+
         </StackPanel>
         <TextBox materialDesign:HintAssist.Hint="ROM PATH" Name="rp" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,60,157,406" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding RomPath}"  IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="ICON IMAGE" ToolTip="Also known as IconTex" Name="ic" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,181,157,283" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGAIco.ImgPath}" Cursor="Help"  IsTabStop="False"/>
