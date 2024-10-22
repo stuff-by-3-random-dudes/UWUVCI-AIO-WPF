@@ -47,7 +47,7 @@
         <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,7,0,0" VerticalAlignment="Top" Width="17"/>
         <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,7,0,0" VerticalAlignment="Top" Width="17"/>
         <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="12,6,0,0" VerticalAlignment="Top" Width="1108" CornerRadius="5" Background="#FF2196F3"/>
-        <Label Content="v3 OT" HorizontalAlignment="Left" Margin="1075,10,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF" Width="81" Height="24"/>
+        <Label Content="v3.Z-B" HorizontalAlignment="Left" Margin="1075,10,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF" Width="81" Height="24"/>
         <Button HorizontalAlignment="Left" Margin="32,522,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_13" IsTabStop="False" Height="58" ToolTip="Support UWUVCI on Ko-Fi">
             <Image HorizontalAlignment="Left" Height="46" VerticalAlignment="Top" Width="46" Source="/UI/Images/61e111774d3a2f67c827cd25_Frame 5.png" />
         </Button>
