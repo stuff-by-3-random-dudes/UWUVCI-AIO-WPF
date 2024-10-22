@@ -52,18 +52,18 @@
             <Button Content="Back"
                     HorizontalAlignment="Left"
                     Width="80"
-                    Margin="10,0,10,10"
+                    Margin="50,0,0,10"
                     Click="BackButton_Click"
-                    Grid.Column="0" />
+                    Grid.Column="0" Grid.ColumnSpan="2" />
 
             <!-- Next Button on the Right -->
             <Button Content="Next"
                     HorizontalAlignment="Right"
                     Width="80"
-                    Margin="10,0,10,10"
+                    Margin="0,0,42,10"
                     Click="NextButton_Click"
-                    Grid.Column="2" 
-                    x:Name="NextButton"/>
+                    Grid.Column="1" 
+                    x:Name="NextButton" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>
