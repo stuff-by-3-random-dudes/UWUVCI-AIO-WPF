@@ -23,8 +23,31 @@
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex" IsTabStop="False"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,78,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection" IsTabStop="False"/>
         <ComboBox HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top" Width="246" x:Name="gamepad" SelectionChanged="gamepad_SelectionChanged" IsTabStop="False" Height="38"/>
-        <Button Content="Select GCT File" HorizontalAlignment="Left" Margin="506,134,0,0" VerticalAlignment="Top" Width="127" Click="SelectGctile" IsTabStop="False"/>
-        <TextBox materialDesign:HintAssist.Hint="GCT PATH (OPTIONAL)" x:Name="gctPath" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="272,110,157,330" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="12" IsReadOnly="True" Text="{Binding GctPath}" IsTabStop="False" TextWrapping="Wrap" Focusable="False" Cursor="Help"/>
+        <Button Content="Select GCT File" 
+        HorizontalAlignment="Left" 
+        Margin="506,134,0,0" 
+        VerticalAlignment="Top" 
+        Width="127" 
+        Click="SelectGctile" 
+        IsTabStop="False"
+        ToolTip="GCT files contain cheat codes or mods for games. You can select multiple GCT files to apply various modifications to your game. If no GCT file is selected, the game will run without cheats or mods. To select multiple files, hold 'Ctrl' while clicking on the files."/>
+
+        <TextBox materialDesign:HintAssist.Hint="GCT PATH (OPTIONAL)" 
+         x:Name="gctPath" 
+         Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+         Margin="272,110,157,330" 
+         Background="{x:Null}" 
+         Foreground="Black" 
+         SelectionBrush="#FF00C3D7" 
+         CaretBrush="#FF21C3F3" 
+         FontSize="12" 
+         IsReadOnly="True" 
+         Text="{Binding GctPath}" 
+         IsTabStop="False" 
+         TextWrapping="Wrap" 
+         Focusable="False" 
+         Cursor="Help"
+         ToolTip="This field shows the currently selected GCT files. GCT files contain cheat codes or mods. If no GCT file is selected, the game will run without cheats or mods." />
         
         <Label Content="Use GamePad as:" HorizontalAlignment="Left" Margin="6,113,0,0" VerticalAlignment="Top" FontSize="14"/>
         <CheckBox Content="Swap L/R and ZL/ZR" HorizontalAlignment="Left" Margin="129,118,0,0" VerticalAlignment="Top" Width="137" x:Name="LR" IsEnabled="False" IsChecked="False" IsTabStop="False"/>
