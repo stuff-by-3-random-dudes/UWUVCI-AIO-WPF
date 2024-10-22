@@ -107,7 +107,32 @@
             <RadioButton x:Name="RF_tn" Content="To NTSC" Click="RF_tp_Click" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="85" ToolTip="Change Game Region to NTSC" Margin="0,6,0,0"/>
             <RadioButton x:Name="RF_tj" Content="To JPN" Click="RF_tp_Click" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="82" ToolTip="Change Game Region to JPN" Margin="0,6,0,0"/>
         </StackPanel>
-        <TextBox materialDesign:HintAssist.Hint="WIIU ANCAST KEY" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,460,395,5" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding ancastKey}" x:Name="ancastKey" MaxLength="250" IsTabStop="False" IsEnabled="False"/>
-        <Button Content="Get From OTP" HorizontalAlignment="Left" Margin="257,473,0,0" VerticalAlignment="Top" Width="127" Click="ancast_OTP" Focusable="False" IsTabStop="False" x:Name="ancast_Button" IsEnabled="False"/>
+        <TextBox materialDesign:HintAssist.Hint="WIIU ANCAST KEY" 
+         Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+         Margin="10,460,395,5" 
+         Background="{x:Null}" 
+         Foreground="Black" 
+         SelectionBrush="#FF00C3D7" 
+         CaretBrush="#FF21C3F3" 
+         FontSize="18" 
+         Text="{Binding ancastKey}" 
+         x:Name="ancastKey" 
+         MaxLength="250" 
+         IsTabStop="False" 
+         IsEnabled="False"
+         ToolTip="The ANCAST key is to allow the ability to overclock your Wii homebrew injects. You can retrieve it from your WiiU's OTP file." />
+
+        <Button Content="Get From OTP" 
+        HorizontalAlignment="Left" 
+        Margin="257,473,0,0" 
+        VerticalAlignment="Top" 
+        Width="127" 
+        Click="ancast_OTP" 
+        Focusable="False" 
+        IsTabStop="False" 
+        x:Name="ancast_Button" 
+        IsEnabled="False"
+        ToolTip="Click here to automatically fetch the ANCAST key from your WiiU's OTP file. This option is only available if you have access to the OTP file." />
+
     </Grid>
 </Page>
