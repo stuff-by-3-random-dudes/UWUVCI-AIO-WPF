@@ -20,17 +20,26 @@ namespace UWUVCI_AIO_WPF
         private void Application_Startup(object sender, StartupEventArgs e)
 		{
             _startupArgs = e; // Store the StartupEventArgs
-            if (MacLinuxHelper.IsRunningUnderWineOrSimilar())
-            {
-                MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not, we will assume you did, but if you didn't in the main application, click the gear icon, and then click the button that says 'Tutorial'", "UWUCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
-                Settings.Default.IsFirstLaunch = false;
-            }
+
             if (!Settings.Default.IsFirstLaunch)
+            {
                 // Proceed with the regular application startup
                 LaunchMainApplication(_startupArgs);
+            }
             else
-                // Show the introductory window sequence
-                new IntroductionWindow().ShowDialog();            
+            {
+                if (MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                {
+                    MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not, we will assume you did, but if you didn't in the main application, click the gear icon, and then click the button that says 'Tutorial'", "UWUCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
+                    Settings.Default.IsFirstLaunch = false;
+                    LaunchMainApplication(_startupArgs);
+                }
+                else
+                {
+                    // Show the introductory window sequence
+                    new IntroductionWindow().ShowDialog();
+                }
+            }
         }
         public void LaunchMainApplication()
         {
