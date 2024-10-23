@@ -6,9 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Navigation;
 using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Helpers
@@ -64,59 +62,7 @@ namespace UWUVCI_AIO_WPF.Helpers
         public static void PrepareAndInformUserOnUWUVCIHelper(string functionName, string toolName, string arguments, string currentDirectory = "")
         {
             WriteFailedStepToJson(functionName, toolName, arguments, currentDirectory);
-            //DisplayMessageBoxAboutTheHelper();
-            LaunchHelperApp();
-        }
-
-        // Determine whether running on macOS or Linux
-        public static string DetermineOSHelperPath()
-        {
-            var path = "";
-            if (File.Exists("/proc/version") || Directory.Exists("/etc"))
-                // If certain Linux-specific files/folders exist, it's probably Linux
-                path = "linux";
-            else if (Directory.Exists("/Applications") || File.Exists("/usr/bin/sw_vers"))
-                // Check for macOS-specific folders or files like /Applications or /usr/bin/sw_vers
-                path = "macos";
-
-            return path + "/UWUVCI-V3-Helper";
-        }
-
-        public static void LaunchHelperApp()
-        {
-            string osSpecificHelperPath = DetermineOSHelperPath();
-
-            // Use bash to call the helper app
-            ProcessStartInfo bashProcess = new ProcessStartInfo
-            {
-                FileName = "/bin/bash", // Use /bin/bash for Mac/Linux
-                Arguments = $"-c \"./{osSpecificHelperPath}\"", // Run the appropriate helper app based on the detected OS
-                WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), // Assume UWUVCI is the parent folder
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-
-            try
-            {
-                using Process process = Process.Start(bashProcess);
-                string output = process.StandardOutput.ReadToEnd();
-                string error = process.StandardError.ReadToEnd();
-
-                process.WaitForExit();
-
-                if (!string.IsNullOrEmpty(output))
-                    Console.WriteLine($"Helper Output: {output}");
-
-                if (!string.IsNullOrEmpty(error))
-                    Console.WriteLine($"Helper Error: {error}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to launch helper app: {ex.Message}");
-                DisplayMessageBoxAboutTheHelper();
-            }
+            DisplayMessageBoxAboutTheHelper();
         }
 
         public static bool IsRunningUnderWineOrSimilar()
