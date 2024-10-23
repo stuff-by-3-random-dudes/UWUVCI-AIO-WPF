@@ -22,7 +22,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="RenderingScale:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="May cause issues, doesn't work for every base. Here are base titles that work: &#x0a;Big Brain Academy&#x0a;WarioWare: Touched&#x0a;Yoshi's Island DS&#x0a;Mario Kart DS&#x0a;New Super Mario Bros.&#x0a;Brain Age: Train Your Brain in Minutes a Day (aka Dr. Kawashima's Brain Training)&#x0a;Yoshi Touch &amp; Go&#x0a;Mario &amp; Luigi: Partners in Time&#x0a;Star Fox Command&#x0a;Kirby Squeak Squad&#x0a;DK: Jungle Climber&#x0a;Wario: Master of Disguise"/>
                 <RadioButton VerticalAlignment="Center" Content="1" GroupName="RenderingScale" IsChecked="True" ToolTip="1 is the default amount set by Nintendo." Checked="RendererScale1_Checked"/>
-                <RadioButton VerticalAlignment="Center" Content="2" GroupName="RenderingScale" ToolTip="Setting it to 2 may cause slowdown, possibility of injects outright not working, hang on exit and softlock. To close out you'll have to power the Wii U off completely." Checked="RendererScale2_Checked" Margin="20,0,0,0"/>
+                <RadioButton VerticalAlignment="Center" Content="2" GroupName="RenderingScale" ToolTip="Setting it to 2 doubles the native resolution, may cause slowdown, possibility of injects outright not working, hang on exit and softlock, etc... To close out you'll have to power the Wii U off completely." Checked="RendererScale2_Checked" Margin="20,0,0,0"/>
             </StackPanel>
             <!-- Brightness -->
             <StackPanel Orientation="Horizontal" Margin="40,0,0,10">
