@@ -215,6 +215,9 @@
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\PixelArtScalerValidationRule.cs" />
+    <Compile Include="UI\Frames\InjectFrames\Configurations\BrightnessValidationRule.cs" />
+    <Compile Include="UI\Frames\InjectFrames\Configurations\InverseBootConverter.cs" />
     <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren %282%29.xaml.cs">
       <DependentUpon>OtherConfigs - Kopieren - Kopieren %282%29.xaml</DependentUpon>
     </Compile>

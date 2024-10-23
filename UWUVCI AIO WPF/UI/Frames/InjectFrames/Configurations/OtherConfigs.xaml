@@ -9,6 +9,10 @@
       d:DesignHeight="510" d:DesignWidth="643"
       Title="OtherConfigs" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
+    <Page.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </Page.Resources>
+
     <Grid DataContext="{StaticResource mvm}" Focusable="False">
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" Name="snesnes" Visibility="Hidden">
             <CheckBox Content="Enable Pixel Perfect Mode" ToolTip="May not work with every Base" Margin="0,0,0,26"  IsTabStop="False" Click="CheckBox_Click" Name="pixp"/>
@@ -18,18 +22,34 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="RenderingScale:" VerticalAlignment="Center" Margin="0,0,10,0" ToolTip="May cause issues, doesn't work for every base. Here are base titles that work: &#x0a;Big Brain Academy&#x0a;WarioWare: Touched&#x0a;Yoshi's Island DS&#x0a;Mario Kart DS&#x0a;New Super Mario Bros.&#x0a;Brain Age: Train Your Brain in Minutes a Day (aka Dr. Kawashima's Brain Training)&#x0a;Yoshi Touch &amp; Go&#x0a;Mario &amp; Luigi: Partners in Time&#x0a;Star Fox Command&#x0a;Kirby Squeak Squad&#x0a;DK: Jungle Climber&#x0a;Wario: Master of Disguise"/>
                 <RadioButton VerticalAlignment="Center" Content="1" GroupName="RenderingScale" IsChecked="True" ToolTip="1 is the default amount set by Nintendo." Checked="RendererScale1_Checked"/>
-                <RadioButton VerticalAlignment="Center" Content="2" GroupName="RenderingScale" ToolTip="Setting it to 2 may cause slowdown, possibility of injects outright not working, hang on exit and softlock. To close out you'll have to power the Wii U off completely." Checked="RendererScale2_Checked"/>
+                <RadioButton VerticalAlignment="Center" Content="2" GroupName="RenderingScale" ToolTip="Setting it to 2 may cause slowdown, possibility of injects outright not working, hang on exit and softlock. To close out you'll have to power the Wii U off completely." Checked="RendererScale2_Checked" Margin="20,0,0,0"/>
             </StackPanel>
             <!-- Brightness -->
-            <StackPanel Orientation="Horizontal" Margin="65,0,0,0">
-                <TextBlock Text="Brightness:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Width="29" Text="{Binding Brightness}" VerticalAlignment="Center" ToolTip="80% is the normal (darkfilter) amount released officially for VC titles."/>
-                <TextBlock Text="%" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <StackPanel Orientation="Horizontal" Margin="40,0,0,10">
+                <TextBlock Text="Brightness:" VerticalAlignment="Center" Margin="0,12,5,0"/>
+                <TextBox Width="50" Margin="0,12,0,0">
+                    <TextBox.Text>
+                        <Binding Path="Brightness" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:BrightnessValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                <TextBlock Text="%" VerticalAlignment="Center" Margin="0,12,5,0"/>
             </StackPanel>
             <!-- PixelArtUpScaler -->
-            <StackPanel Orientation="Horizontal" Margin="65,0,0,0">
-                <TextBlock Text="PixelArtUpScaler:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Width="26" Text="{Binding PixelArtUpscaler}" VerticalAlignment="Center" ToolTip="This might lead to graphical artifacts if pushed too high. Up to 32 has been confirmed safe."/>
+            <StackPanel Orientation="Horizontal" Margin="40,0,0,10">
+                <TextBlock Text="PixelArtUpScaler:" VerticalAlignment="Center" Margin="0,12,5,0"/>
+                <TextBox Width="50" Margin="0,12,0,0">
+                    <TextBox.Text>
+                        <Binding Path="PixelArtUpscaler" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <local:PixelArtScalerValidationRule />
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
             </StackPanel>
         </StackPanel>
         <StackPanel Name="ndsLayout" Orientation="Horizontal" Visibility="Hidden">
