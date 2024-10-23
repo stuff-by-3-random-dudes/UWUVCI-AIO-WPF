@@ -17,7 +17,7 @@ namespace UWUVCI_AIO_WPF.Helpers
     {
         private static readonly string[] UWUVCIHelperMessage = {
             "Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
-                    "\n\nGo to the folder where UWUVCI is, you should see a folder called 'osx' or 'linux' please go into the one meant for your system. In either folder you'll see a file called 'UWUVCI-V3-Helper' run that file." +
+                    "\n\nGo to the folder where UWUVCI is, you should see a folder called 'macos' or 'linux' please go into the one meant for your system. In either folder you'll see a file called 'UWUVCI-V3-Helper' run that file." +
                     "\nDon't use Wine or any form of virtualization, that is a program that you can run natively." +
                     "\n\nOnce that program finishes running, it'll tell you, to click the 'OK' button on this MessageBox." +
                     "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.",
