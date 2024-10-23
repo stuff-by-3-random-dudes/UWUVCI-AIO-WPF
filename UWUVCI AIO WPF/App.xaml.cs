@@ -6,6 +6,7 @@ using System.Windows;
 using UWUVCI_AIO_WPF.UI.Windows;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.Helpers;
+using UWUVCI_AIO_WPF.Classes;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -19,20 +20,25 @@ namespace UWUVCI_AIO_WPF
         private StartupEventArgs _startupArgs;
         private void Application_Startup(object sender, StartupEventArgs e)
 		{
-            _startupArgs = e; // Store the StartupEventArgs
+            // Store the StartupEventArgs
+            _startupArgs = e; 
+            
+            // Load settings from the JSON file
+            JsonSettingsManager.LoadSettings();
 
-            if (!Settings.Default.IsFirstLaunch)
+            if (!JsonSettingsManager.Settings.IsFirstLaunch)
             {
                 // Proceed with the regular application startup
-                LaunchMainApplication(_startupArgs);
+                LaunchMainApplication(e);
             }
             else
             {
                 if (MacLinuxHelper.IsRunningUnderWineOrSimilar())
                 {
-                    MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not, we will assume you did, but if you didn't in the main application, click the gear icon, and then click the button that says 'Tutorial'", "UWUCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
-                    Settings.Default.IsFirstLaunch = false;
-                    LaunchMainApplication(_startupArgs);
+                    MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not. We will assume you did, but if you didn't, in the main application click the gear icon, and then click the button that says 'Tutorial'.", "UWUVCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
+                    JsonSettingsManager.Settings.IsFirstLaunch = false;
+                    JsonSettingsManager.SaveSettings();
+                    LaunchMainApplication(e);
                 }
                 else
                 {

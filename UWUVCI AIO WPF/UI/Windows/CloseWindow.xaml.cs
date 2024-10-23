@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Properties;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -38,13 +39,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             //Clicked button to see tutorial
-            if (Settings.Default.IsFirstLaunch)
+            if (JsonSettingsManager.Settings.IsFirstLaunch)
             {
                 // Close the tutorial by marking the first launch as false
-                Settings.Default.IsFirstLaunch = false;
+                JsonSettingsManager.Settings.IsFirstLaunch = false;
 
                 // Save settings
-                Settings.Default.Save();
+                JsonSettingsManager.SaveSettings();
 
                 // Call the LaunchMainApplication method directly from the current application instance
                 ((App)Application.Current).LaunchMainApplication();

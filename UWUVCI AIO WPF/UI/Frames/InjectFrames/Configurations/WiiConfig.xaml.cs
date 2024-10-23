@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -337,7 +338,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
-                    Settings.Default.Ancast = ancastKey.Text;
+                    JsonSettingsManager.Settings.Ancast = ancastKey.Text;
                     string[] ancastKeyCopy = { ancastKey.Text };
 
                     Task.Run(() =>
@@ -361,7 +362,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         foreach (var titleId in titleIds)
                         {
-                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
+                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
                             mvm.Progress += 5;
                         }
 

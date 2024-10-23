@@ -203,10 +203,12 @@
     <Compile Include="AssemblyInfo1.cs" />
     <Compile Include="Classes\BootImage.cs" />
     <Compile Include="Classes\DeflickerDitheringRemover.cs" />
+    <Compile Include="Helpers\JsonSettingsManager.cs" />
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
     <Compile Include="Classes\MenuIconImage.cs" />
     <Compile Include="Helpers\MacLinuxHelper.cs" />
+    <Compile Include="Models\JsonAppSettings.cs" />
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />

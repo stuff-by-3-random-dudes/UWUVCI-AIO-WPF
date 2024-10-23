@@ -489,8 +489,7 @@ namespace UWUVCI_AIO_WPF
                 foreach (var arg in args)
                     MacLinuxHelper.WriteFailedStepToJson(functionName, "wit", arg, string.Empty);
 
-                //MacLinuxHelper.DisplayMessageBoxAboutTheHelper();
-                MacLinuxHelper.LaunchHelperApp();
+                MacLinuxHelper.DisplayMessageBoxAboutTheHelper();
 
             }
 
@@ -1255,20 +1254,20 @@ namespace UWUVCI_AIO_WPF
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
             gameName = gameName.Replace("|", " ");
             Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-            //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName,"")} [{mvvm.prodcode}]");
+            //string outputPath = Path.Combine(JsonSettingsManager.Settings.InjectionPath, gameName);
+            string outputPath = Path.Combine(JsonSettingsManager.Settings.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName,"")} [{mvvm.prodcode}]");
             mvvm.foldername = $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Settings.Default.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
+                outputPath = Path.Combine(JsonSettingsManager.Settings.OutPath, $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}");
                 mvvm.foldername = $"[LOADIINE][{gameConsole}] {reg.Replace(gameName, "")} [{mvvm.prodcode}]_{i}";
                 i++;
             }
             
             DirectoryCopy(baseRomPath,outputPath, true);
 
-            Custom_Message cm = new Custom_Message("Injection Complete", $"To Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press Copy to SD.", Settings.Default.OutPath);
+            Custom_Message cm = new Custom_Message("Injection Complete", $"To Open the Location of the Inject press Open Folder.\nIf you want the inject to be put on your SD now, press Copy to SD.", JsonSettingsManager.Settings.OutPath);
             try
             {
                 cm.Owner = mvvm.mw;
@@ -1289,14 +1288,14 @@ namespace UWUVCI_AIO_WPF
             Regex reg = new Regex("[^a-zA-Z0-9 -]");
             if (gameName == null || gameName == string.Empty) gameName = "NoName";
            
-            //string outputPath = Path.Combine(Properties.Settings.Default.InjectionPath, gameName);
-            string outputPath = Path.Combine(Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}");
+            //string outputPath = Path.Combine(JsonSettingsManager.Settings.InjectionPath, gameName);
+            string outputPath = Path.Combine(JsonSettingsManager.Settings.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}");
             outputPath = outputPath.Replace("|", " ");
             mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|"," ")}";
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Settings.Default.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}_{i}");
+                outputPath = Path.Combine(JsonSettingsManager.Settings.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}_{i}");
                 mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|", " ")}_{i}";
                 i++;
             }
@@ -1319,12 +1318,12 @@ namespace UWUVCI_AIO_WPF
                 if (Environment.Is64BitOperatingSystem)
                 {
                     cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Settings.Default.Ckey}";
+                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
                 }
                 else
                 {
                     cnuspacker.StartInfo.FileName = "java";
-                    cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {Settings.Default.Ckey}";
+                    cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
                 }
                 cnuspacker.Start();
                 cnuspacker.WaitForExit();
@@ -1359,9 +1358,9 @@ namespace UWUVCI_AIO_WPF
                 var downloader = new Downloader(null, null);
                 downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
 
-                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
                 mvm.Progress = 99;
-                foreach (string sFile in Directory.GetFiles(Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]", "content"), "*.nfs"))
+                foreach (string sFile in Directory.GetFiles(Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]", "content"), "*.nfs"))
                     File.Delete(sFile);
 
                 mvm.Progress = 100;
@@ -1378,24 +1377,24 @@ namespace UWUVCI_AIO_WPF
                 downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
 
                 mvm.Progress = 75;
-                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(Settings.Default.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
                 mvm.Progress = 100;
             }
         }
 
         public static string ExtractBase(string path, GameConsoles console)
         {
-            if(!Directory.Exists(Path.Combine(Settings.Default.BasePath, "CustomBases")))
-                Directory.CreateDirectory(Path.Combine(Settings.Default.BasePath, "CustomBases"));
+            if(!Directory.Exists(Path.Combine(JsonSettingsManager.Settings.BasePath, "CustomBases")))
+                Directory.CreateDirectory(Path.Combine(JsonSettingsManager.Settings.BasePath, "CustomBases"));
 
-            string outputPath = Path.Combine(Settings.Default.BasePath, "CustomBases", $"[{console}] Custom");
+            string outputPath = Path.Combine(JsonSettingsManager.Settings.BasePath, "CustomBases", $"[{console}] Custom");
             int i = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(Settings.Default.BasePath, $"[{console}] Custom_{i}");
+                outputPath = Path.Combine(JsonSettingsManager.Settings.BasePath, $"[{console}] Custom_{i}");
                 i++;
             }
-            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, path, outputPath });
+            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, path, outputPath });
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
@@ -1500,7 +1499,7 @@ namespace UWUVCI_AIO_WPF
             if (baserom == "Custom")
                 DirectoryCopy(customPath, baseRomPath, true);
             else
-                DirectoryCopy(Path.Combine(Settings.Default.BasePath, baserom), baseRomPath, true);
+                DirectoryCopy(Path.Combine(JsonSettingsManager.Settings.BasePath, baserom), baseRomPath, true);
         }
 
         private static void TG16(string injectRomPath)

@@ -638,13 +638,13 @@ namespace UWUVCI_AIO_WPF
             if (!Directory.Exists("bin\\BaseGames")) 
                 Directory.CreateDirectory("bin\\BaseGames");
 
-            if (Settings.Default.OutPath == "" || Settings.Default.OutPath == null)
-                Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+            if (JsonSettingsManager.Settings.OutPath == "" || JsonSettingsManager.Settings.OutPath == null)
+                JsonSettingsManager.Settings.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
 
-            if (Settings.Default.BasePath == "" || Settings.Default.BasePath == null)
-                Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+            if (JsonSettingsManager.Settings.BasePath == "" || JsonSettingsManager.Settings.BasePath == null)
+                JsonSettingsManager.Settings.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
 
-            Settings.Default.Save();
+            JsonSettingsManager.SaveSettings();
             ArePathsSet();
 
             Update(false);
@@ -653,7 +653,7 @@ namespace UWUVCI_AIO_WPF
             BaseCheck();
 
             GameConfiguration = new GameConfig();
-            if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
+            if (!ValidatePathsStillExist() && JsonSettingsManager.Settings.SetBaseOnce && JsonSettingsManager.Settings.SetOutOnce)
             {
                 Custom_Message cm = new Custom_Message("Issue", " One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
                 try
@@ -1068,7 +1068,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 gc2rom = "";
 
-                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", Settings.Default.OutPath); try
+                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", JsonSettingsManager.Settings.OutPath); try
                 {
                     cm.Owner = mw;
                 }
@@ -1524,29 +1524,29 @@ namespace UWUVCI_AIO_WPF
         {
             if (key.GetHashCode() == -589797700 || GetDeterministicHashCode(key) == -589797700)
             {
-                Settings.Default.SysKey = key;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.SysKey = key;
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
             return false;
         }
         public bool SysKey1set()
         {
-            return checkSysKey1(Settings.Default.SysKey1);
+            return checkSysKey1(JsonSettingsManager.Settings.SysKey1);
         }
         public bool checkSysKey1(string key)
         {
             if (key.GetHashCode() == -1230232583 || (GetDeterministicHashCode(key) == -1230232583))
             {
-                Settings.Default.SysKey1 = key;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.SysKey1 = key;
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
             return false;
         }
         public bool SysKeyset()
         {
-            return checkSysKey(Settings.Default.SysKey);
+            return checkSysKey(JsonSettingsManager.Settings.SysKey);
         }
         public bool GetConsoleOfConfig(string configPath, GameConsoles console)
         {
@@ -1629,7 +1629,7 @@ namespace UWUVCI_AIO_WPF
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        if (!Settings.Default.ndsw)
+                        if (!JsonSettingsManager.Settings.ndsw)
                         {
                             cm.ShowDialog();
                         }
@@ -1643,7 +1643,7 @@ namespace UWUVCI_AIO_WPF
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        if (!Settings.Default.snesw)
+                        if (!JsonSettingsManager.Settings.snesw)
                         {
                             cm.ShowDialog();
                         }
@@ -1726,7 +1726,7 @@ namespace UWUVCI_AIO_WPF
                         {
 
                         }
-                        if (!Settings.Default.gczw)
+                        if (!JsonSettingsManager.Settings.gczw)
                             cm1.ShowDialog();
                     }
                     ret = dialog.FileName;
@@ -2008,29 +2008,29 @@ namespace UWUVCI_AIO_WPF
 
         public void UpdatePathSet()
         {
-            PathsSet = Settings.Default.PathsSet;
+            PathsSet = JsonSettingsManager.Settings.PathsSet;
 
-            if (BaseStore != Settings.Default.BasePath)
-                BaseStore = Settings.Default.BasePath;
+            if (BaseStore != JsonSettingsManager.Settings.BasePath)
+                BaseStore = JsonSettingsManager.Settings.BasePath;
 
-            if (InjectStore != Settings.Default.BasePath)
-                InjectStore = Settings.Default.OutPath;
+            if (InjectStore != JsonSettingsManager.Settings.BasePath)
+                InjectStore = JsonSettingsManager.Settings.OutPath;
         }
 
         public bool ValidatePathsStillExist()
         {
-            string basePath = Settings.Default.BasePath;
-            string outPath = Settings.Default.OutPath;
+            string basePath = JsonSettingsManager.Settings.BasePath;
+            string outPath = JsonSettingsManager.Settings.OutPath;
 
             bool baseExists = EnsureDirectoryExists(ref basePath, "bin/BaseGames");
             bool injectExists = EnsureDirectoryExists(ref outPath, "InjectedGames");
 
             if (baseExists && injectExists)
             {
-                Settings.Default.BasePath = basePath;
-                Settings.Default.OutPath = outPath;
-                Settings.Default.PathsSet = true;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.BasePath = basePath;
+                JsonSettingsManager.Settings.OutPath = outPath;
+                JsonSettingsManager.Settings.PathsSet = true;
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
 
@@ -2176,9 +2176,9 @@ namespace UWUVCI_AIO_WPF
 
             if (keyHash == 1274359530 || GetDeterministicHashCode(lowerKey) == -485504051)
             {
-                Settings.Default.Ckey = lowerKey;
+                JsonSettingsManager.Settings.Ckey = lowerKey;
                 ckeys = true;
-                Settings.Default.Save();
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
             ckeys = false;
@@ -2187,7 +2187,7 @@ namespace UWUVCI_AIO_WPF
 
         public bool isCkeySet()
         {
-            string lowerCKey = Settings.Default.Ckey.ToLower();
+            string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLower();
             ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
             return ckeys;
         }
@@ -2351,7 +2351,7 @@ namespace UWUVCI_AIO_WPF
         }
         public List<bool> getInfoOfBase(GameBases gb)
         {
-            string basePath = $@"{Settings.Default.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]";
+            string basePath = $@"{JsonSettingsManager.Settings.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]";
             return new List<bool>
             {
                 Directory.Exists(basePath),
@@ -2363,8 +2363,8 @@ namespace UWUVCI_AIO_WPF
         public void SetInjectPath()
         {
             SetFolderPath(
-                folderPath => Settings.Default.OutPath = folderPath,
-                Settings.Default.SetOutOnce,
+                folderPath => JsonSettingsManager.Settings.OutPath = folderPath,
+                JsonSettingsManager.Settings.SetOutOnce,
                 "Inject Folder");
         }
 
@@ -2379,7 +2379,7 @@ namespace UWUVCI_AIO_WPF
                         {
                             setPathAction(dialog.FileName);
                             setOnceFlag = true;
-                            Settings.Default.Save();
+                            JsonSettingsManager.SaveSettings();
                             UpdatePathSet();
                         }
                         else
@@ -2403,7 +2403,7 @@ namespace UWUVCI_AIO_WPF
                 choosefolder = false;
                 setPathAction(folderPath);
                 setOnceFlag = true;
-                Settings.Default.Save();
+                JsonSettingsManager.SaveSettings();
                 UpdatePathSet();
             }
             else
@@ -2423,8 +2423,8 @@ namespace UWUVCI_AIO_WPF
         public void SetBasePath()
         {
             SetFolderPath(
-                folderPath => Settings.Default.BasePath = folderPath,
-                Settings.Default.SetBaseOnce,
+                folderPath => JsonSettingsManager.Settings.BasePath = folderPath,
+                JsonSettingsManager.Settings.SetBaseOnce,
                 "Bases Folder");
         }
 
@@ -2432,8 +2432,8 @@ namespace UWUVCI_AIO_WPF
         {
             if (ValidatePathsStillExist())
             {
-                Settings.Default.PathsSet = true;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.PathsSet = true;
+                JsonSettingsManager.SaveSettings();
             }
             UpdatePathSet();
         }
