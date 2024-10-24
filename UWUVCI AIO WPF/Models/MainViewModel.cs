@@ -619,30 +619,11 @@ namespace UWUVCI_AIO_WPF
                 ToolCheck.ToolNames = Tools.ToArray();
             }
 
-            //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
-            if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
-            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+            // Clean up unnecessary folders
+            CleanUpFolders();
 
-            if (Directory.Exists(@"keys"))
-            {
-                if (Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
-                Injection.DirectoryCopy("keys", "bin/keys", true);
-                Directory.Delete("keys", true);
-            }
-            if (!Directory.Exists("InjectedGames")) 
-                Directory.CreateDirectory("InjectedGames");
-
-            if (!Directory.Exists("SourceFiles")) 
-                Directory.CreateDirectory("SourceFiles");
-
-            if (!Directory.Exists("bin\\BaseGames")) 
-                Directory.CreateDirectory("bin\\BaseGames");
-
-            if (JsonSettingsManager.Settings.OutPath == "" || JsonSettingsManager.Settings.OutPath == null)
-                JsonSettingsManager.Settings.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
-
-            if (JsonSettingsManager.Settings.BasePath == "" || JsonSettingsManager.Settings.BasePath == null)
-                JsonSettingsManager.Settings.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+            // Ensure settings paths are initialized properly
+            InitializePaths();
 
             JsonSettingsManager.SaveSettings();
             ArePathsSet();
@@ -670,6 +651,39 @@ namespace UWUVCI_AIO_WPF
 
             GetAllBases();
         }
+
+        private void CleanUpFolders()
+        {
+            if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
+            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+
+            if (Directory.Exists(@"keys"))
+            {
+                if (Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
+                Injection.DirectoryCopy("keys", "bin/keys", true);
+                Directory.Delete("keys", true);
+            }
+
+            if (!Directory.Exists("InjectedGames"))
+                Directory.CreateDirectory("InjectedGames");
+
+            if (!Directory.Exists("SourceFiles"))
+                Directory.CreateDirectory("SourceFiles");
+
+            if (!Directory.Exists("bin\\BaseGames"))
+                Directory.CreateDirectory("bin\\BaseGames");
+        }
+
+        private void InitializePaths()
+        {
+            if (string.IsNullOrEmpty(JsonSettingsManager.Settings.OutPath))
+                JsonSettingsManager.Settings.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+
+            if (string.IsNullOrEmpty(JsonSettingsManager.Settings.BasePath))
+                JsonSettingsManager.Settings.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+        }
+
+
         public string turbocd()
         {
             string ret = string.Empty;
@@ -1957,53 +1971,68 @@ namespace UWUVCI_AIO_WPF
                 Progress = 0;
             }
         }
-        private void toolCheck()
+        
+        private void toolCheck(int currentRetry = 0)
         {
+            int maxRetries = 3;
             if (ToolCheck.DoesToolsFolderExist())
             {
-                List<MissingTool> missingTools = new List<MissingTool>();
-                missingTools = ToolCheck.CheckForMissingTools();
-
+                List<MissingTool> missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
                     if (CheckForInternetConnection())
                     {
                         Task.Run(() => ThreadDownload(missingTools));
-                        DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
-                        try
-                        {
-                            dw.changeOwner(mw);
-                        }
-                        catch (Exception)
-                        {
+                        ShowDownloadWaitDialog();
 
-                        }
-                        dw.ShowDialog();
-                        Thread.Sleep(200);
-                        //Download Tools
-                        Progress = 0;
-                        toolCheck();
+                        // Retry logic after downloading
+                        if (currentRetry < maxRetries)
+                            toolCheck(currentRetry + 1);
+                        else
+                            ShowMessage("Error", "Tool download failed after multiple attempts.");
                     }
                     else
                     {
-                        Custom_Message dw = new Custom_Message("No Internet connection", " You have files missing, which need to be downloaded but you dont have an Internet Connection. \n The Program will now terminate");
-                        try
-                        {
-                            dw.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        dw.ShowDialog();
+                        ShowMessage("No Internet connection", "You have files missing, which need to be downloaded but there is no Internet Connection. The program will now terminate.");
                         Environment.Exit(1);
                     }
                 }
             }
             else
             {
-                if (!Directory.GetCurrentDirectory().Contains("bin/tools"))
+                try
+                {
                     Directory.CreateDirectory("bin/Tools");
-                
-                toolCheck();
+                    toolCheck();  // Retry once after creating the directory
+                }
+                catch (Exception ex)
+                {
+                    ShowMessage("Error", $"Failed to create tools directory: {ex.Message}");
+                }
             }
+        }
+
+        private void ShowDownloadWaitDialog()
+        {
+            DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
+            try
+            {
+                dw.changeOwner(mw);
+            }
+            catch (Exception) { }
+            dw.ShowDialog();
+            Thread.Sleep(200);  // Pause after showing dialog
+        }
+
+        private void ShowMessage(string title, string message)
+        {
+            Custom_Message cm = new Custom_Message(title, message);
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
         }
 
         public void UpdatePathSet()

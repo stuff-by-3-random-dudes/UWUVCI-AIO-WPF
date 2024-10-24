@@ -70,19 +70,30 @@ namespace UWUVCI_AIO_WPF.Classes
         {
             bool ret = false;
             var md5 = "";
-            using (WebClient client = new WebClient())
+            try
             {
-                client.DownloadFile(backupulr + name + ".md5", name + ".md5");
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(backupulr + name + ".md5", name + ".md5");
+                }
+
                 using StreamReader sr = new StreamReader(name + ".md5");
                 md5 = sr.ReadLine();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error downloading MD5 file for {name}: {ex.Message}");
+                return false;  // Early return if MD5 file cannot be downloaded
+            }
 
             ret = CalculateMD5(name) == md5;
-
             File.Delete(name + ".md5");
+
             return ret;
         }
-        static string CalculateMD5(string filename)
+
+
+        public static string CalculateMD5(string filename)
         {
             using var md5 = MD5.Create();
             using var stream = File.OpenRead(filename);
@@ -90,50 +101,85 @@ namespace UWUVCI_AIO_WPF.Classes
             stream.Close();
             return ret;
         }
+
         public static List<MissingTool> CheckForMissingTools()
         {
-            List<MissingTool> ret = new List<MissingTool>();
-            foreach(string s in ToolNames)
+            List<MissingTool> missingTools = new List<MissingTool>();
+
+            foreach (string toolName in ToolNames)
             {
-                string path = $@"{FolderName}\{s}";
-                if (!DoesToolExist(path))
-                    ret.Add(new MissingTool(s, path));
+                string path = Path.Combine(FolderName, toolName);
+
+                // Check if the tool exists and has the right MD5 hash
+                if (!DoesToolExist(path) || !IsToolRight(path))
+                    missingTools.Add(new MissingTool(toolName, path));
             }
-            return ret;
+
+            return missingTools;
         }
 
-        private static bool DoesToolExist(string path)
+
+        private static bool DoesToolExist(string path, int retryCount = 0)
         {
+            const int MaxRetries = 3;  // Define a maximum number of retries
+
             if (!File.Exists(path))
                 return false;
 
             if (path.ToLower().Contains("gba1.zip") || path.ToLower().Contains("gba2.zip"))
+            {
                 if (!File.Exists(Path.Combine(FolderName, "MArchiveBatchTool.exe")) || !File.Exists(Path.Combine(FolderName, "ucrtbase.dll")))
+                {
                     try
                     {
                         ZipFile.ExtractToDirectory(path, FolderName);
                     }
                     catch (Exception)
                     {
-                        Thread.Sleep(200);
-                        DoesToolExist(path);
+                        if (retryCount < MaxRetries)
+                        {
+                            Thread.Sleep(200);
+                            return DoesToolExist(path, retryCount + 1);  // Recursively retry
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Failed to extract {path} after {MaxRetries} attempts.");
+                            return false;
+                        }
                     }
+                }
+            }
+
             if (path.ToLower().Contains("wstrt.zip"))
+            {
                 if (!File.Exists(Path.Combine(FolderName, "wstrt.exe")))
+                {
                     try
                     {
                         ZipFile.ExtractToDirectory(path, FolderName);
                     }
                     catch (Exception)
                     {
-                        Thread.Sleep(200);
-                        DoesToolExist(path);
+                        if (retryCount < MaxRetries)
+                        {
+                            Thread.Sleep(200);
+                            return DoesToolExist(path, retryCount + 1);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Failed to extract {path} after {MaxRetries} attempts.");
+                            return false;
+                        }
                     }
+                }
+            }
 
             return true;
         }
+
     }
-    class MissingTool
+
+    public class MissingTool
     {
         public string Name { get; set; }
         public string Path { get; set; }
