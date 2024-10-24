@@ -35,7 +35,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (MacLinuxHelper.IsRunningUnderWineOrSimilar())
                 {
-                    MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not. We will assume you did, but if you didn't, in the main application click the gear icon, and then click the button that says 'Tutorial'.", "UWUVCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
+                    MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not. We will assume you did, but if you didn't, in the main application click the gear icon, and then click the button that says 'Show Tutorial Screens'.", "UWUVCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
                     JsonSettingsManager.Settings.IsFirstLaunch = false;
                     JsonSettingsManager.SaveSettings();
                     LaunchMainApplication(e);
