@@ -13,11 +13,9 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Models;
-using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
-using AutoUpdaterDotNET;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -28,7 +26,6 @@ using System.Timers;
 using NAudio.Utils;
 using System.Security.Cryptography;
 using UWUVCI_AIO_WPF.Helpers;
-using Microsoft.Win32;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1980,6 +1977,7 @@ namespace UWUVCI_AIO_WPF
                 List<MissingTool> missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
+                    Logger.Log("Missing tools detected.");
                     if (CheckForInternetConnection())
                     {
                         Task.Run(() => ThreadDownload(missingTools));
@@ -1989,7 +1987,10 @@ namespace UWUVCI_AIO_WPF
                         if (currentRetry < maxRetries)
                             toolCheck(currentRetry + 1);
                         else
+                        {
+                            Logger.Log($"Failed to download {missingTools} after retries.");
                             ShowMessage("Error", "Tool download failed after multiple attempts.");
+                        }
                     }
                     else
                     {
@@ -2003,11 +2004,13 @@ namespace UWUVCI_AIO_WPF
                 try
                 {
                     Directory.CreateDirectory("bin/Tools");
+                    Logger.Log("Created Tools folder.");
                     toolCheck();  // Retry once after creating the directory
                 }
                 catch (Exception ex)
                 {
                     ShowMessage("Error", $"Failed to create tools directory: {ex.Message}");
+                    Logger.Log($"Failed to create Tools folder: {ex.Message}");
                 }
             }
         }
@@ -2019,7 +2022,10 @@ namespace UWUVCI_AIO_WPF
             {
                 dw.changeOwner(mw);
             }
-            catch (Exception) { }
+            catch (Exception) 
+            {
+                Logger.Log("Failed to set DownloadWait owner.");
+            }
             dw.ShowDialog();
             Thread.Sleep(200);  // Pause after showing dialog
         }
@@ -2376,6 +2382,7 @@ namespace UWUVCI_AIO_WPF
                 if (mapping.Value.Any(b => b.Name == gb.Name && b.Region == gb.Region))
                     return mapping.Key;
 
+            Logger.Log($"Console of base is not one of the listed ones to work with UWUVCI, what did you do? Name: {gb.Name}, Region: {gb.Region}");
             throw new Exception("Console of base is not one of the listed ones to work with UWUVCI, what you do?");
         }
         public List<bool> getInfoOfBase(GameBases gb)

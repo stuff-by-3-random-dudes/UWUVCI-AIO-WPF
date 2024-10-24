@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using System.Drawing;
 using Image = System.Windows.Controls.Image;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -162,6 +163,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 case ImageFormat.R5g6b5:
                     return PixelFormats.Bgr565;
                 default:
+                    Logger.Log($"Unable to convert {image.Format} to WPF PixelFormat");
                     throw new Exception($"Unable to convert {image.Format} to WPF PixelFormat");
             }
         }

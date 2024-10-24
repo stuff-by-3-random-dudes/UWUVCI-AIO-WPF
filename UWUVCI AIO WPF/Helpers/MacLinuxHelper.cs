@@ -55,6 +55,7 @@ namespace UWUVCI_AIO_WPF.Helpers
             if (result != MessageBoxResult.OK)
             {
                 MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
+                Logger.Log("User canceled Injection early");
                 throw new Exception("User canceled Injection early");
             }
         }

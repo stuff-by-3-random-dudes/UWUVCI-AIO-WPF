@@ -291,7 +291,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
 
                 MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file and on the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
-
+                Logger.Log(e.Message);
                 Clean();
                 return false;
             }
@@ -1330,6 +1330,7 @@ namespace UWUVCI_AIO_WPF
                 Directory.SetCurrentDirectory(oldpath);
             } catch(Exception ex )
             {
+                Logger.Log(ex.Message);
                 throw ex;
             }
             mvm.Progress = 90;
@@ -2281,6 +2282,7 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception e)
             {
+                Logger.Log(e.Message);
                 if (e.Message.Contains("Size"))
                 {
                     throw e;
@@ -2506,7 +2508,10 @@ namespace UWUVCI_AIO_WPF
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
             if (!dir.Exists)
+            {
+                Logger.Log($"Source directory does not exist or could not be found: {sourceDirName}");
                 throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
+            }
 
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(destDirName))

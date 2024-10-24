@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using UWUVCI_AIO_WPF.Helpers;
 
 public static class DeflickerDitheringRemover
 {
@@ -69,10 +70,16 @@ public static class DeflickerDitheringRemover
     public static void ProcessFile(string inputFilePath, string outputFilePath, bool applyDeflicker, bool applyDithering, bool applyVFilter)
     {
         if (string.IsNullOrEmpty(inputFilePath))
+        {
+            Logger.Log($"Invalid input file path: {nameof(inputFilePath)}");
             throw new ArgumentException("Invalid input file path", nameof(inputFilePath));
+        }
 
         if (string.IsNullOrEmpty(outputFilePath))
+        {
+            Logger.Log($"Invalid input file path: {nameof(outputFilePath)}");
             throw new ArgumentException("Invalid output file path", nameof(outputFilePath));
+        }
 
         byte[] fileBuffer = File.ReadAllBytes(inputFilePath);
 

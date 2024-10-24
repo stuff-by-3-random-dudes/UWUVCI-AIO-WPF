@@ -4,9 +4,7 @@ using System.IO;
 using System.Timers;
 using System.Windows;
 using UWUVCI_AIO_WPF.UI.Windows;
-using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.Helpers;
-using UWUVCI_AIO_WPF.Classes;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -20,6 +18,9 @@ namespace UWUVCI_AIO_WPF
         private StartupEventArgs _startupArgs;
         private void Application_Startup(object sender, StartupEventArgs e)
 		{
+            // Redirect Console.WriteLine to the logger at the very beginning
+            Console.SetOut(new ConsoleLoggerWriter());
+
             // Store the StartupEventArgs
             _startupArgs = e; 
             

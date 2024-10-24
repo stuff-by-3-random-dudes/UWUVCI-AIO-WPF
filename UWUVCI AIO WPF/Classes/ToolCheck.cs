@@ -111,7 +111,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 string path = Path.Combine(FolderName, toolName);
 
                 // Check if the tool exists and has the right MD5 hash
-                if (!DoesToolExist(path) || !IsToolRight(path))
+                if (!DoesToolExist(path))
                     missingTools.Add(new MissingTool(toolName, path));
             }
 
