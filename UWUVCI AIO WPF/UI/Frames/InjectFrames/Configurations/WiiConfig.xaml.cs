@@ -183,28 +183,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     gamepad.ItemsSource = gpEmu;
                     mvm.RomPath = path;
                     mvm.RomSet = true;
+
                     if (mvm.BaseDownloaded)
-                    {
                         mvm.CanInject = true;
 
-                    }
                     if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol") && !path.ToLower().Contains(".wad"))
                     {
                         string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
-                        if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
-                        {
+
+                        if (string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGAIco.ImgPath))
                             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
-                        }
-                        if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
-                        {
+
+                        if (string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv.ImgPath))
                             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
-                        }
+
                         if (path.ToLower().Contains("iso"))
                         {
-
                             trimn.IsEnabled = true;
                             mvm.IsIsoNkit();
                         }
