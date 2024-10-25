@@ -384,7 +384,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
                         mvm.Progress = 100;
-                    }).GetAwaiter();
+                    }).GetAwaiter().GetResult();
                 }
                 else
                 {
