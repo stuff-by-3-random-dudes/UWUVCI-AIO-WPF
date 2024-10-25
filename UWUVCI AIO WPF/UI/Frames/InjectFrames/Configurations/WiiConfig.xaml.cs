@@ -528,107 +528,68 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.RomSet = false;
             mvm.gc2rom = "";
             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+
             if (tv.Text.Length > 0)
-            {
                 tvIMG.Visibility = Visibility.Visible;
-            }
+
             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
             if (ic.Text.Length > 0)
-            {
                 icoIMG.Visibility = Visibility.Visible;
-            }
+
             drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
             if (drc.Text.Length > 0)
-            {
                 drcIMG.Visibility = Visibility.Visible;
-            }
+
             log.Text = mvm.GameConfiguration.TGALog.ImgPath;
             if (log.Text.Length > 0)
-            {
                 logIMG.Visibility = Visibility.Visible;
-            }
+
             gn.Text = mvm.GameConfiguration.GameName;
             mvm.Index = mvm.GameConfiguration.Index;
             gamepad.SelectedIndex = mvm.GameConfiguration.Index;
             if (mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
             {
                 if (!Directory.Exists(@"bin\cfgBoot"))
-                {
                     Directory.CreateDirectory(@"bin\cfgBoot");
-                }
+
                 if (File.Exists($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}"))
-                {
                     File.Delete($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}");
-                }
+
                 File.WriteAllBytes($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}", mvm.GameConfiguration.bootsound);
                 sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "cfgBoot", $"bootSound.{mvm.GameConfiguration.extension}");
                 mvm.BootSound = sound.Text;
                 sound_TextChanged(null, null);
             }
+
             LR.IsChecked = mvm.LR;
-            if (mvm.GameConfiguration.donttrim)
-            {
-                trimn.IsChecked = true;
-            }
-            else
-            {
-                trimn.IsChecked = false;
-            }
+            trimn.IsChecked = mvm.GameConfiguration.donttrim;
             jppatch.IsChecked = mvm.jppatch;
             motepass.IsChecked = mvm.passtrough;
-            if (mvm.Patch)
-            {
-                if (mvm.toPal)
-                {
-                    vmcsmoll.IsChecked = false;
-                    pal.IsChecked = false;
-                    ntsc.IsChecked = true;
-                }
-                else
-                {
-                    vmcsmoll.IsChecked = false;
-                    ntsc.IsChecked = false;
-                    pal.IsChecked = true;
-                }
-            }
-            else
-            {
-                vmcsmoll.IsChecked = true;
-                pal.IsChecked = false;
-                ntsc.IsChecked = false;
-            }
 
+            // First block refactored
+            vmcsmoll.IsChecked = !mvm.Patch;
+            pal.IsChecked = mvm.Patch && !mvm.toPal;
+            ntsc.IsChecked = mvm.Patch && mvm.toPal;
+
+            // Second block refactored
             if (mvm.regionfrii)
             {
-                if (mvm.regionfriijp)
-                {
-                    RF_n.IsChecked = false;
-                    RF_tj.IsChecked = true;
-                    RF_tn.IsChecked = false;
-                    RF_tp.IsChecked = false;
-                }
-                else if (mvm.regionfriius)
-                {
-                    RF_n.IsChecked = false;
-                    RF_tj.IsChecked = false;
-                    RF_tn.IsChecked = true;
-                    RF_tp.IsChecked = false;
-                }
-                else
-                {
-                    RF_n.IsChecked = false;
-                    RF_tj.IsChecked = false;
-                    RF_tn.IsChecked = false;
-                    RF_tp.IsChecked =true;
-                }
+                RF_n.IsChecked = false;
+
+                // Set the appropriate region-frii option
+                RF_tj.IsChecked = mvm.regionfriijp;
+                RF_tn.IsChecked = mvm.regionfriius;
+                RF_tp.IsChecked = !mvm.regionfriijp && !mvm.regionfriius;
             }
             else
             {
+                // Reset to default when regionfrii is false
                 RF_n.IsChecked = true;
                 RF_tj.IsChecked = false;
                 RF_tn.IsChecked = false;
                 RF_tp.IsChecked = false;
             }
+
         }
         private bool CheckIfNull(string s)
         {
@@ -655,6 +616,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void gamepad_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             mvm.Index = gamepad.SelectedIndex;
+
             if (gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
                 LR.IsEnabled = true;
             else
@@ -768,9 +730,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void gn_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.Up) || Keyboard.IsKeyDown(Key.Down) || Keyboard.IsKeyDown(Key.Left) || Keyboard.IsKeyDown(Key.Right))
-            {
                 dont = false;
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -779,6 +739,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             if (!CheckIfNull(path))
             {
                 if (new FileInfo(path).Extension.Contains("wav"))
+                {
                     if (mvm.ConfirmRiffWave(path))
                         mvm.BootSound = path;
                     else
@@ -794,6 +755,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         }
                         cm.ShowDialog();
                     }
+                }
                 else
                     mvm.BootSound = path;
             }
@@ -802,7 +764,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 {
                     mvm.BootSound = null;
                     sound.Text = "";
-                   
                 }
         }
 
@@ -873,13 +834,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.donttrim = true;
                 mvm.jppatch = false;
                 int last = gamepad.SelectedIndex;
-                List<string> gpEmu = new List<string>();
-                gpEmu.Add("Do not use. WiiMotes only");
-                gpEmu.Add("Classic Controller");
-                gpEmu.Add("Horizontal WiiMote");
-                gpEmu.Add("Vertical WiiMote");
-                gpEmu.Add("[NEEDS TRIMMING] Force Classic Controller");
-                gpEmu.Add("Force No Classic Controller");
+
+                List<string> gpEmu = new List<string>
+                {
+                    "Do not use. WiiMotes only",
+                    "Classic Controller",
+                    "Horizontal WiiMote",
+                    "Vertical WiiMote",
+                    "[NEEDS TRIMMING] Force Classic Controller",
+                    "Force No Classic Controller"
+                };
+
                 gamepad.ItemsSource = gpEmu;
                 gamepad.SelectedIndex = last;
                 jppatch.IsEnabled = false;
@@ -892,13 +857,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ntsc.IsEnabled = true;
                 mvm.donttrim = false;
                 jppatch.IsEnabled = true;
-                List<string> gpEmu = new List<string>();
-                gpEmu.Add("Do not use. WiiMotes only");
-                gpEmu.Add("Classic Controller");
-                gpEmu.Add("Horizontal WiiMote");
-                gpEmu.Add("Vertical WiiMote");
-                gpEmu.Add("Force Classic Controller");
-                gpEmu.Add("Force No Classic Controller");
+
+                List<string> gpEmu = new List<string>
+                {
+                    "Do not use. WiiMotes only",
+                    "Classic Controller",
+                    "Horizontal WiiMote",
+                    "Vertical WiiMote",
+                    "Force Classic Controller",
+                    "Force No Classic Controller"
+                };
+
                 gamepad.ItemsSource = gpEmu;
                 gamepad.ItemsSource = gpEmu;
                 gamepad.SelectedIndex = last;
@@ -1015,11 +984,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 dialog.Multiselect = true;
                 dialog.DefaultExt = ".gct";
                 dialog.Filter = "GCT Files (*.gct)|*.gct";
-
-                if (Directory.Exists("SourceFiles"))
-                {
-                    dialog.InitialDirectory = "SourceFiles";
-                }
 
                 System.Windows.Forms.DialogResult res = dialog.ShowDialog();
                 if (res == System.Windows.Forms.DialogResult.OK)
