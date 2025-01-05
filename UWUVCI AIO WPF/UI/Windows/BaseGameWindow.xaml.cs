@@ -52,7 +52,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             // Open the compatibility list in the default browser
             Process.Start(new ProcessStartInfo
             {
-                FileName = "https://uwuvci-prime.github.io/UWUVCI-Resources",
+                FileName = "https://uwuvci.net/",
                 UseShellExecute = true
             });
         }
