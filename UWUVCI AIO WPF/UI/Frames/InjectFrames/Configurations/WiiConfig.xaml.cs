@@ -32,7 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 case 0:
                     icoIMG.Visibility = Visibility.Hidden;
                     mvm.GameConfiguration.TGAIco = new PNGTGA();
-                    ic.Text = null; 
+                    ic.Text = null;
                     break;
                 case 1:
                     tvIMG.Visibility = Visibility.Hidden;
@@ -60,11 +60,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             // Uncheck other checkboxes if this one is checked
             if (checkBox.IsChecked == true)
             {
-                if (checkBox != deflickerCheckBox) 
+                if (checkBox != deflickerCheckBox)
                     deflickerCheckBox.IsChecked = false;
-                if (checkBox != ditheringCheckBox) 
+                if (checkBox != ditheringCheckBox)
                     ditheringCheckBox.IsChecked = false;
-                if (checkBox != vFilterCheckBox) 
+                if (checkBox != vFilterCheckBox)
                     vFilterCheckBox.IsChecked = false;
             }
         }
@@ -226,7 +226,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.donttrim = false;
                         gamepad.IsEnabled = false;
                         LR.IsEnabled = false;
-                    }else if (path.ToLower().Contains(".wad"))
+                    }
+                    else if (path.ToLower().Contains(".wad"))
                     {
                         mvm.NKITFLAG = false;
                         trimn.IsEnabled = false;
@@ -240,7 +241,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         RF_tp.IsEnabled = false;
                         jppatch.IsEnabled = false;
                         mvm.donttrim = false;
-                       
+
                     }
                     else
                     {
@@ -248,7 +249,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         motepass.IsEnabled = false;
 
                         trimn.IsEnabled = true;
-                    } 
+                    }
                 }
                 else
                 {
@@ -353,7 +354,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         foreach (var titleId in titleIds)
                         {
 
-                            Task.Run(() => new Downloader(null,null).DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            Task.Run(() => new Downloader(null, null).DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
                             mvm.Progress += 5;
                         }
 
@@ -681,7 +682,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TDRSHOW t = new TDRSHOW(drc.Text,true);
+            TDRSHOW t = new TDRSHOW(drc.Text, true);
             try
             {
                 t.Owner = mvm.mw;
@@ -714,7 +715,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void drc_TextChanged(object sender, TextChangedEventArgs e)
         {
-            drcIMG.Visibility = drc.Text.Length > 0 ? Visibility.Visible: Visibility.Hidden;
+            drcIMG.Visibility = drc.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void tv_TextChanged(object sender, TextChangedEventArgs e)
@@ -761,15 +762,15 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             else
                 if (path == "")
-                {
-                    mvm.BootSound = null;
-                    sound.Text = "";
-                }
+            {
+                mvm.BootSound = null;
+                sound.Text = "";
+            }
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           
+
         }
 
         private void SoundImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -872,7 +873,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 gamepad.ItemsSource = gpEmu;
                 gamepad.SelectedIndex = last;
             }
-            
+
         }
 
         private void jppatch_Click(object sender, RoutedEventArgs e)
@@ -979,21 +980,35 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private string GetGCTFilePaths()
         {
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
-            {
-                dialog.Multiselect = true;
-                dialog.DefaultExt = ".gct";
-                dialog.Filter = "GCT Files (*.gct)|*.gct";
+            using var dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.Multiselect = true;
+            dialog.Filter = "GCT or TXT Files (*.gct, *.txt)|*.gct;*.txt";
 
-                System.Windows.Forms.DialogResult res = dialog.ShowDialog();
-                if (res == System.Windows.Forms.DialogResult.OK)
+            System.Windows.Forms.DialogResult res = dialog.ShowDialog();
+            if (res == System.Windows.Forms.DialogResult.OK)
+            {
+                var validFilePaths = new List<string>();
+
+                foreach (string filePath in dialog.FileNames)
                 {
-                    // Join the selected files into a single string separated by commas or newlines
-                    return string.Join(Environment.NewLine, dialog.FileNames);
+                    // If it's a GCT file, accept it without validation
+                    if (System.IO.Path.GetExtension(filePath).Equals(".gct", StringComparison.OrdinalIgnoreCase))
+                        validFilePaths.Add(filePath);
+
+                    // If it's a TXT file, validate the format
+                    else if (System.IO.Path.GetExtension(filePath).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (new GctCode().IsTxtFileFormatValid(filePath))
+                            validFilePaths.Add(filePath);
+                        else
+                            System.Windows.Forms.MessageBox.Show($"The file {filePath} is not in the correct format.", "Invalid Format", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                    }
                 }
+
+                return string.Join(Environment.NewLine, validFilePaths);
             }
 
-            // Return an empty string if the dialog was cancelled
+            // Return an empty string if the dialog was canceled
             return string.Empty;
         }
     }
