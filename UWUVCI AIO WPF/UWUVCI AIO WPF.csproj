@@ -203,6 +203,7 @@
     <Compile Include="AssemblyInfo1.cs" />
     <Compile Include="Classes\BootImage.cs" />
     <Compile Include="Classes\DeflickerDitheringRemover.cs" />
+    <Compile Include="Classes\Dol.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
     <Compile Include="Classes\KeyFile.cs" />
@@ -210,6 +211,8 @@
     <Compile Include="Classes\MenuIconImage.cs" />
     <Compile Include="Helpers\Loggercs.cs" />
     <Compile Include="Helpers\MacLinuxHelper.cs" />
+    <Compile Include="Models\DolSection.cs" />
+    <Compile Include="Models\GctCode.cs" />
     <Compile Include="Models\JsonAppSettings.cs" />
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
