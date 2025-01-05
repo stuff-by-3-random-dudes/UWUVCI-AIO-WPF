@@ -20,20 +20,17 @@ namespace UWUVCI_AIO_WPF.Helpers
                     "\n\nOnce that program finishes running, it'll tell you, to click the 'OK' button on this MessageBox." +
                     "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.",
             "UWUVCI V3 Helper Program Required To Continue!" };
-        public static void WriteFailedStepToJson(string functionName, string toolName, string arguments, string currentDirectory)
+        public static void WriteFailedStepToJson(string functionName, string toolName, string arguments, string realPath)
         {
             // Get the base directory where the application is running
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             string toolsJsonPath = Path.Combine(basePath, "tools.json");
 
-            if (string.IsNullOrEmpty(currentDirectory))
-                currentDirectory = basePath;
-
             var step = new ToolStep
             {
                 ToolName = toolName,
                 Arguments = arguments,
-                CurrentDirectory = currentDirectory,
+                RealPath = realPath,
                 Function = functionName
             };
 
@@ -60,9 +57,9 @@ namespace UWUVCI_AIO_WPF.Helpers
             }
         }
 
-        public static void PrepareAndInformUserOnUWUVCIHelper(string functionName, string toolName, string arguments, string currentDirectory = "")
+        public static void PrepareAndInformUserOnUWUVCIHelper(string functionName, string toolName, string arguments, string realPath = "")
         {
-            WriteFailedStepToJson(functionName, toolName, arguments, currentDirectory);
+            WriteFailedStepToJson(functionName, toolName, arguments, realPath);
             DisplayMessageBoxAboutTheHelper();
         }
 

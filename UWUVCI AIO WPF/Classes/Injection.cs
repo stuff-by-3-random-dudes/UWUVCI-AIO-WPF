@@ -645,7 +645,7 @@ namespace UWUVCI_AIO_WPF
                     else
                         witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
 
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, romPath);
                 }
             }
 
@@ -668,7 +668,7 @@ namespace UWUVCI_AIO_WPF
                     unpack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, isoPath);
 
                 mvm.msg = "Patching main.dol file";
                 mvm.Progress = 21;
@@ -699,7 +699,7 @@ namespace UWUVCI_AIO_WPF
                     pack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, extraction);
 
                 Directory.Delete(extraction, recursive: true);
             }
@@ -723,7 +723,7 @@ namespace UWUVCI_AIO_WPF
                     unpack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, isoPath);
 
                 mvm.msg = "Patching main.dol with gct file";
                 mvm.Progress = 27;
@@ -758,7 +758,7 @@ namespace UWUVCI_AIO_WPF
                     unpack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wstrt", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wstrt", witArgs, mainDolPath);
 
                 //File.Delete(mainDolPath);
                 //File.Move(output, mainDolPath);
@@ -778,7 +778,7 @@ namespace UWUVCI_AIO_WPF
                     pack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, extraction);
 
                 Directory.Delete(extraction, recursive: true);
             }
@@ -826,7 +826,8 @@ namespace UWUVCI_AIO_WPF
                     }
                     fs.Close();
                 }
-                witArgs = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
+                var preIso = Path.Combine(tempPath, "pre.iso");
+                witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
                 if (IsNativeWindows)
                 {
                     using Process trimm = new Process();
@@ -841,7 +842,7 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 33;
                 }
                 else                  
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, preIso);
 
                 if (mvm.Index == 4)
                 {
@@ -906,7 +907,8 @@ namespace UWUVCI_AIO_WPF
 
                 }
                 mvm.msg = "Creating ISO from trimmed ROM...";
-                witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+                var tempFolder = Path.Combine(tempPath, "TEMP");
+                witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
                 if (IsNativeWindows)
                 {
                     using Process repack = new Process();
@@ -921,13 +923,14 @@ namespace UWUVCI_AIO_WPF
                     File.Delete(Path.Combine(tempPath, "pre.iso"));
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, tempFolder);
             }
             else
             {
                 if (mvm.Index == 4 || mvm.Patch)
                 {
-                    witArgs = $"extract \"{Path.Combine(tempPath, "pre.iso")}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
+                    var preIso = Path.Combine(tempPath, "pre.iso");
+                    witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
                     if (IsNativeWindows)
                     {
                         using Process trimm = new Process();
@@ -995,7 +998,8 @@ namespace UWUVCI_AIO_WPF
 
                     }
                     mvm.msg = "Creating ISO from patched ROM...";
-                    witArgs = $"copy \"{Path.Combine(tempPath, "TEMP")}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
+                    var tempFolder = Path.Combine(tempPath, "TEMP");
+                    witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
                     if (IsNativeWindows)
                     {
                         using Process repack = new Process();
@@ -1019,8 +1023,8 @@ namespace UWUVCI_AIO_WPF
 
             mvm.Progress = 50;
             mvm.msg = "Replacing TIK and TMD...";
-
-            witArgs = $"extract \"{Path.Combine(tempPath, "game.iso")}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
+            var gameIso = Path.Combine(tempPath, "game.iso");
+            witArgs = $"extract \"{gameIso}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{Path.Combine(tempPath, "TIKTMD")}\" -vv1";
 
             if (IsNativeWindows)
             {
@@ -1034,7 +1038,7 @@ namespace UWUVCI_AIO_WPF
                 extract.WaitForExit();
             }
             else
-                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, gameIso);
 
             foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
                 File.Delete(sFile);
