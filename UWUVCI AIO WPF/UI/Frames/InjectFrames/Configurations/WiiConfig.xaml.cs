@@ -998,10 +998,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     // If it's a TXT file, validate the format
                     else if (System.IO.Path.GetExtension(filePath).Equals(".txt", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (new GctCode().IsTxtFileFormatValid(filePath))
-                            validFilePaths.Add(filePath);
-                        else
-                            System.Windows.Forms.MessageBox.Show($"The file {filePath} is not in the correct format.", "Invalid Format", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                        GctCode.ParseOcarinaOrDolphinTxtFile(filePath); // Try to parse; throws exception if invalid
+                        validFilePaths.Add(filePath);
                     }
                 }
 
