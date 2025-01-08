@@ -53,10 +53,10 @@ namespace UWUVCI_AIO_WPF
         [DllImport("user32.dll", SetLastError = true)]
         static extern bool PostMessage(IntPtr hWnd, int Msg, System.Windows.Forms.Keys wParam, int lParam);
         private static int WM_KEYUP = 0x101;
-        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "temp");
+        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
         private static readonly string baseRomPath = Path.Combine(tempPath, "baserom");
         private static readonly string imgPath = Path.Combine(tempPath, "img");
-        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(),"bin", "Tools");
+        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         static string code = null;
         static MainViewModel mvvm;
         private static bool IsNativeWindows = !MacLinuxHelper.IsRunningUnderWineOrSimilar();
@@ -137,7 +137,7 @@ namespace UWUVCI_AIO_WPF
 
                     }
                 }
-                catch (Exception )
+                catch (Exception)
                 {
 
                 }
@@ -161,15 +161,15 @@ namespace UWUVCI_AIO_WPF
         [STAThread]
         public static bool Inject(GameConfig Configuration, string RomPath, MainViewModel mvm, bool force)
         {
-         
+
             mvm.failed = false;
-           
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += tick;
-            
+
             Clean();
-            
+
             long freeSpaceInBytes = 0;
             if (!mvm.saveworkaround)
             {
@@ -182,21 +182,21 @@ namespace UWUVCI_AIO_WPF
                     done = true;
                     freeSpaceInBytes = drive.AvailableFreeSpace;
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     mvm.saveworkaround = true;
                 }
-                           
-            }            
+
+            }
             mvvm = mvm;
-                      
+
             Directory.CreateDirectory(tempPath);
-                      
+
             mvm.msg = "Checking Tools...";
             mvm.InjcttoolCheck();
-     
+
             mvm.Progress = 5;
-           
+
             mvm.msg = "Copying Base...";
             try
             {
@@ -208,7 +208,7 @@ namespace UWUVCI_AIO_WPF
                         throw new Exception("12G");
                 }
 
-                if(Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
+                if (Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
                 {
                     throw new Exception("BASE");
                 }
@@ -222,13 +222,13 @@ namespace UWUVCI_AIO_WPF
                     //Custom Base Functionality here
                     CopyBase($"Custom", Configuration.CBasePath);
                 }
-                if(!Directory.Exists(Path.Combine(baseRomPath, "code")) || !Directory.Exists(Path.Combine(baseRomPath, "content")) || !Directory.Exists(Path.Combine(baseRomPath, "meta")))
+                if (!Directory.Exists(Path.Combine(baseRomPath, "code")) || !Directory.Exists(Path.Combine(baseRomPath, "content")) || !Directory.Exists(Path.Combine(baseRomPath, "meta")))
                 {
                     throw new Exception("MISSINGF");
                 }
                 mvm.Progress = 10;
                 mvm.msg = "Injecting ROM...";
-                
+
                 RunSpecificInjection(Configuration, (mvm.GC ? GameConsoles.GCN : Configuration.Console), RomPath, force, mvm);
 
                 mvm.msg = "Editing XML...";
@@ -242,19 +242,19 @@ namespace UWUVCI_AIO_WPF
                     mvm.msg = "Adding BootSound...";
                     bootsound(mvm.BootSound);
                 }
-                
-                
+
+
                 mvm.Progress = 100;
-               
-                
+
+
                 code = null;
                 return true;
-            }catch(Exception e)
+            } catch (Exception e)
             {
                 mvm.Progress = 100;
-                
+
                 code = null;
-                if(e.Message == "Failed this shit")
+                if (e.Message == "Failed this shit")
                 {
                     Clean();
                     return false;
@@ -298,7 +298,7 @@ namespace UWUVCI_AIO_WPF
             }
             finally
             {
-                
+
                 mvm.Index = -1;
                 mvm.LR = false;
                 mvm.msg = "";
@@ -324,7 +324,7 @@ namespace UWUVCI_AIO_WPF
         {
             string btsndPath = Path.Combine(baseRomPath, "meta", "bootSound.btsnd");
             FileInfo soundFile = new FileInfo(sound);
-            if(soundFile.Extension.Contains("mp3") || soundFile.Extension.Contains("wav"))
+            if (soundFile.Extension.Contains("mp3") || soundFile.Extension.Contains("wav"))
             {
                 // Convert input file to 6 second .wav
                 using (Process sox = new Process())
@@ -362,9 +362,9 @@ namespace UWUVCI_AIO_WPF
 
         static void timer_Tick(object sender, EventArgs e)
         {
-            if(mvvm.Progress < 50)
+            if (mvvm.Progress < 50)
                 mvvm.Progress += 1;
-            
+
         }
         private static void RunSpecificInjection(GameConfig cfg, GameConsoles console, string RomPath, bool force, MainViewModel mvm)
         {
@@ -375,7 +375,7 @@ namespace UWUVCI_AIO_WPF
                     break;
 
                 case GameConsoles.N64:
-                   N64(RomPath, cfg.N64Stuff);
+                    N64(RomPath, cfg.N64Stuff);
                     break;
 
                 case GameConsoles.GBA:
@@ -416,7 +416,7 @@ namespace UWUVCI_AIO_WPF
         {
             string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Forwarder Base...";
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase")))
                 Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
 
             Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
@@ -436,7 +436,7 @@ namespace UWUVCI_AIO_WPF
             }
 
             string[] id = { ByteArrayToString(test) };
-            File.WriteAllLines(Path.Combine(tempPath, "TempBase", "files","title.txt"), id);
+            File.WriteAllLines(Path.Combine(tempPath, "TempBase", "files", "title.txt"), id);
             mvm.Progress = 30;
             mvm.msg = "Copying Forwarder...";
             File.Copy(Path.Combine(toolsPath, "forwarder.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
@@ -445,7 +445,7 @@ namespace UWUVCI_AIO_WPF
             SharedWitAndNFS2ISO2NFS(savedir, mvm, "WiiForwarder");
         }
 
-        private static void SharedWitAndNFS2ISO2NFS (string savedir, MainViewModel mvm, string functionName)
+        private static void SharedWitAndNFS2ISO2NFS(string savedir, MainViewModel mvm, string functionName)
         {
             if (IsNativeWindows)
             {
@@ -567,7 +567,7 @@ namespace UWUVCI_AIO_WPF
             string savedir = Directory.GetCurrentDirectory();
             mvvm.msg = "Extracting Homebrew Base...";
 
-            if (Directory.Exists(Path.Combine(tempPath, "TempBase"))) 
+            if (Directory.Exists(Path.Combine(tempPath, "TempBase")))
                 Directory.Delete(Path.Combine(tempPath, "TempBase"), true);
 
             Directory.CreateDirectory(Path.Combine(tempPath, "TempBase"));
@@ -581,7 +581,107 @@ namespace UWUVCI_AIO_WPF
             File.Copy(romPath, Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
             mvm.Progress = 30;
             mvvm.msg = "Creating Injectable file...";
-            SharedWitAndNFS2ISO2NFS(savedir,mvm, "WiiHomebrew");
+            SharedWitAndNFS2ISO2NFS(savedir, mvm, "WiiHomebrew");
+        }
+        private static void PatchDol(string consoleName, string mainDolPath, MainViewModel mvm)
+        {
+            // Split the existing file paths in gctPath.Text by new lines
+            var filePaths = mvm.gctPath.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (consoleName == "Wii")
+            {
+                var stringBuilder = new StringBuilder();
+
+
+                // Iterate over each file path and append the corresponding "--add-section" argument
+                foreach (var path in filePaths)
+                    stringBuilder.Append($" --add-section \"{path}\"");
+
+                // Convert the StringBuilder to a string and return it
+                var witArgs = $"patch \"{mainDolPath}\"" + stringBuilder.ToString();
+
+                if (IsNativeWindows)
+                {
+                    using var unpack = new Process();
+                    if (!mvm.debug)
+                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wstrt.exe");
+                    unpack.StartInfo.Arguments = witArgs;
+                    unpack.Start();
+                    unpack.WaitForExit();
+                }
+                else
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wstrt", witArgs, mainDolPath);
+                return;
+            }
+
+            //GCN version
+            var dol = new Dol();
+            var allCodes = new List<GctCode>();
+
+            foreach (var filePath in filePaths)
+                allCodes.AddRange(GctCode.LoadFromFile(filePath));
+
+            dol.PatchDolFile(mainDolPath, allCodes);
+        }
+
+        private static void GctPatch(MainViewModel mvm, string consoleName)
+        {
+            if (string.IsNullOrEmpty(mvm.GctPath))
+                return;
+
+            var isoPath = Path.Combine(tempPath, "pre.iso");
+            var extraction = Path.Combine(tempPath, "extraction");
+            mvm.msg = "Unpacking rom to get main.dol file";
+            mvm.Progress = 25;
+            var witArgs = $"extract --psel=data \"{isoPath}\" \"{extraction}\"";
+            if (IsNativeWindows)
+            {
+                using var unpack = new Process();
+                if (!mvm.debug)
+                    unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                unpack.StartInfo.Arguments = witArgs;
+                unpack.Start();
+                unpack.WaitForExit();
+            }
+            else
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, isoPath);
+
+            mvm.msg = "Patching main.dol with gct file";
+            mvm.Progress = 27;
+
+            File.Delete(isoPath);
+
+            var extractionFolder = Path.Combine(tempPath, "extraction");
+            var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
+            //var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
+
+            PatchDol(consoleName, mainDolPath, mvm);
+
+            //File.Delete(mainDolPath);
+            //File.Move(output, mainDolPath);
+
+            mvm.msg = "Packing rom back up";
+            mvm.Progress = 29;
+            witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
+            if (IsNativeWindows)
+            {
+                using var pack = new Process();
+                if (!mvm.debug)
+                    pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                pack.StartInfo.Arguments = witArgs;
+                pack.Start();
+                pack.WaitForExit();
+            }
+            else
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, extraction);
+
+            Directory.Delete(extraction, recursive: true);
         }
 
         private static void WII(string romPath, MainViewModel mvm)
@@ -705,84 +805,7 @@ namespace UWUVCI_AIO_WPF
                 Directory.Delete(extraction, recursive: true);
             }
 
-            if (!string.IsNullOrEmpty(mvm.GctPath))
-            {
-                var isoPath = Path.Combine(tempPath, "pre.iso");
-                var extraction = Path.Combine(tempPath, "extraction");
-                mvm.msg = "Unpacking rom to get main.dol file";
-                mvm.Progress = 25;
-                witArgs = $"extract --psel=data \"{isoPath}\" \"{extraction}\"";
-                if (IsNativeWindows)
-                {
-                    using var unpack = new Process();
-                    if (!mvm.debug)
-                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    unpack.StartInfo.Arguments = witArgs;
-                    unpack.Start();
-                    unpack.WaitForExit();
-                }
-                else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, isoPath);
-
-                mvm.msg = "Patching main.dol with gct file";
-                mvm.Progress = 27;
-
-                File.Delete(isoPath);
-
-                var extractionFolder = Path.Combine(tempPath, "extraction");
-                var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
-                //var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
-
-                var stringBuilder = new StringBuilder();
-
-                // Split the existing file paths in gctPath.Text by new lines
-                var filePaths = mvm.gctPath.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
-                // Iterate over each file path and append the corresponding "--add-section" argument
-                foreach (var path in filePaths)
-                    stringBuilder.Append($" --add-section \"{path}\"");
-
-                // Convert the StringBuilder to a string and return it
-                witArgs = $"patch \"{mainDolPath}\"" + stringBuilder.ToString();
-
-                if (IsNativeWindows)
-                {
-                    using var unpack = new Process();
-                    if (!mvm.debug)
-                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wstrt.exe");
-                    unpack.StartInfo.Arguments = witArgs;
-                    unpack.Start();
-                    unpack.WaitForExit();
-                }
-                else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wstrt", witArgs, mainDolPath);
-
-                //File.Delete(mainDolPath);
-                //File.Move(output, mainDolPath);
-
-                mvm.msg = "Packing rom back up";
-                mvm.Progress = 29;
-                witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
-                if (IsNativeWindows)
-                {
-                    using var pack = new Process();
-                    if (!mvm.debug)
-                        pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    pack.StartInfo.Arguments = witArgs;
-                    pack.Start();
-                    pack.WaitForExit();
-                }
-                else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, extraction);
-
-                Directory.Delete(extraction, recursive: true);
-            }
+            GctPatch(mvm, "Wii");
 
             //GET ROMCODE and change it
             mvm.msg = "Trying to change the Manual...";
@@ -1141,7 +1164,7 @@ namespace UWUVCI_AIO_WPF
                 mvvm.msg += "...";
                 File.Copy(Path.Combine(toolsPath, "nintendont.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
             }
-            mvm.Progress = 40;
+            mvm.Progress = 23;
             mvvm.msg = "Injecting GameCube Game into NintendontBase...";
             if (mvm.donttrim)
             {
@@ -1176,7 +1199,7 @@ namespace UWUVCI_AIO_WPF
                         File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
                 }
             }
-
+            GctPatch(mvm, "GCN");
             SharedWitAndNFS2ISO2NFS(savedir, mvm, "GCN");
         }
        
