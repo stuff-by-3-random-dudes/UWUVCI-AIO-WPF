@@ -1,5 +1,6 @@
 ﻿using GameBaseClassLibrary;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -697,6 +698,59 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
 
             }
+        }
+
+        private void SelectGctFile(object sender, RoutedEventArgs e)
+        {
+            // Get the new selected GCT files as a single string
+            var newFiles = GetGCTFilePaths();
+            if (string.IsNullOrEmpty(newFiles))
+                return;
+
+            // Split newFiles by new lines into a list of file paths
+            var newFileList = newFiles.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Use a HashSet to store unique file paths (it avoids duplicates automatically)
+            var uniqueFiles = new HashSet<string>(gctPath.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+
+            // Add the new files to the HashSet
+            foreach (var file in newFileList)
+                uniqueFiles.Add(file); // HashSet ensures no duplicates are added
+
+            // Update the TextBox with the combined list of files, separated by new lines
+            gctPath.Text = string.Join(Environment.NewLine, uniqueFiles);
+        }
+
+        private string GetGCTFilePaths()
+        {
+            using var dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.Multiselect = true;
+            dialog.Filter = "GCT or TXT Files (*.gct, *.txt)|*.gct;*.txt";
+
+            System.Windows.Forms.DialogResult res = dialog.ShowDialog();
+            if (res == System.Windows.Forms.DialogResult.OK)
+            {
+                var validFilePaths = new List<string>();
+
+                foreach (string filePath in dialog.FileNames)
+                {
+                    // If it's a GCT file, accept it without validation
+                    if (System.IO.Path.GetExtension(filePath).Equals(".gct", StringComparison.OrdinalIgnoreCase))
+                        validFilePaths.Add(filePath);
+
+                    // If it's a TXT file, validate the format
+                    else if (System.IO.Path.GetExtension(filePath).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GctCode.ParseOcarinaOrDolphinTxtFile(filePath); // Try to parse; throws exception if invalid
+                        validFilePaths.Add(filePath);
+                    }
+                }
+
+                return string.Join(Environment.NewLine, validFilePaths);
+            }
+
+            // Return an empty string if the dialog was canceled
+            return string.Empty;
         }
     }
 }

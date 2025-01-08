@@ -41,6 +41,34 @@
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,376,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click_1" IsTabStop="False"/>
         <Label Content="Use | for 2 lines" HorizontalAlignment="Left" Margin="506,428,0,0" VerticalAlignment="Top" Width="127" HorizontalContentAlignment="Center" ToolTip="e.g. Wii|Sports"/>
         <Button Content="?" HorizontalAlignment="Left" Margin="600,19,0,0" Height="32" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_2" FontSize="22" Padding="0"   IsTabStop="False"/>
+
+        <TextBox materialDesign:HintAssist.Hint="GCT PATH (OPTIONAL)" 
+         x:Name="gctPath" 
+         Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+         Margin="10,462,296,6" 
+         Background="{x:Null}" 
+         Foreground="Black" 
+         SelectionBrush="#FF00C3D7" 
+         CaretBrush="#FF21C3F3" 
+         FontSize="12" 
+         IsReadOnly="True" 
+         Text="{Binding GctPath}" 
+         IsTabStop="False" 
+         TextWrapping="Wrap" 
+         Focusable="False" 
+         Cursor="Help"
+         ToolTip="This field shows the currently selected GCT files. GCT files contain cheat codes or mods. If no GCT file is selected, the game will run without cheats or mods." />
+        <Button Content="Select GCT File" 
+            HorizontalAlignment="Left" 
+            Margin="359,469,0,0" 
+            VerticalAlignment="Top" 
+            Width="127" 
+            Click="SelectGctFile" 
+            IsTabStop="False"
+            ToolTip="GCT files contain cheat codes or mods for games. You can select multiple GCT files to apply various modifications to your game. If no GCT file is selected, the game will run without cheats or mods. To select multiple files, hold 'Ctrl' while clicking on the files." Height="35"/>
+
+
+
     </Grid>
 
 </Page>
