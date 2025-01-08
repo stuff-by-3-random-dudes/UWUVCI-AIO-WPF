@@ -957,7 +957,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             ancastKey.Text = ReadAncastFromOtp();
         }
 
-        private void SelectGctile(object sender, RoutedEventArgs e)
+        private void SelectGctFile(object sender, RoutedEventArgs e)
         {
             // Get the new selected GCT files as a single string
             var newFiles = GetGCTFilePaths();

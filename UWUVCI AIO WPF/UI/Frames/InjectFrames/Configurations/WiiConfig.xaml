@@ -28,7 +28,7 @@
         Margin="506,141,0,0" 
         VerticalAlignment="Top" 
         Width="127" 
-        Click="SelectGctile" 
+        Click="SelectGctFile" 
         IsTabStop="False"
         ToolTip="GCT files contain cheat codes or mods for games. You can select multiple GCT files to apply various modifications to your game. If no GCT file is selected, the game will run without cheats or mods. To select multiple files, hold 'Ctrl' while clicking on the files." Height="35"/>
 
