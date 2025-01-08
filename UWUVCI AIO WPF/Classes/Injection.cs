@@ -24,6 +24,7 @@ using WiiUDownloaderLibrary.Models;
 using WiiUDownloaderLibrary;
 using Newtonsoft.Json.Linq;
 using UWUVCI_AIO_WPF.Helpers;
+using Microsoft.WindowsAPICodePack.Net;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1313,24 +1314,15 @@ namespace UWUVCI_AIO_WPF
             catch { }
             try
             {
-                using Process cnuspacker = new Process();
-                if (!mvm.debug)
-                {
-                    cnuspacker.StartInfo.UseShellExecute = false;
-                    cnuspacker.StartInfo.CreateNoWindow = true;
-                }
-                if (Environment.Is64BitOperatingSystem)
-                {
-                    cnuspacker.StartInfo.FileName = Path.Combine(toolsPath, "CNUSPACKER.exe");
-                    cnuspacker.StartInfo.Arguments = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
-                }
-                else
-                {
-                    cnuspacker.StartInfo.FileName = "java";
-                    cnuspacker.StartInfo.Arguments = $"-jar \"{Path.Combine(toolsPath, "NUSPacker.jar")}\" -in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
-                }
-                cnuspacker.Start();
-                cnuspacker.WaitForExit();
+                var cmdLine = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
+                var regex = new Regex(@"(\"".+?\"")|(\S+)", RegexOptions.Compiled);
+                var args = new List<string>();
+
+                foreach (Match match in regex.Matches(cmdLine))
+                    args.Add(match.Value.Trim('\"'));
+
+                CNUSPACKER.Program.Main(args.ToArray());
+
                 Directory.SetCurrentDirectory(oldpath);
             } catch(Exception ex )
             {

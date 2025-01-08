@@ -611,7 +611,6 @@ namespace UWUVCI_AIO_WPF
             if (!Environment.Is64BitOperatingSystem)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
-                Tools.Remove("CNUSPACKER.exe");
                 Tools.Add("NUSPacker.jar");
                 ToolCheck.ToolNames = Tools.ToArray();
             }
