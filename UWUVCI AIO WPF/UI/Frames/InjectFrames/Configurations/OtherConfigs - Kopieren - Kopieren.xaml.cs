@@ -228,6 +228,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.Inject(cd);
             mvm.Index = 1;
             gp.IsChecked = false;
+            mvm.GctPath = gctPath.Text;
         }
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
