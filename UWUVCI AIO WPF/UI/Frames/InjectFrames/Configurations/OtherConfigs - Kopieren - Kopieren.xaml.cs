@@ -225,10 +225,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             mvm.GameConfiguration.GameName = gn.Text;
             mvm.GC = true;
+            mvm.GctPath = gctPath.Text;
             mvm.Inject(cd);
             mvm.Index = 1;
             gp.IsChecked = false;
-            mvm.GctPath = gctPath.Text;
+
         }
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
