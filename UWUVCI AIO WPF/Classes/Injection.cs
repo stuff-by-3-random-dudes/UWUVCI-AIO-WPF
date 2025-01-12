@@ -13,18 +13,14 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
-using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using Newtonsoft.Json;
 using MessageBox = System.Windows.MessageBox;
-using Microsoft.Win32;
-using System.Management;
 using UWUVCI_AIO_WPF.Models;
 using WiiUDownloaderLibrary.Models;
 using WiiUDownloaderLibrary;
 using Newtonsoft.Json.Linq;
 using UWUVCI_AIO_WPF.Helpers;
-using Microsoft.WindowsAPICodePack.Net;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -626,16 +622,21 @@ namespace UWUVCI_AIO_WPF
             dol.PatchDolFile(mainDolPath, allCodes);
         }
 
-        private static void GctPatch(MainViewModel mvm, string consoleName)
+        private static void GctPatch(MainViewModel mvm, string consoleName, string isoPath)
         {
             if (string.IsNullOrEmpty(mvm.GctPath))
                 return;
-
-            var isoPath = Path.Combine(tempPath, "pre.iso");
+;
             var extraction = Path.Combine(tempPath, "extraction");
             mvm.msg = "Unpacking rom to get main.dol file";
             mvm.Progress = 25;
-            var witArgs = $"extract --psel=data \"{isoPath}\" \"{extraction}\"";
+
+            string witArgs;
+            if (consoleName == "Wii")
+                witArgs = $"extract --psel=data \"{isoPath}\" \"{extraction}\"";
+            else
+                witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
+
             if (IsNativeWindows)
             {
                 using var unpack = new Process();
@@ -657,12 +658,12 @@ namespace UWUVCI_AIO_WPF
 
             var extractionFolder = Path.Combine(tempPath, "extraction");
             var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
-            //var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
+            var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
 
             PatchDol(consoleName, mainDolPath, mvm);
 
-            //File.Delete(mainDolPath);
-            //File.Move(output, mainDolPath);
+            File.Delete(mainDolPath);
+            File.Move(output, mainDolPath);
 
             mvm.msg = "Packing rom back up";
             mvm.Progress = 29;
@@ -805,7 +806,7 @@ namespace UWUVCI_AIO_WPF
                 Directory.Delete(extraction, recursive: true);
             }
 
-            GctPatch(mvm, "Wii");
+            GctPatch(mvm, "Wii", Path.Combine(tempPath, "pre.iso"));
 
             //GET ROMCODE and change it
             mvm.msg = "Trying to change the Manual...";
@@ -1164,8 +1165,10 @@ namespace UWUVCI_AIO_WPF
                 mvvm.msg += "...";
                 File.Copy(Path.Combine(toolsPath, "nintendont.dol"), Path.Combine(tempPath, "TempBase", "sys", "main.dol"));
             }
-            mvm.Progress = 23;
+            mvm.Progress = 25;
             mvvm.msg = "Injecting GameCube Game into NintendontBase...";
+
+            var isoPath = Path.Combine(tempPath, "TempBase", "files");
             if (mvm.donttrim)
             {
                 if (romPath.ToLower().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
@@ -1199,7 +1202,6 @@ namespace UWUVCI_AIO_WPF
                         File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));
                 }
             }
-            GctPatch(mvm, "GCN");
             SharedWitAndNFS2ISO2NFS(savedir, mvm, "GCN");
         }
        

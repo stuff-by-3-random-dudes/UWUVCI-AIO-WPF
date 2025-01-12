@@ -225,7 +225,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             mvm.GameConfiguration.GameName = gn.Text;
             mvm.GC = true;
-            mvm.GctPath = gctPath.Text;
+            //mvm.GctPath = gctPath.Text;
             mvm.Inject(cd);
             mvm.Index = 1;
             gp.IsChecked = false;
@@ -701,7 +701,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
         }
-
+        /*
         private void SelectGctFile(object sender, RoutedEventArgs e)
         {
             // Get the new selected GCT files as a single string
@@ -722,7 +722,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             // Update the TextBox with the combined list of files, separated by new lines
             gctPath.Text = string.Join(Environment.NewLine, uniqueFiles);
         }
-
+        */
         private string GetGCTFilePaths()
         {
             using var dialog = new System.Windows.Forms.OpenFileDialog();
