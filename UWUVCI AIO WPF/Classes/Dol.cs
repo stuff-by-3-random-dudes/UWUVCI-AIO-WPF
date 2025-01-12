@@ -165,7 +165,7 @@ namespace UWUVCI_AIO_WPF.Classes
                 // Update entry point in DOL
                 PatchDolEntryPoint(dolData, injectionOffset);
 
-                string outputPath = Path.Combine(Path.GetDirectoryName(dolFilePath), "patched_with_codehandler.dol");
+                string outputPath = Path.Combine(Path.GetDirectoryName(dolFilePath), "patched_dol.dol");
                 File.WriteAllBytes(outputPath, dolData);
 
                 Logger.Log($"Codehandler injected successfully. Patched DOL saved to: {outputPath}");
