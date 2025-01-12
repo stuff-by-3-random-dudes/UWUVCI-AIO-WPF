@@ -207,6 +207,7 @@
     <Compile Include="Classes\BootImage.cs" />
     <Compile Include="Classes\DeflickerDitheringRemover.cs" />
     <Compile Include="Classes\Dol.cs" />
+    <Compile Include="Classes\GameCubeISO.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\FileUtils.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
