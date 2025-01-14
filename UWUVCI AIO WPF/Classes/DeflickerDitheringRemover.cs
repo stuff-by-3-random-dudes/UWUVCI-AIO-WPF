@@ -112,7 +112,6 @@ public static class DeflickerDitheringRemover
             }
     }
 
-
     private static void ApplyDitheringPatch(byte[] buffer)
     {
         for (int i = 8; i <= buffer.Length - DitheringPattern.Length; i++)
