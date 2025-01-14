@@ -53,11 +53,11 @@
         <CheckBox Content="Swap L/R and ZL/ZR" HorizontalAlignment="Left" Margin="129,118,0,0" VerticalAlignment="Top" Width="137" x:Name="LR" IsEnabled="False" IsChecked="False" IsTabStop="False"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,39,0,0">
             <!-- Deflicker Checkbox -->
-            <CheckBox Content="Remove Deflicker" 
+            <CheckBox Content="Remove VFilter" 
               Name="deflickerCheckBox" 
               IsChecked="{Binding RemoveDeflicker}" 
               Checked="CheckBox_Checked" 
-              ToolTip="Removes screen flickering for smoother visuals." 
+              ToolTip="Removes vertical filter for sharper images." 
               Margin="0,0,20,0"/>
 
             <!-- Dithering Checkbox -->
@@ -69,7 +69,7 @@
               Margin="0,0,20,0"/>
 
             <!-- VFilter Checkbox -->
-            <CheckBox Content="Half VFilter Strength" 
+            <CheckBox Content="Half VFilter" 
               Name="vFilterCheckBox" 
               IsChecked="{Binding HalfVFilter}" 
               Checked="CheckBox_Checked" 
