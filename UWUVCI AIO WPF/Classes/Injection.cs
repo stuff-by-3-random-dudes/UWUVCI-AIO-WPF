@@ -1378,7 +1378,7 @@ namespace UWUVCI_AIO_WPF
 
                 // Call the download method with progress reporting
                 var downloader = new Downloader(null, null);
-                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
+                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).GetAwaiter().GetResult();
 
                 CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
                 mvm.Progress = 99;
@@ -1396,7 +1396,7 @@ namespace UWUVCI_AIO_WPF
 
                 // Call the download method with progress reporting
                 var downloader = new Downloader(null, null);
-                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).Wait();
+                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).GetAwaiter().GetResult();
 
                 mvm.Progress = 75;
                 CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
