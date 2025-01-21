@@ -1756,7 +1756,13 @@ namespace UWUVCI_AIO_WPF
 
         private static void DeleteTool(string tool)
         {
-            File.Delete($@"bin\Tools\{tool}");
+            try { 
+                File.Delete($@"bin\Tools\{tool}");
+            }
+            catch
+            {
+                //why does that try break everything? wtf
+            }
         }
         private static void DeleteBase(string console)
         {
