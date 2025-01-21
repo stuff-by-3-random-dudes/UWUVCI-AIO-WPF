@@ -62,7 +62,14 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public static bool DoesToolsFolderExist()
         {
-            return Directory.Exists(FolderName);
+            try
+            {
+                return Directory.Exists(FolderName);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public static bool IsToolRight(string name)
