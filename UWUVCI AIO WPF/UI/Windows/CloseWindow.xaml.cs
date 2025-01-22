@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Threading;
 using UWUVCI_AIO_WPF.Helpers;
-using UWUVCI_AIO_WPF.Properties;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -78,6 +76,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Process.Start(new ProcessStartInfo
             {
                 FileName = "https://ko-fi.com/zestyts",
+                UseShellExecute = true
+            });
+        }
+
+        private void GameButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Open YT game page in the default browser
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "https://www.youtube.com/watch?v=RcfVhFi3wJc",
                 UseShellExecute = true
             });
         }
