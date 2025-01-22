@@ -608,7 +608,7 @@ namespace UWUVCI_AIO_WPF
                     unpack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wstrt", witArgs, mainDolPath);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wstrt", witArgs, toolsPath);
                 return;
             }
 
@@ -649,7 +649,7 @@ namespace UWUVCI_AIO_WPF
                 unpack.WaitForExit();
             }
             else
-                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, isoPath);
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, toolsPath);
 
             mvm.msg = "Patching main.dol with gct file";
             mvm.Progress = 27;
@@ -680,7 +680,7 @@ namespace UWUVCI_AIO_WPF
                 pack.WaitForExit();
             }
             else
-                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, extraction);
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, toolsPath);
 
             Directory.Delete(extraction, recursive: true);
         }
@@ -747,7 +747,7 @@ namespace UWUVCI_AIO_WPF
                     else
                         witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
 
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, romPath);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
                 }
             }
 
@@ -770,7 +770,7 @@ namespace UWUVCI_AIO_WPF
                     unpack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, isoPath);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
 
                 mvm.msg = "Patching main.dol file";
                 mvm.Progress = 21;
@@ -801,7 +801,7 @@ namespace UWUVCI_AIO_WPF
                     pack.WaitForExit();
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, extraction);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
 
                 Directory.Delete(extraction, recursive: true);
             }
@@ -867,7 +867,7 @@ namespace UWUVCI_AIO_WPF
                     mvm.Progress = 33;
                 }
                 else                  
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, preIso);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
 
                 if (mvm.Index == 4)
                 {
@@ -948,7 +948,7 @@ namespace UWUVCI_AIO_WPF
                     File.Delete(Path.Combine(tempPath, "pre.iso"));
                 }
                 else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, tempFolder);
+                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
             }
             else
             {
@@ -1063,7 +1063,7 @@ namespace UWUVCI_AIO_WPF
                 extract.WaitForExit();
             }
             else
-                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, gameIso);
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
 
             foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
                 File.Delete(sFile);
