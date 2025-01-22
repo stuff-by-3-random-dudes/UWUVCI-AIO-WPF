@@ -1566,7 +1566,7 @@ namespace UWUVCI_AIO_WPF
         {
             string rpxFile = Directory.GetFiles(Path.Combine(baseRomPath, "code"), "*.rpx")[0]; //To get the RPX path where the NES/SNES rom needs to be Injected in
             mvvm.msg = "Decompressing RPX...";
-            RPXdecomp(rpxFile); //Decompresses the RPX to be able to write the game into it
+            RPXCompOrDecomp(rpxFile, false); //Decompresses the RPX to be able to write the game into it
             mvvm.Progress = 20;
             if (mvvm.pixelperfect)
             {
@@ -1606,7 +1606,7 @@ namespace UWUVCI_AIO_WPF
 
             }
             mvvm.msg = "Compressing RPX...";
-            RPXcomp(rpxFile); //Compresses the RPX
+            RPXCompOrDecomp(rpxFile, true); //Compresses the RPX
             mvvm.Progress = 80;
         }
 
@@ -2031,27 +2031,14 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-
-        //Compressed or decompresses the RPX using wiiurpxtool
-        private static void RPXdecomp(string rpxpath)
+        private static void RPXCompOrDecomp(string rpxpath, bool comp)
         {
+            var prefix = comp ? "-c" : "-d";
             using Process rpxtool = new Process();
             rpxtool.StartInfo.UseShellExecute = false;
             rpxtool.StartInfo.CreateNoWindow = true;
             rpxtool.StartInfo.FileName = Path.Combine(toolsPath, "wiiurpxtool.exe");
-            rpxtool.StartInfo.Arguments = $"-d \"{rpxpath}\"";
-
-            rpxtool.Start();
-            rpxtool.WaitForExit();
-        }
-
-        private static void RPXcomp(string rpxpath)
-        {
-            using Process rpxtool = new Process();
-            rpxtool.StartInfo.UseShellExecute = false;
-            rpxtool.StartInfo.CreateNoWindow = true;
-            rpxtool.StartInfo.FileName = Path.Combine(toolsPath, "wiiurpxtool.exe");
-            rpxtool.StartInfo.Arguments = $"-c \"{rpxpath}\"";
+            rpxtool.StartInfo.Arguments = $"{prefix} \"{rpxpath}\"";
 
             rpxtool.Start();
             rpxtool.WaitForExit();
