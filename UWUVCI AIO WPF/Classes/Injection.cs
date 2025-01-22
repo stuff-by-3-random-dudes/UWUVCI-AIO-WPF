@@ -1088,10 +1088,7 @@ namespace UWUVCI_AIO_WPF
 
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
                 string extra = "";
-                if (mvm.Index == 2)
-                {
-                    extra = "-horizontal ";
-                }
+                if (mvm.Index == 2) { extra = "-horizontal "; }
                 if (mvm.Index == 3) { extra = "-wiimote "; }
                 if (mvm.Index == 4) { extra = "-instantcc "; }
                 if (mvm.Index == 5) { extra = "-nocc "; }
@@ -1786,8 +1783,8 @@ namespace UWUVCI_AIO_WPF
                 mvvm.msg = "Removing BaseRom...";
                 ReplaceRomWithInjected(romName, injectRomPath);
 
-
-                if (mvvm.DSLayout) {
+                if (mvvm.DSLayout) 
+                {
                     mvvm.msg = "Adding additional DS layout screens...";
 
                     using (var zip = ZipFile.Open(Path.Combine(toolsPath, "DSLayoutScreens.zip"), ZipArchiveMode.Read))
@@ -1903,17 +1900,15 @@ namespace UWUVCI_AIO_WPF
         {
             string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
 
-            using (Process n64convert = new Process())
-            {
-                mvvm.msg = "Injecting ROM...";
-                n64convert.StartInfo.UseShellExecute = false;
-                n64convert.StartInfo.CreateNoWindow = true;
-                n64convert.StartInfo.FileName = Path.Combine(toolsPath, "N64Converter.exe");
-                n64convert.StartInfo.Arguments = $"\"{injectRomPath}\" \"{mainRomPath}\"";
-                n64convert.Start();
-                n64convert.WaitForExit();
-                mvvm.Progress = 60;
-            }
+            using Process n64convert = new Process();
+            mvvm.msg = "Injecting ROM...";
+            n64convert.StartInfo.UseShellExecute = false;
+            n64convert.StartInfo.CreateNoWindow = true;
+            n64convert.StartInfo.FileName = Path.Combine(toolsPath, "N64Converter.exe");
+            n64convert.StartInfo.Arguments = $"\"{injectRomPath}\" \"{mainRomPath}\"";
+            n64convert.Start();
+            n64convert.WaitForExit();
+            mvvm.Progress = 60;
         }
 
         private static void ApplyCustomSettings(N64Conf config)
@@ -2152,60 +2147,51 @@ namespace UWUVCI_AIO_WPF
                     {
                         if (Images[1])
                         {
-                            using (Process conv = new Process())
-                            {
+                            using Process conv = new Process();
 
-                                if (!mvvm.debug)
-                                {
-                                    conv.StartInfo.UseShellExecute = false;
-                                    conv.StartInfo.CreateNoWindow = true;
-                                }
-                                if (usetemp)
-                                {
-                                    File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
-                                }
+                            if (!mvvm.debug)
+                            {
+                                conv.StartInfo.UseShellExecute = false;
+                                conv.StartInfo.CreateNoWindow = true;
+                            }
+                            if (usetemp)
+                                File.Copy(Path.Combine(toolsPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+                            else
+                            {
+                                conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
+                                if (!readbin)
+                                    conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
                                 else
                                 {
-
-                                    conv.StartInfo.FileName = Path.Combine(toolsPath, "tga2png.exe");
-                                    if (!readbin)
+                                    if (config.TGATv.extension.Contains("tga"))
                                     {
-                                        conv.StartInfo.Arguments = $"-i \"{config.TGATv.ImgPath}\" -o \"{Path.Combine(tempPath)}\"";
+                                        ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
+                                        conv.StartInfo.Arguments = $"-i \"bootTvTex.{config.TGATv.extension}\" -o \"{Path.Combine(tempPath)}\"";
                                     }
                                     else
-                                    {
-                                        if (config.TGATv.extension.Contains("tga"))
-                                        {
-                                            ReadFileFromBin(config.TGATv.ImgBin, $"bootTvTex.{config.TGATv.extension}");
-                                            conv.StartInfo.Arguments = $"-i \"bootTvTex.{config.TGATv.extension}\" -o \"{Path.Combine(tempPath)}\"";
-                                        }
-                                        else
-                                        {
-                                            ReadFileFromBin(config.TGATv.ImgBin, Path.Combine(tempPath, "bootTvTex.png"));
-                                        }
-
-                                    }
-                                    if (!readbin || config.TGATv.extension.Contains("tga"))
-                                    {
-                                        conv.Start();
-                                        conv.WaitForExit();
-                                    }
-
-                                    File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
-                                    if (File.Exists(Path.Combine(tempPath, "bootTvTex.png"))) File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
-                                    if (File.Exists($"bootTvTex.{config.TGATv.extension}")) File.Delete($"bootTvTex.{config.TGATv.extension}");
+                                        ReadFileFromBin(config.TGATv.ImgBin, Path.Combine(tempPath, "bootTvTex.png"));
                                 }
 
+                                if (!readbin || config.TGATv.extension.Contains("tga"))
+                                {
+                                    conv.Start();
+                                    conv.WaitForExit();
+                                }
 
-                                CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
-                                Images.Add(true);
+                                File.Copy(Path.Combine(tempPath, "bootTvTex.png"), Path.Combine(tempPath, "bootDrcTex.png"));
+
+                                if (File.Exists(Path.Combine(tempPath, "bootTvTex.png")))
+                                    File.Delete(Path.Combine(tempPath, "bootTvTex.png"));
+
+                                if (File.Exists($"bootTvTex.{config.TGATv.extension}"))
+                                    File.Delete($"bootTvTex.{config.TGATv.extension}");
                             }
+
+                            CopyAndConvertImage(Path.Combine(tempPath, "bootDrcTex.png"), Path.Combine(imgPath), false, 854, 480, 24, "bootDrcTex.tga");
+                            Images.Add(true);
                         }
                         else
-                        {
                             Images.Add(false);
-                        }
-
                     }
                 }
                 else
@@ -2221,7 +2207,6 @@ namespace UWUVCI_AIO_WPF
 
                 //logo
                 if (config.TGALog.ImgBin == null)
-                {
                     //use path
                     if (config.TGALog.ImgPath != null)
                     {
@@ -2229,10 +2214,7 @@ namespace UWUVCI_AIO_WPF
                         CopyAndConvertImage(config.TGALog.ImgPath, Path.Combine(imgPath), false, 170, 42, 32, "bootLogoTex.tga");
                     }
                     else
-                    {
                         Images.Add(false);
-                    }
-                }
                 else
                 {
                     ReadFileFromBin(config.TGALog.ImgBin, $"bootLogoTex.{config.TGALog.extension}");
@@ -2255,15 +2237,15 @@ namespace UWUVCI_AIO_WPF
                         checkIfIssue.Start();
                         checkIfIssue.WaitForExit();
                         var s = checkIfIssue.StandardOutput.ReadToEnd();
+
                         if (s.Contains("width") || s.Contains("height") || s.Contains("depth"))
-                        {
                             throw new Exception("Size");
-                        }
+
                         var e = checkIfIssue.StandardError.ReadToEnd();
+
                         if (e.Contains("width") || e.Contains("height") || e.Contains("depth"))
-                        {
                             throw new Exception("Size");
-                        }
+
                         if (e.Contains("TRUEVISION") || s.Contains("TRUEVISION"))
                         {
                             checkIfIssue.StartInfo.UseShellExecute = false;
@@ -2304,21 +2286,19 @@ namespace UWUVCI_AIO_WPF
             catch (Exception e)
             {
                 Logger.Log(e.Message);
+
                 if (e.Message.Contains("Size"))
-                {
                     throw e;
-                }
+
                 throw new Exception("Images");
             }
-
         }
 
         private static void PrepareImageDirectory()
         {
             if (Directory.Exists(imgPath))
-            {
                 Directory.Delete(imgPath, true);
-            }
+
             Directory.CreateDirectory(imgPath);
         }
 
@@ -2343,6 +2323,8 @@ namespace UWUVCI_AIO_WPF
                 CopyAndConvertImage($"{fileName}.{imgConfig.extension}", outputDir, true, width, height, bitDepth, $"{fileName}.tga");
                 return true;
             }
+
+            // When tf would this ever return false?
             return false;
         }
 
@@ -2433,32 +2415,40 @@ namespace UWUVCI_AIO_WPF
             if (hasTvImage)
             {
                 string destPath = Path.Combine(baseRomPath, "meta", "bootTvTex.tga");
+
                 if (File.Exists(destPath))
                     File.Delete(destPath);
+
                 File.Move(Path.Combine(imgPath, "bootTvTex.tga"), destPath);
             }
 
             if (hasDrcImage)
             {
                 string destPath = Path.Combine(baseRomPath, "meta", "bootDrcTex.tga");
+
                 if (File.Exists(destPath))
                     File.Delete(destPath);
+
                 File.Move(Path.Combine(imgPath, "bootDrcTex.tga"), destPath);
             }
 
             if (hasIconImage)
             {
                 string destPath = Path.Combine(baseRomPath, "meta", "iconTex.tga");
+
                 if (File.Exists(destPath))
                     File.Delete(destPath);
+
                 File.Move(Path.Combine(imgPath, "iconTex.tga"), destPath);
             }
 
             if (hasLogoImage)
             {
                 string destPath = Path.Combine(baseRomPath, "meta", "bootLogoTex.tga");
+
                 if (File.Exists(destPath))
                     File.Delete(destPath);
+
                 File.Move(Path.Combine(imgPath, "bootLogoTex.tga"), destPath);
             }
         }
@@ -2474,16 +2464,13 @@ namespace UWUVCI_AIO_WPF
                     png2tga.StartInfo.UseShellExecute = false;
                     png2tga.StartInfo.CreateNoWindow = true;
                     var extension = new FileInfo(inputPath).Extension;
+
                     if (extension.Contains("png"))
-                    {
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "png2tga.exe");
-                    }else if (extension.Contains("jpg") || extension.Contains("jpeg"))
-                    {
+                    else if (extension.Contains("jpg") || extension.Contains("jpeg"))
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "jpg2tga.exe");
-                    }else if (extension.Contains("bmp"))
-                    {
+                    else if (extension.Contains("bmp"))
                         png2tga.StartInfo.FileName = Path.Combine(toolsPath, "bmp2tga.exe");
-                    }
                     
                     png2tga.StartInfo.Arguments = $"-i \"{inputPath}\" -o \"{outputPath}\" --width={widht} --height={height} --tga-bpp={bit} --tga-compression=none";
 
@@ -2491,15 +2478,12 @@ namespace UWUVCI_AIO_WPF
                     png2tga.WaitForExit();
                 }
                 string name = Path.GetFileNameWithoutExtension(inputPath);
+
                 if(File.Exists(Path.Combine(outputPath , name + ".tga")))
-                {
                     File.Move(Path.Combine(outputPath, name + ".tga"), Path.Combine(outputPath, newname));
-                }
             }
             if (delete)
-            {
                 File.Delete(inputPath);
-            }
         }
 
         private static string RemoveHeader(string filePath)
@@ -2511,6 +2495,7 @@ namespace UWUVCI_AIO_WPF
             string string1 = BitConverter.ToString(header, 8, 3);
             string string2 = Encoding.ASCII.GetString(header, 0, 11);
             string string3 = BitConverter.ToString(header, 30, 16);
+
             if (string1 != "AA-BB-04" && string2 != "GAME DOCTOR" && string3 != "00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00")
                 return filePath;
 
@@ -2547,6 +2532,5 @@ namespace UWUVCI_AIO_WPF
                 foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
                     DirectoryCopy(subdir.FullName,  Path.Combine(destDirName, subdir.Name), copySubDirs);
         }
-        
     }
 }
