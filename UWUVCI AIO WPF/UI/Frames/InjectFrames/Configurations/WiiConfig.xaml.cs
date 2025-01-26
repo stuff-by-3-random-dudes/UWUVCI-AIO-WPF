@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -31,7 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 case 0:
                     icoIMG.Visibility = Visibility.Hidden;
                     mvm.GameConfiguration.TGAIco = new PNGTGA();
-                    ic.Text = null; 
+                    ic.Text = null;
                     break;
                 case 1:
                     tvIMG.Visibility = Visibility.Hidden;
@@ -50,6 +51,24 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     break;
             }
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            // Cast sender to a CheckBox
+            var checkBox = sender as CheckBox;
+
+            // Uncheck other checkboxes if this one is checked
+            if (checkBox.IsChecked == true)
+            {
+                if (checkBox != deflickerCheckBox)
+                    deflickerCheckBox.IsChecked = false;
+                if (checkBox != ditheringCheckBox)
+                    ditheringCheckBox.IsChecked = false;
+                if (checkBox != vFilterCheckBox)
+                    vFilterCheckBox.IsChecked = false;
+            }
+        }
+
         public void imgpath(string icon, string tv)
         {
             ic.Text = icon;
@@ -115,38 +134,30 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             ancastKey.Text = "";
             ancastKey.IsEnabled = false;
             if (!CheckIfNull(path))
-
             {
                 int TitleIDInt = 0;
                 bool isok = false;
                 if (path.ToLower().Contains(".gcz") || path.ToLower().Contains(".dol") || path.ToLower().Contains(".wad"))
-                {
                     isok = true;
-                }
                 else
                 {
-                    using (var reader = new BinaryReader(File.OpenRead(path)))
+                    using var reader = new BinaryReader(File.OpenRead(path));
+                    reader.BaseStream.Position = 0x00;
+                    TitleIDInt = reader.ReadInt32();
+                    if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
+                    { isok = true; }
+                    else if (TitleIDInt != 65536)
                     {
-                        reader.BaseStream.Position = 0x00;
-                        TitleIDInt = reader.ReadInt32();
-                        if (TitleIDInt == 1397113431) //Performs actions if the header indicates a WBFS file
-                        { isok = true; }
-                        else if (TitleIDInt != 65536)
-                        {
-                            long GameType = 0;
-                            reader.BaseStream.Position = 0x18;
-                            GameType = reader.ReadInt64();
-                            if (GameType == 2745048157)
-                            {
-                                isok = true;
-                            }
+                        long GameType = 0;
+                        reader.BaseStream.Position = 0x18;
+                        GameType = reader.ReadInt64();
+                        if (GameType == 2745048157)
+                            isok = true;
 
-                        }
-                        reader.Close();
                     }
+                    reader.Close();
                 }
-                
-                
+
                 if (isok)
                 {
                     motepass.IsEnabled = false;
@@ -172,28 +183,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     gamepad.ItemsSource = gpEmu;
                     mvm.RomPath = path;
                     mvm.RomSet = true;
+
                     if (mvm.BaseDownloaded)
-                    {
                         mvm.CanInject = true;
 
-                    }
                     if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol") && !path.ToLower().Contains(".wad"))
                     {
                         string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
-                        if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
-                        {
+
+                        if (string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGAIco.ImgPath))
                             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
-                        }
-                        if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
-                        {
+
+                        if (string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv.ImgPath))
                             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
-                        }
+
                         if (path.ToLower().Contains("iso"))
                         {
-
                             trimn.IsEnabled = true;
                             mvm.IsIsoNkit();
                         }
@@ -218,7 +226,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.donttrim = false;
                         gamepad.IsEnabled = false;
                         LR.IsEnabled = false;
-                    }else if (path.ToLower().Contains(".wad"))
+                    }
+                    else if (path.ToLower().Contains(".wad"))
                     {
                         mvm.NKITFLAG = false;
                         trimn.IsEnabled = false;
@@ -232,7 +241,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         RF_tp.IsEnabled = false;
                         jppatch.IsEnabled = false;
                         mvm.donttrim = false;
-                       
+
                     }
                     else
                     {
@@ -241,8 +250,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         trimn.IsEnabled = true;
                     }
-                       
-                   
                 }
                 else
                 {
@@ -286,48 +293,29 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void InjectGame(object sender, RoutedEventArgs e)
         {
             if (File.Exists(tv.Text))
-            {
                 mvm.GameConfiguration.TGATv.ImgPath = tv.Text;
-            }
             else if (!tv.Text.Equals("Added via Config") && !tv.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGATv.ImgPath = null;
-            }
+
             if (File.Exists(ic.Text))
-            {
                 mvm.GameConfiguration.TGAIco.ImgPath = ic.Text;
-            }
             else if (!ic.Text.Equals("Added via Config") && !ic.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGAIco.ImgPath = null;
 
-            }
             if (File.Exists(log.Text))
-            {
                 mvm.GameConfiguration.TGALog.ImgPath = log.Text;
-            }
             else if (!log.Text.Equals("Added via Config") && !log.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGALog.ImgPath = null;
-            }
+
             if (File.Exists(drc.Text))
-            {
                 mvm.GameConfiguration.TGADrc.ImgPath = drc.Text;
-            }
             else if (!drc.Text.Equals("Added via Config") && !drc.Text.Equals("Downloaded from Cucholix Repo"))
-            {
                 mvm.GameConfiguration.TGADrc.ImgPath = null;
-            }
+
             mvm.Index = gamepad.SelectedIndex;
-            if (LR.IsChecked == true)
-            {
-                mvm.LR = true;
-            }
-            else
-            {
-                mvm.LR = false;
-            }
+            mvm.LR = (bool)LR.IsChecked;
             mvm.GameConfiguration.GameName = gn.Text;
+            mvm.GctPath = gctPath.Text;
 
             if (!string.IsNullOrEmpty(ancastKey.Text))
             {
@@ -348,7 +336,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                 if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
-                    Settings.Default.Ancast = ancastKey.Text;
+                    JsonSettingsManager.Settings.Ancast = ancastKey.Text;
                     string[] ancastKeyCopy = { ancastKey.Text };
 
                     Task.Run(() =>
@@ -365,14 +353,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         foreach (var titleId in titleIds)
                         {
-
-                            Task.Run(() => new Downloader(null,null).DownloadAsync(titleId, downloadPath)).GetAwaiter().GetResult();
+                            new Downloader(null, null).DownloadAsync(titleId, downloadPath).GetAwaiter().GetResult();
                             mvm.Progress += 5;
                         }
 
                         foreach (var titleId in titleIds)
                         {
-                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { Settings.Default.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
+                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
                             mvm.Progress += 5;
                         }
 
@@ -397,7 +384,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
                         mvm.Progress = 100;
-                    }).GetAwaiter();
+                    }).GetAwaiter().GetResult();
                 }
                 else
                 {
@@ -541,132 +528,84 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             mvm.RomSet = false;
             mvm.gc2rom = "";
             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
+
             if (tv.Text.Length > 0)
-            {
                 tvIMG.Visibility = Visibility.Visible;
-            }
+
             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
             if (ic.Text.Length > 0)
-            {
                 icoIMG.Visibility = Visibility.Visible;
-            }
+
             drc.Text = mvm.GameConfiguration.TGADrc.ImgPath;
             if (drc.Text.Length > 0)
-            {
                 drcIMG.Visibility = Visibility.Visible;
-            }
+
             log.Text = mvm.GameConfiguration.TGALog.ImgPath;
             if (log.Text.Length > 0)
-            {
                 logIMG.Visibility = Visibility.Visible;
-            }
+
             gn.Text = mvm.GameConfiguration.GameName;
             mvm.Index = mvm.GameConfiguration.Index;
             gamepad.SelectedIndex = mvm.GameConfiguration.Index;
             if (mvm.GameConfiguration.extension != "" && mvm.GameConfiguration.bootsound != null)
             {
                 if (!Directory.Exists(@"bin\cfgBoot"))
-                {
                     Directory.CreateDirectory(@"bin\cfgBoot");
-                }
+
                 if (File.Exists($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}"))
-                {
                     File.Delete($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}");
-                }
+
                 File.WriteAllBytes($@"bin\cfgBoot\bootSound.{mvm.GameConfiguration.extension}", mvm.GameConfiguration.bootsound);
                 sound.Text = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "cfgBoot", $"bootSound.{mvm.GameConfiguration.extension}");
                 mvm.BootSound = sound.Text;
                 sound_TextChanged(null, null);
             }
+
             LR.IsChecked = mvm.LR;
-            if (mvm.GameConfiguration.donttrim)
-            {
-                trimn.IsChecked = true;
-            }
-            else
-            {
-                trimn.IsChecked = false;
-            }
+            trimn.IsChecked = mvm.GameConfiguration.donttrim;
             jppatch.IsChecked = mvm.jppatch;
             motepass.IsChecked = mvm.passtrough;
-            if (mvm.Patch)
-            {
-                if (mvm.toPal)
-                {
-                    vmcsmoll.IsChecked = false;
-                    pal.IsChecked = false;
-                    ntsc.IsChecked = true;
-                }
-                else
-                {
-                    vmcsmoll.IsChecked = false;
-                    ntsc.IsChecked = false;
-                    pal.IsChecked = true;
-                }
-            }
-            else
-            {
-                vmcsmoll.IsChecked = true;
-                pal.IsChecked = false;
-                ntsc.IsChecked = false;
-            }
 
+            // First block refactored
+            vmcsmoll.IsChecked = !mvm.Patch;
+            pal.IsChecked = mvm.Patch && !mvm.toPal;
+            ntsc.IsChecked = mvm.Patch && mvm.toPal;
+
+            // Second block refactored
             if (mvm.regionfrii)
             {
-                if (mvm.regionfriijp)
-                {
-                    RF_n.IsChecked = false;
-                    RF_tj.IsChecked = true;
-                    RF_tn.IsChecked = false;
-                    RF_tp.IsChecked = false;
-                }
-                else if (mvm.regionfriius)
-                {
-                    RF_n.IsChecked = false;
-                    RF_tj.IsChecked = false;
-                    RF_tn.IsChecked = true;
-                    RF_tp.IsChecked = false;
-                }
-                else
-                {
-                    RF_n.IsChecked = false;
-                    RF_tj.IsChecked = false;
-                    RF_tn.IsChecked = false;
-                    RF_tp.IsChecked =true;
-                }
+                RF_n.IsChecked = false;
+
+                // Set the appropriate region-frii option
+                RF_tj.IsChecked = mvm.regionfriijp;
+                RF_tn.IsChecked = mvm.regionfriius;
+                RF_tp.IsChecked = !mvm.regionfriijp && !mvm.regionfriius;
             }
             else
             {
+                // Reset to default when regionfrii is false
                 RF_n.IsChecked = true;
                 RF_tj.IsChecked = false;
                 RF_tn.IsChecked = false;
                 RF_tp.IsChecked = false;
             }
+
         }
         private bool CheckIfNull(string s)
         {
-            if (s == null || s.Equals(string.Empty))
-            {
-                return true;
-            }
-            return false;
+            return string.IsNullOrEmpty(s);
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
         {
-
             /*Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-       string backup = string.Copy(gn.Text);
-       gn.Text = reg.Replace(gn.Text, string.Empty);
-       gn.CaretIndex = gn.Text.Length;
-       if (gn.Text != backup)
-       {
-           gn.ScrollToHorizontalOffset(double.MaxValue);
-       }*/
-
-
-
-
+           string backup = string.Copy(gn.Text);
+           gn.Text = reg.Replace(gn.Text, string.Empty);
+           gn.CaretIndex = gn.Text.Length;
+           if (gn.Text != backup)
+           {
+               gn.ScrollToHorizontalOffset(double.MaxValue);
+           }*/
         }
 
         private void gn_KeyUp_1(object sender, KeyEventArgs e)
@@ -677,10 +616,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void gamepad_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             mvm.Index = gamepad.SelectedIndex;
+
             if (gamepad.SelectedIndex == 1 || gamepad.SelectedIndex == 4)
-            {
                 LR.IsEnabled = true;
-            }
             else
             {
                 LR.IsChecked = false;
@@ -712,8 +650,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             gn.Text = "";
             ic.Text = "";
             log.Text = "";
-
-
         }
         private void icoIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -745,7 +681,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void drcIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            TDRSHOW t = new TDRSHOW(drc.Text,true);
+            TDRSHOW t = new TDRSHOW(drc.Text, true);
             try
             {
                 t.Owner = mvm.mw;
@@ -755,7 +691,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
             t.ShowDialog();
-
         }
 
         private void logIMG_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -774,59 +709,28 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void ic_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (ic.Text.Length > 0)
-            {
-                icoIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                icoIMG.Visibility = Visibility.Hidden;
-            }
+            icoIMG.Visibility = ic.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void drc_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (drc.Text.Length > 0)
-            {
-                drcIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-
-                drcIMG.Visibility = Visibility.Hidden;
-            }
+            drcIMG.Visibility = drc.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void tv_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (tv.Text.Length > 0)
-            {
-                tvIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                tvIMG.Visibility = Visibility.Hidden;
-            }
+            tvIMG.Visibility = tv.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void log_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (log.Text.Length > 0)
-            {
-                logIMG.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                logIMG.Visibility = Visibility.Hidden;
-            }
+            logIMG.Visibility = log.Text.Length > 0 ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void gn_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.Up) || Keyboard.IsKeyDown(Key.Down) || Keyboard.IsKeyDown(Key.Left) || Keyboard.IsKeyDown(Key.Right))
-            {
                 dont = false;
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -837,9 +741,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 if (new FileInfo(path).Extension.Contains("wav"))
                 {
                     if (mvm.ConfirmRiffWave(path))
-                    {
                         mvm.BootSound = path;
-                    }
                     else
                     {
                         Custom_Message cm = new Custom_Message("Incompatible WAV file", "Your WAV file needs to be a RIFF WAVE file which is 16 bit stereo and also 48000khz");
@@ -855,25 +757,19 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                 }
                 else
-                {
-
                     mvm.BootSound = path;
-                }
             }
             else
-            {
                 if (path == "")
-                {
-                    mvm.BootSound = null;
-                    sound.Text = "";
-                   
-                }
+            {
+                mvm.BootSound = null;
+                sound.Text = "";
             }
         }
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-           
+
         }
 
         private void SoundImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -886,26 +782,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             try
             {
                 if (File.Exists(mvm.BootSound))
-                {
-                    if (!new FileInfo(mvm.BootSound).Extension.Contains("btsnd"))
-                    {
-                        SoundImg.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        SoundImg.Visibility = Visibility.Hidden;
-                    }
-                }
+                    SoundImg.Visibility = !new FileInfo(mvm.BootSound).Extension.Contains("btsnd") ? Visibility.Visible : Visibility.Hidden;
             }
             catch (Exception)
             {
 
             }
-            
-            
         }
-
-        
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -951,13 +834,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.donttrim = true;
                 mvm.jppatch = false;
                 int last = gamepad.SelectedIndex;
-                List<string> gpEmu = new List<string>();
-                gpEmu.Add("Do not use. WiiMotes only");
-                gpEmu.Add("Classic Controller");
-                gpEmu.Add("Horizontal WiiMote");
-                gpEmu.Add("Vertical WiiMote");
-                gpEmu.Add("[NEEDS TRIMMING] Force Classic Controller");
-                gpEmu.Add("Force No Classic Controller");
+
+                List<string> gpEmu = new List<string>
+                {
+                    "Do not use. WiiMotes only",
+                    "Classic Controller",
+                    "Horizontal WiiMote",
+                    "Vertical WiiMote",
+                    "[NEEDS TRIMMING] Force Classic Controller",
+                    "Force No Classic Controller"
+                };
+
                 gamepad.ItemsSource = gpEmu;
                 gamepad.SelectedIndex = last;
                 jppatch.IsEnabled = false;
@@ -970,30 +857,27 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ntsc.IsEnabled = true;
                 mvm.donttrim = false;
                 jppatch.IsEnabled = true;
-                List<string> gpEmu = new List<string>();
-                gpEmu.Add("Do not use. WiiMotes only");
-                gpEmu.Add("Classic Controller");
-                gpEmu.Add("Horizontal WiiMote");
-                gpEmu.Add("Vertical WiiMote");
-                gpEmu.Add("Force Classic Controller");
-                gpEmu.Add("Force No Classic Controller");
+
+                List<string> gpEmu = new List<string>
+                {
+                    "Do not use. WiiMotes only",
+                    "Classic Controller",
+                    "Horizontal WiiMote",
+                    "Vertical WiiMote",
+                    "Force Classic Controller",
+                    "Force No Classic Controller"
+                };
+
                 gamepad.ItemsSource = gpEmu;
                 gamepad.ItemsSource = gpEmu;
                 gamepad.SelectedIndex = last;
             }
-            
+
         }
 
         private void jppatch_Click(object sender, RoutedEventArgs e)
         {
-            if (mvm.jppatch)
-            {
-                mvm.jppatch = false;
-            }
-            else
-            {
-                mvm.jppatch = true;
-            }
+            mvm.jppatch = !mvm.jppatch;
         }
 
         private void selectionDB_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1070,6 +954,59 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         private void ancast_OTP(object sender, RoutedEventArgs e)
         {
             ancastKey.Text = ReadAncastFromOtp();
+        }
+
+        private void SelectGctFile(object sender, RoutedEventArgs e)
+        {
+            // Get the new selected GCT files as a single string
+            var newFiles = GetGCTFilePaths();
+            if (string.IsNullOrEmpty(newFiles))
+                return;
+
+            // Split newFiles by new lines into a list of file paths
+            var newFileList = newFiles.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Use a HashSet to store unique file paths (it avoids duplicates automatically)
+            var uniqueFiles = new HashSet<string>(gctPath.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+
+            // Add the new files to the HashSet
+            foreach (var file in newFileList)
+                uniqueFiles.Add(file); // HashSet ensures no duplicates are added
+
+            // Update the TextBox with the combined list of files, separated by new lines
+            gctPath.Text = string.Join(Environment.NewLine, uniqueFiles);
+        }
+
+        private string GetGCTFilePaths()
+        {
+            using var dialog = new System.Windows.Forms.OpenFileDialog();
+            dialog.Multiselect = true;
+            dialog.Filter = "GCT or TXT Files (*.gct, *.txt)|*.gct;*.txt";
+
+            System.Windows.Forms.DialogResult res = dialog.ShowDialog();
+            if (res == System.Windows.Forms.DialogResult.OK)
+            {
+                var validFilePaths = new List<string>();
+
+                foreach (string filePath in dialog.FileNames)
+                {
+                    // If it's a GCT file, accept it without validation
+                    if (System.IO.Path.GetExtension(filePath).Equals(".gct", StringComparison.OrdinalIgnoreCase))
+                        validFilePaths.Add(filePath);
+
+                    // If it's a TXT file, validate the format
+                    else if (System.IO.Path.GetExtension(filePath).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        GctCode.ParseOcarinaOrDolphinTxtFile(filePath); // Try to parse; throws exception if invalid
+                        validFilePaths.Add(filePath);
+                    }
+                }
+
+                return string.Join(Environment.NewLine, validFilePaths);
+            }
+
+            // Return an empty string if the dialog was canceled
+            return string.Empty;
         }
     }
 }

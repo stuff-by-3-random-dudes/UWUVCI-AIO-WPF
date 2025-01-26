@@ -1,5 +1,6 @@
 ﻿using GameBaseClassLibrary;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,6 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 ndsLayout.Visibility = Visibility.Visible;
             }
         }
+
         public void clearImages(int i)
         {
 

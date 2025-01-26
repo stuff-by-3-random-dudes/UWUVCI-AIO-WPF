@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
+using UWUVCI_AIO_WPF.Helpers;
 
 public static class DeflickerDitheringRemover
 {
@@ -69,10 +70,16 @@ public static class DeflickerDitheringRemover
     public static void ProcessFile(string inputFilePath, string outputFilePath, bool applyDeflicker, bool applyDithering, bool applyVFilter)
     {
         if (string.IsNullOrEmpty(inputFilePath))
+        {
+            Logger.Log($"Invalid input file path: {nameof(inputFilePath)}");
             throw new ArgumentException("Invalid input file path", nameof(inputFilePath));
+        }
 
         if (string.IsNullOrEmpty(outputFilePath))
+        {
+            Logger.Log($"Invalid input file path: {nameof(outputFilePath)}");
             throw new ArgumentException("Invalid output file path", nameof(outputFilePath));
+        }
 
         byte[] fileBuffer = File.ReadAllBytes(inputFilePath);
 
@@ -105,7 +112,6 @@ public static class DeflickerDitheringRemover
             }
     }
 
-
     private static void ApplyDitheringPatch(byte[] buffer)
     {
         for (int i = 8; i <= buffer.Length - DitheringPattern.Length; i++)
@@ -135,7 +141,7 @@ public static class DeflickerDitheringRemover
                 return false;
         return true;
     }
-
+    // This is dev code to quickly check to see how the applying went.
     public static bool AreFilesDifferent(string filePath1, string filePath2)
     {
         byte[] file1 = File.ReadAllBytes(filePath1);

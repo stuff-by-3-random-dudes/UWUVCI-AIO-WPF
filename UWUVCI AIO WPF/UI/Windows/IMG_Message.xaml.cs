@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using System.Drawing;
 using Image = System.Windows.Controls.Image;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -32,11 +33,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if (this.Owner != null)
+                if (Owner != null)
                 {
-                    if (this.Owner?.GetType() != typeof(MainWindow))
+                    if (Owner?.GetType() != typeof(MainWindow))
                     {
-                        this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                        WindowStartupLocation = WindowStartupLocation.CenterScreen;
                     }
 
                 }
@@ -45,7 +46,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
 
             InitializeComponent();
@@ -162,6 +163,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 case ImageFormat.R5g6b5:
                     return PixelFormats.Bgr565;
                 default:
+                    Logger.Log($"Unable to convert {image.Format} to WPF PixelFormat");
                     throw new Exception($"Unable to convert {image.Format} to WPF PixelFormat");
             }
         }
@@ -203,12 +205,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Canc_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
 
         }
 
@@ -294,7 +296,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                  checkForAdditionalFiles(mvm.GameConfiguration.Console);
              }*/
 
-            this.Close();
+            Close();
         }
         private void checkForAdditionalFiles(GameConsoles console)
         {

@@ -72,6 +72,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            tbKey.Text = tbKey.Text.Trim();
             if(tbKey.Text.Length > 32 || tbKey.Text.Length < 32)
             {
                 if(tbKey.Text.Length > 32)

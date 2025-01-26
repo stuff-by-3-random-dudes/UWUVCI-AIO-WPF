@@ -70,6 +70,9 @@
     <Reference Include="AutoUpdater.NET, Version=1.6.3.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Autoupdater.NET.Official.1.6.3\lib\net45\AutoUpdater.NET.dll</HintPath>
     </Reference>
+    <Reference Include="CNUSPACKER, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CNUSPACKER.1.0.4\lib\netstandard2.0\CNUSPACKER.dll</HintPath>
+    </Reference>
     <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
@@ -203,14 +206,28 @@
     <Compile Include="AssemblyInfo1.cs" />
     <Compile Include="Classes\BootImage.cs" />
     <Compile Include="Classes\DeflickerDitheringRemover.cs" />
+    <Compile Include="Classes\Dol.cs" />
+    <Compile Include="Classes\GameCubeISO.cs" />
+    <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
+    <Compile Include="Helpers\FileUtils.cs" />
+    <Compile Include="Helpers\JsonSettingsManager.cs" />
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
     <Compile Include="Classes\MenuIconImage.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Helpers\MacLinuxHelper.cs" />
+    <Compile Include="Models\DolSection.cs" />
+    <Compile Include="Models\GctCode.cs" />
+    <Compile Include="Models\JsonAppSettings.cs" />
+    <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\PixelArtScalerValidationRule.cs" />
+    <Compile Include="UI\Frames\InjectFrames\Configurations\BrightnessValidationRule.cs" />
+    <Compile Include="UI\Frames\InjectFrames\Configurations\InverseBootConverter.cs" />
     <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren %282%29.xaml.cs">
       <DependentUpon>OtherConfigs - Kopieren - Kopieren %282%29.xaml</DependentUpon>
     </Compile>
@@ -229,6 +246,12 @@
     <Compile Include="UI\Frames\Path\Paths.xaml.cs">
       <DependentUpon>Paths.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Windows\CloseWindow.xaml.cs">
+      <DependentUpon>CloseWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\MacLinuxWindow.xaml.cs">
+      <DependentUpon>MacLinuxWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Windows\Custom Message - Kopieren.xaml.cs">
       <DependentUpon>Custom Message - Kopieren.xaml</DependentUpon>
     </Compile>
@@ -243,6 +266,9 @@
     </Compile>
     <Compile Include="UI\Windows\EnterKey.xaml.cs">
       <DependentUpon>EnterKey.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\BaseGameWindow.xaml.cs">
+      <DependentUpon>BaseGameWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml.cs">
       <DependentUpon>ImageCreator - Kopieren - Kopieren %282%29.xaml</DependentUpon>
@@ -267,6 +293,12 @@
     </Compile>
     <Compile Include="UI\Windows\IMG_Message.xaml.cs">
       <DependentUpon>IMG_Message.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\GuideWindow.xaml.cs">
+      <DependentUpon>GuideWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\IntroductionWindow.xaml.cs">
+      <DependentUpon>IntroductionWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\TitleKeys - Kopieren.xaml.cs">
       <DependentUpon>TitleKeys - Kopieren.xaml</DependentUpon>
@@ -334,6 +366,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Windows\CloseWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Windows\MacLinuxWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\Windows\Custom Message - Kopieren.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -353,6 +393,10 @@
     <Page Include="UI\Windows\EnterKey.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\BaseGameWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -383,6 +427,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\IMG_Message.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\GuideWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Windows\IntroductionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

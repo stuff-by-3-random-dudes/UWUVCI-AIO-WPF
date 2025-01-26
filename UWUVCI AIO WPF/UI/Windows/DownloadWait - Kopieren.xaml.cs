@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -360,6 +361,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             if (!dir.Exists)
             {
+                Logger.Log($"Source directory does not exist or could not be found: {sourceDirName}");
                 throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
             }
 

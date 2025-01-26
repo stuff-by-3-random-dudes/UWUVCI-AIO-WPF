@@ -13,11 +13,9 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Models;
-using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
-using AutoUpdaterDotNET;
 using System.Threading;
 using System.Windows.Threading;
 using System.Diagnostics;
@@ -27,6 +25,7 @@ using NAudio.Wave;
 using System.Timers;
 using NAudio.Utils;
 using System.Security.Cryptography;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -223,8 +222,6 @@ namespace UWUVCI_AIO_WPF
 
         private List<GameBases> lSNES = new List<GameBases>();
 
-
-
         public List<GameBases> LSNES
         {
             get { return lSNES; }
@@ -279,56 +276,31 @@ namespace UWUVCI_AIO_WPF
         public void RemoveCreatedIMG()
         {
             if (Directory.Exists(@"bin\createdIMG"))
-            {
                 Directory.Delete(@"bin\createdIMG", true);
-            }
         }
 
         private List<GameBases> lWii = new List<GameBases>();
 
         public void IsIsoNkit()
         {
-            using (var fs = new FileStream(RomPath,
-                                FileMode.Open,
-                                FileAccess.Read))
-            {
-                byte[] procode = new byte[4];
-                fs.Seek(0x200, SeekOrigin.Begin);
-                fs.Read(procode, 0, 4);
-                var s = ByteArrayToString(procode);
+            using var fs = new FileStream(RomPath, FileMode.Open, FileAccess.Read);
+            byte[] procode = new byte[4];
+            fs.Seek(0x200, SeekOrigin.Begin);
+            fs.Read(procode, 0, 4);
+            var s = ByteArrayToString(procode);
 
-                fs.Close();
-                if (s.ToLower().Contains("nkit"))
-                {
-                    NKITFLAG = true;
-
-                }
-                else
-                {
-                    NKITFLAG = false;
-                }
-            }
+            fs.Close();
+            NKITFLAG = s.ToLower().Contains("nkit");
         }
 
         public bool CheckTime(DateTime creationTime)
         {
             DateTime curr = DateTime.Now;
-            if (creationTime.Hour == curr.Hour || creationTime.Hour == curr.Hour - 1)
-            {
-                if (creationTime.Minute == curr.Minute || creationTime.Minute == curr.Minute - 2)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+
+            // Calculate the time difference and return true if within 62 minutes, false otherwise
+            return (curr - creationTime).TotalMinutes >= 0 && (curr - creationTime).TotalMinutes <= 62;
         }
+
 
         public List<GameBases> LWII
         {
@@ -457,7 +429,6 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-
         public int Index = -1;
         public bool LR = false;
         public bool GC = false;
@@ -465,9 +436,20 @@ namespace UWUVCI_AIO_WPF
         public string doing = "";
         public bool Patch = false;
         public bool toPal = false;
+        public string GctPath = "";
         private string Msg;
 
         private string Gc2rom = "";
+
+        public string gctPath
+        {
+            get { return GctPath; }
+            set
+            {
+                GctPath = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string gc2rom
         {
@@ -533,7 +515,7 @@ namespace UWUVCI_AIO_WPF
                 if (button)
                 {
                     var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
-                    var releases = Task.Run(() => client.Repository.Release.GetAll("ZestyTS", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
+                    var releases = Task.Run(() => client.Repository.Release.GetAll("stuff-by-3-random-dudes", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
                     int comparison;
                     try
                     {
@@ -556,7 +538,7 @@ namespace UWUVCI_AIO_WPF
                     //You idiot, when tf did you flip this back?
                     if (comparison < 0)
                     {
-                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/ZestyTS/UWUVCI-AIO-WPF/releases/latest");
+                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest");
                         try
                         {
                             cm.Owner = mw;
@@ -576,12 +558,10 @@ namespace UWUVCI_AIO_WPF
                     }
                 }
             }
-
         }
 
         private int GetNewVersion()
         {
-
             try
             {
                 WebRequest request;
@@ -589,17 +569,14 @@ namespace UWUVCI_AIO_WPF
 
                 request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
 
-
                 var response = request.GetResponse();
-                using (Stream dataStream = response.GetResponseStream())
-                {
-                    // Open the stream using a StreamReader for easy access.  
-                    StreamReader reader = new StreamReader(dataStream);
-                    // Read the content.  
-                    string responseFromServer = reader.ReadToEnd();
-                    // Display the content.  
-                    return Convert.ToInt32(responseFromServer);
-                }
+                using Stream dataStream = response.GetResponseStream();
+                // Open the stream using a StreamReader for easy access.  
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.  
+                string responseFromServer = reader.ReadToEnd();
+                // Display the content.  
+                return Convert.ToInt32(responseFromServer);
 
             }
             catch (Exception)
@@ -610,26 +587,17 @@ namespace UWUVCI_AIO_WPF
 
         public bool ConfirmRiffWave(string path)
         {
-            using (var reader = new BinaryReader(File.OpenRead(path)))
-            {
-                reader.BaseStream.Position = 0x00;
-                long WAVHeader1 = reader.ReadInt32();
-                reader.BaseStream.Position = 0x08;
-                long WAVHeader2 = reader.ReadInt32();
-                if (WAVHeader1 == 1179011410 & WAVHeader2 == 1163280727)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            using var reader = new BinaryReader(File.OpenRead(path));
+            reader.BaseStream.Position = 0x00;
+            long WAVHeader1 = reader.ReadInt32();
+            reader.BaseStream.Position = 0x08;
+            long WAVHeader2 = reader.ReadInt32();
+
+            return WAVHeader1 == 1179011410 & WAVHeader2 == 1163280727;
         }
 
         public void OpenDialog(string title, string msg)
         {
-
             Custom_Message cm = new Custom_Message(title, msg);
             try
             {
@@ -643,34 +611,17 @@ namespace UWUVCI_AIO_WPF
             if (!Environment.Is64BitOperatingSystem)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
-                Tools.Remove("CNUSPACKER.exe");
                 Tools.Add("NUSPacker.jar");
                 ToolCheck.ToolNames = Tools.ToArray();
             }
 
+            // Clean up unnecessary folders
+            CleanUpFolders();
 
-            //if (Directory.Exists(@"Tools")) Directory.Delete(@"Tools", true);
-            if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
-            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+            // Ensure settings paths are initialized properly
+            InitializePaths();
 
-            if (Directory.Exists(@"keys"))
-            {
-                if (Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
-                Injection.DirectoryCopy("keys", "bin/keys", true);
-                Directory.Delete("keys", true);
-            }
-            if (!Directory.Exists("InjectedGames")) Directory.CreateDirectory("InjectedGames");
-            if (!Directory.Exists("SourceFiles")) Directory.CreateDirectory("SourceFiles");
-            if (!Directory.Exists("bin\\BaseGames")) Directory.CreateDirectory("bin\\BaseGames");
-            if (Settings.Default.OutPath == "" || Settings.Default.OutPath == null)
-            {
-                Settings.Default.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
-            }
-            if (Settings.Default.BasePath == "" || Settings.Default.BasePath == null)
-            {
-                Settings.Default.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
-            }
-            Settings.Default.Save();
+            JsonSettingsManager.SaveSettings();
             ArePathsSet();
 
             Update(false);
@@ -679,7 +630,7 @@ namespace UWUVCI_AIO_WPF
             BaseCheck();
 
             GameConfiguration = new GameConfig();
-            if (!ValidatePathsStillExist() && Settings.Default.SetBaseOnce && Settings.Default.SetOutOnce)
+            if (!ValidatePathsStillExist() && JsonSettingsManager.Settings.SetBaseOnce && JsonSettingsManager.Settings.SetOutOnce)
             {
                 Custom_Message cm = new Custom_Message("Issue", " One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
                 try
@@ -696,10 +647,41 @@ namespace UWUVCI_AIO_WPF
 
             GetAllBases();
         }
+
+        private void CleanUpFolders()
+        {
+            if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
+            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+
+            if (Directory.Exists(@"keys"))
+            {
+                if (Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
+                Injection.DirectoryCopy("keys", "bin/keys", true);
+                Directory.Delete("keys", true);
+            }
+
+            if (!Directory.Exists("InjectedGames"))
+                Directory.CreateDirectory("InjectedGames");
+
+            if (!Directory.Exists("SourceFiles"))
+                Directory.CreateDirectory("SourceFiles");
+
+            if (!Directory.Exists("bin\\BaseGames"))
+                Directory.CreateDirectory("bin\\BaseGames");
+        }
+
+        private void InitializePaths()
+        {
+            if (string.IsNullOrEmpty(JsonSettingsManager.Settings.OutPath))
+                JsonSettingsManager.Settings.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+
+            if (string.IsNullOrEmpty(JsonSettingsManager.Settings.BasePath))
+                JsonSettingsManager.Settings.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+        }
+
+
         public string turbocd()
         {
-
-
             string ret = string.Empty;
             Custom_Message cm = new Custom_Message("Information", " Please put a TurboGrafX CD ROM into a folder and select said folder. \n\n The Folder should at least contain: \n EXACTLY ONE *.hcd file \n One or more *.ogg files \n One or More *.bin files \n\n Not doing so will result in a faulty Inject. You have been warned! ");
             try
@@ -744,9 +726,7 @@ namespace UWUVCI_AIO_WPF
                             {
                                 //WUP
                                 if (Directory.GetFiles(dialog.FileName, "*.hcd").Length == 1 && Directory.GetFiles(dialog.FileName, "*.ogg").Length > 0 && Directory.GetFiles(dialog.FileName, "*.bin").Length > 0)
-                                {
                                     ret = dialog.FileName;
-                                }
                                 else
                                 {
                                     cm = new Custom_Message("Issue", " This Folder does not contain needed minimum of Files ");
@@ -770,16 +750,12 @@ namespace UWUVCI_AIO_WPF
 
             }
 
-
-
-
-
             return ret;
         }
         public GameConfig saveconf = null;
         public void resetCBASE()
         {
-            if (cb != null) cb.Reset();
+            cb?.Reset();
         }
         public void removeCBASE()
         {
@@ -1102,7 +1078,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 gc2rom = "";
 
-                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", Settings.Default.OutPath); try
+                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", JsonSettingsManager.Settings.OutPath); try
                 {
                     cm.Owner = mw;
                 }
@@ -1558,29 +1534,29 @@ namespace UWUVCI_AIO_WPF
         {
             if (key.GetHashCode() == -589797700 || GetDeterministicHashCode(key) == -589797700)
             {
-                Settings.Default.SysKey = key;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.SysKey = key;
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
             return false;
         }
         public bool SysKey1set()
         {
-            return checkSysKey1(Settings.Default.SysKey1);
+            return checkSysKey1(JsonSettingsManager.Settings.SysKey1);
         }
         public bool checkSysKey1(string key)
         {
             if (key.GetHashCode() == -1230232583 || (GetDeterministicHashCode(key) == -1230232583))
             {
-                Settings.Default.SysKey1 = key;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.SysKey1 = key;
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
             return false;
         }
         public bool SysKeyset()
         {
-            return checkSysKey(Settings.Default.SysKey);
+            return checkSysKey(JsonSettingsManager.Settings.SysKey);
         }
         public bool GetConsoleOfConfig(string configPath, GameConsoles console)
         {
@@ -1663,7 +1639,7 @@ namespace UWUVCI_AIO_WPF
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        if (!Settings.Default.ndsw)
+                        if (!JsonSettingsManager.Settings.ndsw)
                         {
                             cm.ShowDialog();
                         }
@@ -1677,7 +1653,7 @@ namespace UWUVCI_AIO_WPF
                             cm.Owner = mw;
                         }
                         catch (Exception) { }
-                        if (!Settings.Default.snesw)
+                        if (!JsonSettingsManager.Settings.snesw)
                         {
                             cm.ShowDialog();
                         }
@@ -1725,14 +1701,10 @@ namespace UWUVCI_AIO_WPF
                                 break;
                             case GameConsoles.WII:
                                 if (test == GameConsoles.GCN)
-                                {
                                     dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
-                                }
                                 else
-                                {
                                     dialog.Filter = "All Supported Types (*.*) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso; *.dol; *.wad|Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
                                     // dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
-                                }
 
                                 break;
                             case GameConsoles.GCN:
@@ -1741,21 +1713,14 @@ namespace UWUVCI_AIO_WPF
                         }
                     }
 
-
                 }
                 else if (!INI)
-                {
-
                     dialog.Filter = "Images (*.png; *.jpg; *.bmp; *.tga; *jpeg) | *.png;*.jpg;*.bmp;*.tga;*jpeg";
-                }
                 else if (INI)
-                {
                     dialog.Filter = "N64 VC Configuration (*.ini) | *.ini";
-                }
+
                 if (Directory.Exists("SourceFiles"))
-                {
                     dialog.InitialDirectory = "SourceFiles";
-                }
 
                 DialogResult res = dialog.ShowDialog();
                 if (res == DialogResult.OK)
@@ -1771,20 +1736,14 @@ namespace UWUVCI_AIO_WPF
                         {
 
                         }
-                        if (!Settings.Default.gczw)
-                        {
+                        if (!JsonSettingsManager.Settings.gczw)
                             cm1.ShowDialog();
-                        }
                     }
                     ret = dialog.FileName;
                 }
                 else
-                {
-                    if (dialog.Filter.Contains("BootImages") || dialog.Filter.Contains("BootSound"))
-                    {
+                    if (dialog.Filter.Contains("BootImages") || dialog.Filter.Contains("BootSound") || dialog.Filter.Contains("GCT"))
                         ret = "";
-                    }
-                }
             }
             return ret;
         }
@@ -1797,7 +1756,13 @@ namespace UWUVCI_AIO_WPF
 
         private static void DeleteTool(string tool)
         {
-            File.Delete($@"bin\Tools\{tool}");
+            try { 
+                File.Delete($@"bin\Tools\{tool}");
+            }
+            catch
+            {
+                //why does that try break everything? wtf
+            }
         }
         private static void DeleteBase(string console)
         {
@@ -1807,38 +1772,31 @@ namespace UWUVCI_AIO_WPF
         {
             List<string> ret = new List<string>();
             string path = @"bin\bases\bases.vcb";
+
             if (!File.Exists(path + "nds"))
-            {
                 ret.Add(path + "nds");
-            }
+
             if (!File.Exists(path + "nes"))
-            {
                 ret.Add(path + "nes");
-            }
+
             if (!File.Exists(path + "n64"))
-            {
                 ret.Add(path + "n64");
-            }
+
             if (!File.Exists(path + "snes"))
-            {
                 ret.Add(path + "snes");
-            }
+
             if (!File.Exists(path + "gba"))
-            {
                 ret.Add(path + "gba");
-            }
+
             if (!File.Exists(path + "tg16"))
-            {
                 ret.Add(path + "tg16");
-            }
+
             if (!File.Exists(path + "msx"))
-            {
                 ret.Add(path + "msx");
-            }
+
             if (!File.Exists(path + "wii"))
-            {
                 ret.Add(path + "wii");
-            }
+
             return ret;
         }
         public static void DownloadBase(string name, MainViewModel mvm)
@@ -1848,15 +1806,13 @@ namespace UWUVCI_AIO_WPF
             {
                 string basePath = $@"bin\bases\";
                 Directory.SetCurrentDirectory(basePath);
-                using (var client = new WebClient())
-                {
-                    var fixname = name.Split('\\');
+                using var client = new WebClient();
+                var fixname = name.Split('\\');
 
-                    if (Injection.IsRunningInVirtualMachine() || Injection.IsRunningUnderWineOrSimilar())
-                        name = "Net6/" + name;
+                if (MacLinuxHelper.IsRunningInVirtualMachine() || MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                    name = "Net6/" + name;
 
-                    client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
-                }
+                client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
             }
             catch (Exception e)
             {
@@ -1877,11 +1833,8 @@ namespace UWUVCI_AIO_WPF
             string olddir = Directory.GetCurrentDirectory();
             try
             {
-
                 if (Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
-                {
                     olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
-                }
                 else
                 {
                     string basePath = $@"bin\Tools\";
@@ -1890,16 +1843,11 @@ namespace UWUVCI_AIO_WPF
                 do
                 {
                     if (File.Exists(name))
-                    {
                         File.Delete(name);
-                    }
-                    using (var client = new WebClient())
-                    {
-                        client.DownloadFile(getDownloadLink(name, true), name);
-                    }
+
+                    using var client = new WebClient();
+                    client.DownloadFile(getDownloadLink(name, true), name);
                 } while (!ToolCheck.IsToolRight(name));
-
-
             }
             catch (Exception e)
             {
@@ -1923,60 +1871,43 @@ namespace UWUVCI_AIO_WPF
                 bool ok = false;
                 try
                 {
-                    System.Net.WebClient client = new System.Net.WebClient();
-                    string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
+                    using (WebClient client = new WebClient())
+                    {
+                        string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
+                    }
+
                     ok = true;
                 }
-                catch (System.Net.WebException)
+                catch (WebException)
                 {
-
-
                 }
                 if (ok)
                 {
                     WebRequest request;
                     //get download link from uwuvciapi
-                    if (tool)
-                    {
-                        request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?tool=" + toolname);
-                    }
-                    else
-                    {
-                        request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVcbLink?vcb=" + toolname);
-                    }
+                    request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?" + (tool ? "tool=" : "vcb=") + toolname);
 
                     var response = request.GetResponse();
-                    using (Stream dataStream = response.GetResponseStream())
-                    {
-                        // Open the stream using a StreamReader for easy access.  
-                        StreamReader reader = new StreamReader(dataStream);
-                        // Read the content.  
-                        string responseFromServer = reader.ReadToEnd();
-                        // Display the content.  
-                        if (responseFromServer == "")
-                        {
-                            if (tool)
-                            {
-                                return $"{ToolCheck.backupulr}{toolname}";
-                            }
-                            else
-                            {
-                                return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
-                            }
-                        }
-                        return responseFromServer;
-                    }
+                    using Stream dataStream = response.GetResponseStream();
+                    // Open the stream using a StreamReader for easy access.  
+                    StreamReader reader = new StreamReader(dataStream);
+                    // Read the content.  
+                    string responseFromServer = reader.ReadToEnd();
+                    // Display the content.  
+                    if (responseFromServer == "")
+                        if (tool)
+                            return $"{ToolCheck.backupulr}{toolname}";
+                        else
+                            return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
+
+                    return responseFromServer;
                 }
                 else
                 {
                     if (tool)
-                    {
                         return $"{ToolCheck.backupulr}{toolname}";
-                    }
                     else
-                    {
                         return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
-                    }
                 }
 
 
@@ -1984,13 +1915,9 @@ namespace UWUVCI_AIO_WPF
             catch (Exception)
             {
                 if (tool)
-                {
                     return $"{ToolCheck.backupulr}{toolname}";
-                }
                 else
-                {
                     return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
-                }
 
             }
         }
@@ -1998,42 +1925,27 @@ namespace UWUVCI_AIO_WPF
         {
             if (ToolCheck.DoesToolsFolderExist())
             {
-
                 List<MissingTool> missingTools = new List<MissingTool>();
                 missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
-
-
-
                     foreach (MissingTool m in missingTools)
-                    {
                         DownloadTool(m.Name, this);
 
-                    }
-
-
-
                     InjcttoolCheck();
-
                 }
             }
             else
             {
-                string path = $@"{Directory.GetCurrentDirectory()}bin\\Tools";
-
                 Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
                 InjcttoolCheck();
-
             }
         }
         private void ThreadDownload(List<MissingTool> missingTools)
         {
-
             var thread = new Thread(() =>
             {
                 double l = 100 / missingTools.Count;
-
 
                 foreach (MissingTool m in missingTools)
                 {
@@ -2043,18 +1955,14 @@ namespace UWUVCI_AIO_WPF
                         sw.Close();
                     }
                     else
-                    {
                         DownloadTool(m.Name, this);
-                    }
 
                     Progress += Convert.ToInt32(l);
                 }
                 Progress = 100;
-
             });
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
-
         }
         private void timer_Tick2(object sender, EventArgs e)
         {
@@ -2065,90 +1973,104 @@ namespace UWUVCI_AIO_WPF
                 Progress = 0;
             }
         }
-        private void toolCheck()
+        
+        private void toolCheck(int currentRetry = 0)
         {
+            int maxRetries = 3;
             if (ToolCheck.DoesToolsFolderExist())
             {
-                List<MissingTool> missingTools = new List<MissingTool>();
-                missingTools = ToolCheck.CheckForMissingTools();
-
+                List<MissingTool> missingTools = ToolCheck.CheckForMissingTools();
                 if (missingTools.Count > 0)
                 {
+                    Logger.Log("Missing tools detected.");
                     if (CheckForInternetConnection())
                     {
                         Task.Run(() => ThreadDownload(missingTools));
-                        DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
-                        try
-                        {
-                            dw.changeOwner(mw);
-                        }
-                        catch (Exception)
-                        {
+                        ShowDownloadWaitDialog();
 
+                        // Retry logic after downloading
+                        if (currentRetry < maxRetries)
+                            toolCheck(currentRetry + 1);
+                        else
+                        {
+                            Logger.Log($"Failed to download {missingTools} after retries.");
+                            ShowMessage("Error", "Tool download failed after multiple attempts.");
                         }
-                        dw.ShowDialog();
-                        Thread.Sleep(200);
-                        //Download Tools
-                        Progress = 0;
-                        toolCheck();
                     }
                     else
                     {
-                        Custom_Message dw = new Custom_Message("No Internet connection", " You have files missing, which need to be downloaded but you dont have an Internet Connection. \n The Program will now terminate");
-                        try
-                        {
-                            dw.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        dw.ShowDialog();
+                        ShowMessage("No Internet connection", "You have files missing, which need to be downloaded but there is no Internet Connection. The program will now terminate.");
                         Environment.Exit(1);
                     }
-
-
                 }
             }
             else
             {
-                if (Directory.GetCurrentDirectory().Contains("bin/tools"))
-                {
-
-                }
-                else
+                try
                 {
                     Directory.CreateDirectory("bin/Tools");
+                    Logger.Log("Created Tools folder.");
+                    toolCheck();  // Retry once after creating the directory
                 }
-
-                toolCheck();
-
-
+                catch (Exception ex)
+                {
+                    ShowMessage("Error", $"Failed to create tools directory: {ex.Message}");
+                    Logger.Log($"Failed to create Tools folder: {ex.Message}");
+                }
             }
+        }
+
+        private void ShowDownloadWaitDialog()
+        {
+            DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
+            try
+            {
+                dw.changeOwner(mw);
+            }
+            catch (Exception) 
+            {
+                Logger.Log("Failed to set DownloadWait owner.");
+            }
+            dw.ShowDialog();
+            Thread.Sleep(200);  // Pause after showing dialog
+        }
+
+        private void ShowMessage(string title, string message)
+        {
+            Custom_Message cm = new Custom_Message(title, message);
+            try
+            {
+                cm.Owner = mw;
+            }
+            catch (Exception) { }
+            cm.ShowDialog();
         }
 
         public void UpdatePathSet()
         {
-            PathsSet = Settings.Default.PathsSet;
+            PathsSet = JsonSettingsManager.Settings.PathsSet;
 
-            if (BaseStore != Settings.Default.BasePath)
-                BaseStore = Settings.Default.BasePath;
+            if (BaseStore != JsonSettingsManager.Settings.BasePath)
+                BaseStore = JsonSettingsManager.Settings.BasePath;
 
-            if (InjectStore != Settings.Default.BasePath)
-                InjectStore = Settings.Default.OutPath;
+            if (InjectStore != JsonSettingsManager.Settings.BasePath)
+                InjectStore = JsonSettingsManager.Settings.OutPath;
         }
 
         public bool ValidatePathsStillExist()
         {
-            string basePath = Settings.Default.BasePath;
-            string outPath = Settings.Default.OutPath;
+            string basePath = JsonSettingsManager.Settings.BasePath;
+            string outPath = JsonSettingsManager.Settings.OutPath;
 
             bool baseExists = EnsureDirectoryExists(ref basePath, "bin/BaseGames");
             bool injectExists = EnsureDirectoryExists(ref outPath, "InjectedGames");
 
             if (baseExists && injectExists)
             {
-                Settings.Default.BasePath = basePath;
-                Settings.Default.OutPath = outPath;
-                Settings.Default.PathsSet = true;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.BasePath = basePath;
+                JsonSettingsManager.Settings.OutPath = outPath;
+                JsonSettingsManager.Settings.PathsSet = true;
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
 
@@ -2158,9 +2080,7 @@ namespace UWUVCI_AIO_WPF
         private bool EnsureDirectoryExists(ref string path, string defaultSubDir)
         {
             if (Directory.Exists(path))
-            {
                 return true;
-            }
 
             string fullPath = Path.Combine(Directory.GetCurrentDirectory(), defaultSubDir);
             Directory.CreateDirectory(fullPath);
@@ -2296,9 +2216,9 @@ namespace UWUVCI_AIO_WPF
 
             if (keyHash == 1274359530 || GetDeterministicHashCode(lowerKey) == -485504051)
             {
-                Settings.Default.Ckey = lowerKey;
+                JsonSettingsManager.Settings.Ckey = lowerKey;
                 ckeys = true;
-                Settings.Default.Save();
+                JsonSettingsManager.SaveSettings();
                 return true;
             }
             ckeys = false;
@@ -2307,7 +2227,7 @@ namespace UWUVCI_AIO_WPF
 
         public bool isCkeySet()
         {
-            string lowerCKey = Settings.Default.Ckey.ToLower();
+            string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLower();
             ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
             return ckeys;
         }
@@ -2467,11 +2387,12 @@ namespace UWUVCI_AIO_WPF
                 if (mapping.Value.Any(b => b.Name == gb.Name && b.Region == gb.Region))
                     return mapping.Key;
 
+            Logger.Log($"Console of base is not one of the listed ones to work with UWUVCI, what did you do? Name: {gb.Name}, Region: {gb.Region}");
             throw new Exception("Console of base is not one of the listed ones to work with UWUVCI, what you do?");
         }
         public List<bool> getInfoOfBase(GameBases gb)
         {
-            string basePath = $@"{Settings.Default.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]";
+            string basePath = $@"{JsonSettingsManager.Settings.BasePath}\{gb.Name.Replace(":", "")} [{gb.Region}]";
             return new List<bool>
             {
                 Directory.Exists(basePath),
@@ -2483,8 +2404,8 @@ namespace UWUVCI_AIO_WPF
         public void SetInjectPath()
         {
             SetFolderPath(
-                folderPath => Settings.Default.OutPath = folderPath,
-                Settings.Default.SetOutOnce,
+                folderPath => JsonSettingsManager.Settings.OutPath = folderPath,
+                JsonSettingsManager.Settings.SetOutOnce,
                 "Inject Folder");
         }
 
@@ -2499,7 +2420,7 @@ namespace UWUVCI_AIO_WPF
                         {
                             setPathAction(dialog.FileName);
                             setOnceFlag = true;
-                            Settings.Default.Save();
+                            JsonSettingsManager.SaveSettings();
                             UpdatePathSet();
                         }
                         else
@@ -2523,7 +2444,7 @@ namespace UWUVCI_AIO_WPF
                 choosefolder = false;
                 setPathAction(folderPath);
                 setOnceFlag = true;
-                Settings.Default.Save();
+                JsonSettingsManager.SaveSettings();
                 UpdatePathSet();
             }
             else
@@ -2543,8 +2464,8 @@ namespace UWUVCI_AIO_WPF
         public void SetBasePath()
         {
             SetFolderPath(
-                folderPath => Settings.Default.BasePath = folderPath,
-                Settings.Default.SetBaseOnce,
+                folderPath => JsonSettingsManager.Settings.BasePath = folderPath,
+                JsonSettingsManager.Settings.SetBaseOnce,
                 "Bases Folder");
         }
 
@@ -2552,8 +2473,8 @@ namespace UWUVCI_AIO_WPF
         {
             if (ValidatePathsStillExist())
             {
-                Settings.Default.PathsSet = true;
-                Settings.Default.Save();
+                JsonSettingsManager.Settings.PathsSet = true;
+                JsonSettingsManager.SaveSettings();
             }
             UpdatePathSet();
         }
@@ -2675,7 +2596,6 @@ namespace UWUVCI_AIO_WPF
                 catch (Exception) { }
                 cm.ShowDialog();
             }
-
         }
         private string GetFakeMSXTGProdcode(string v, bool msx)
         {
@@ -2692,6 +2612,7 @@ namespace UWUVCI_AIO_WPF
 
                 fs.Close();
             }
+
             string hash = GetMd5Hash(md5, procode);
             //var number = /*hash.GetHashCode();*/ gamename.GetHashCode();
             if (msx) Console.Write("MSX");
