@@ -20,7 +20,7 @@ namespace UWUVCI_AIO_WPF.Helpers
             // Write to the original Console output
             originalConsoleOut.WriteLine(message);
 
-            // Log the message using your Logger
+            // Log the message
             Logger.Log(message);
         }
 
