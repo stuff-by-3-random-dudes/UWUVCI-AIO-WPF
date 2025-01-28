@@ -272,7 +272,7 @@ namespace UWUVCI_AIO_WPF
                 else if (e.Message.Contains("WII"))
                     errorMessage = $"{e.Message.Replace("Wii", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
                 else if (e.Message.Contains("12G"))
-                    errorMessage = $" Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
+                    errorMessage = $"Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
                 else if (e.Message.Contains("nkit"))
                     errorMessage = $"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.";
                 else if (e.Message.Contains("meta.xml"))
