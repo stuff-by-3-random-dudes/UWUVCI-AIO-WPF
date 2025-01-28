@@ -21,6 +21,7 @@ using WiiUDownloaderLibrary.Models;
 using WiiUDownloaderLibrary;
 using Newtonsoft.Json.Linq;
 using UWUVCI_AIO_WPF.Helpers;
+using System.Diagnostics.Eventing.Reader;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -688,122 +689,44 @@ namespace UWUVCI_AIO_WPF
         private static void WII(string romPath, MainViewModel mvm)
         {
             var witArgs = "";
+            var witList = new List<string>();
+            var dolPatch = mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter;
             string savedir = Directory.GetCurrentDirectory();
-            if (mvm.NKITFLAG || romPath.Contains("nkit") || new FileInfo(romPath).Extension.Contains("wbfs"))
+            if (new FileInfo(romPath).Extension.Contains("iso"))
             {
-                if (IsNativeWindows)
-                {
-                    if (mvm.NKITFLAG || romPath.Contains("nkit"))
-                    {
-                        using Process toiso = new Process();
-                        mvm.msg = "Converting NKIT to ISO";
-
-                        if (!mvm.debug)
-                            toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                        witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
-                        toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                        toiso.StartInfo.Arguments = witArgs;
-
-                        toiso.Start();
-                        toiso.WaitForExit();
-                        if (!File.Exists(Path.Combine(toolsPath, "out.iso")))
-                        {
-                            throw new Exception("nkit");
-                        }
-                        File.Move(Path.Combine(toolsPath, "out.iso"), Path.Combine(tempPath, "pre.iso"));
-                        mvm.Progress = 15;
-                    }
-                    else
-                    {
-                        if (new FileInfo(romPath).Extension.Contains("wbfs"))
-                        {
-                            mvm.msg = "Converting WBFS to ISO...";
-                            using Process toiso = new Process();
-
-                            if (!mvm.debug)
-                                toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                            witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
-                            toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                            toiso.StartInfo.Arguments = witArgs;
-
-                            toiso.Start();
-                            toiso.WaitForExit();
-                            mvm.Progress = 15;
-                        }
-                        else if (new FileInfo(romPath).Extension.Contains("iso"))
-                        {
-                            mvm.msg = "Copying ROM...";
-                            File.Copy(romPath, Path.Combine(tempPath, "pre.iso"));
-                            mvm.Progress = 15;
-                        }
-                    }
-                }
-                else
-                {
-                    if (mvm.NKITFLAG || romPath.Contains("nkit"))
-                        witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
-                    else
-                        witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
-
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
-                }
+                mvm.msg = "Copying ROM...";
+                File.Copy(romPath, Path.Combine(tempPath, "pre.iso"));
+                mvm.Progress = 15;
             }
-
-            if (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter)
+            else if (mvm.NKITFLAG || romPath.Contains("nkit") || new FileInfo(romPath).Extension.Contains("wbfs"))
             {
-                var isoPath = Path.Combine(tempPath, "pre.iso");
-                var extraction = Path.Combine(tempPath, "extraction");
-                mvm.msg = "Unpacking rom to get main.dol file";
-                mvm.Progress = 19;
-                witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
+                witArgs = $"copy --source \"{romPath}\" --dest \"{Path.Combine(tempPath, "pre.iso")}\" -I";
                 if (IsNativeWindows)
                 {
-                    using var unpack = new Process();
-                    if (!mvm.debug)
-                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    if (mvm.NKITFLAG || romPath.Contains("nkit"))
+                        mvm.msg = "Converting NKIT to ISO";
+                    else
+                        mvm.msg = "Converting WBFS to ISO...";
 
-                    unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    unpack.StartInfo.Arguments = witArgs;
-                    unpack.Start();
-                    unpack.WaitForExit();
+                    using Process toiso = new Process();
+
+                    if (!mvm.debug)
+                        toiso.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    toiso.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                    toiso.StartInfo.Arguments = witArgs;
+
+                    toiso.Start();
+                    toiso.WaitForExit();
                 }
                 else
                     MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
 
-                mvm.msg = "Patching main.dol file";
-                mvm.Progress = 21;
+                if (!new FileInfo(romPath).Extension.Contains("wbfs"))
+                    if (!File.Exists(Path.Combine(toolsPath, "pre.iso")))
+                        throw new Exception("nkit");
 
-                File.Delete(isoPath);
-
-                var extractionFolder = Path.Combine(tempPath, "extraction");
-                var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
-                var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
-
-                DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
-
-                File.Delete(mainDolPath);
-                File.Move(output, mainDolPath);
-
-                mvm.msg = "Packing rom back up";
-                mvm.Progress = 23;
-                witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
-                if (IsNativeWindows)
-                {
-                    using var pack = new Process();
-                    if (!mvm.debug)
-                        pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    pack.StartInfo.Arguments = witArgs;
-                    pack.Start();
-                    pack.WaitForExit();
-                }
-                else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
-
-                Directory.Delete(extraction, recursive: true);
+                mvm.Progress = 15;
             }
 
             GctPatch(mvm, "Wii", Path.Combine(tempPath, "pre.iso"));
@@ -823,228 +746,160 @@ namespace UWUVCI_AIO_WPF
             doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
             doc.Save(metaXml);
             //edit emta.xml
-            mvm.Progress = 31;
+            mvm.Progress = 25;
+
+            if (mvm.regionfrii)
+            {
+                using FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open);
+                fs.Seek(0x4E003, SeekOrigin.Begin);
+                if (mvm.regionfriius)
+                {
+                    fs.Write(new byte[] { 0x01 }, 0, 1);
+                    fs.Seek(0x4E010, SeekOrigin.Begin);
+                    fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                }
+                else if (mvm.regionfriijp)
+                {
+                    fs.Write(new byte[] { 0x00 }, 0, 1);
+                    fs.Seek(0x4E010, SeekOrigin.Begin);
+                    fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                }
+                else
+                {
+                    fs.Write(new byte[] { 0x02 }, 0, 1);
+                    fs.Seek(0x4E010, SeekOrigin.Begin);
+                    fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                }
+                fs.Close();
+            }
+
+            var preIso = Path.Combine(tempPath, "pre.iso");
 
             if (!mvm.donttrim)
             {
-                if (mvm.regionfrii)
-                {
-                    using FileStream fs = new FileStream(Path.Combine(tempPath, "pre.iso"), FileMode.Open);
-                    fs.Seek(0x4E003, SeekOrigin.Begin);
-                    if (mvm.regionfriius)
-                    {
-                        fs.Write(new byte[] { 0x01 }, 0, 1);
-                        fs.Seek(0x4E010, SeekOrigin.Begin);
-                        fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                    }
-                    else if (mvm.regionfriijp)
-                    {
-                        fs.Write(new byte[] { 0x00 }, 0, 1);
-                        fs.Seek(0x4E010, SeekOrigin.Begin);
-                        fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                    }
-                    else
-                    {
-                        fs.Write(new byte[] { 0x02 }, 0, 1);
-                        fs.Seek(0x4E010, SeekOrigin.Begin);
-                        fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
-                    }
-                    fs.Close();
-                }
-                var preIso = Path.Combine(tempPath, "pre.iso");
                 witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
-                if (IsNativeWindows)
-                {
-                    using Process trimm = new Process();
-                    if (!mvm.debug)
-                        trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    mvm.msg = "Trimming ROM...";
-                    trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    trimm.StartInfo.Arguments = witArgs;
-                    trimm.Start();
-                    trimm.WaitForExit();
-                    mvm.Progress = 33;
-                }
-                else                  
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
-
-                if (mvm.Index == 4)
-                {
-                    mvvm.msg = "Patching ROM (Force CC)...";
-                    Console.WriteLine("Patching the ROM to force Classic Controller input");
-                    using Process tik = new Process();
-                    tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                    tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "sys", "main.dol")}\" -nc";
-                    tik.StartInfo.UseShellExecute = false;
-                    tik.StartInfo.CreateNoWindow = true;
-                    tik.StartInfo.RedirectStandardOutput = true;
-                    tik.StartInfo.RedirectStandardInput = true;
-                    tik.Start();
-                    Thread.Sleep(2000);
-                    tik.StandardInput.WriteLine();
-                    tik.WaitForExit();
-                    mvm.Progress = 35;
-
-                }
-                if (mvm.jppatch)
-                {
-                    mvm.msg = "Language Patching ROM...";
-                    using (BinaryWriter writer = new BinaryWriter(new FileStream(Path.Combine(tempPath, "TEMP", "sys", "main.dol"), FileMode.Open)))
-                    {
-                        byte[] stuff = new byte[] { 0x38, 0x60 };
-                        writer.Seek(0x4CBDAC, SeekOrigin.Begin);
-                        writer.Write(stuff);
-                        writer.Seek(0x4CBDAF, SeekOrigin.Begin);
-                        stuff = new byte[] { 0x00 };
-                        writer.Write(stuff);
-                        writer.Close();
-                    }
-                    mvm.Progress = 37;
-                }
-                if (mvm.Patch)
-                {
-                    mvm.msg = "Video Patching ROM...";
-                    File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "sys", "wii-vmc.exe"));
-                    Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "sys"));
-
-                    using Process vmc = new Process();
-                    vmc.StartInfo.FileName = "wii-vmc.exe";
-                    vmc.StartInfo.Arguments = "main.dol";
-                    vmc.StartInfo.UseShellExecute = false;
-                    vmc.StartInfo.CreateNoWindow = true;
-                    vmc.StartInfo.RedirectStandardOutput = true;
-                    vmc.StartInfo.RedirectStandardInput = true;
-
-                    vmc.Start();
-                    Thread.Sleep(1000);
-                    vmc.StandardInput.WriteLine("a");
-                    Thread.Sleep(2000);
-                    if (mvm.toPal) vmc.StandardInput.WriteLine("1");
-                    else vmc.StandardInput.WriteLine("2");
-                    Thread.Sleep(2000);
-                    vmc.StandardInput.WriteLine();
-                    vmc.WaitForExit();
-                    File.Delete("wii-vmc.exe");
-
-                    Directory.SetCurrentDirectory(savedir);
-                    mvm.Progress = 40;
-
-                }
-                mvm.msg = "Creating ISO from trimmed ROM...";
-                var tempFolder = Path.Combine(tempPath, "TEMP");
-                witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
-                if (IsNativeWindows)
-                {
-                    using Process repack = new Process();
-                    if (!mvm.debug)
-                        repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                    repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                    repack.StartInfo.Arguments = witArgs;
-                    repack.Start();
-                    repack.WaitForExit();
-                    Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
-                    File.Delete(Path.Combine(tempPath, "pre.iso"));
-                }
-                else
-                    MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
+                mvm.msg = "Prepping ROM...";
             }
             else
             {
-                if (mvm.Index == 4 || mvm.Patch)
-                {
-                    var preIso = Path.Combine(tempPath, "pre.iso");
-                    witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
-                    if (IsNativeWindows)
-                    {
-                        using Process trimm = new Process();
-                        if (!mvm.debug)
-                            trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                        mvm.msg = "Trimming ROM...";
-                       
-                        trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                        trimm.StartInfo.Arguments = witArgs;
-                        trimm.Start();
-                        trimm.WaitForExit();
-                        mvm.Progress = 30;
-                    }
-                    else
-                        MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
-
-                    if (mvm.Index == 4)
-                    {
-                        mvvm.msg = "Patching ROM (Force CC)...";
-                        Console.WriteLine("Patching the ROM to force Classic Controller input");
-                        using Process tik = new Process();
-                        tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                        tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "DATA", "sys", "main.dol")}\" -nc";
-                        tik.StartInfo.UseShellExecute = false;
-                        tik.StartInfo.CreateNoWindow = true;
-                        tik.StartInfo.RedirectStandardOutput = true;
-                        tik.StartInfo.RedirectStandardInput = true;
-                        tik.Start();
-                        Thread.Sleep(2000);
-                        tik.StandardInput.WriteLine();
-                        tik.WaitForExit();
-                        mvm.Progress = 35;
-
-                    }
-                    if (mvm.Patch)
-                    {
-                        mvm.msg = "Video Patching ROM...";
-                        using Process vmc = new Process();
-
-                        File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "DATA", "sys", "wii-vmc.exe"));
-
-                        Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "DATA", "sys"));
-                        vmc.StartInfo.FileName = "wii-vmc.exe";
-                        vmc.StartInfo.Arguments = "main.dol";
-                        vmc.StartInfo.UseShellExecute = false;
-                        vmc.StartInfo.CreateNoWindow = true;
-                        vmc.StartInfo.RedirectStandardOutput = true;
-                        vmc.StartInfo.RedirectStandardInput = true;
-
-                        vmc.Start();
-                        Thread.Sleep(1000);
-                        vmc.StandardInput.WriteLine("a");
-                        Thread.Sleep(2000);
-                        if (mvm.toPal) vmc.StandardInput.WriteLine("1");
-                        else vmc.StandardInput.WriteLine("2");
-                        Thread.Sleep(2000);
-                        vmc.StandardInput.WriteLine();
-                        vmc.WaitForExit();
-                        File.Delete("wii-vmc.exe");
-
-
-                        Directory.SetCurrentDirectory(savedir);
-                        mvm.Progress = 40;
-
-                    }
-                    mvm.msg = "Creating ISO from patched ROM...";
-                    var tempFolder = Path.Combine(tempPath, "TEMP");
-                    witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
-                    if (IsNativeWindows)
-                    {
-                        using Process repack = new Process();
-                        if (!mvm.debug)
-                            repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                        repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                        repack.StartInfo.Arguments = witArgs;
-                        repack.Start();
-                        repack.WaitForExit();
-                    }
-                    else
-                        MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, string.Empty);
-
-                    Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
-                    File.Delete(Path.Combine(tempPath, "pre.iso"));
-                }
-                else
-                    File.Move(Path.Combine(tempPath, "pre.iso"), Path.Combine(tempPath, "game.iso"));
+                witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
+                mvm.msg = "Trimming ROM...";
             }
+
+            if (IsNativeWindows)
+            {
+                using Process trimm = new Process();
+                if (!mvm.debug)
+                    trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                mvm.msg = "Trimming ROM...";
+                trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                trimm.StartInfo.Arguments = witArgs;
+                trimm.Start();
+                trimm.WaitForExit();
+                mvm.Progress = 30;
+            }
+            else
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
+
+            if (dolPatch)
+            {
+                mvm.msg = "Patching main.dol file";
+                mvm.Progress = 33;
+
+                var extractionFolder = Path.Combine(tempPath, "TEMP");
+                var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
+                var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
+
+                DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
+
+                File.Delete(mainDolPath);
+                File.Move(output, mainDolPath);
+            }
+
+            if (mvm.Index == 4)
+            {
+                mvvm.msg = "Patching ROM (Force CC)...";
+                Console.WriteLine("Patching the ROM to force Classic Controller input");
+                using Process tik = new Process();
+                tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                tik.StartInfo.Arguments = $"\"{Path.Combine(tempPath, "TEMP", "DATA", "sys", "main.dol")}\" -nc";
+                tik.StartInfo.UseShellExecute = false;
+                tik.StartInfo.CreateNoWindow = true;
+                tik.StartInfo.RedirectStandardOutput = true;
+                tik.StartInfo.RedirectStandardInput = true;
+                tik.Start();
+                Thread.Sleep(2000);
+                tik.StandardInput.WriteLine();
+                tik.WaitForExit();
+                mvm.Progress = 35;
+            }
+
+            if (mvm.Patch)
+            {
+                mvm.msg = "Video Patching ROM...";
+                using Process vmc = new Process();
+
+                File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempPath, "TEMP", "DATA", "sys", "wii-vmc.exe"));
+                Directory.SetCurrentDirectory(Path.Combine(tempPath, "TEMP", "DATA", "sys"));
+
+                vmc.StartInfo.FileName = "wii-vmc.exe";
+                vmc.StartInfo.Arguments = "main.dol";
+                vmc.StartInfo.UseShellExecute = false;
+                vmc.StartInfo.CreateNoWindow = true;
+                vmc.StartInfo.RedirectStandardOutput = true;
+                vmc.StartInfo.RedirectStandardInput = true;
+
+                vmc.Start();
+                Thread.Sleep(1000);
+                vmc.StandardInput.WriteLine("a");
+                Thread.Sleep(2000);
+
+                if (mvm.toPal)
+                    vmc.StandardInput.WriteLine("1");
+                else
+                    vmc.StandardInput.WriteLine("2");
+
+                Thread.Sleep(2000);
+                vmc.StandardInput.WriteLine();
+                vmc.WaitForExit();
+                File.Delete("wii-vmc.exe");
+
+                Directory.SetCurrentDirectory(savedir);
+                mvm.Progress = 40;
+            }
+
+            var tempFolder = Path.Combine(tempPath, "TEMP");
+
+            if (!mvm.donttrim)
+            {
+                mvm.msg = "Creating ISO from patched ROM...";
+                witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
+            }
+            else
+            {
+                mvm.msg = "Creating ISO from trimmed ROM...";
+                witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --links --iso";
+            }
+
+            if (IsNativeWindows)
+            {
+                using Process repack = new Process();
+                if (!mvm.debug)
+                    repack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                repack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
+                repack.StartInfo.Arguments = witArgs;
+                repack.Start();
+                repack.WaitForExit();
+            }
+            else
+                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
+
+
+            Directory.Delete(Path.Combine(tempPath, "TEMP"), true);
+            File.Delete(Path.Combine(tempPath, "pre.iso"));
+
 
             mvm.Progress = 50;
             mvm.msg = "Replacing TIK and TMD...";
