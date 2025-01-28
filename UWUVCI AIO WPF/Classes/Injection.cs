@@ -610,6 +610,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                     MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wstrt", witArgs, toolsPath);
+
                 return;
             }
 
@@ -628,68 +629,25 @@ namespace UWUVCI_AIO_WPF
             if (string.IsNullOrEmpty(mvm.GctPath))
                 return;
 ;
-            var extraction = Path.Combine(tempPath, "extraction");
-            mvm.msg = "Unpacking rom to get main.dol file";
-            mvm.Progress = 25;
-
-            string witArgs;
-            if (consoleName == "Wii")
-                witArgs = $"extract --psel=data \"{isoPath}\" \"{extraction}\"";
-            else
-                witArgs = $"extract \"{isoPath}\" \"{extraction}\"";
-
-            if (IsNativeWindows)
-            {
-                using var unpack = new Process();
-                if (!mvm.debug)
-                    unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                unpack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                unpack.StartInfo.Arguments = witArgs;
-                unpack.Start();
-                unpack.WaitForExit();
-            }
-            else
-                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, toolsPath);
+            var extraction = Path.Combine(tempPath, "temp");
 
             mvm.msg = "Patching main.dol with gct file";
             mvm.Progress = 27;
 
             File.Delete(isoPath);
-
-            var extractionFolder = Path.Combine(tempPath, "extraction");
-            var mainDolPath = Directory.GetFiles(extractionFolder, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
+;
+            var mainDolPath = Directory.GetFiles(extraction, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
             var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
 
             PatchDol(consoleName, mainDolPath, mvm);
 
             File.Delete(mainDolPath);
             File.Move(output, mainDolPath);
-
-            mvm.msg = "Packing rom back up";
-            mvm.Progress = 29;
-            witArgs = $"copy \"{extraction}\" \"{isoPath}\"";
-            if (IsNativeWindows)
-            {
-                using var pack = new Process();
-                if (!mvm.debug)
-                    pack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-                pack.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
-                pack.StartInfo.Arguments = witArgs;
-                pack.Start();
-                pack.WaitForExit();
-            }
-            else
-                MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wit", witArgs, toolsPath);
-
-            Directory.Delete(extraction, recursive: true);
         }
 
         private static void WII(string romPath, MainViewModel mvm)
         {
             var witArgs = "";
-            var witList = new List<string>();
             var dolPatch = mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter;
             string savedir = Directory.GetCurrentDirectory();
             if (new FileInfo(romPath).Extension.Contains("iso"))
@@ -728,8 +686,6 @@ namespace UWUVCI_AIO_WPF
 
                 mvm.Progress = 15;
             }
-
-            GctPatch(mvm, "Wii", Path.Combine(tempPath, "pre.iso"));
 
             //GET ROMCODE and change it
             mvm.msg = "Trying to change the Manual...";
@@ -792,7 +748,6 @@ namespace UWUVCI_AIO_WPF
                 if (!mvm.debug)
                     trimm.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                mvm.msg = "Trimming ROM...";
                 trimm.StartInfo.FileName = Path.Combine(toolsPath, "wit.exe");
                 trimm.StartInfo.Arguments = witArgs;
                 trimm.Start();
@@ -801,6 +756,8 @@ namespace UWUVCI_AIO_WPF
             }
             else
                 MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper("Wii", "wit", witArgs, toolsPath);
+
+            GctPatch(mvm, "Wii", Path.Combine(tempPath, "pre.iso"));
 
             if (dolPatch)
             {
