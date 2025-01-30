@@ -51,6 +51,12 @@ namespace UWUVCI_AIO_WPF.Helpers
 
             if (result != MessageBoxResult.OK)
             {
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string toolsJsonPath = Path.Combine(basePath, "tools.json");
+
+                if (File.Exists(toolsJsonPath))
+                    File.Delete(toolsJsonPath);
+
                 MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
                 Logger.Log("User canceled Injection early");
                 throw new Exception("User canceled Injection early");
