@@ -828,7 +828,7 @@ namespace UWUVCI_AIO_WPF
 
             var tempFolder = Path.Combine(tempPath, "TEMP");
 
-            if (!mvm.donttrim)
+            if (mvm.donttrim)
             {
                 mvm.msg = "Creating ISO from patched ROM...";
                 witArgs = $"copy \"{tempFolder}\" --DEST \"{Path.Combine(tempPath, "game.iso")}\" -ovv --psel WHOLE --iso";
