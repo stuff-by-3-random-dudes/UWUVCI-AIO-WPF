@@ -1,33 +1,42 @@
 Thanks for downloading UWUVCI-3!
-If you didn't download us from the official source (https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases) then you might be using a custom version that someone else made.
+If you didn't download it from the official source (https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases), then you might be using a custom version that someone else made.
+
 If you're looking for the FAQ, keep scrolling.
 
-If you're interested in the discord: 
+If you're interested in the Discord:
 https://discord.gg/mPZpqJJVmZ
 
-If you're curious about the latest changes: 
+If you're curious about the latest changes:
 https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
 
-If you want to check out the Official UWUVCI 3 Video Series:
+If you want to check out the official UWUVCI 3 video series:
 https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
-By the time you're reading this, active development on UWUVCI-3 would have ended.
-I, ZestyTS, have been the active developer on UWUVCI-3 since late 2020, and I have been helping the original creator on making UWUVCI-Prime (aka 4).
-For history as to what I've done on the project, I fixed a lot of bugs, and helped get UWUVCI-3 out of beta while introducing new features to UWUVCI like Widescreen for N64, DarkFilter removal for N64 and GBA, C2W for Wii, added support for Win7/8, support for Unix (helper app), etc...
+By the time you're reading this, active development on UWUVCI-3 has ended.
+I, ZestyTS, have been the active developer on UWUVCI-3 since late 2020 and have been helping the original creator with UWUVCI-Prime (aka 4).
 
-If you'd like to donate to me
+For history as to what I've done on the project, I fixed a lot of bugs and helped get UWUVCI-3 out of beta while introducing new features like:
+	Widescreen for N64
+	DarkFilter removal for N64 and GBA
+	C2W for Wii
+	Added support for Win7/8
+	Support for Unix (helper app), etc.
+
+If you'd like to donate to me:
 https://ko-fi.com/zestyts
 
-If you'd like to donate to the creator, NicoAICP
+If you'd like to donate to the creator, NicoAICP:
 https://ko-fi.com/uwuvci
 
-If you have any questions about anything, feel free to reach out on the discord.
+If you have any questions, check out the FAQ below.
+
+If you have any questions about anything, checkout the FAQ below, and don't hestitate to check out the Discord server.
 
 
 ##############################################################################################################################################################################
 									FAQ
 ##############################################################################################################################################################################
-I, ZestyTS, have been making this FAQ since I took over UWUVCI-3, and with the update of V3.Z-B a bunch of things were overhauled or changed, so much that the FAQ needs to be completely redone.
+I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the update of V3.Z-B, a lot of things were overhauled or changed, so the FAQ needed to be completely redone.
 
 
 1) I don't know how to use UWUVCI, can you show me?
@@ -35,54 +44,43 @@ I, ZestyTS, have been making this FAQ since I took over UWUVCI-3, and with the u
 	Select console and follow the guide
  
 2)  What games are compatible?
-	https://uwuvci.net/
-	On the top right, click "Compatibility" followed by the console.
-	This compatibility guide is community driven, so some different setups may work
-	For GCN, nothing is listed because Rhythm Heaven Fever works as a base for practically all the games
+	https://uwuvci.net/ → Click "Compatibility" (top right) → Select a console.
+	This guide is community-driven, so results may vary.
+	For GCN, Rhythm Heaven Fever works as a base for nearly all games.
 
 3) I don't understand what it means by "Base" in the drop down menu?
-	This is the game that will be used as the base for the inject
+	The base game is what UWUVCI uses to inject your selected game.
 
 4) What does it mean by "Base not downloaded"
-	It means the base game can not be found
-	Clicking the button "Enter TKey" and entering in the Title Key will fix that issue
+	It means the base game cannot be found.
+	Click "Enter TKey" and enter the Title Key to fix this.
 
 5) How do I get the Title Key?
 	Buy the base from the eshop
 	Use Tik2SD to dump the title key
 
 6) What does it mean by Common Key?
-	This is the common key for your Wii U
-	Using the nandbackup of your Wii U, there is a file named otp.bin
-	Load the otp.bin file to get pass this
-	If you don't have a nandbackup, you can follow this guide:
-		https://wiiu.hacks.guide/aroma/nand-backup.html
+	This is the Wii U system key needed for decryption.
+		If you have a NAND backup, use otp.bin.
+		If not, follow this guide: https://wiiu.hacks.guide/aroma/nand-backup.html
 
 7) The base is taking a while to download
-	Are you trying to inject a GCN or a Wii game?
-	If the answer is no, then the base should download in less than 5 minutes
-	If it's taking a while anyway, it probably has to do with Nintendo's servers, trying again later might be the solution.
-	If the answer is yes, then it might be because of what the base is
-	Xenoblade Chronicles takes a very long time to get, there are reports of more than an hour
-	Internet speed does play a role in this, the game is ~8.2GB
-	Explanation: 
-		8.2GB * 8 = 65,365Gb
-		65,365Gb * 1024 = 67,108,864Mb
-
-		67108864 / 10(mb per s) = 6710886.4 seconds
-		6710886.4 / 3600 = 1864 hours
-		1864 / 24 = ~78 days
+	If not injecting GCN/Wii, it should finish in <5 min.
+	Otherwise, Nintendo’s servers may be slow—try again later.
+	Some games (like Xenoblade Chronicles) are large (~8.2GB) and take longer.
 
 8) My anti virus said [insert anything]
-	This program doesn't have anything malicious in it
+	There are no malicious files in this program.
 
 9) I can't find my game when I click the "Rom Path" button
-	Your game is in a format that UWUVCI can't read
-	You'll need to undo whatever you did to get it back to it's original form
-	We don't condone piracy, so we won't really help past this
+	Your game is in a format UWUVCI can't read.
+	Revert it to its original state.
 
 10) Wup install failing/Error 199-9999
-	Download https://github.com/V10lator/SigpatchesModuleWiiU/releases/download/v1.0/01_sigpatches.rpx and place it in sd:/wiiu/environments/aroma/modules/setup
+	Download SigpatchesModuleWiiU:
+		https://github.com/V10lator/SigpatchesModuleWiiU/releases/download/v1.0/01_sigpatches.rpx
+	Place it in:
+		sd:/wiiu/environments/aroma/modules/setup
 
 11) GCN/Wii Injects not working
 	There are reports that SDUSB or ISFShax might be the reason why
@@ -100,7 +98,6 @@ I, ZestyTS, have been making this FAQ since I took over UWUVCI-3, and with the u
 		if the dump is an "nkit" or a "wbfs" please try using the iso version instead
 
 14) If you're having issues and the fix isn't listed here, see about updating UWUVCI.
-	The latest version can be found here:
 	https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
  
 15) Help with Rom Mods and Hacks
@@ -160,4 +157,3 @@ I, ZestyTS, have been making this FAQ since I took over UWUVCI-3, and with the u
 
 30) UWUVCI's progress bar gets stuck (outside of Downloading base)
 	Try updating your tools (gear icon to the top right -> "Update Tools")
-	
