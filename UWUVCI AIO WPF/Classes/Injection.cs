@@ -637,12 +637,8 @@ namespace UWUVCI_AIO_WPF
             File.Delete(isoPath);
 ;
             var mainDolPath = Directory.GetFiles(extraction, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
-            var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
 
             PatchDol(consoleName, mainDolPath, mvm);
-
-            File.Delete(mainDolPath);
-            File.Move(output, mainDolPath);
         }
 
         private static void WII(string romPath, MainViewModel mvm)
