@@ -21,6 +21,9 @@ namespace UWUVCI_AIO_WPF
             // Redirect Console.WriteLine to the logger at the very beginning
             Console.SetOut(new ConsoleLoggerWriter());
 
+            if (File.Exists("tools.json"))
+                File.Delete("tools.json");
+
             // Store the StartupEventArgs
             _startupArgs = e; 
             
