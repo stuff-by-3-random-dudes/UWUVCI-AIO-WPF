@@ -13,13 +13,14 @@ If you want to check out the official UWUVCI 3 video series:
 https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
 By the time you're reading this, active development on UWUVCI-3 has ended.
-I, ZestyTS, have been the active developer on UWUVCI-3 since late 2020 and have been helping the original creator with UWUVCI-Prime (aka 4).
+I, ZestyTS, have been the active developer on UWUVCI-3 since late 2020 and have been helping the original creator with UWUVCI-Prime (aka V4).
 
 For history as to what I've done on the project, I fixed a lot of bugs and helped get UWUVCI-3 out of beta while introducing new features like:
 	Widescreen for N64
 	DarkFilter removal for N64 and GBA
 	C2W for Wii
 	Added support for Win7/8
+	GCT & Deflicker for Wii
 	Support for Unix (helper app), etc.
 
 If you'd like to donate to me:
@@ -43,10 +44,11 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 	https://uwuvci-prime.github.io/UWUVCI-Resources/index
 	Select console and follow the guide
  
-2)  What games are compatible?
+2) What games are compatible?
 	https://uwuvci.net/ → Click "Compatibility" (top right) → Select a console.
 	This guide is community-driven, so results may vary.
-	For GCN, Rhythm Heaven Fever works as a base for nearly all games.
+	If it's not listed, that just means it's Untested
+	For GCN, Rhythm Heaven Fever works as a base for all games.
 
 3) I don't understand what it means by "Base" in the drop down menu?
 	The base game is what UWUVCI uses to inject your selected game.
@@ -58,6 +60,7 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 5) How do I get the Title Key?
 	Buy the base from the eshop
 	Use Tik2SD to dump the title key
+	Note: Title Key sharing is considered piracy
 
 6) What does it mean by Common Key?
 	This is the Wii U system key needed for decryption.
@@ -157,3 +160,9 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 
 30) UWUVCI's progress bar gets stuck (outside of Downloading base)
 	Try updating your tools (gear icon to the top right -> "Update Tools")
+
+31) Mac/Linux version?
+	This program was built using WPF (Windows Platform Foundation) and that does not natively work on non-Windows platforms.
+	Using the exe, you can run it on Mac/Linux using Wine or some other tool like that. The program will know if you're running it not on a Windows platform, and will do it's best to help you.
+	UWUVCI V4 will have Mac & Linux support.
+	
