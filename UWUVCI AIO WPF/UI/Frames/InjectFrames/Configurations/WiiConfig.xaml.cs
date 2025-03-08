@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.Properties;
@@ -127,9 +128,129 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         }
 
+        private void WiiConfig_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void WiiConfig_PreviewDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0)
+                {
+                    string filePath = files[0]; // Get the first file
+                    TextBox txtBox = sender as TextBox;
+
+                    if (txtBox != null)
+                    {
+                        txtBox.IsReadOnly = false;
+                        txtBox.IsReadOnly = true;
+
+                        // Special handling for GCT Path (multiple files allowed)
+                        if (txtBox.Name == "gctPath")
+                        {
+                            var newFiles = new List<string>();
+
+                            foreach (string file in files)
+                            {
+                                // If it's a GCT file, accept it
+                                if (System.IO.Path.GetExtension(file).Equals(".gct", StringComparison.OrdinalIgnoreCase))
+                                    newFiles.Add(file);
+
+                                // If it's a TXT file, validate the format before adding
+                                else if (System.IO.Path.GetExtension(file).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    try
+                                    {
+                                        GctCode.ParseOcarinaOrDolphinTxtFile(file); // Throws exception if invalid
+                                        newFiles.Add(file);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Custom_Message cm = new Custom_Message("Invalid GCT File", $"Invalid TXT file format: {file}\nError: {ex.Message}");
+                                        try
+                                        {
+                                            cm.Owner = mvm.mw;
+                                        }
+                                        catch (Exception)
+                                        {
+
+                                        }
+                                        cm.ShowDialog();
+                                    }
+                                }
+                            }
+
+                            if (newFiles.Count > 0)
+                            {
+                                // Merge new files with existing paths (avoid duplicates)
+                                var existingFiles = new HashSet<string>(
+                                    txtBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                                );
+
+                                foreach (var newFile in newFiles)
+                                    existingFiles.Add(newFile); // HashSet prevents duplicates
+
+                                // Update the TextBox with the combined list
+                                txtBox.Text = string.Join(Environment.NewLine, existingFiles);
+                            }
+
+                            return; // No further processing needed for GCT files
+                        }
+
+                        switch (txtBox.Name)
+                        {
+                            case "rp":
+                                mvm.RomPath = filePath;
+                                mvm.RomSet = true;
+                                PostRomPath(filePath); // Call Wii-specific function
+                                break;
+                            case "ic":
+                                mvm.GameConfiguration.TGAIco.ImgPath = filePath;
+                                break;
+                            case "tv":
+                                mvm.GameConfiguration.TGATv.ImgPath = filePath;
+                                break;
+                            case "drc":
+                                mvm.GameConfiguration.TGADrc.ImgPath = filePath;
+                                break;
+                            case "log":
+                                mvm.GameConfiguration.TGALog.ImgPath = filePath;
+                                break;
+                            case "sound":
+                                mvm.BootSound = filePath;
+                                break;
+                            case "ancastKey":
+                                Custom_Message cm = new Custom_Message("Invalid Operation", "You cannot manually drop a file here.Use 'Get From OTP' instead");
+                                try
+                                {
+                                    cm.Owner = mvm.mw;
+                                }
+                                catch (Exception)
+                                {
+
+                                }
+                                cm.ShowDialog();
+                                txtBox.Text = ""; // Clear if accidentally dropped
+                                break;
+                        }
+                        txtBox.Text = filePath;
+                    }
+                }
+            }
+        }
+
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
             string path = mvm.GetFilePath(true, false);
+            PostRomPath(path);
+        }
+
+        public void PostRomPath(string path)
+        {
             ancast_Button.IsEnabled = false;
             ancastKey.Text = "";
             ancastKey.IsEnabled = false;
@@ -266,6 +387,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 }
             }
         }
+
         public string ReadAncastFromOtp()
         {
             var ret = "";

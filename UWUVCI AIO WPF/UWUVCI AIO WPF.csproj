@@ -228,14 +228,14 @@
     <Compile Include="UI\Frames\InjectFrames\Configurations\PixelArtScalerValidationRule.cs" />
     <Compile Include="UI\Frames\InjectFrames\Configurations\BrightnessValidationRule.cs" />
     <Compile Include="UI\Frames\InjectFrames\Configurations\InverseBootConverter.cs" />
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren %282%29.xaml.cs">
-      <DependentUpon>OtherConfigs - Kopieren - Kopieren %282%29.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\GBA.xaml.cs">
+      <DependentUpon>GBA.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren.xaml.cs">
-      <DependentUpon>OtherConfigs - Kopieren - Kopieren.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\GCConfig.xaml.cs">
+      <DependentUpon>GCConfig.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren.xaml.cs">
-      <DependentUpon>OtherConfigs - Kopieren.xaml</DependentUpon>
+    <Compile Include="UI\Frames\InjectFrames\Configurations\TurboGrafX.xaml.cs">
+      <DependentUpon>TurboGrafX.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Frames\InjectFrames\Configurations\WiiConfig.xaml.cs">
       <DependentUpon>WiiConfig.xaml</DependentUpon>
@@ -330,15 +330,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren %282%29.xaml">
+    <Page Include="UI\Frames\InjectFrames\Configurations\GBA.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren - Kopieren.xaml">
+    <Page Include="UI\Frames\InjectFrames\Configurations\GCConfig.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\Frames\InjectFrames\Configurations\OtherConfigs - Kopieren.xaml">
+    <Page Include="UI\Frames\InjectFrames\Configurations\TurboGrafX.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
 
@@ -96,6 +97,72 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
 
         }
+        private void GCConfig_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = true;
+        }
+        private void GCConfig_PreviewDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files != null && files.Length > 0)
+                {
+                    TextBox txtBox = sender as TextBox;
+                    if (txtBox != null)
+                    {
+                        string filePath = files[0]; // Default case (single file handling)
+
+                        // Special handling for GCN Disc 2
+                        if (txtBox.Name == "gc2")
+                        {
+                            if (System.IO.Path.GetExtension(filePath).Equals(".iso", StringComparison.OrdinalIgnoreCase) ||
+                                System.IO.Path.GetExtension(filePath).Equals(".gcm", StringComparison.OrdinalIgnoreCase))
+
+                            {
+                                mvm.gc2rom = filePath;
+                                txtBox.Text = filePath;
+                            }
+                            else
+                            {
+                                MessageBox.Show("Only ISO or GCM files are allowed for Disc 2.",
+                                                "Invalid File Type",
+                                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                            return;
+                        }
+
+                        // Assign to corresponding ViewModel property
+                        switch (txtBox.Name)
+                        {
+                            case "rp":
+                                PostRomPath(filePath); // Call existing function for ROM processing
+                                break;
+                            case "ic":
+                                mvm.GameConfiguration.TGAIco.ImgPath = filePath;
+                                break;
+                            case "tv":
+                                mvm.GameConfiguration.TGATv.ImgPath = filePath;
+                                break;
+                            case "drc":
+                                mvm.GameConfiguration.TGADrc.ImgPath = filePath;
+                                break;
+                            case "log":
+                                mvm.GameConfiguration.TGALog.ImgPath = filePath;
+                                break;
+                            case "sound":
+                                mvm.BootSound = filePath;
+                                break;
+                        }
+
+                        txtBox.Text = filePath; // Update UI text field
+                    }
+                }
+            }
+        }
+
+
         public void imgpath(string icon, string tv)
         {
             ic.Text = icon;
@@ -103,8 +170,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         }
         private void Set_Rom_Path(object sender, RoutedEventArgs e)
         {
-            string path = string.Empty;
-            path = mvm.GetFilePath(true, false);
+            var path = mvm.GetFilePath(true, false);
+            PostRomPath(path);
+        }
+
+        private void PostRomPath(string path)
+        {
             int TitleIDInt = 0;
             bool isok = false;
             if (!CheckIfNull(path))
@@ -112,9 +183,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 using (var reader = new BinaryReader(File.OpenRead(path)))
                 {
                     if (path.ToLower().Contains(".gcz"))
-                    {
                         isok = true;
-                    }
                     else
                     {
                         reader.BaseStream.Position = 0x00;
@@ -124,13 +193,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             reader.BaseStream.Position = 0x18;
                             long GameType = reader.ReadInt64();
                             if (GameType == 4440324665927270400)
-                            {
                                 isok = true;
-                            }
                         }
                         reader.Close();
                     }
-                    
                 }
                 if (isok)
                 {
@@ -141,13 +207,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         trimn.IsChecked = false;
                         trimn_Click(null, null);
                     }
+
                     mvm.RomPath = path;
                     mvm.RomSet = true;
+
                     if (mvm.BaseDownloaded)
-                    {
                         mvm.CanInject = true;
 
-                    }
                     if (!path.ToLower().Contains(".gcz"))
                     {
                         trimn.IsChecked = false;
@@ -157,20 +223,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
                         mvm.gc2rom = "";
-                        if (mvm.GameConfiguration.TGAIco.ImgPath != "" || mvm.GameConfiguration.TGAIco.ImgPath != null)
-                        {
+
+                        if (string.IsNullOrEmpty(mvm.GameConfiguration.TGAIco.ImgPath))
                             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
-                        }
-                        if (mvm.GameConfiguration.TGATv.ImgPath != "" || mvm.GameConfiguration.TGATv.ImgPath != null)
-                        {
+
+                        if (string.IsNullOrEmpty(mvm.GameConfiguration.TGATv.ImgPath))
                             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
-                        }
                     }
-                    
                 }
                 else
                 {
-
                     Custom_Message cm = new Custom_Message("Wrong ROM", "The chosen ROM is not a supported GameCube Game");
                     try
                     {
@@ -182,10 +244,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     }
                     cm.ShowDialog();
                 }
-
             }
-
-
         }
 
         private void InjectGame(object sender, RoutedEventArgs e)
