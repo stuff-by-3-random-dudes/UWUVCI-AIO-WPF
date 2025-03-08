@@ -126,9 +126,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                             }
                             else
                             {
-                                MessageBox.Show("Only ISO or GCM files are allowed for Disc 2.",
-                                                "Invalid File Type",
-                                                MessageBoxButton.OK, MessageBoxImage.Error);
+                                Custom_Message cm = new Custom_Message("Invalid File Type", "Only ISO or GCM files are allowed for Disc 2.");
+                                try
+                                {
+                                    cm.Owner = mvm.mw;
+                                }
+                                catch (Exception)
+                                {
+
+                                }
+                                cm.ShowDialog();
                             }
                             return;
                         }
