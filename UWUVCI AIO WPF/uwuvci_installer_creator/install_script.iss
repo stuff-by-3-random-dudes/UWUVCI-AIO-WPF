@@ -6,7 +6,7 @@
 AppName=UWUVCI AIO
 AppId=UWUVCI AIO
 AppVersion=3.Z-B
-DefaultDirName={code:GetInstallDir}
+DefaultDirName={userappdata}\UWUVCI_AIO
 UninstallDisplayIcon={app}\UWUVCI AIO.exe
 OutputBaseFilename=UWUVCI_INSTALLER
 Compression=lzma2
@@ -72,9 +72,13 @@ begin
 end;
 
 function IsAlreadyInstalled: Boolean;
+var
+  InstallPath: string;
 begin
-  Result := DirExists(ExpandConstant('{app}'));
+  InstallPath := ExpandConstant('{userappdata}\UWUVCI_AIO');  // Use a safe fallback path
+  Result := DirExists(InstallPath);  // Check if the folder exists
 end;
+
 
 function ConfirmUninstall: Boolean;
 begin
