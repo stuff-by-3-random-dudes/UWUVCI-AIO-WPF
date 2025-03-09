@@ -165,4 +165,7 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 	This program was built using WPF (Windows Platform Foundation) and that does not natively work on non-Windows platforms.
 	Using the exe, you can run it on Mac/Linux using Wine or some other tool like that. The program will know if you're running it not on a Windows platform, and will do it's best to help you.
 	UWUVCI V4 will have Mac & Linux support.
+
+32) An error message popped up.
+	Read it, it'll explain the problem.
 	
