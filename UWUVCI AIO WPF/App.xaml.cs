@@ -7,8 +7,6 @@ using System.Windows.Controls;
 using UWUVCI_AIO_WPF.UI.Windows;
 using UWUVCI_AIO_WPF.Helpers;
 using GameBaseClassLibrary;
-using System.Linq;
-using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -197,18 +195,9 @@ namespace UWUVCI_AIO_WPF
                     t.Elapsed += KillProg;
                     t.Start();
                     Custom_Message cm = new Custom_Message("Resolution not supported",
-                        "Your screen resolution is not supported, please use a resolution of at least 1152x864\nThis instance will terminate in 5 seconds.");
+                        "Your screen resolution is not supported, please use a resolution of at least 1152x864\nIf your resolution is higher than this, then it's because of your zoom level, either way, please change your display settings.\nThis instance will terminate in 5 seconds.");
                     cm.ShowDialog();
                     KillProg(null, null);
-                }
-
-                if (!Environment.Is64BitOperatingSystem)
-                {
-                    Custom_Message cm = new Custom_Message("Warning",
-                        "Some features may cause issues on a 32Bit System. Upgrading to 64Bit would be recommended.\n" +
-                        "Due to an issue with packing on 32Bit Systems, you need Java installed for packing. \n" +
-                        "Report any issues in the UWUVCI Discord, or ping @NicoAICP or @ZestyTS in #wiiu-assistance in the Nintendo Homebrew discord.");
-                    cm.ShowDialog();
                 }
 
                 if (bypass)
