@@ -20,6 +20,15 @@ namespace UWUVCI_AIO_WPF
             // Redirect Console.WriteLine to the logger at the very beginning
             Console.SetOut(new ConsoleLoggerWriter());
 
+            // Check if running from OneDrive
+            if (IsRunningFromOneDrive())
+            {
+                MessageBox.Show("UWUVCI AIO cannot be run from a OneDrive folder due to compatibility issues. \n\n" +
+                    "Please move it to another location (e.g., C:\\Programs or C:\\Users\\YourName\\UWUVCI_AIO) before launching.",
+                    "Error: OneDrive Detected", MessageBoxButton.OK, MessageBoxImage.Error);
+                Environment.Exit(1); // Terminate the application
+            }
+
             // Add global event handlers for drag-and-drop
             EventManager.RegisterClassHandler(typeof(TextBox), UIElement.PreviewDragOverEvent, new DragEventHandler(GlobalTextBox_PreviewDragOver));
             EventManager.RegisterClassHandler(typeof(TextBox), UIElement.PreviewDropEvent, new DragEventHandler(GlobalTextBox_PreviewDrop));
@@ -55,6 +64,11 @@ namespace UWUVCI_AIO_WPF
         {
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
+        }
+        private bool IsRunningFromOneDrive()
+        {
+            string exePath = Process.GetCurrentProcess().MainModule.FileName;
+            return exePath.ToLower().Contains("onedrive");
         }
 
         private static void GlobalTextBox_PreviewDrop(object sender, DragEventArgs e)
