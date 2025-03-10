@@ -6,7 +6,7 @@
 AppName=UWUVCI AIO
 AppId=UWUVCI AIO
 AppVersion=3.Z-B
-DefaultDirName={userappdata}\UWUVCI_AIO
+DefaultDirName={userprofile}\UWUVCI_AIO
 UninstallDisplayIcon={app}\UWUVCI AIO.exe
 OutputBaseFilename=UWUVCI_INSTALLER
 Compression=lzma2
@@ -16,7 +16,7 @@ DisableProgramGroupPage=yes
 DefaultGroupName=UWUVCI AIO
 
 [Files]
-Source: "*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs;
+Source: "app\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs;
 Source: "dotnetfx481.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall;
 
 [Run]
@@ -125,13 +125,13 @@ begin
     Parent := WelcomePage.Surface;
     Left := ScaleX(10);
     Top := ScaleY(10);
-    Width := WelcomePage.SurfaceWidth - ScaleX(20);
+    Width := WelcomePage.SurfaceWidth - ScaleX(40);
     Caption := 'This installer will guide you through setting up UWUVCI AIO.' + #13#10 +
                'Before you proceed, please ensure that:' + #13#10 +
-               '- You have at least **500MB of free disk space**.' + #13#10 +
-               '- You are **not installing in a OneDrive folder**.' + #13#10 +
+               '- You have at least 15GB of free disk space.' + #13#10 +
+               '- You are not installing in a OneDrive folder.' + #13#10 +
                '- If using Wine, you have run `winetricks dotnet48`.' + #13#10#13#10 +
-               'Click **Next** to continue!';
+               'Click Next to continue!';
     AutoSize := True;
   end;
 end;
