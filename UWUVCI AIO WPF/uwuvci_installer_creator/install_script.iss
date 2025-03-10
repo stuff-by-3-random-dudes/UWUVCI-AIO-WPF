@@ -6,7 +6,7 @@
 AppName=UWUVCI AIO
 AppId=UWUVCI AIO
 AppVersion=3.Z-B
-DefaultDirName={userprofile}\UWUVCI_AIO
+DefaultDirName={userdocs}\UWUVCI_AIO
 UninstallDisplayIcon={app}\UWUVCI AIO.exe
 OutputBaseFilename=UWUVCI_INSTALLER
 Compression=lzma2
