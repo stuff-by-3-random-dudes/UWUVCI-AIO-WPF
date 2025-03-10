@@ -14,9 +14,16 @@ namespace UWUVCI_AIO_WPF
     {
         Timer t = new Timer(5000);
         private StartupEventArgs _startupArgs;
+        private static string AppDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "UWUVCI-V3");
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            // Ensure the settings directory exists before attempting to load settings
+            if (!Directory.Exists(AppDataPath))
+                Directory.CreateDirectory(AppDataPath);
+
             // Redirect Console.WriteLine to the logger at the very beginning
             Console.SetOut(new ConsoleLoggerWriter());
 
