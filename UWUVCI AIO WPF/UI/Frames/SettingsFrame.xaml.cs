@@ -1,19 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 
@@ -113,11 +102,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_10(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.dont = false;
-            Properties.Settings.Default.ndsw = false;
-            Properties.Settings.Default.snesw = false;
-            Properties.Settings.Default.gczw = false;
-            Properties.Settings.Default.Save();
+            JsonSettingsManager.Settings.dont = false;
+            JsonSettingsManager.Settings.ndsw = false;
+            JsonSettingsManager.Settings.snesw = false;
+            JsonSettingsManager.Settings.gczw = false;
+            JsonSettingsManager.SaveSettings();
         }
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
@@ -144,6 +133,11 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         private void Button_Click_13(object sender, RoutedEventArgs e)
         {
             Process.Start("https://ko-fi.com/zestyts");
+        }
+
+        private void ShowTutorialScreens_Click(object sender, RoutedEventArgs e)
+        {
+            new IntroductionWindow().ShowDialog();
         }
     }
 }

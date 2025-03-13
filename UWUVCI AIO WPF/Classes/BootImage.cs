@@ -3,16 +3,13 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
     public class BootImage : IDisposable
     {
         private bool disposed = false;
-
         private Bitmap _frame;
         private Bitmap _titleScreen;
         private Font font;
@@ -21,29 +18,20 @@ namespace UWUVCI_AIO_WPF.Classes
         public Rectangle _rectangleGBA = new Rectangle(132, 260, 399, 266);
         public Rectangle _rectangleGBC = new Rectangle(183, 260, 296, 266);
         public Rectangle _rectangleH4V3 = new Rectangle(131, 249, 400, 300);
-        // Rectangle rectanglewii = new Rectangle(224, 201, 832, 332);
         public Rectangle _rectangleWII = new Rectangle(224, 200, 832, 333);
 
         public Bitmap Frame
         {
-            set
-            {
-                if (_frame != null)
-                    _frame.Dispose();
-                _frame = value;
-            }
+            set { _frame?.Dispose(); _frame = value; }
             get { return _frame; }
         }
+
         public Bitmap TitleScreen
         {
-            set
-            {
-                if (_titleScreen != null)
-                    _titleScreen.Dispose();
-                _titleScreen = value;
-            }
+            set { _titleScreen?.Dispose(); _titleScreen = value; }
             get { return _titleScreen; }
         }
+
         public string NameLine1;
         public string NameLine2;
         public int Released;
@@ -52,8 +40,6 @@ namespace UWUVCI_AIO_WPF.Classes
 
         public BootImage()
         {
-            _frame = null;
-            _titleScreen = null;
             NameLine1 = null;
             NameLine2 = null;
             Released = 0;
@@ -78,16 +64,8 @@ namespace UWUVCI_AIO_WPF.Classes
             {
                 if (disposing)
                 {
-                    if (Frame != null)
-                    {
-                        Frame.Dispose();
-                        Frame = null;
-                    }
-                    if (TitleScreen != null)
-                    {
-                        TitleScreen.Dispose();
-                        TitleScreen = null;
-                    }
+                    _frame?.Dispose();
+                    _titleScreen?.Dispose();
                 }
                 disposed = true;
             }
@@ -95,15 +73,55 @@ namespace UWUVCI_AIO_WPF.Classes
 
         private bool ContainsJapanese(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return false;
+
             foreach (char c in text)
             {
-                UnicodeCategory cat = char.GetUnicodeCategory(c);
-                if (cat == UnicodeCategory.OtherLetter) // this covers Hiragana, Katakana, and Kanji
+                if (char.GetUnicodeCategory(c) == UnicodeCategory.OtherLetter) // this covers Hiragana, Katakana, and Kanji
                     return true;
             }
             return false;
         }
 
+        private Font GetFont()
+        {
+            try
+            {
+                var privateFonts = new PrivateFontCollection();
+                privateFonts.AddFontFile(@"bin\Tools\font.otf");
+                return new Font(privateFonts.Families[0], 10.0F, FontStyle.Regular, GraphicsUnit.Point);
+            }
+            catch
+            {
+                return new Font("Trebuchet MS", 10.0F, FontStyle.Bold, GraphicsUnit.Point);
+            }
+        }
+
+        private Rectangle GetRectangleForConsole(string console)
+        {
+            _imageVar = "_rectangle" + console;
+            try
+            {
+                var fieldInfo = GetType().GetField(_imageVar, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                return fieldInfo != null ? (Rectangle)fieldInfo.GetValue(this) : _rectangleH4V3;
+            }
+            catch
+            {
+                return _rectangleH4V3;
+            }
+        }
+
+        private void DrawText(Graphics g, string text, Font font, Rectangle rectangle, Pen shadow, Pen outline, Brush brush)
+        {
+            using (var path = new GraphicsPath())
+            {
+                path.AddString(text, font.FontFamily, (int)FontStyle.Regular, g.DpiY * 25.0F / 72.0F, rectangle, new StringFormat());
+                g.DrawPath(shadow, path);
+                g.DrawPath(outline, path);
+                g.FillPath(brush, path);
+            }
+        }
 
         public Bitmap Create(string console)
         {

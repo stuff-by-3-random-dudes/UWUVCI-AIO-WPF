@@ -1,66 +1,159 @@
-﻿;InnoSetupVersion=6.0.0 (Unicode)
+﻿; Inno Setup Script for UWUVCI AIO
+; Version 3.Z-B
+; Supports Windows and Wine
 
 [Setup]
 AppName=UWUVCI AIO
 AppId=UWUVCI AIO
-AppVersion=3.Z-Again
-DefaultDirName={userdocs}\UWUVCI AIO
+AppVersion=3.Z-B
+DefaultDirName={userdocs}\UWUVCI_AIO
 UninstallDisplayIcon={app}\UWUVCI AIO.exe
 OutputBaseFilename=UWUVCI_INSTALLER
 Compression=lzma2
 PrivilegesRequired=lowest
 DisableDirPage=no
 DisableProgramGroupPage=yes
-
+DefaultGroupName=UWUVCI AIO
 
 [Files]
-Source: "{app}\UWUVCI AIO.exe"; DestDir: "{app}"; MinVersion: 0.0,6.0; 
-Source: "{app}\UWUVCI DEBUG MODE.bat"; DestDir: "{app}"; MinVersion: 0.0,6.0; 
-Source: "{app}\GameBaseClassLibrary.dll"; DestDir: "{app}"; MinVersion: 0.0,6.0; 
-Source: "{app}\Readme.txt"; DestDir: "{app}"; MinVersion: 0.0,6.0; 
-Source: "{app}\UWUVCI VWII.exe"; DestDir: "{app}"; MinVersion: 0.0,6.0; 
-Source: "{app}\bin\vwii\Tools\ASH.exe"; DestDir: "{app}\bin\vwii\Tools"; MinVersion: 0.0,6.0; Flags: ignoreversion 
-Source: "{app}\bin\vwii\Tools\ICSharpCode.SharpZipLib.dll"; DestDir: "{app}\bin\vwii\Tools"; MinVersion: 0.0,6.0; Flags: ignoreversion 
-Source: "{app}\bin\vwii\Tools\ThemeMii.exe"; DestDir: "{app}\bin\vwii\Tools"; MinVersion: 0.0,6.0; Flags: ignoreversion 
+Source: "app\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs;
+Source: "dotnetfx481.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall;
 
 [Run]
-Filename: "{app}\Readme.txt"; MinVersion: 0.0,6.0; Flags: shellexec skipifdoesntexist postinstall skipifsilent nowait
-Filename: "{app}\UWUVCI AIO.exe"; Description: "{cm:LaunchProgram,UWUVCI AIO v3.Z Again}"; MinVersion: 0.0,6.0; Flags: postinstall skipifsilent nowait
+Filename: "{tmp}\dotnetfx481.exe"; Parameters: "/quiet /norestart"; StatusMsg: "Installing .NET Framework 4.8.1..."; Check: not IsRunningUnderWine and NeedsDotNet481; Flags: runhidden;
+Filename: "{app}\Readme.txt"; Flags: shellexec postinstall nowait;
+Filename: "{app}\UWUVCI AIO.exe"; Description: "Launch UWUVCI AIO"; Flags: postinstall nowait unchecked;
 
 [Icons]
-Name: "{autoprograms}\UWUVCI AIO"; Filename: "{app}\UWUVCI AIO.exe"; MinVersion: 0.0,6.0; 
-Name: "{autodesktop}\UWUVCI AIO"; Filename: "{app}\UWUVCI AIO.exe"; Tasks: desktopicon; MinVersion: 0.0,6.0; 
+Name: "{group}\UWUVCI AIO"; Filename: "{app}\UWUVCI AIO.exe";
+Name: "{group}\Uninstall UWUVCI AIO"; Filename: "{uninstallexe}";
+Name: "{autodesktop}\UWUVCI AIO"; Filename: "{app}\UWUVCI AIO.exe"; Tasks: desktopicon;
+Name: "{autodesktop}\UWUVCI AIO Debug Mode"; Filename: "{app}\UWUVCI DEBUG MODE.bat"; Tasks: desktopicon;
+Name: "{autodesktop}\UWUVCI AIO ReadMe"; Filename: "{app}\Readme.txt"; Tasks: desktopicon;
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; MinVersion: 0.0,6.0; 
-
-[InstallDelete]
-Type: filesandordirs; Name: "{app}\UWUVCI AIO.exe"; 
-Type: filesandordirs; Name: "{app}\bin\bases"; 
-Type: filesandordirs; Name: "{app}\bin\Tools"; 
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{app}\bin"; 
-Type: filesandordirs; Name: "{app}\InjectedGames"; 
-Type: filesandordirs; Name: "{app}\SourceFiles"; 
-Type: filesandordirs; Name: "{app}\configs"; 
-Type: filesandordirs; Name: "{localappdata}\UWUVCI_AIO_WPF"; 
+Type: filesandordirs; Name: "{app}"; Check: ConfirmUninstall;
 
 [CustomMessages]
 default.NameAndVersion=%1 version %2
 default.AdditionalIcons=Additional shortcuts:
 default.CreateDesktopIcon=Create a &desktop shortcut
-default.CreateQuickLaunchIcon=Create a &Quick Launch shortcut
-default.ProgramOnTheWeb=%1 on the Web
 default.UninstallProgram=Uninstall %1
 default.LaunchProgram=Launch %1
-default.AssocFileExtension=&Associate %1 with the %2 file extension
-default.AssocingFileExtension=Associating %1 with the %2 file extension...
-default.AutoStartProgramGroupDescription=Startup:
-default.AutoStartProgram=Automatically start %1
-default.AddonHostProgramNotFound=%1 could not be located in the folder you selected.%n%nDo you want to continue anyway?
 
-[Languages]
-; These files are stubs
-; To achieve better results after recompilation, use the real language files
+[Code]
+var
+  WelcomePage: TWizardPage;
 
+function IsDotNetInstalled(version: string): Boolean;
+var
+  Success: Boolean;
+  Installed: Cardinal;
+begin
+  Success := RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', Installed);
+  Result := Success and (Installed >= 528372); // .NET 4.8.1 release key is 528372
+end;
+
+function NeedsDotNet481: Boolean;
+begin
+  Result := not IsDotNetInstalled('4.8.1');
+end;
+
+function IsRunningUnderWine: Boolean;
+var
+  WineCheck: String;
+begin
+  Result := RegQueryStringValue(HKEY_LOCAL_MACHINE, 'Software\Wine', '', WineCheck);
+  if not Result then
+    Result := GetEnv('WINELOADER') <> '';
+end;
+
+function IsAlreadyInstalled: Boolean;
+var
+  InstallPath: string;
+begin
+  InstallPath := ExpandConstant('{userappdata}\UWUVCI_AIO');  // Use a safe fallback path
+  Result := DirExists(InstallPath);  // Check if the folder exists
+end;
+
+
+function ConfirmUninstall: Boolean;
+begin
+  Result := MsgBox('Are you sure you want to uninstall UWUVCI AIO?', mbConfirmation, MB_YESNO) = IDYES;
+end;
+
+function GetInstallDir(Default: string): string;
+var
+  HomePath: string;
+begin
+  if IsRunningUnderWine then
+  begin
+    // Get $HOME for Unix-like systems
+    if GetEnv('HOME') <> '' then
+      HomePath := GetEnv('HOME')
+    else
+      HomePath := ExpandConstant('{userdocs}'); // Fallback for Wine users
+
+    Result := HomePath + '/.UWUVCI_AIO';
+  end
+  else
+  begin
+    // Get USERPROFILE for Windows
+    if GetEnv('USERPROFILE') <> '' then
+      HomePath := GetEnv('USERPROFILE')
+    else
+      HomePath := ExpandConstant('{userdocs}'); // Fallback for Windows
+
+    Result := HomePath + '\UWUVCI_AIO';
+  end;
+end;
+
+function IsOneDrivePath(Path: string): Boolean;
+begin
+  Result := (Pos('OneDrive', Path) > 0);
+end;
+
+procedure AddWelcomePage;
+begin
+  WelcomePage := CreateCustomPage(wpWelcome, 'Welcome to UWUVCI AIO', 'Thank you for using UWUVCI AIO!');
+
+  with TNewStaticText.Create(WizardForm) do
+  begin
+    Parent := WelcomePage.Surface;
+    Left := ScaleX(10);
+    Top := ScaleY(10);
+    Width := WelcomePage.SurfaceWidth - ScaleX(40);
+    Caption := 'This installer will guide you through setting up UWUVCI AIO.' + #13#10 +
+               'Before you proceed, please ensure that:' + #13#10 +
+               '- You have at least 15GB of free disk space.' + #13#10 +
+               '- You are not installing in a OneDrive folder.' + #13#10 +
+               '- If using Wine, you have run `winetricks dotnet48`.' + #13#10#13#10 +
+               'Click Next to continue!';
+    AutoSize := True;
+  end;
+end;
+
+procedure InitializeWizard;
+var
+  InstallPath: string;
+begin
+  InstallPath := GetInstallDir('');
+
+  if IsOneDrivePath(InstallPath) then
+  begin
+    MsgBox('UWUVCI AIO cannot be installed in a OneDrive folder due to compatibility issues.' + #13#10 +
+           'Please choose a different location.', mbError, MB_OK);
+    Abort;
+  end;
+
+  AddWelcomePage;
+
+  if IsAlreadyInstalled then
+  begin
+    MsgBox('A previous version of UWUVCI AIO is already installed.' + #13#10 +
+           'Installing over it may overwrite existing files.', mbInformation, MB_OK);
+  end;
+end;

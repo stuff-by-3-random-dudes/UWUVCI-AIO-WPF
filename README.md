@@ -1,4 +1,4 @@
-# UWUVCI-AIO-WPF
+# UWUVCI-AIO-WPF: The ZestyTS Fork (OT Mode)
 
 Wii U All-in-One Injector.
 
@@ -16,14 +16,13 @@ Wii U All-in-One Injector.
 
 ## Questions and Concerns
 
-Check out our discord:
-* https://discord.gg/mPZpqJJVmZ
-
-Check out the official video guide:
+Check out my video guide:
 * https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
-## This repo is no longer in active development
+## This repo is forked from the official version (expectations)
 
-* The lastest version of this writing is 3.Z-Again
-* Any future updates will be community driven
-* Repo is still being managed, so feel free to fork/PR
+* I'm adding changes I might make based on how I want to use UWUVCI.
+* This fork will not contain releases that are installers, the intent will be building from the source or dropping the exe in the release onto a current installation
+* I will not be providing support for this repo, since this is for my personal use and those savvy enough to use it.
+* Because of the constant pestering I have been receiving about this repo, I have removed the exe from releases. If you want to use this, you must build from source.
+* This fork starts from release "3.Z-Again" of UWUVCI 3.

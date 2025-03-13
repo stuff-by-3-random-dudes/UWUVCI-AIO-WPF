@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -203,22 +205,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 var messageLower = Message.Content.ToString().ToLower();
                 if (messageLower.Contains("gcz"))
                 {
-                    Properties.Settings.Default.gczw = true;
+                    JsonSettingsManager.Settings.gczw = true;
                 }
                 else if (messageLower.Contains("dsi"))
                 {
-                    Properties.Settings.Default.ndsw = true;
+                    JsonSettingsManager.Settings.ndsw = true;
                 }
                 else if (messageLower.Contains("co-processor"))
                 {
-                    Properties.Settings.Default.snesw = true;
+                    JsonSettingsManager.Settings.snesw = true;
                 }
                 else if (messageLower.Contains("images"))
                 {
-                    Properties.Settings.Default.dont = true;
+                    JsonSettingsManager.Settings.dont = true;
                 }
 
-                Properties.Settings.Default.Save();
+                JsonSettingsManager.SaveSettings();
             }
         }
     }

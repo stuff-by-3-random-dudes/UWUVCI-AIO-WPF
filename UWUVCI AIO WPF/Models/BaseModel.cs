@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -17,10 +14,7 @@ namespace UWUVCI_AIO_WPF
         // source property that is being updated.
         protected void OnPropertyChanged([CallerMemberName]string propertyName = "")
         {
-            if (this.PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

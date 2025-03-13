@@ -1,17 +1,5 @@
-﻿using GameBaseClassLibrary;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -26,14 +14,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                if (this.Owner?.GetType() != typeof(MainWindow))
+                if (Owner?.GetType() != typeof(MainWindow))
                 {
-                    this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 }
             }
             catch (Exception)
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             InitializeComponent();
             this.ckey = ckey;
@@ -56,9 +44,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public EnterKey(int i)
         {
-            if (this.Owner?.GetType() != typeof(MainWindow))
+            if (Owner?.GetType() != typeof(MainWindow))
             {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                WindowStartupLocation = WindowStartupLocation.CenterScreen;
             }
             InitializeComponent();
             region.Visibility = Visibility.Hidden;
@@ -79,11 +67,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            tbKey.Text = tbKey.Text.Trim();
             if(tbKey.Text.Length > 32 || tbKey.Text.Length < 32)
             {
                 if(tbKey.Text.Length > 32)
@@ -107,13 +96,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     MainViewModel mvm = (MainViewModel)FindResource("mvm");
                     if (mvm.checkcKey(tbKey.Text))
                     {
-                        this.Visibility = Visibility.Hidden;
+                        Visibility = Visibility.Hidden;
                         cm = new Custom_Message("Correct Key", "The entered CommonKey is correct!");
-                        cm.Owner = this.Owner;
-                        (this.Owner as MainWindow).move = false;
+                        cm.Owner = Owner;
+                        (Owner as MainWindow).move = false;
                         cm.ShowDialog();
-                        (this.Owner as MainWindow).move = true;
-                        this.Close();
+                        (Owner as MainWindow).move = true;
+                        Close();
                         mvm.ArePathsSet();
                     }
                     else
@@ -129,13 +118,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     MainViewModel mvm = (MainViewModel)FindResource("mvm");
                     if (mvm.checkKey(tbKey.Text))
                     {
-                        this.Visibility = Visibility.Hidden;
+                        Visibility = Visibility.Hidden;
                         cm =  new Custom_Message("Correct Key", "The entered TitleKey is correct!");
-                        cm.Owner = this.Owner;
-                        (this.Owner as MainWindow).move = false;
+                        cm.Owner = Owner;
+                        (Owner as MainWindow).move = false;
                         cm.ShowDialog();
-                        (this.Owner as MainWindow).move = true;
-                        this.Close();
+                        (Owner as MainWindow).move = true;
+                        Close();
                     }
                     else
                     {

@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -224,134 +225,184 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             return string.Format("{0:0.##} {1}", dblSByte, Suffix[i]);
         }
         private void setup_Click(object sender, RoutedEventArgs e)
-        {if(!(FindResource("mvm") as MainViewModel).saveworkaround)
+        {
+            var mvm = FindResource("mvm") as MainViewModel;
+            if (!mvm.saveworkaround)
             {
-                long injctSize = GetDirectorySize(Path.Combine(path, (FindResource("mvm") as MainViewModel).foldername), true);
-                if (injctSize >= new DriveInfo(driveletter).AvailableFreeSpace)
-                {
-                    long div = injctSize - new DriveInfo(driveletter).AvailableFreeSpace + 1048576;
-                    Custom_Message cm = new Custom_Message("Insufficient Space", $" You do not have enough space on the selected drive. \n Please make sure you have at least {FormatBytes(div)} free! ");
-                    try
-                    {
-                        cm.Owner = (FindResource("mvm") as MainViewModel).mw;
-                    }
-                    catch (Exception)
-                    {
-                        //left empty on purpose
-                    }
-                    cm.ShowDialog();
-                }
-                else
-                {
-                    dp.Tick += Dp_Tick;
-                    dp.Interval = TimeSpan.FromSeconds(1);
-                    dp.Start();
-                    Task.Run(() =>
-                    {
+                long injctSize = GetDirectorySize(Path.Combine(path, mvm.foldername), true);
+                long availableSpace = new DriveInfo(driveletter).AvailableFreeSpace;
 
-                        if (gc)
-                        {
-                            SetupNintendont();
-                        }
-                        CopyInject();
-                    });
-                    setup.IsEnabled = false;
+                if (injctSize >= availableSpace)
+                {
+                    long neededSpace = injctSize - availableSpace + 1048576;
+                    Custom_Message cm = new Custom_Message(
+                        "Insufficient Space",
+                        $"You do not have enough space on the selected drive.\n" +
+                        $"Please make sure you have at least {FormatBytes(neededSpace)} free!"
+                    );
+
+                    try { cm.Owner = mvm.mw; } catch { }  // Ignore ownership exception
+                    cm.ShowDialog();
+                    return;
                 }
             }
-            else
-            {
-                
-                    dp.Tick += Dp_Tick;
-                    dp.Interval = TimeSpan.FromSeconds(1);
-                    dp.Start();
-                    Task.Run(() =>
-                    {
 
-                        if (gc)
-                        {
-                            SetupNintendont();
-                        }
-                        CopyInject();
-                    });
-                    setup.IsEnabled = false;
-                
-            }   
+            dp.Tick += Dp_Tick;
+            dp.Interval = TimeSpan.FromSeconds(1);
+            dp.Start();
+
+            setup.IsEnabled = false;
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (gc) 
+                        SetupNintendont();
+
+                    CopyInject();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Error in setup process: {ex.Message}\n{ex.StackTrace}");
+                    Dispatcher.Invoke(() => { mvm.msg = "Setup Failed!"; });
+                }
+            });
         }
 
         private void Dp_Tick(object sender, EventArgs e)
         {
-            MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            status.Content = mvm.msg;
-            if(mvm.msg == "Done with Setup!")
+            var mvm = FindResource("mvm") as MainViewModel;
+
+            Dispatcher.Invoke(() =>
             {
-                mvm.msg = "";
-                dp.Stop();
-                setup.IsEnabled = true;
-                setup.Click -= setup_Click;
-                setup.Click += Window_Close;
-                setup.Content = "Close";
-            }
+                status.Content = mvm.msg;
+
+                if (mvm.msg == "Done with Setup!" || mvm.msg == "Setup Failed!")
+                {
+                    dp.Stop();
+                    setup.IsEnabled = true;
+                    setup.Click -= setup_Click;
+                    setup.Click += Window_Close;
+                    setup.Content = "Close";
+                }
+            });
         }
 
         private void SetupNintendont()
         {
-           
-            MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            mvm.msg = "";
-            mvm.msg = "Downloading Nintendont...";
-            if (Directory.Exists(@"bin\tempsd"))
+            try
             {
-                Directory.Delete(@"bin\tempsd", true);
-            }
-            Directory.CreateDirectory(@"bin\tempsd");
-            var client = new WebClient();
-            client.DownloadFile("https://dl.dropbox.com/s/3swnsatmautzlk4/Nintendont.zip?dl=1", @"bin\tempsd\nintendont.zip");
-            using(FileStream s = new FileStream(@"bin\tempsd\nintendont.zip", FileMode.Open, FileAccess.ReadWrite))
-            {
-                ZipArchive z = new ZipArchive(s);
-                z.ExtractToDirectory(@"bin\tempsd\nintendont");
-                s.Close();
-            }
-           mvm.msg = "Setting up Nintendon't...";
-            if (!File.Exists(driveletter + "\\nincfg.bin"))
-               
+                var mvm = FindResource("mvm") as MainViewModel;
+                Dispatcher.Invoke(() => mvm.msg = "Downloading Nintendont...");
+                Logger.Log("Starting SetupNintendont...");
+
+                string tempPath = @"bin\tempsd";
+
+                if (Directory.Exists(tempPath)) 
+                    Directory.Delete(tempPath, true);
+
+                Directory.CreateDirectory(tempPath);
+
+                string zipPath = Path.Combine(tempPath, "nintendont.zip");
+
+                using (var client = new WebClient())
                 {
-                    File.Copy(@"bin\tempsd\nintendont\nincfg.bin", driveletter + @"\nincfg.bin");
+                    Logger.Log("Downloading Nintendont...");
+                    client.DownloadFile("https://dl.dropbox.com/s/3swnsatmautzlk4/Nintendont.zip?dl=1", zipPath);
                 }
 
-            if (!Directory.Exists(driveletter + "\\apps\\nintendont"))
-            {
-                Directory.CreateDirectory(driveletter + "\\apps\\nintendont");
+                Logger.Log("Extracting Nintendont...");
+                ZipFile.ExtractToDirectory(zipPath, tempPath);
+
+                string nintendontPath = Path.Combine(driveletter, "apps", "nintendont");
+
+                if (Directory.Exists(nintendontPath))
+                    Directory.Delete(nintendontPath, true);
+
+                Directory.CreateDirectory(nintendontPath);
+
+                using (var client = new WebClient())
+                {
+                    Logger.Log("Downloading Nintendont files...");
+                    client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/loader/loader.dol", Path.Combine(nintendontPath, "boot.dol"));
+                    client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/nintendont/meta.xml", Path.Combine(nintendontPath, "meta.xml"));
+                    client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/nintendont/icon.png", Path.Combine(nintendontPath, "icon.png"));
+                }
+
+                Logger.Log("Copying Nintendont codes...");
+                CopyDirectory(Path.Combine(tempPath, "nintendont", "codes"), Path.Combine(driveletter, "codes"));
+
+                Directory.Delete(tempPath, true);
+                Logger.Log("SetupNintendont completed.");
             }
-            else
+            catch (Exception ex)
             {
-                Directory.Delete(driveletter + "\\apps\\nintendont", true);
-                Directory.CreateDirectory(driveletter + "\\apps\\nintendont");
+                Logger.Log($"Error in SetupNintendont: {ex.Message}");
             }
-            client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/loader/loader.dol", driveletter + "\\apps\\nintendont\\boot.dol");
-            client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/nintendont/meta.xml", driveletter + "\\apps\\nintendont\\meta.xml");
-            client.DownloadFile("https://raw.githubusercontent.com/GaryOderNichts/Nintendont/master/nintendont/icon.png", driveletter + "\\apps\\nintendont\\icon.png");
-            DirectoryCopy(@"bin\tempsd\nintendont\codes", driveletter + "\\codes", true);
-            Directory.Delete(@"bin\tempsd", true);
         }
 
         private void CopyInject()
         {
-            MainViewModel mvm = FindResource("mvm") as MainViewModel;
-            mvm.msg = "Copying Injected Game...";
-            if(!Path.Combine(path, mvm.foldername).Contains("[WUP]"))
+            var mvm = FindResource("mvm") as MainViewModel;
+            string sourcePath = Path.Combine(path, mvm.foldername);
+            string destinationPath = sourcePath.Contains("[WUP]")
+                ? Path.Combine(driveletter, "install", mvm.foldername)
+                : Path.Combine(driveletter, "wiiu", "games", mvm.foldername);
+
+            try
             {
-                DirectoryCopy(Path.Combine(path, mvm.foldername), driveletter + "\\wiiu\\games\\" + mvm.foldername, true);
+                Dispatcher.Invoke(() => mvm.msg = "Copying Injected Game...");
+                Logger.Log($"Copying from {sourcePath} to {destinationPath}");
+
+                CopyDirectory(sourcePath, destinationPath);
+
+                Dispatcher.Invoke(() =>
+                {
+                    mvm.msg = "Done with Setup!";
+                    mvm.foldername = "";
+                });
+
+                Logger.Log("CopyInject completed successfully.");
             }
-            else
+            catch (Exception ex)
             {
-                DirectoryCopy(Path.Combine(path,mvm.foldername), driveletter + "\\install\\" + mvm.foldername, true);
+                Logger.Log($"Error in CopyInject: {ex.Message}");
+                Dispatcher.Invoke(() => mvm.msg = "Setup Failed!");
             }
-            
-            mvm.foldername = "";
-            mvm.msg = "Done with Setup!";
-            
         }
+
+        public static void CopyDirectory(string sourceDir, string destDir)
+        {
+            if (!Directory.Exists(sourceDir))
+                throw new DirectoryNotFoundException($"Source directory not found: {sourceDir}");
+
+            Logger.Log($"Starting directory copy: {sourceDir} → {destDir}");
+
+            Directory.CreateDirectory(destDir);
+
+            foreach (string file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
+            {
+                string relativePath = file.Substring(sourceDir.Length + 1); // Get relative path
+                string destFilePath = Path.Combine(destDir, relativePath);
+                string destDirPath = Path.GetDirectoryName(destFilePath);
+
+                if (!Directory.Exists(destDirPath)) Directory.CreateDirectory(destDirPath);
+
+                try
+                {
+                    File.Copy(file, destFilePath, true);
+                    Logger.Log($"Copied: {file} → {destFilePath}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Failed to copy {file}: {ex.Message}");
+                }
+            }
+
+            Logger.Log($"Finished copying directory: {sourceDir} → {destDir}");
+        }
+
 
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
@@ -360,6 +411,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             if (!dir.Exists)
             {
+                Logger.Log($"Source directory does not exist or could not be found: {sourceDirName}");
                 throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
             }
 

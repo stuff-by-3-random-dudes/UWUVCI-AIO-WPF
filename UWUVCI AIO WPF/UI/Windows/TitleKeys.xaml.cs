@@ -143,7 +143,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
         private void wb_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
