@@ -1,4 +1,4 @@
-# UWUVCI-AIO-WPF: The ZestyTS Fork (OT Mode)
+# UWUVCI-AIO-WPF
 
 Wii U All-in-One Injector.
 
