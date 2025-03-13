@@ -128,7 +128,7 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 20) Path .../temp/temp missing
 	Same issue as with Pre.iso, please redump and try again.
 
-21) tmd.bin can't be found
+21) tmd.bin can't be found or parameter invalid or handle invalid
 	Same issue as with /temp/temp, please redump and try again
 
 22) Official Video Guide?
@@ -158,14 +158,23 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 	You're missing .Net Framework 4.8.1 Runtime, download/install it from here:
 		https://dotnet.microsoft.com/en-us/download/dotnet-framework/net481
 
-30) UWUVCI's progress bar gets stuck (outside of Downloading base)
+30) UWUVCI still won't open
+	If checking the log doesn't have anything in there, then you'll have to look in your Event Viewer to see what the problem is.
+
+31) UWUVCI's progress bar gets stuck (outside of Downloading base)
 	Try updating your tools (gear icon to the top right -> "Update Tools")
 
-31) Mac/Linux version?
+32) Mac/Linux version?
 	This program was built using WPF (Windows Platform Foundation) and that does not natively work on non-Windows platforms.
-	Using the exe, you can run it on Mac/Linux using Wine or some other tool like that. The program will know if you're running it not on a Windows platform, and will do it's best to help you.
+	Using the exe, you can run it on Mac/Linux using Wine or some other tool like that. 
+	The program will know if you're running it not on a Windows platform, and will do it's best to help you.
 	UWUVCI V4 will have Mac & Linux support.
 
-32) An error message popped up.
+33) Where can I find the Log file or the settings file?
+	It'll be in your local appdata folder called "UWUVCI-V3", you can find that by going to %localappdata%
+	As for my Unix friends, it depends on your tool like if you're using wine, you could do something like this "wine cmd /c echo %localappdata%"
+	That'll tell you if your folder is somewhere like ~/.wine/drive_c/users/$USER/Local Settings/Application Data/ or ~/.wine/drive_c/users/$USER/AppData/Local/
+
+34) An error message popped up.
 	Read it, it'll explain the problem.
 	
