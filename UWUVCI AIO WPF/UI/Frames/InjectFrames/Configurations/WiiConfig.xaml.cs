@@ -315,10 +315,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
 
-                        if (string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGAIco.ImgPath))
+                        if (!string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGAIco.ImgPath))
                             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
 
-                        if (string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv.ImgPath))
+                        if (!string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv.ImgPath))
                             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
 
                         if (path.ToLower().Contains("iso"))
