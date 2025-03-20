@@ -457,7 +457,7 @@ namespace UWUVCI_AIO_WPF
                     wit.WaitForExit();
                 }
 
-                Thread.Sleep(6000);
+                //Thread.Sleep(6000);
                 if (!File.Exists(Path.Combine(tempPath, "game.iso")))
                 {
                     Console.Clear();
@@ -532,24 +532,29 @@ namespace UWUVCI_AIO_WPF
                     iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
                 iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
-                string pass = "-passthrough ";
-                string extra = "";
+
                 if (functionName != "GCN")
                 {
+                    string pass = "-passthrough ";
+                    string extra = "";
                     if (mvm.passtrough != true)
                         pass = "";
                     if (mvm.Index == 2)
                         extra = "-horizontal ";
-                    if (mvm.Index == 3) extra = "-wiimote ";
+                    if (mvm.Index == 3) 
+                        extra = "-wiimote ";
                     if (mvm.Index == 4)
                         extra = "-instantcc ";
                     if (mvm.Index == 5)
                         extra = "-nocc ";
                     if (mvm.LR)
                         extra += "-lrpatch ";
-                }
 
-                iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}{pass}-iso game.iso";
+                    iso2nfs.StartInfo.Arguments = $"-enc -homebrew {extra}{pass}-iso game.iso";
+                }
+                else
+                    iso2nfs.StartInfo.Arguments = $"-enc -homebrew -passthrough -iso game.iso";
+
                 iso2nfs.Start();
                 iso2nfs.WaitForExit();
                 File.Delete("nfs2iso2nfs.exe");
@@ -727,7 +732,7 @@ namespace UWUVCI_AIO_WPF
 
             var preIso = Path.Combine(tempPath, "pre.iso");
 
-            if (!mvm.donttrim)
+            if (mvm.donttrim)
             {
                 witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
                 mvm.msg = "Prepping ROM...";
@@ -932,7 +937,7 @@ namespace UWUVCI_AIO_WPF
         private static void ConvertToNKit(string sourcePath, string outputFileName, bool debugMode)
         {
             using Process process = new Process();
-            if (debugMode)
+            if (!debugMode)
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
             process.StartInfo.FileName = Path.Combine(toolsPath, "ConvertToNKit.exe");
