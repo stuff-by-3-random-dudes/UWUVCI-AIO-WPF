@@ -587,47 +587,73 @@ namespace UWUVCI_AIO_WPF
         }
         private static void PatchDol(string consoleName, string mainDolPath, MainViewModel mvm)
         {
-            // Split the existing file paths in gctPath.Text by new lines
             var filePaths = mvm.gctPath.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var convertedGctFiles = new List<string>();
+
+            foreach (var path in filePaths)
+            {
+                string convertedPath = path;
+
+                if (Path.GetExtension(path).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        var (codes, gameId) = GctCode.ParseOcarinaOrDolphinTxtFile(path);
+                        convertedPath = Path.ChangeExtension(path, ".gct");
+                        GctCode.WriteGctFile(convertedPath, codes, gameId);
+                        Logger.Log($"Converted {path} → {convertedPath} (Game ID: {gameId ?? "None"})");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log($"ERROR: Failed to convert {path} - {ex.Message}");
+                        continue;
+                    }
+                }
+
+                convertedGctFiles.Add(convertedPath);
+            }
+
+            if (convertedGctFiles.Count == 0)
+            {
+                Logger.Log("ERROR: No valid GCT files available for patching.");
+                return;
+            }
 
             if (consoleName == "Wii")
             {
                 var stringBuilder = new StringBuilder();
 
+                foreach (var gctFile in convertedGctFiles)
+                    stringBuilder.Append($" --add-section \"{gctFile}\"");
 
-                // Iterate over each file path and append the corresponding "--add-section" argument
-                foreach (var path in filePaths)
-                    stringBuilder.Append($" --add-section \"{path}\"");
-
-                // Convert the StringBuilder to a string and return it
                 var witArgs = $"patch \"{mainDolPath}\"" + stringBuilder.ToString();
 
                 if (IsNativeWindows)
                 {
                     using var unpack = new Process();
-                    if (!mvm.debug)
-                        unpack.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
                     unpack.StartInfo.FileName = Path.Combine(toolsPath, "wstrt.exe");
                     unpack.StartInfo.Arguments = witArgs;
                     unpack.Start();
                     unpack.WaitForExit();
                 }
                 else
+                {
                     MacLinuxHelper.PrepareAndInformUserOnUWUVCIHelper(consoleName, "wstrt", witArgs, toolsPath);
-
-                return;
+                }
             }
+            else
+            {
+                var dol = new Dol();
+                var allCodes = new List<GctCode>();
 
-            //GCN version
-            var dol = new Dol();
-            var allCodes = new List<GctCode>();
+                foreach (var filePath in convertedGctFiles)
+                    allCodes.AddRange(GctCode.LoadFromFile(filePath));
 
-            foreach (var filePath in filePaths)
-                allCodes.AddRange(GctCode.LoadFromFile(filePath));
-
-            dol.PatchDolFile(mainDolPath, allCodes);
+                dol.PatchDolFile(mainDolPath, allCodes);
+            }
         }
+
+
 
         private static void GctPatch(MainViewModel mvm, string consoleName, string isoPath)
         {
