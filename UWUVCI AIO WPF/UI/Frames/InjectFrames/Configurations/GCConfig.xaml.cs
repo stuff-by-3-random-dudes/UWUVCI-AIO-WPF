@@ -231,10 +231,10 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
                         mvm.gc2rom = "";
 
-                        if (string.IsNullOrEmpty(mvm.GameConfiguration.TGAIco.ImgPath))
+                        if (!string.IsNullOrEmpty(mvm.GameConfiguration.TGAIco.ImgPath))
                             ic.Text = mvm.GameConfiguration.TGAIco.ImgPath;
 
-                        if (string.IsNullOrEmpty(mvm.GameConfiguration.TGATv.ImgPath))
+                        if (!string.IsNullOrEmpty(mvm.GameConfiguration.TGATv.ImgPath))
                             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
                     }
                 }
