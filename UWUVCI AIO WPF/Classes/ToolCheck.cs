@@ -31,7 +31,7 @@ namespace UWUVCI_AIO_WPF.Classes
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
             "wit.exe",
-            "wstrt.zip",
+            "wstrt.exe",
             "cygwin1.dll",
             "cygz.dll",
             "cyggcc_s-1.dll",
@@ -57,7 +57,9 @@ namespace UWUVCI_AIO_WPF.Classes
             "gba1.zip",
             "gba2.zip",
             "c2w_patcher.exe",
-            "DSLayoutScreens.zip"
+            "DSLayoutScreens.zip",
+            "cygcrypto-1.1.dll",
+            "cygncursesw-10.dll"
         };
 
         public static bool DoesToolsFolderExist()
@@ -155,31 +157,6 @@ namespace UWUVCI_AIO_WPF.Classes
                     }
                 }
             }
-
-            if (path.ToLower().Contains("wstrt.zip"))
-            {
-                if (!File.Exists(Path.Combine(FolderName, "wstrt.exe")))
-                {
-                    try
-                    {
-                        ZipFile.ExtractToDirectory(path, FolderName);
-                    }
-                    catch (Exception)
-                    {
-                        if (retryCount < MaxRetries)
-                        {
-                            Thread.Sleep(200);
-                            return DoesToolExist(path, retryCount + 1);
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Failed to extract {path} after {MaxRetries} attempts.");
-                            return false;
-                        }
-                    }
-                }
-            }
-
             return true;
         }
 

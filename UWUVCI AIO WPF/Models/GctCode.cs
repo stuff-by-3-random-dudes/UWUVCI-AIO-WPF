@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using UWUVCI_AIO_WPF.Helpers;
 
@@ -24,7 +25,7 @@ namespace UWUVCI_AIO_WPF.Models
             return extension switch
             {
                 ".gct" => ParseGctFile(filePath),
-                ".txt" => ParseOcarinaOrDolphinTxtFile(filePath),
+                ".txt" => ParseOcarinaOrDolphinTxtFile(filePath).Item1,
                 _ => throw new NotSupportedException($"Unsupported file format: {extension}")
             };
         }
@@ -52,34 +53,45 @@ namespace UWUVCI_AIO_WPF.Models
         }
 
         // Parse textual codelists from Ocarina Manager or Dolphin Emulator
-        public static List<GctCode> ParseOcarinaOrDolphinTxtFile(string txtFilePath)
+        public static (List<GctCode>, string) ParseOcarinaOrDolphinTxtFile(string txtFilePath)
         {
             var codes = new List<GctCode>();
             string[] lines = File.ReadAllLines(txtFilePath);
-            string currentGameId = null;
+            string gameId = null;
             string currentCodeName = null;
+            bool insideGeckoSection = false;
             var codeLines = new List<string>();
 
             foreach (var line in lines)
             {
                 string trimmedLine = line.Trim();
 
-                // Skip empty lines or comments
+                // Ignore empty lines or comments
                 if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#"))
                     continue;
 
-                // Detect game ID line
+                // Detect Game ID (Ocarina)
                 if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
                 {
-                    currentGameId = trimmedLine.Trim('[', ']');
-                    Logger.Log($"Detected Game ID: {currentGameId}");
+                    if (!trimmedLine.Equals("[Gecko]", StringComparison.OrdinalIgnoreCase))
+                    {
+                        gameId = trimmedLine.Trim('[', ']');
+                        Logger.Log($"Detected Game ID: {gameId}");
+                    }
                     continue;
                 }
 
-                // Detect code name line
+                // Detect start of Gecko section (Dolphin)
+                if (trimmedLine.Equals("[Gecko]", StringComparison.OrdinalIgnoreCase))
+                {
+                    insideGeckoSection = true;
+                    continue;
+                }
+
+                // Detect new cheat code section
                 if (trimmedLine.StartsWith("$"))
                 {
-                    // Process the previous code block if exists
+                    // Process previous block if any
                     if (codeLines.Count > 0)
                     {
                         codes.AddRange(ParseCodeBlock(currentCodeName, codeLines));
@@ -91,27 +103,32 @@ namespace UWUVCI_AIO_WPF.Models
                     continue;
                 }
 
-                // Collect code lines
+                // Validate and collect cheat codes
                 if (Regex.IsMatch(trimmedLine, @"^[0-9A-Fa-f]{8}\s+[0-9A-Fa-f]{8}$"))
                 {
                     codeLines.Add(trimmedLine);
                 }
+                else if (insideGeckoSection)
+                {
+                    Logger.Log($"WARNING: Ignoring unrecognized line in Gecko section: {trimmedLine}");
+                }
                 else
                 {
-                    Logger.Log($"Unrecognized line format: {trimmedLine}");
-                    throw new InvalidDataException($"Unrecognized line format: {trimmedLine}");
+                    Logger.Log($"ERROR: Unrecognized line format in {txtFilePath}: {trimmedLine}");
+                    throw new InvalidDataException($"Invalid format in {txtFilePath}: {trimmedLine}");
                 }
             }
 
-            // Process the last code block
+            // Process last block
             if (codeLines.Count > 0)
-            {
                 codes.AddRange(ParseCodeBlock(currentCodeName, codeLines));
-            }
 
-            Logger.Log($"Parsed {codes.Count} codes from TXT file.");
-            return codes;
+            if (codes.Count == 0)
+                throw new InvalidDataException($"No valid cheat codes found in {txtFilePath}");
+
+            return (codes, gameId);
         }
+
 
         // Helper method to parse a block of code lines into GctCode objects
         private static List<GctCode> ParseCodeBlock(string codeName, List<string> codeLines)
@@ -137,31 +154,45 @@ namespace UWUVCI_AIO_WPF.Models
         }
 
         // Convert a list of GctCode to a GCT binary file
-        public static void WriteGctFile(string gctFilePath, List<GctCode> codes)
+        public static void WriteGctFile(string gctFilePath, List<GctCode> codes, string gameId = null)
         {
-            using (var fs = new FileStream(gctFilePath, FileMode.Create, FileAccess.Write))
+            if (codes == null || codes.Count == 0)
             {
-                foreach (var code in codes)
+                Logger.Log($"ERROR: No cheat codes available to write to {gctFilePath}");
+                throw new InvalidDataException($"Cannot create {gctFilePath}: No valid codes found.");
+            }
+
+            using var fs = new FileStream(gctFilePath, FileMode.Create, FileAccess.Write);
+            Logger.Log($"Writing {codes.Count} cheat codes to {gctFilePath}");
+
+            // Optionally write Game ID if provided
+            if (!string.IsNullOrEmpty(gameId))
+            {
+                byte[] gameIdBytes = Encoding.ASCII.GetBytes(gameId.PadRight(8, '\0')); // Ensure 8 bytes
+                fs.Write(gameIdBytes, 0, 8);
+            }
+
+            foreach (var code in codes)
+            {
+                byte[] addressBytes = BitConverter.GetBytes(code.Address);
+                byte[] valueBytes = BitConverter.GetBytes(code.Value);
+
+                if (BitConverter.IsLittleEndian)
                 {
-                    byte[] addressBytes = BitConverter.GetBytes(code.Address);
-                    byte[] valueBytes = BitConverter.GetBytes(code.Value);
-
-                    if (BitConverter.IsLittleEndian)
-                    {
-                        Array.Reverse(addressBytes); // Convert to big-endian
-                        Array.Reverse(valueBytes);
-                    }
-
-                    fs.Write(addressBytes, 0, 4);
-                    fs.Write(valueBytes, 0, 4);
+                    Array.Reverse(addressBytes);
+                    Array.Reverse(valueBytes);
                 }
 
-                // Write GCT terminator
-                fs.Write(BitConverter.GetBytes(0xF0000000), 0, 4);
-                fs.Write(BitConverter.GetBytes(0x00000000), 0, 4);
-
-                Logger.Log($"GCT file written to {gctFilePath}.");
+                fs.Write(addressBytes, 0, 4);
+                fs.Write(valueBytes, 0, 4);
             }
+
+            // Write GCT terminator
+            fs.Write(BitConverter.GetBytes(0xF0000000), 0, 4);
+            fs.Write(BitConverter.GetBytes(0x00000000), 0, 4);
+
+            Logger.Log($"GCT file successfully written to {gctFilePath}");
         }
+
     }
 }
