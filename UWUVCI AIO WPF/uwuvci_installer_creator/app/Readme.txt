@@ -10,7 +10,7 @@ If you're curious about the latest changes:
 https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
 
 If you want to check out the official UWUVCI 3 video series:
-https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
+https://www.youtube.com/watch?v=8HddnYFRZDE&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id&index=8
 
 By the time you're reading this, active development on UWUVCI-3 has ended.
 I, ZestyTS, have been the active developer on UWUVCI-3 since late 2020 and have been helping the original creator with UWUVCI-Prime (aka V4).
@@ -175,6 +175,9 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 	As for my Unix friends, it depends on your tool like if you're using wine, you could do something like this "wine cmd /c echo %localappdata%"
 	That'll tell you if your folder is somewhere like ~/.wine/drive_c/users/$USER/Local Settings/Application Data/ or ~/.wine/drive_c/users/$USER/AppData/Local/
 
-34) An error message popped up.
+34) wstrt.exe - Entry Point Not Found
+	Windows is just being cranky. You can click "ok" and it will continue and patch correctly. 
+
+35) An error message popped up.
 	Read it, it'll explain the problem.
 	

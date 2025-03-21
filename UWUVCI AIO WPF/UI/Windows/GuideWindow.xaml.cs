@@ -72,7 +72,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             // Open Zesty's Corner video guide in the default browser
             Process.Start(new ProcessStartInfo
             {
-                FileName = "https://www.youtube.com/watch?v=1vzD_R-xPx4&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id&index=8",
+                FileName = "https://www.youtube.com/watch?v=8HddnYFRZDE&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id&index=8",
                 UseShellExecute = true
             });
         }
