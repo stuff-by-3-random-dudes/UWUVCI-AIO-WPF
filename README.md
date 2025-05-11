@@ -24,6 +24,6 @@
  
  ## This repo is no longer in active development
  
- * The latest version of this writing is 3.Z-B2
+ * The latest version of this writing is 3.N
  * Any future updates will be community-driven
  * Repo is still being managed, so feel free to fork/PR
