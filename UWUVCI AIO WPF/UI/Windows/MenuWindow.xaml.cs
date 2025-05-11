@@ -231,6 +231,7 @@ namespace UWUVCI_AIO_WPF
 
         private void UpdateUIForSelectedIndex(MainViewModel mvm, int selectedIndex)
         {
+            Console.WriteLine(Directory.GetCurrentDirectory());
             string title = selectedIndex switch
             {
                 0 => "UWUVCI AIO - NDS VC INJECT",

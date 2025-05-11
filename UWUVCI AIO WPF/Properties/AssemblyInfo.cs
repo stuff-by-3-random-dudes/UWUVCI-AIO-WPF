@@ -8,9 +8,9 @@ using System.Windows;
 [assembly: AssemblyTitle("UWUVCI AIO")]
 [assembly: AssemblyDescription("Ultimate Wii U Virtual Console Injector")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ZestyTS")]
+[assembly: AssemblyCompany("NicoAICP, ZestyTS")]
 [assembly: AssemblyProduct("UWUVCI AIO")]
-[assembly: AssemblyCopyright("Copyright © 2024")]
+[assembly: AssemblyCopyright("Copyright © 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +49,5 @@ using System.Windows;
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // indem Sie "*" wie unten gezeigt eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.99.9.9")]
-[assembly: AssemblyFileVersion("3.99.9.9")]
+[assembly: AssemblyVersion("3.100")]
+[assembly: AssemblyFileVersion("3.100")]

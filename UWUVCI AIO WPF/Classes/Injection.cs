@@ -1535,6 +1535,7 @@ namespace UWUVCI_AIO_WPF
         
         public static void Download(MainViewModel mvm)
         {
+            var curdir = Directory.GetCurrentDirectory();
             mvm.InjcttoolCheck();
             GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
 
@@ -1573,6 +1574,7 @@ namespace UWUVCI_AIO_WPF
                 CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
                 mvm.Progress = 100;
             }
+            Directory.SetCurrentDirectory(curdir);
         }
 
         public static string ExtractBase(string path, GameConsoles console)
