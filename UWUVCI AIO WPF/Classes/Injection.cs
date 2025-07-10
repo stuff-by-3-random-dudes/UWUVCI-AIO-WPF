@@ -2093,7 +2093,6 @@ namespace UWUVCI_AIO_WPF
 
             using (var fileStream = File.Open(frameLayoutPath, FileMode.Open))
             {
-                // I would love to modularize this code, but idfk how it works exactly
                 uint offset = 0;
                 uint size = 0;
                 byte[] offsetB = new byte[4];
@@ -2113,11 +2112,11 @@ namespace UWUVCI_AIO_WPF
                 {
                     fileStream.Position = 0x0C;
                     fileStream.Read(offsetB, 0, 4);
-                    offset = BitConverter.ToUInt32(offsetB.Reverse().ToArray(), 0);
+                    offset = (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
 
                     fileStream.Position = 0x38;
                     fileStream.Read(offsetB, 0, 4);
-                    offset += BitConverter.ToUInt32(offsetB.Reverse().ToArray(), 0);
+                    offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
 
                     fileStream.Position = offset;
                     fileStream.Read(header, 0, 4);
@@ -2127,7 +2126,10 @@ namespace UWUVCI_AIO_WPF
                         fileStream.Position = offset + 0x04;
                         fileStream.Read(offsetB, 0, 4);
 
-                        offset += BitConverter.ToUInt32(offsetB.Skip(2).Reverse().ToArray(), 0);
+                        offsetB[0] = 0;
+                        offsetB[1] = 0;
+
+                        offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
 
                         fileStream.Position = offset;
 
@@ -2135,17 +2137,24 @@ namespace UWUVCI_AIO_WPF
                         {
                             fileStream.Read(header, 0, 4);
                             fileStream.Read(sizeB, 0, 4);
-                            size = BitConverter.ToUInt32(sizeB.Reverse().ToArray(), 0);
+                            size = (uint)(sizeB[0] << 24 | sizeB[1] << 16 | sizeB[2] << 8 | sizeB[3]);
 
-                            fileStream.Read(nameB, 0, 0x18);
-                            string name = Encoding.ASCII.GetString(nameB.TakeWhile(b => b != 0).ToArray());
+                            if (header[0] == 'p' && header[1] == 'i' && header[2] == 'c' && header[3] == '1')
+                            {
+                                fileStream.Position = offset + 0x0C;
+                                fileStream.Read(nameB, 0, 0x18);
 
-                            if (name == "frame")
-                                WriteFrameData(fileStream, offset, zeroOut, oneOut, wideScreen);
-                            else if (name == "frame_mask")
-                                WriteDarkFilterData(fileStream, offset, darkFilter);
-                            else if (name == "power_save_bg")
-                                break; // End the loop as the required modifications are done
+                                int count = Array.IndexOf(nameB, (byte)0);
+                                string name = Encoding.ASCII.GetString(nameB, 0, count);
+
+                                if (name == "frame")
+                                    WriteFrameData(fileStream, offset, zeroOut, oneOut, wideScreen);
+                                else if (name == "frame_mask")
+                                    WriteDarkFilterData(fileStream, offset, darkFilter);
+                                else if (name == "power_save_bg")
+                                    break; // End the loop as the required modifications are done
+
+                            }
 
                             offset += size;
                             fileStream.Position = offset;
