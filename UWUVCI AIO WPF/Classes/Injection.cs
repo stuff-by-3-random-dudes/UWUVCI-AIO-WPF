@@ -760,13 +760,13 @@ namespace UWUVCI_AIO_WPF
 
             if (mvm.donttrim)
             {
-                witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
-                mvm.msg = "Prepping ROM...";
+                witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
+                mvm.msg = "Trimming ROM...";
             }
             else
             {
-                witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel WHOLE -vv1";
-                mvm.msg = "Trimming ROM...";
+                witArgs = $"extract \"{preIso}\" --DEST \"{Path.Combine(tempPath, "TEMP")}\" --psel data -vv1";
+                mvm.msg = "Prepping ROM...";
             }
 
             if (IsNativeWindows)
