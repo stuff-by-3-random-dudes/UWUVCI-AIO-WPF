@@ -1,0 +1,17 @@
+{
+  "PathsSet": true,
+  "BasePath": "C:\\bin\\BaseGames",
+  "OutPath": "C:\\InjectedGames",
+  "Ckey": "",
+  "SetBaseOnce": false,
+  "SetOutOnce": false,
+  "UpgradeRequired": true,
+  "SysKey": "",
+  "SysKey1": "",
+  "dont": false,
+  "ndsw": false,
+  "snesw": false,
+  "gczw": false,
+  "Ancast": "",
+  "IsFirstLaunch": false
+}

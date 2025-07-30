@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>WineskinX11</string>
+	<key>CFBundleIconFile</key>
+	<string>Wineskin.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.Wineskin.Wineskin</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Wineskin</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>Wineskin 2.0</string>
+	<key>CFBundleVersion</key>
+	<string>Wineskin 2.0</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>use start.exe</key>
+	<false/>
+	<key>Use RandR</key>
+	<true/>
+	<key>Fullscreen</key>
+	<false/>
+	<key>Gamma Correction</key>
+	<string>default</string>
+	<key>NSMainNibFile</key>
+	<string>main</string>
+	<key>NSPrincipalClass</key>
+	<string>X11Application</string>
+	<key>Program Flags</key>
+	<string></string>
+	<key>Program Name and Path</key>
+	<string>nothing.exe</string>
+	<key>Resolution</key>
+	<string>novdx24sleep0</string>
+</dict>
+</plist>

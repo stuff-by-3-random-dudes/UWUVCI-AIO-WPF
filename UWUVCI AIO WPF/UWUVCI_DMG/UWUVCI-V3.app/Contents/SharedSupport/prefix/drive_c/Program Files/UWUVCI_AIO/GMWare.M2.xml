@@ -1,0 +1,1172 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GMWare.M2</name>
+    </assembly>
+    <members>
+        <member name="T:GMWare.M2.CliStreamSource">
+            <summary>
+            Represents the <see cref="T:GMWare.M2.Psb.IPsbStreamSource"/> implementation used by this
+            library's command line app.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.CliStreamSource.#ctor(System.String)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.CliStreamSource"/>.
+            </summary>
+            <param name="baseDir">The base directory to locate stream files from.</param>
+        </member>
+        <member name="M:GMWare.M2.CliStreamSource.GetStream(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.MArchive.AllDataPacker">
+            <summary>
+            A collection of functions for manipulating archive files.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.MArchive.AllDataPacker.UnpackFiles(System.String,System.String,GMWare.M2.MArchive.MArchivePacker,GMWare.M2.Psb.IPsbFilter)">
+            <summary>
+            Unpacks an archive file.
+            </summary>
+            <param name="psbPath">The path of archive .psb. Can also be .bin or .psb.m.</param>
+            <param name="outputPath">The path to write unpacked files.</param>
+            <param name="maPacker">Optional <see cref="T:GMWare.M2.MArchive.MArchivePacker"/> if unpacking .psb.m.</param>
+            <param name="filter">The <see cref="T:GMWare.M2.Psb.IPsbFilter"/> to use to decode the PSB file.</param>
+            <exception cref="T:System.ArgumentNullException">
+            If .psb.m is provided in <paramref name="psbPath"/> but <paramref name="maPacker"/>
+            is <c>null</c>.
+            </exception>
+            <exception cref="T:System.IO.InvalidDataException">If PSB file does not represent an archive.</exception>
+        </member>
+        <member name="M:GMWare.M2.MArchive.AllDataPacker.Build(System.String,System.String,GMWare.M2.MArchive.MArchivePacker,GMWare.M2.Psb.IPsbFilter)">
+            <summary>
+            Builds an archive file.
+            </summary>
+            <param name="folderPath">The directory to make an archive from.</param>
+            <param name="outputPath">The path of the resulting archive file. Do not include file extension.</param>
+            <param name="maPacker">Optional <see cref="T:GMWare.M2.MArchive.MArchivePacker"/> if archive PSB is to be compressed.</param>
+            <param name="filter">The <see cref="T:GMWare.M2.Psb.IPsbFilter"/> to use to encode the PSB file.</param>
+        </member>
+        <member name="T:GMWare.M2.MArchive.FastLzCodec">
+            <summary>
+            Represents a FastLZ codec.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.MArchive.FastLzCodec.Magic">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.FastLzCodec.GetCompressionStream(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.FastLzCodec.GetDecompressionStream(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.FastLzCodec.GetDecompressionStream(System.IO.Stream,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.MArchive.IMArchiveCodec">
+            <summary>
+            Represents an MArchive codec.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.MArchive.IMArchiveCodec.Magic">
+            <summary>
+            Gets the magic value identifying the codec used.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.MArchive.IMArchiveCodec.GetDecompressionStream(System.IO.Stream)">
+            <summary>
+            Gets a decompression stream using the codec.
+            </summary>
+            <param name="inStream">The stream to decompress.</param>
+            <returns>A stream that can be read from to decompress <paramref name="inStream"/>.</returns>
+        </member>
+        <member name="M:GMWare.M2.MArchive.IMArchiveCodec.GetDecompressionStream(System.IO.Stream,System.Int32)">
+            <summary>
+            Gets a decompression stream using the codec.
+            </summary>
+            <param name="inStream">The stream to decompress.</param>
+            <param name="decompressedLength">The length of the decompressed data.</param>
+            <returns>A stream that can be read from to decompress <paramref name="inStream"/>.</returns>
+        </member>
+        <member name="M:GMWare.M2.MArchive.IMArchiveCodec.GetCompressionStream(System.IO.Stream)">
+            <summary>
+            Gets a compression stream using the codec.
+            </summary>
+            <param name="inStream">The stream to compress.</param>
+            <returns>A stream that can be written to to compress <paramref name="inStream"/>.</returns>
+        </member>
+        <member name="T:GMWare.M2.MArchive.MArchiveCryptoStream">
+            <summary>
+            Represents a stream that performs inline crypto of an MArchive stream.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.#ctor(System.IO.Stream,System.String,System.String,System.Int32)">
+            <summary>
+            Instantiates an instance of <see cref="T:GMWare.M2.MArchive.MArchiveCryptoStream"/>.
+            </summary>
+            <param name="inStream">The stream to encrypt or decrypt.</param>
+            <param name="fileName">The file name of the stream.</param>
+            <param name="seed">The crypto seed.</param>
+            <param name="keyLength">The period of the key stream.</param>
+            <exception cref="T:System.ArgumentNullException">
+            If <paramref name="inStream"/> or <paramref name="seed"/> is <c>null</c>, or if
+            <paramref name="fileName"/> is <c>null</c> or empty.
+            </exception>
+            <exception cref="T:System.ArgumentException">If <paramref name="inStream"/> is not seekable.</exception>
+        </member>
+        <member name="P:GMWare.M2.MArchive.MArchiveCryptoStream.CanRead">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.MArchive.MArchiveCryptoStream.CanSeek">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.MArchive.MArchiveCryptoStream.CanWrite">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.MArchive.MArchiveCryptoStream.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.MArchive.MArchiveCryptoStream.Position">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.Flush">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.SetLength(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchiveCryptoStream.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.MArchive.MArchivePacker">
+            <summary>
+            Provides functions for encrypting and decrypting MArchive encoded files.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchivePacker.#ctor(GMWare.M2.MArchive.IMArchiveCodec,System.String,System.Int32)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.MArchive.MArchivePacker"/>.
+            </summary>
+            <param name="codec">The <see cref="T:GMWare.M2.MArchive.IMArchiveCodec"/> used for compression.</param>
+            <param name="seed">The encryption seed.</param>
+            <param name="keyLength">The key period.</param>
+            <exception cref="T:System.ArgumentNullException">If <paramref name="codec"/> or <paramref name="seed"/> is <c>null</c>.</exception>
+        </member>
+        <member name="P:GMWare.M2.MArchive.MArchivePacker.NoCompressionFilters">
+            <summary>
+            Gets or sets filters for files that will not have compression applied by default.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">When attempting to set to <c>null</c>.</exception>
+            <remarks>
+            If a file's parent directory has a name in these filters, the file is not compressed
+            when compressing directories. By default the list contains the "sound" directory.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchivePacker.DecompressFile(System.String,System.Boolean,System.IO.Stream)">
+            <summary>
+            Decompreses a file.
+            </summary>
+            <param name="path">The path of the file to decompress.</param>
+            <param name="keepOrig">Whether to keep the original .m file.</param>
+            <param name="outputStream">Stream to write to. If <c>null</c>, save to file. If not, the original file is not removed.</param>
+            <remarks>The decompressed file is the same name but with ".m" extension removed.</remarks>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchivePacker.CompressFile(System.String,System.Boolean,System.IO.Stream)">
+            <summary>
+            Compresses a file.
+            </summary>
+            <param name="path">The path of the file to compress.</param>
+            <param name="keepOrig">Whether to keep the uncompressed file.</param>
+            <param name="outputStream">Stream to write to. If <c>null</c>, save to file. If not, the original file is not removed.</param>
+            <remarks>The compressed file will have ".m" extension appended.</remarks>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchivePacker.CompressDirectory(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Compresses a directory recursively.
+            </summary>
+            <param name="path">The path to the directory to compress.</param>
+            <param name="keepOrig">Whether to keep the uncompressed files.</param>
+            <param name="forceCompress">Whether to ignore no compression filters.</param>
+            <remarks>
+            This is equivalent to running <see cref="M:GMWare.M2.MArchive.MArchivePacker.CompressFile(System.String,System.Boolean,System.IO.Stream)"/> on each
+            file in <paramref name="path"/> except for files that match <see cref="P:GMWare.M2.MArchive.MArchivePacker.NoCompressionFilters"/>.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.MArchive.MArchivePacker.DecompressDirectory(System.String,System.Boolean)">
+            <summary>
+            Decompresses a directory recursively.
+            </summary>
+            <param name="path">The path to the directory to decompress.</param>
+            <param name="keepOrig">Whether to keep the .m files.</param>
+            <remarks>
+            This is equivalent to running <see cref="M:GMWare.M2.MArchive.MArchivePacker.DecompressFile(System.String,System.Boolean,System.IO.Stream)"/> on each
+            file in <paramref name="path"/>.
+            </remarks>
+        </member>
+        <member name="T:GMWare.M2.MArchive.ZlibCodec">
+            <summary>
+            Represents a DEFLATE codec.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.MArchive.ZlibCodec.Magic">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.ZlibCodec.GetCompressionStream(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.ZlibCodec.GetDecompressionStream(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.ZlibCodec.GetDecompressionStream(System.IO.Stream,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.MArchive.ZStandardCodec">
+            <summary>
+            Represents a ZStandard codec.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.MArchive.ZStandardCodec.Magic">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.ZStandardCodec.GetCompressionStream(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.ZStandardCodec.GetDecompressionStream(System.IO.Stream)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.MArchive.ZStandardCodec.GetDecompressionStream(System.IO.Stream,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Models.ArchiveV1">
+            <summary>
+            Represents the data model for an archive manifest.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Models.ArchiveV1.ObjectType">
+            <summary>
+            Gets or sets the object type.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Models.ArchiveV1.Version">
+            <summary>
+            Gets or sets the version of the archive.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Models.ArchiveV1.FileInfo">
+            <summary>
+            Gets or sets the list of files.
+            </summary>
+            <remarks>
+            The key is the file path. The first <c>int</c> is the offset of the
+            file, and the second <c>int</c> is the length of the file.
+            </remarks>
+        </member>
+        <member name="P:GMWare.M2.Models.ArchiveV1.ExpireSuffixList">
+            <summary>
+            Gets or sets the expire suffixes list.
+            </summary>
+            <remarks>Not sure what this is actually for.</remarks>
+        </member>
+        <member name="T:GMWare.M2.Psb.EmoteCryptFilter">
+            <summary>
+            Default <see cref="T:GMWare.M2.Psb.IPsbFilter"/> implementation for E-mote motion files.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.EmoteCryptFilter.#ctor(System.UInt32)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.EmoteCryptFilter"/>.
+            </summary>
+            <param name="seed">The seed used to initialize the RNG.</param>
+        </member>
+        <member name="M:GMWare.M2.Psb.EmoteCryptFilter.Filter(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Psb.IPsbFilter">
+            <summary>
+            Represents a PSB data filter.
+            </summary>
+            <remarks>
+            A filter can be used to encrypt or obfuscate PSB header fields and main data.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.Psb.IPsbFilter.Filter(System.Byte[])">
+            <summary>
+            Applies filtering to <paramref name="data"/>.
+            </summary>
+            <param name="data">The data to apply filtering to.</param>
+        </member>
+        <member name="T:GMWare.M2.Psb.IPsbStreamSource">
+            <summary>
+            Represents a stream source.
+            </summary>
+            <remarks>
+            This is used when serializing a <see cref="T:Newtonsoft.Json.Linq.JToken"/> to PSB, where
+            <see cref="T:GMWare.M2.Psb.JStream"/>s are represented as strings rather than an actual instance. This
+            class provides the actual data backing the stream.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.Psb.IPsbStreamSource.GetStream(System.String)">
+            <summary>
+            Gets the backing stream for a given <paramref name="identifier"/>.
+            </summary>
+            <param name="identifier">The string representation of a <see cref="T:GMWare.M2.Psb.JStream"/>.</param>
+            <returns>The backing stream.</returns>
+            <remarks>
+            <paramref name="identifier"/> is in the form of "_type:id", where "type" is either
+            "stream" or "bstream", and "id" is its index within the PSB.
+            </remarks>
+        </member>
+        <member name="T:GMWare.M2.Psb.JStream">
+            <summary>
+            Represents a binary stream value.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.JStream.Reader">
+            <summary>
+            Gets the <see cref="T:GMWare.M2.Psb.PsbReader"/> this stream is associated with.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.JStream.BinaryData">
+            <summary>
+            Gets or sets the binary data for this stream.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.JStream.Index">
+            <summary>
+            Gets or sets the index of this stream.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.JStream.IsBStream">
+            <summary>
+            Gets or sets whether this stream is a B-stream.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.JStream.#ctor(System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.JStream"/>/
+            </summary>
+            <param name="isBStream">Whether this stream is a B-stream.</param>
+        </member>
+        <member name="M:GMWare.M2.Psb.JStream.#ctor(System.UInt32,System.Boolean,GMWare.M2.Psb.PsbReader)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.JStream"/> from a PSB.
+            </summary>
+            <param name="index">The index of this stream.</param>
+            <param name="isBStream">Whether this stream is a B-stream.</param>
+            <param name="parent">The reader this stream is associated with.</param>
+        </member>
+        <member name="M:GMWare.M2.Psb.JStream.CreateFromStringRepresentation(System.String)">
+            <summary>
+            Creates a new <see cref="T:GMWare.M2.Psb.JStream"/> based on a string representation.
+            </summary>
+            <param name="rep">The string representation.</param>
+            <returns>The created <see cref="T:GMWare.M2.Psb.JStream"/>.</returns>
+            <exception cref="T:System.ArgumentException">When <paramref name="rep"/> does not adhere to the expected representation.</exception>
+        </member>
+        <member name="M:GMWare.M2.Psb.JStream.FromBytes(System.Byte[],System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:GMWare.M2.Psb.JStream"/> with the given binary data.
+            </summary>
+            <param name="data">The data to set on the stream.</param>
+            <param name="isBStream">Whether this is a B-stream.</param>
+            <returns>A new stream containing the given data.</returns>
+            <exception cref="T:System.ArgumentNullException">If <paramref name="data"/> is <c>null</c>.</exception>
+        </member>
+        <member name="T:GMWare.M2.Psb.OverlayReadStream">
+            <summary>
+            Represents a stream with a section that has been filtered by a <see cref="T:GMWare.M2.Psb.IPsbFilter"/>.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.#ctor(System.IO.Stream,System.UInt32,System.UInt32,GMWare.M2.Psb.IPsbFilter)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.OverlayReadStream"/>.
+            </summary>
+            <param name="baseStream">The base stream.</param>
+            <param name="overlayStart">The starting offset of the filtered data.</param>
+            <param name="overlayEnd">The ending offset of the filtered data.</param>
+            <param name="filter">The filter to apply over the data.</param>
+            <exception cref="T:System.IO.IOException">If the data to be filtered cannot be read.</exception>
+        </member>
+        <member name="P:GMWare.M2.Psb.OverlayReadStream.CanRead">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Psb.OverlayReadStream.CanSeek">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Psb.OverlayReadStream.CanWrite">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Psb.OverlayReadStream.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Psb.OverlayReadStream.Position">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.Flush">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.SetLength(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Psb.OverlayReadStream.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Psb.PsbFlags">
+            <summary>
+            Represents PSB header flags.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbFlags.None">
+            <summary>
+            No flags set.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbFlags.HeaderFiltered">
+            <summary>
+            Header is filtered.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbFlags.BodyFiltered">
+            <summary>
+            Body (key names, strings, token tree) is filtered.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Psb.PsbReader">
+            <summary>
+            Reads a PSB file to a <see cref="T:Newtonsoft.Json.Linq.JToken"/>.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.Version">
+            <summary>
+            Gets the version of the PSB file.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.Flags">
+            <summary>
+            Gets the flags set in the header of the PSB file.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.Root">
+            <summary>
+            Gets the root token of the PSB file.
+            </summary>
+            <exception cref="T:System.ObjectDisposedException">Trying to obtain root after reader was closed.</exception>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.StreamCache">
+            <summary>
+            Gets the stream cache. Index on the stream's ID to get the corresponding <see cref="T:GMWare.M2.Psb.JStream"/>.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.BStreamCache">
+            <summary>
+            Gets the B-stream cache. Index on the stream's ID to get the corresponding <see cref="T:GMWare.M2.Psb.JStream"/>.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.IsLazyStreamLoading">
+            <summary>
+            Gets whether lazy stream loading is enabled.
+            </summary>
+            <remarks>
+            <para>Lazy loading allows you to delay loading stream contents until you try to read from them.</para>
+            
+            <para>If lazy loading is enabled and you want to be able to read streams and B-streams after
+            closing the reader, you must call <see cref="M:GMWare.M2.Psb.PsbReader.LoadAllStreamData"/> before closing the reader.</para>
+            </remarks>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.KeyNames">
+            <summary>
+            Gets the key names reader.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.#ctor(System.IO.Stream,GMWare.M2.Psb.IPsbFilter,System.IO.TextWriter,System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.PsbReader"/> and loads the PSB's header.
+            </summary>
+            <param name="stream">The input stream.</param>
+            <param name="filter">Optional filter for encrypted PSBs.</param>
+            <param name="debugWriter">Optional <see cref="T:System.IO.TextWriter"/> to write PSB reading debug info into.</param>
+            <param name="lazyStreamLoading">Whether lazy stream loading is enabled.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="stream"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">The <paramref name="stream"/> cannot be seeked.</exception>
+            <exception cref="T:System.IO.InvalidDataException">The file is not in PSB format.</exception>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.DumpDecryptedStream(System.IO.Stream)">
+            <summary>
+            Copies the unfiltered stream to <paramref name="stream"/>.
+            </summary>
+            <param name="stream">The stream to copy to.</param>
+            <remarks>
+            For debugging purposes.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.GenerateNameNodes">
+            <summary>
+            Generates key name nodes.
+            </summary>
+            <returns>A dictionary of generated key name nodes, where the key is ID of the corresponding node.</returns>
+            <remarks>
+            For debugging purposes.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.Close">
+            <summary>
+            Closes the reader.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.Dispose">
+            <summary>
+            Closes the reader.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.GetStreamData(GMWare.M2.Psb.JStream)">
+            <summary>
+            Gets the data associated with a <see cref="T:GMWare.M2.Psb.JStream"/>.
+            </summary>
+            <param name="js">The <see cref="T:GMWare.M2.Psb.JStream"/> to get the data for.</param>
+            <returns>A <see cref="T:byte[]"/> containing the data corresponding to <paramref name="js"/>.</returns>
+            <exception cref="T:System.ArgumentException">When <paramref name="js"/> does not belong to this reader.</exception>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.LoadAllStreamData">
+            <summary>
+            Decouples <see cref="T:GMWare.M2.Psb.JStream"/>s from the reader.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Psb.PsbReader.KeyNamesReader">
+            <summary>
+            Reads key names from PSB files.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.KeyNamesReader.#ctor(GMWare.M2.Psb.PsbReader)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.PsbReader.KeyNamesReader"/>.
+            </summary>
+            <param name="reader">The reader to load key names from.</param>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.KeyNamesReader.#ctor(System.UInt32[],System.UInt32[],System.UInt32[])">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.PsbReader.KeyNamesReader"/> from an unpacked tree.
+            </summary>
+            <param name="valueOffsets">The offsets array.</param>
+            <param name="tree">The parent pointers.</param>
+            <param name="tails">The tails array.</param>
+            <exception cref="T:System.ArgumentNullException">
+            If any of <paramref name="valueOffsets"/>, <paramref name="tree"/>, or
+            <paramref name="tails"/> is <c>null</c>.
+            </exception>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.KeyNamesReader.Count">
+            <summary>
+            Gets the number of key names.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbReader.KeyNamesReader.Item(System.UInt32)">
+            <summary>
+            Gets a key name.
+            </summary>
+            <param name="index">The index of the key name.</param>
+            <returns>The key name at <paramref name="index"/>.</returns>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbReader.KeyNamesReader.GenerateNodes">
+            <summary>
+            Generates key name nodes.
+            </summary>
+            <returns>A dictionary of generated key name nodes, where the key is ID of the corresponding node.</returns>
+            <exception cref="T:System.InvalidOperationException">When nodes are stored in a single array instead of a tree.</exception>
+        </member>
+        <member name="T:GMWare.M2.Psb.PsbTokenType">
+            <summary>
+            Represents the types of tokens in a PSB.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Invalid">
+            <summary>
+            An unknown token type.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Null">
+            <summary>
+            The value <c>null</c>.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Bool">
+            <summary>
+            The values <c>true</c> and <c>false</c>.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Int">
+            <summary>
+            A signed 32-bit integer.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Long">
+            <summary>
+            A signed 64-bit integer.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.UInt">
+            <summary>
+            An unsigned 32-bit integer.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Key">
+            <summary>
+            Index into key names array (v1 only).
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.String">
+            <summary>
+            A string.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Stream">
+            <summary>
+            A stream.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Float">
+            <summary>
+            A single precision floating point number.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Double">
+            <summary>
+            A double precision floating point number.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.TokenArray">
+            <summary>
+            An array of tokens.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.Object">
+            <summary>
+            A dictionary of strings and tokens.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Psb.PsbTokenType.BStream">
+            <summary>
+            A B-stream.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Psb.PsbWriter">
+            <summary>
+            Serializes <see cref="T:Newtonsoft.Json.Linq.JToken"/>s to PSB format.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Psb.PsbWriter.StreamCacheEntry">
+            <summary>
+            Represents a stream cache entry.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbWriter.StreamCacheEntry.OrigValue">
+            <summary>
+            Gets or sets the original name of the stream.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbWriter.StreamCacheEntry.Streams">
+            <summary>
+            Gets or sets a list of <see cref="T:GMWare.M2.Psb.JStream"/>s with the same data.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbWriter.StreamCacheEntry.Length">
+            <summary>
+            Gets or sets the length of the data.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbWriter.Version">
+            <summary>
+            Gets or sets the version of PSB to write.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbWriter.Flags">
+            <summary>
+            Gets or sets the flags for the PSB header.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.PsbWriter.Optimize">
+            <summary>
+            Gets or sets whether to optimize when writing.
+            </summary>
+            <remarks>
+            Optimization reduces space usage by reusing offsets of duplicate tokens within a collection.
+            It takes longer to write a PSB with optimization enabled. It is enabled by default.
+            </remarks>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbWriter.#ctor(Newtonsoft.Json.Linq.JToken,GMWare.M2.Psb.IPsbStreamSource)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.PsbWriter"/>.
+            </summary>
+            <param name="root">The root of the PSB.</param>
+            <param name="streamSource">
+            Source for <see cref="T:GMWare.M2.Psb.JStream"/>s that need to be copied. Can be <c>null</c>
+            if <paramref name="root"/> came directly from a <see cref="T:GMWare.M2.Psb.PsbReader"/>.
+            </param>
+        </member>
+        <member name="M:GMWare.M2.Psb.PsbWriter.Write(System.IO.Stream,GMWare.M2.Psb.IPsbFilter)">
+            <summary>
+            Writes root to <paramref name="stream"/> in PSB format.
+            </summary>
+            <param name="stream">The stream to write to.</param>
+            <param name="filter">Optional filter for encryption.</param>
+            <exception cref="T:System.ArgumentNullException">When <paramref name="stream"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">When <paramref name="stream"/> is not seekable.</exception>
+            <exception cref="T:System.NotSupportedException">When the version requested is not supported.</exception>
+            <exception cref="T:System.Exception">When there is no source for a <see cref="T:GMWare.M2.Psb.JStream"/>.</exception>
+        </member>
+        <member name="T:GMWare.M2.Psb.Writing.IKeyNamesEncoder">
+            <summary>
+            Represents a key names encoder.
+            </summary>
+            <remarks>
+            An encoder sets the index and offset on each name node, providing the necessary
+            information to create a serialized name node tree.
+            </remarks>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.IKeyNamesEncoder.IsProcessed">
+            <summary>
+            Gets whether processing has completed.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.IKeyNamesEncoder.TotalSlots">
+            <summary>
+            Gets the total number of slots used after processing the tree.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.IKeyNamesEncoder.Process(GMWare.M2.Psb.Writing.RegularNameNode,System.Int32)">
+            <summary>
+            Processes the tree provided by <paramref name="root"/>.
+            </summary>
+            <param name="root">The root node of the key names tree.</param>
+            <param name="totalNodes">The total number of nodes in the tree.</param>
+        </member>
+        <member name="T:GMWare.M2.Psb.Writing.KeyNamesGenerator">
+            <summary>
+            Generates key names tree.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.ValueOffsets">
+            <summary>
+            Gets the offsets array.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">When the tree has not been generated or the tree is flat.</exception>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.Tree">
+            <summary>
+            Gets the parent pointers array.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">When the tree has not been generated or the tree is flat.</exception>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.Tails">
+            <summary>
+            Gets the tails array.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">When the tree has not been generated or the tree is flat.</exception>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.IsGenerated">
+            <summary>
+            Gets whether the tree has been generated.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.IsFlat">
+            <summary>
+            Gets whether a flat array is to be generated instead of a tree.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.Count">
+            <summary>
+            Gets the number of key names in the generator.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.KeyNamesGenerator.#ctor(GMWare.M2.Psb.Writing.IKeyNamesEncoder,System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.Writing.KeyNamesGenerator"/>.
+            </summary>
+            <param name="encoder">The encoder to use for ordering tree nodes.</param>
+            <param name="isFlat">Whether to generate a flat array instead of a tree.</param>
+            <exception cref="T:System.ArgumentNullException">When encoder is <c>null</c> if not generating flat array.</exception>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.KeyNamesGenerator.AddString(System.String)">
+            <summary>
+            Adds a key name into the generator.
+            </summary>
+            <param name="s">The key name to add.</param>
+            <exception cref="T:System.InvalidOperationException">When the tree has already been generated.</exception>
+            <exception cref="T:System.ArgumentNullException">When <paramref name="s"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.KeyNamesGenerator.Generate">
+            <summary>
+            Generates the key names tree.
+            </summary>
+            <remarks>This is a one-time only operation.</remarks>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.Item(System.String)">
+            <summary>
+            Gets the index of a key name.
+            </summary>
+            <param name="s">The key name to get the index of.</param>
+            <returns>The index corresponding to <paramref name="s"/>.</returns>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.KeyNamesGenerator.Item(System.Int32)">
+            <summary>
+            Gets the key name at <paramref name="i"/>.
+            </summary>
+            <param name="i">The index.</param>
+            <returns>The key name.</returns>
+        </member>
+        <member name="T:GMWare.M2.Psb.Writing.NameNode">
+            <summary>
+            Represents a name node. This is an abstract class.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.NameNode.Index">
+            <summary>
+            Gets or sets the index of this node.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.NameNode.ParentIndex">
+            <summary>
+            Gets or sets the parent index of this node.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.NameNode.Parent">
+            <summary>
+            Gets or sets the parent node.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.NameNode.Character">
+            <summary>
+            Gets or sets the character represented by this node.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.NameNode.WriteDot(System.IO.TextWriter)">
+            <summary>
+            Writes this node to a GraphViz DOT file.
+            </summary>
+            <param name="writer">The writer for the DOT file.</param>
+        </member>
+        <member name="T:GMWare.M2.Psb.Writing.RegularNameNode">
+            <summary>
+            Represents a regular name node.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.RegularNameNode.ValueOffset">
+            <summary>
+            Gets or sets the offset between the index of the lowest child and its value.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.RegularNameNode.Children">
+            <summary>
+            Gets the children of this node. The key is the value of the corresponding node.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.RegularNameNode.WriteDot(System.IO.TextWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Psb.Writing.StandardKeyNamesEncoder">
+            <summary>
+            Standard key names encoder that tries to fit ranges compactly.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.StandardKeyNamesEncoder.IsProcessed">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.StandardKeyNamesEncoder.TotalSlots">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.StandardKeyNamesEncoder.OutputDebug">
+            <summary>
+            Gets or sets whether to write debug tree to standard output.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.StandardKeyNamesEncoder.Process(GMWare.M2.Psb.Writing.RegularNameNode,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Psb.Writing.TerminalNameNode">
+            <summary>
+            Represents a terminal name node.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Psb.Writing.TerminalNameNode.TailIndex">
+            <summary>
+            Gets or sets the index of the key name this node constructs.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.Writing.TerminalNameNode.WriteDot(System.IO.TextWriter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Psb.XorShift128">
+            <summary>
+            Random number generator used in E-mote with custom W seed
+            
+            See http://dx.doi.org/10.18637/jss.v008.i14, page 5, xor128()
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Psb.XorShift128.#ctor(System.UInt32)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Psb.XorShift128"/>.
+            </summary>
+            <param name="seed">The seed to use to initialize the RNG.</param>
+        </member>
+        <member name="M:GMWare.M2.Psb.XorShift128.Next">
+            <summary>
+            Gets the next random value.
+            </summary>
+            <returns>A random unsigned 32-bit integer.</returns>
+        </member>
+        <member name="T:GMWare.M2.Utils">
+            <summary>
+            Miscellaneous utilities.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Utils.CopyStream(System.IO.Stream,System.IO.Stream,System.Int64)">
+            <summary>
+            Copies <paramref name="count"/> bytes from <paramref name="input"/> to <paramref name="output"/>.
+            </summary>
+            <param name="input">The stream to copy from.</param>
+            <param name="output">The stream to copy to.</param>
+            <param name="count">The number of bytes to copy.</param>
+        </member>
+        <member name="T:FastLz.FastLz">
+            <summary>
+            Class for compressing and decompressing with FastLZ.
+            </summary>
+        </member>
+        <member name="P:FastLz.FastLz.Version">
+            <summary>
+            Gets the version of the library.
+            </summary>
+        </member>
+        <member name="M:FastLz.FastLz.Compress(System.Int32,System.Byte[],System.Byte[])">
+            <summary>
+            Compress a block of data in the input buffer and returns the size of
+            compressed block.
+            
+            If the input is not compressible, the return value might be larger than
+            the input buffer size.
+            
+            The input buffer and the output buffer can not overlap.
+            
+            Compression level can be specified in <paramref name="level"/>. At the moment,
+            only level 1 and level 2 are supported.
+            Level 1 is the fastest compression and generally useful for short data.
+            Level 2 is slightly slower but it gives better compression ratio.
+            
+            Note that the compressed data, regardless of the level, can always be
+            decompressed using <see cref="M:FastLz.FastLz.Decompress(System.Byte[],System.Byte[])"/>.
+            </summary>
+            <param name="level">The compression level.</param>
+            <param name="input">The buffer with the data to compress. The minimum input buffer size is 16.</param>
+            <param name="output">The buffer to compress into. The output buffer must be at least 5% larger than the input buffer and can not be smaller than 66 bytes.</param>
+            <returns>The size of the compressed block.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="input"/> or <paramref name="output"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="input"/> or <paramref name="output"/> is too small.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="level"/> is unknown.</exception>
+        </member>
+        <member name="M:FastLz.FastLz.Decompress(System.Byte[],System.Byte[])">
+            <summary>
+            Decompress a block of compressed data and returns the size of the
+            decompressed block. If error occurs, e.g. the compressed data is
+            corrupted or the output buffer is not large enough, then an
+            exception will be thrown instead.
+            
+            The input buffer and the output buffer can not overlap.
+            
+            Note that the decompression will always work, regardless of the
+            compression level specified in <see cref="M:FastLz.FastLz.Compress(System.Int32,System.Byte[],System.Byte[])"/>
+            (when producing the compressed block).
+            </summary>
+            <param name="input">The buffer containing compressed data.</param>
+            <param name="output">The buffer to decompress data into.</param>
+            <returns>The size of the decompressed data.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="input"/> or <paramref name="output"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">The compressed block in <paramref name="input"/> is using an unknown level.</exception>
+        </member>
+        <member name="T:FastLz.FastLzCompressionStream">
+            <summary>
+            Represents a stream that can compress to a FastLZ compressed block.
+            </summary>
+        </member>
+        <member name="P:FastLz.FastLzCompressionStream.CanRead">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzCompressionStream.CanSeek">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzCompressionStream.CanWrite">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzCompressionStream.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzCompressionStream.Position">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.#ctor(System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:FastLz.FastLzCompressionStream"/>.
+            </summary>
+            <param name="baseStream">The stream to write compressed data to.</param>
+            <param name="level">The compression level. Can be 1 or 2.</param>
+            <param name="leaveOpen">Leave <paramref name="baseStream"/> open when this stream is closed.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="level"/> is unknown.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="baseStream"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.Flush">
+            <summary>
+            Performs the compression operation and writes the compressed block to the underlying stream.
+            </summary>
+            <remarks>
+            Call only when all data to be compressed has been written to the stream. Subsequent calls
+            will not do anything.
+            </remarks>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.SetLength(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Write data to be compressed.
+            </summary>
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzCompressionStream.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:FastLz.FastLzDecompressionStream">
+            <summary>
+            Represents a stream that can decompress FastLZ compressed block.
+            </summary>
+        </member>
+        <member name="P:FastLz.FastLzDecompressionStream.CanRead">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzDecompressionStream.CanSeek">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzDecompressionStream.CanWrite">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzDecompressionStream.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:FastLz.FastLzDecompressionStream.Position">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.#ctor(System.IO.Stream,System.Int32)">
+            <summary>
+            Instantiates a new instance of <see cref="T:FastLz.FastLzDecompressionStream"/>.
+            </summary>
+            <param name="baseStream">The base stream to read compressed data from.</param>
+            <param name="decompressedLength">The length of the decompressed data.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="baseStream"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="baseStream"/> is not seekable.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="decompressedLength"/> is negative.</exception>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.Flush">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.SetLength(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:FastLz.FastLzDecompressionStream.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Meisui.Random.MersenneTwister">
+            <summary>
+            Represents a Mersenne Twister random number generator.
+            </summary>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.#ctor(System.UInt32)">
+            <summary>
+            Instantiates an instance of <see cref="T:Meisui.Random.MersenneTwister"/> with a specific seed.
+            </summary>
+            <param name="s">The seed to initialize the RNG with.</param>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.#ctor">
+            <summary>
+            Instantiates an instance of <see cref="T:Meisui.Random.MersenneTwister"/> with a random seed.
+            </summary>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.#ctor(System.UInt32[])">
+            <summary>
+            Instantiates an instance of <see cref="T:Meisui.Random.MersenneTwister"/> with a key array.
+            </summary>
+            <param name="init_key">The key array.</param>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.Finalize">
+            <summary>
+            Finalizes the <see cref="T:Meisui.Random.MersenneTwister"/>.
+            </summary>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.genrand_Int32">
+            <summary>
+            Generates a random signed 32-bit integer.
+            </summary>
+            <returns>A random number.</returns>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.genrand_Int31">
+            <summary>
+            Generates a random 31-bit integer.
+            </summary>
+            <returns>A random number 0 &lt;= x &lt;= 0x7fffffff.</returns>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.genrand_real1">
+            <summary>
+            Generates a random floating point number.
+            </summary>
+            <returns>A double precision floating point number on range [0, 1].</returns>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.genrand_real2">
+            <summary>
+            Generates a random floating point number.
+            </summary>
+            <returns>A double precision floating point number on range [0, 1).</returns>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.genrand_real3">
+            <summary>
+            Generates a random floating point number.
+            </summary>
+            <returns>A double precision floating point number on range (0, 1].</returns>
+        </member>
+        <member name="M:Meisui.Random.MersenneTwister.genrand_res53">
+            <summary>
+            Generates a random floating point number.
+            </summary>
+            <returns>A double precision floating point number on range [0, 1) with 53-bit resolution.</returns>
+        </member>
+    </members>
+</doc>

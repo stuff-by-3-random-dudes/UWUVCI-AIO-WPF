@@ -1,0 +1,767 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NAudio.WinForms</name>
+    </assembly>
+    <members>
+        <member name="T:NAudio.Gui.Fader">
+            <summary>
+            Summary description for Fader.
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.Fader.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.#ctor">
+            <summary>
+            Creates a new Fader control
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnPaint(System.Windows.Forms.PaintEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseDown(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseMove(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseUp(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>        
+        </member>
+        <member name="P:NAudio.Gui.Fader.Minimum">
+            <summary>
+            Minimum value of this fader
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.Fader.Maximum">
+            <summary>
+            Maximum value of this fader
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.Fader.Value">
+            <summary>
+            Current value of this fader
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.Fader.Orientation">
+            <summary>
+            Fader orientation
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Fader.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NAudio.Gui.PanSlider">
+            <summary>
+            Pan slider control
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.PanSlider.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="E:NAudio.Gui.PanSlider.PanChanged">
+            <summary>
+            True when pan value changed
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.PanSlider.#ctor">
+            <summary>
+            Creates a new PanSlider control
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.PanSlider.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.PanSlider.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.PanSlider.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnPaint(System.Windows.Forms.PaintEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.PanSlider.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseMove(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.PanSlider.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseDown(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="P:NAudio.Gui.PanSlider.Pan">
+            <summary>
+            The current Pan setting
+            </summary>
+        </member>
+        <member name="T:NAudio.Gui.Pot">
+            <summary>
+            Control that represents a potentiometer
+            TODO list:
+            Optional Log scale
+            Optional reverse scale
+            Keyboard control
+            Optional bitmap mode
+            Optional complete draw mode
+            Tooltip support
+            </summary>
+        </member>
+        <member name="E:NAudio.Gui.Pot.ValueChanged">
+            <summary>
+            Value changed event
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Pot.#ctor">
+            <summary>
+            Creates a new pot control
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.Pot.Minimum">
+            <summary>
+            Minimum Value of the Pot
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.Pot.Maximum">
+            <summary>
+            Maximum Value of the Pot
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.Pot.Value">
+            <summary>
+            The current value of the pot
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Pot.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Draws the control
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Pot.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handles the mouse down event to allow changing value by dragging
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Pot.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handles the mouse up event to allow changing value by dragging
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Pot.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handles the mouse down event to allow changing value by dragging
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.Pot.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.Pot.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NAudio.Gui.Pot.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NAudio.Gui.VolumeMeter">
+            <summary>
+            Implements a rudimentary volume meter
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeMeter.#ctor">
+            <summary>
+            Basic volume meter
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeMeter.OnForeColorChanged(System.EventArgs)">
+            <summary>
+            On Fore Color Changed
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.VolumeMeter.Amplitude">
+            <summary>
+            Current Value
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.VolumeMeter.MinDb">
+            <summary>
+            Minimum decibels
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.VolumeMeter.MaxDb">
+            <summary>
+            Maximum decibels
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.VolumeMeter.Orientation">
+            <summary>
+            Meter orientation
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeMeter.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Paints the volume meter
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.VolumeMeter.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeMeter.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NAudio.Gui.VolumeMeter.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NAudio.Gui.VolumeSlider">
+            <summary>
+            VolumeSlider control
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.VolumeSlider.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="E:NAudio.Gui.VolumeSlider.VolumeChanged">
+            <summary>
+            Volume changed event
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeSlider.#ctor">
+            <summary>
+            Creates a new VolumeSlider control
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeSlider.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeSlider.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeSlider.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnPaint(System.Windows.Forms.PaintEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeSlider.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseMove(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.VolumeSlider.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnMouseDown(System.Windows.Forms.MouseEventArgs)"/>
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.VolumeSlider.Volume">
+            <summary>
+            The volume for this control
+            </summary>
+        </member>
+        <member name="T:NAudio.Gui.WaveformPainter">
+            <summary>
+            Windows Forms control for painting audio waveforms
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.#ctor">
+            <summary>
+            Constructs a new instance of the WaveFormPainter class
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.OnResize(System.EventArgs)">
+            <summary>
+            On Resize
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.OnForeColorChanged(System.EventArgs)">
+            <summary>
+            On ForeColor Changed
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.AddMax(System.Single)">
+            <summary>
+            Add Max Value
+            </summary>
+            <param name="maxSample"></param>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            On Paint
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.WaveformPainter.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NAudio.Gui.WaveformPainter.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NAudio.Gui.WaveViewer">
+            <summary>
+            Control for viewing waveforms
+            </summary>
+        </member>
+        <member name="F:NAudio.Gui.WaveViewer.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveViewer.#ctor">
+            <summary>
+            Creates a new WaveViewer control
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.WaveViewer.WaveStream">
+            <summary>
+            sets the associated wavestream
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.WaveViewer.SamplesPerPixel">
+            <summary>
+            The zoom level, in samples per pixel
+            </summary>
+        </member>
+        <member name="P:NAudio.Gui.WaveViewer.StartPosition">
+            <summary>
+            Start position (currently in bytes)
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveViewer.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveViewer.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            <see cref="M:System.Windows.Forms.Control.OnPaint(System.Windows.Forms.PaintEventArgs)"/>
+            </summary>
+        </member>
+        <member name="M:NAudio.Gui.WaveViewer.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NAudio.WinForms.Gui.Fader">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.Fader.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.Fader.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:NAudio.WinForms.Gui.PanSlider">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.PanSlider.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.PanSlider.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:NAudio.WinForms.Gui.VolumeSlider">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.VolumeSlider.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.VolumeSlider.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:NAudio.WinForms.Gui.WaveViewer">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.WaveViewer.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:NAudio.WinForms.Gui.WaveViewer.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:NAudio.Utils.ProgressLog">
+            <summary>
+            A thread-safe Progress Log Control
+            </summary>
+        </member>
+        <member name="M:NAudio.Utils.ProgressLog.#ctor">
+            <summary>
+            Creates a new progress log control
+            </summary>
+        </member>
+        <member name="P:NAudio.Utils.ProgressLog.Text">
+            <summary>
+            The contents of the log as text
+            </summary>
+        </member>
+        <member name="M:NAudio.Utils.ProgressLog.LogMessage(System.Drawing.Color,System.String)">
+            <summary>
+            Log a message
+            </summary>
+        </member>
+        <member name="M:NAudio.Utils.ProgressLog.ClearLog">
+            <summary>
+            Clear the log
+            </summary>
+        </member>
+        <member name="F:NAudio.Utils.ProgressLog.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NAudio.Utils.ProgressLog.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NAudio.Utils.ProgressLog.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NAudio.Wave.WaveCallbackInfo">
+            <summary>
+            Wave Callback Info
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveCallbackInfo.Strategy">
+            <summary>
+            Callback Strategy
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveCallbackInfo.Handle">
+            <summary>
+            Window Handle (if applicable)
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveCallbackInfo.FunctionCallback">
+            <summary>
+            Sets up a new WaveCallbackInfo for function callbacks
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveCallbackInfo.NewWindow">
+            <summary>
+            Sets up a new WaveCallbackInfo to use a New Window
+            IMPORTANT: only use this on the GUI thread
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveCallbackInfo.ExistingWindow(System.IntPtr)">
+            <summary>
+            Sets up a new WaveCallbackInfo to use an existing window
+            IMPORTANT: only use this on the GUI thread
+            </summary>
+        </member>
+        <member name="T:NAudio.Wave.WaveIn">
+            <summary>
+            Allows recording using the Windows waveIn APIs
+            Events are raised as recorded buffers are made available
+            </summary>
+        </member>
+        <member name="E:NAudio.Wave.WaveIn.DataAvailable">
+            <summary>
+            Indicates recorded data is available 
+            </summary>
+        </member>
+        <member name="E:NAudio.Wave.WaveIn.RecordingStopped">
+            <summary>
+            Indicates that all recorded data has now been received.
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.#ctor">
+            <summary>
+            Prepares a Wave input device for recording
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.#ctor(System.IntPtr)">
+            <summary>
+            Creates a WaveIn device using the specified window handle for callbacks
+            </summary>
+            <param name="windowHandle">A valid window handle</param>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.#ctor(NAudio.Wave.WaveCallbackInfo)">
+            <summary>
+            Prepares a Wave input device for recording
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveIn.DeviceCount">
+            <summary>
+            Returns the number of Wave In devices available in the system
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.GetCapabilities(System.Int32)">
+            <summary>
+            Retrieves the capabilities of a waveIn device
+            </summary>
+            <param name="devNumber">Device to test</param>
+            <returns>The WaveIn device capabilities</returns>
+        </member>
+        <member name="P:NAudio.Wave.WaveIn.BufferMilliseconds">
+            <summary>
+            Milliseconds for the buffer. Recommended value is 100ms
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveIn.NumberOfBuffers">
+            <summary>
+            Number of Buffers to use (usually 2 or 3)
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveIn.DeviceNumber">
+            <summary>
+            The device number to use
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.Callback(System.IntPtr,NAudio.Wave.WaveInterop.WaveMessage,System.IntPtr,NAudio.Wave.WaveHeader,System.IntPtr)">
+            <summary>
+            Called when we get a new buffer of recorded data
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.StartRecording">
+            <summary>
+            Start recording
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.StopRecording">
+            <summary>
+            Stop recording
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.GetPosition">
+            <summary>
+            Gets the current position in bytes from the wave input device.
+            it calls directly into waveInGetPosition)
+            </summary>
+            <returns>Position in bytes</returns>
+        </member>
+        <member name="P:NAudio.Wave.WaveIn.WaveFormat">
+            <summary>
+            WaveFormat we are recording in
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.Dispose(System.Boolean)">
+            <summary>
+            Dispose pattern
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.GetMixerLine">
+            <summary>
+            Microphone Level
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveIn.Dispose">
+            <summary>
+            Dispose method
+            </summary>
+        </member>
+        <member name="T:NAudio.Wave.WaveOut">
+            <summary>
+            Represents a wave out device
+            </summary>
+        </member>
+        <member name="E:NAudio.Wave.WaveOut.PlaybackStopped">
+            <summary>
+            Indicates playback has stopped automatically
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.GetCapabilities(System.Int32)">
+            <summary>
+            Retrieves the capabilities of a waveOut device
+            </summary>
+            <param name="devNumber">Device to test</param>
+            <returns>The WaveOut device capabilities</returns>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.DeviceCount">
+            <summary>
+            Returns the number of Wave Out devices available in the system
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.DesiredLatency">
+            <summary>
+            Gets or sets the desired latency in milliseconds
+            Should be set before a call to Init
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.NumberOfBuffers">
+            <summary>
+            Gets or sets the number of buffers used
+            Should be set before a call to Init
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.DeviceNumber">
+            <summary>
+            Gets or sets the device number
+            Should be set before a call to Init
+            This must be between -1 and <see>DeviceCount</see> - 1.
+            -1 means stick to default device even default device is changed
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.#ctor">
+            <summary>
+            Creates a default WaveOut device
+            Will use window callbacks if called from a GUI thread, otherwise function
+            callbacks
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.#ctor(System.IntPtr)">
+            <summary>
+            Creates a WaveOut device using the specified window handle for callbacks
+            </summary>
+            <param name="windowHandle">A valid window handle</param>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.#ctor(NAudio.Wave.WaveCallbackInfo)">
+            <summary>
+            Opens a WaveOut device
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Init(NAudio.Wave.IWaveProvider)">
+            <summary>
+            Initialises the WaveOut device
+            </summary>
+            <param name="waveProvider">WaveProvider to play</param>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Play">
+            <summary>
+            Start playing the audio from the WaveStream
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Pause">
+            <summary>
+            Pause the audio
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Resume">
+            <summary>
+            Resume playing after a pause from the same position
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Stop">
+            <summary>
+            Stop and reset the WaveOut device
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.GetPosition">
+            <summary>
+            Gets the current position in bytes from the wave output device.
+            (n.b. this is not the same thing as the position within your reader
+            stream - it calls directly into waveOutGetPosition)
+            </summary>
+            <returns>Position in bytes</returns>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.OutputWaveFormat">
+            <summary>
+            Gets a <see cref="T:NAudio.Wave.WaveFormat"/> instance indicating the format the hardware is using.
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.PlaybackState">
+            <summary>
+            Playback State
+            </summary>
+        </member>
+        <member name="P:NAudio.Wave.WaveOut.Volume">
+            <summary>
+            Volume for this device 1.0 is full scale
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Dispose">
+            <summary>
+            Closes this WaveOut device
+            </summary>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Dispose(System.Boolean)">
+            <summary>
+            Closes the WaveOut device and disposes of buffers
+            </summary>
+            <param name="disposing">True if called from <see>Dispose</see></param>
+        </member>
+        <member name="M:NAudio.Wave.WaveOut.Finalize">
+            <summary>
+            Finalizer. Only called when user forgets to call <see>Dispose</see>
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,19 @@
+#!/bin/sh
+wineskinAppChoice=1
+cd "$(dirname "$0")/../../"
+CONTENTSFOLD="$PWD"
+export PATH="$CONTENTSFOLD/MacOS:$CONTENTSFOLD/SharedSupport/wine:$PATH"
+export WINEPREFIX="$CONTENTSFOLD/Resources"
+
+################
+# You may make a custom program or script and replace this one if you want
+# if you replace this, the Option in KegworksConfig.app for trying to have programs
+#     give a warning prompt at shut down will not function
+
+if [ "$wineskinAppChoice" == "1" ]
+then
+	wineserver -k
+else
+	cd "$CONTENTSFOLD/Resources/Scripts"
+	wine Quit.exe
+fi

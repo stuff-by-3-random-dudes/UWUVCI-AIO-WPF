@@ -1,0 +1,9 @@
+2025-07-29 20:28:45 - Settings file not found. Creating default settings.
+2025-07-29 20:28:45 - Settings saved successfully.
+2025-07-29 20:28:57 - Settings saved successfully.
+2025-07-29 20:28:57 - Settings saved successfully.
+2025-07-29 20:28:57 - Settings saved successfully.
+2025-07-29 20:28:57 - Settings saved successfully.
+2025-07-29 20:28:57 - Created Tools folder.
+2025-07-29 20:28:57 - Missing tools detected.
+2025-07-29 20:29:46 - Settings saved successfully.
