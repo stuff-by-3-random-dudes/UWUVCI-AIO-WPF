@@ -1,8 +1,10 @@
-# UWUVCI-AIO-WPF (Zesty's Forked Version)
+# UWUVCI-AIO-WPF (Zesty's Fork)
 
 ⚠️ **Disclaimer:**  
 This is **not** the official version of [UWUVCI-AIO-WPF](https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF).  
-This fork contains **my own changes, modifications, and improvements**. If you are looking for the original version, please check out the official repo linked above.
+This fork contains **my own changes, modifications, and improvements**. If you are looking for the original version, please check out the official repo linked above.  
+
+If you use this fork and run into issues, please note that there is **no official support provided** — use at your own discretion.  
 
 ---
 
@@ -27,13 +29,13 @@ A tool for injecting various systems into the Wii U.
 
 Official community resources (for the original version):  
 * Discord: [https://discord.gg/mPZpqJJVmZ](https://discord.gg/mPZpqJJVmZ)  
-* Video guide: [YouTube Playlist (although, I made this when I was officially part of the project)](https://www.youtube.com/watch?v=1vzD_R-xPx4&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id)  
+* Video guide: [YouTube Playlist](https://www.youtube.com/watch?v=1vzD_R-xPx4&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id) *(I originally created this when I was part of the project)*  
 
 ---
 
 ## Notes About This Fork
 
-* This fork may include **new features, bug fixes, or changes** not present in the official repo.  
+* May include **new features, bug fixes, or changes** not present in the official repo.  
 * Development and direction may differ from the original.  
 * Contributions are welcome!  
 
