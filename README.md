@@ -1,4 +1,4 @@
-# UWUVCI-AIO-WPF (Forked Version)
+# UWUVCI-AIO-WPF (Zesty's Forked Version)
 
 ⚠️ **Disclaimer:**  
 This is **not** the official version of [UWUVCI-AIO-WPF](https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF).  
