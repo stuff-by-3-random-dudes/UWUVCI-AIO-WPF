@@ -26,6 +26,7 @@ using System.Timers;
 using NAudio.Utils;
 using System.Security.Cryptography;
 using UWUVCI_AIO_WPF.Helpers;
+using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -515,7 +516,7 @@ namespace UWUVCI_AIO_WPF
                 if (button)
                 {
                     var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
-                    var releases = Task.Run(() => client.Repository.Release.GetAll("stuff-by-3-random-dudes", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
+                    var releases = Task.Run(() => client.Repository.Release.GetAll("ZestyTS", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
                     int comparison;
                     try
                     {
@@ -538,7 +539,7 @@ namespace UWUVCI_AIO_WPF
                     //You idiot, when tf did you flip this back?
                     if (comparison < 0)
                     {
-                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest");
+                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/ZestyTS/UWUVCI-AIO-WPF/releases/latest");
                         try
                         {
                             cm.Owner = mw;
@@ -1809,7 +1810,8 @@ namespace UWUVCI_AIO_WPF
                 using var client = new WebClient();
                 var fixname = name.Split('\\');
 
-                if (MacLinuxHelper.IsRunningInVirtualMachine() || MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                var env = EnvDetect.Get();
+                if (env.UnderWineLike)
                     name = "Net6/" + name;
 
                 client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
