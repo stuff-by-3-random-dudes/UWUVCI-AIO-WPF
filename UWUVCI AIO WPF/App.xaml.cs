@@ -1,12 +1,13 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using UWUVCI_AIO_WPF.UI.Windows;
 using UWUVCI_AIO_WPF.Helpers;
-using GameBaseClassLibrary;
+using UWUVCI_AIO_WPF.UI.Windows;
+using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -52,7 +53,8 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                if (MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                var env = EnvDetect.Get();
+                if (env.UnderWineLike)
                 {
                     MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not. We will assume you did, but if you didn't, in the main application click the gear icon, and then click the button that says 'Show Tutorial Screens'.",
                         "UWUVCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);

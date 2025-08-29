@@ -69,131 +69,59 @@ namespace UWUVCI_AIO_WPF.Helpers
             DisplayMessageBoxAboutTheHelper();
         }
 
-        public static bool IsRunningUnderWineOrSimilar()
+
+        public sealed class RuntimeEnv
         {
-            try
-            {
-                // Check for Wine
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Wine"))
-                {
-                    if (key != null)
-                        return true;
-                }
-
-                string winePrefix = Environment.GetEnvironmentVariable("WINEPREFIX");
-                if (!string.IsNullOrEmpty(winePrefix))
-                    return true;
-
-                // Check for Proton
-                string protonPrefix = Environment.GetEnvironmentVariable("STEAM_COMPAT_DATA_PATH");
-                if (!string.IsNullOrEmpty(protonPrefix))
-                    return true;
-
-                // Check for CrossOver
-                string crossoverPrefix = Environment.GetEnvironmentVariable("CROSSOVER_PREFIX");
-                if (!string.IsNullOrEmpty(crossoverPrefix))
-                    return true;
-
-                // Check for BoxedWine
-                string boxedWinePrefix = Environment.GetEnvironmentVariable("BOXEDWINE_PATH");
-                if (!string.IsNullOrEmpty(boxedWinePrefix))
-                    return true;
-
-                // Check for Lutris
-                string lutrisRuntime = Environment.GetEnvironmentVariable("LUTRIS_GAME_UUID");
-                if (!string.IsNullOrEmpty(lutrisRuntime))
-                    return true;
-
-                // Check for PlayOnLinux
-                string playOnLinux = Environment.GetEnvironmentVariable("PLAYONLINUX");
-                if (!string.IsNullOrEmpty(playOnLinux))
-                    return true;
-
-                // Check for DXVK
-                string dxvk = Environment.GetEnvironmentVariable("DXVK_LOG_LEVEL");
-                if (!string.IsNullOrEmpty(dxvk))
-                    return true;
-
-                // Check for ReactOS
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
-                    Environment.OSVersion.VersionString.Contains("ReactOS"))
-                    return true;
-
-                // Check for Winetricks
-                string winetricks = Environment.GetEnvironmentVariable("WINETRICKS");
-                if (!string.IsNullOrEmpty(winetricks))
-                    return true;
-
-                // Check for Cedega (WineX)
-                string cedega = Environment.GetEnvironmentVariable("CEDEGA_PATH");
-                if (!string.IsNullOrEmpty(cedega))
-                    return true;
-
-                // Check for common Wine/Proton files
-                string[] wineFiles = { "/usr/bin/wine", "/usr/local/bin/wine", "/usr/bin/proton", "/usr/local/bin/proton" };
-                if (wineFiles.Any(File.Exists))
-                    return true;
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception while checking for Wine or similar: {ex.Message}");
-            }
-
-            return false;
+            public bool UnderWineLike { get; set; }  // Wine / CrossOver / Proton / Lutris
+            public bool HostIsMac { get; set; }      // macOS host (detected via Wine Z:\ mapping)
+            public string Flavor { get; set; }       // "CrossOver" | "Proton" | "Lutris" | "Wine" | null
         }
 
-        public static bool IsRunningInVirtualMachine()
+        public static class EnvDetect
         {
-            try
+            private static string GetEnv(string name)
             {
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_BIOS"))
-                    foreach (var _ in from ManagementObject bios in searcher.Get()
-                                      let manufacturer = bios["Manufacturer"]?.ToString() ?? string.Empty
-                                      where manufacturer.Contains("VMware") || manufacturer.Contains("VirtualBox") || manufacturer.Contains("Parallels") || manufacturer.Contains("Xen") || manufacturer.Contains("KVM") || manufacturer.Contains("Bhyve")
-                                      select new { })
-                        return true;
-/*
-                using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_ComputerSystem"))
-                    foreach (var (manufacturer, model) in from ManagementObject cs in searcher.Get()
-                                                          let manufacturer = cs["Manufacturer"]?.ToString() ?? string.Empty
-                                                          let model = cs["Model"]?.ToString() ?? string.Empty
-                                                          select (manufacturer, model))
-                    {
-                        if (manufacturer.Contains("Microsoft Corporation") && model.Contains("Virtual Machine"))
-                            return true;
-
-                        if (manufacturer.Contains("QEMU") || manufacturer.Contains("Bochs") || manufacturer.Contains("OpenStack"))
-                            return true;
-                    }
-*/
-                string[] virtualizationIndicators = { "Parallels", "VMware", "VirtualBox", "QEMU", "Hyper-V", "Xen", "KVM", "Bhyve", "Bochs", "OpenStack", "ProxMox", "Virtuozzo" };
-                foreach (string indicator in virtualizationIndicators)
-                    if (Environment.OSVersion.VersionString.Contains(indicator))
-                        return true;
-
-                // Check for common VM files
-                string[] vmFiles = { "/usr/bin/vmware", "/usr/bin/virtualbox", "/usr/bin/qemu", "/usr/bin/kvm", "/usr/bin/hyperv" };
-                if (vmFiles.Any(File.Exists))
-                    return true;
-
-                // Check for Docker
-                string dockerEnv = Environment.GetEnvironmentVariable("DOCKER_ENV");
-                if (!string.IsNullOrEmpty(dockerEnv) || File.Exists("/.dockerenv"))
-                    return true;
-
-                // Check for common VM processes
-                string[] vmProcesses = { "vmware", "virtualbox", "qemu", "kvm", "hyperv" };
-                foreach (var processName in vmProcesses)
-                    if (Process.GetProcessesByName(processName).Length > 0)
-                        return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception while checking for virtual machine: {ex.Message}");
+                var v = Environment.GetEnvironmentVariable(name);
+                return v ?? string.Empty;
             }
 
-            return false;
+            public static RuntimeEnv Get()
+            {
+                bool wineEnv =
+                    GetEnv("WINEDLLPATH") != string.Empty ||
+                    GetEnv("WINEPREFIX") != string.Empty ||
+                    GetEnv("WINELOADERNOEXEC") != string.Empty ||
+                    GetEnv("WINEESYNC") != string.Empty ||
+                    GetEnv("WINEFSYNC") != string.Empty;
+
+                bool isProton = GetEnv("STEAM_COMPAT_DATA_PATH") != string.Empty;
+                bool isCrossOver = GetEnv("CX_BOTTLE_PATH") != string.Empty ||
+                                   GetEnv("CROSSOVER_PREFIX") != string.Empty;
+                bool isLutris = GetEnv("LUTRIS_GAME_UUID") != string.Empty;
+                bool hasZ = false;
+                bool wineSrv = false;
+
+                try { hasZ = Directory.Exists(@"Z:\"); } catch { }
+                try { wineSrv = Process.GetProcessesByName("wineserver").Length > 0; } catch { }
+
+                bool underWineLike = wineEnv || isProton || isCrossOver || isLutris || hasZ || wineSrv;
+
+                // Only works when running under Wine (because Z:\ maps to /)
+                bool hostIsMac = File.Exists(@"Z:\System\Library\CoreServices\SystemVersion.plist");
+
+                string flavor = null;
+                if (isCrossOver) flavor = "CrossOver";
+                else if (isProton) flavor = "Proton";
+                else if (isLutris) flavor = "Lutris";
+                else if (underWineLike) flavor = "Wine";
+
+                return new RuntimeEnv
+                {
+                    UnderWineLike = underWineLike,
+                    HostIsMac = hostIsMac,
+                    Flavor = flavor
+                };
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using GameBaseClassLibrary;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,18 +15,17 @@ using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using UWUVCI_AIO_WPF.Classes;
-using UWUVCI_AIO_WPF.UI.Windows;
-using Newtonsoft.Json;
-using MessageBox = System.Windows.MessageBox;
-using UWUVCI_AIO_WPF.Models;
-using WiiUDownloaderLibrary.Models;
-using WiiUDownloaderLibrary;
-using Newtonsoft.Json.Linq;
 using UWUVCI_AIO_WPF.Helpers;
-using System.Diagnostics.Eventing.Reader;
+using UWUVCI_AIO_WPF.Models;
+using UWUVCI_AIO_WPF.UI.Windows;
+using WiiUDownloaderLibrary;
+using WiiUDownloaderLibrary.Models;
+using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
+using MessageBox = System.Windows.MessageBox;
 
 namespace UWUVCI_AIO_WPF
 {
+
     public static class StringExtensions
     {
         public static string ToHex(this string input)
@@ -56,7 +57,7 @@ namespace UWUVCI_AIO_WPF
         private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
         static string code = null;
         static MainViewModel mvvm;
-        private static bool IsNativeWindows = !MacLinuxHelper.IsRunningUnderWineOrSimilar();
+        private static bool IsNativeWindows = !EnvDetect.Get().UnderWineLike;
 
         /*
          * GameConsole: Can either be NDS, N64, GBA, NES, SNES or TG16
@@ -285,7 +286,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "The images are most likely the culprit, try changing them around." +
                         "\nFAQ: #28";
 
-                if (MacLinuxHelper.IsRunningInVirtualMachine() || MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                if (!IsNativeWindows)
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
 
                 MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file and on the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
