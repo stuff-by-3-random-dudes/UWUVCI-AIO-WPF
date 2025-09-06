@@ -1,10 +1,13 @@
 ﻿using GameBaseClassLibrary;
+using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
+using System.Windows.Media;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.UI.Windows;
 using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
@@ -21,6 +24,23 @@ namespace UWUVCI_AIO_WPF
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            // --- Force software rendering under Wine/Proton/CrossOver ---
+            try
+            {
+                if (ToolRunner.UnderWine())  // or: if (EnvDetect.Get().UnderWineLike)
+                {
+                    RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+
+                    // Optional: persist via WPF registry toggle (harmless under Wine)
+                    Registry.SetValue(
+                        @"HKEY_CURRENT_USER\Software\Microsoft\Avalon.Graphics",
+                        "DisableHWAcceleration",
+                        1,
+                        RegistryValueKind.DWord);
+                }
+            }
+            catch { /* ignore */ }
+
             // Ensure the settings directory exists before attempting to load settings
             if (!Directory.Exists(AppDataPath))
                 Directory.CreateDirectory(AppDataPath);
@@ -48,25 +68,9 @@ namespace UWUVCI_AIO_WPF
             JsonSettingsManager.LoadSettings();
 
             if (!JsonSettingsManager.Settings.IsFirstLaunch)
-            {
                 LaunchMainApplication(e);
-            }
             else
-            {
-                var env = EnvDetect.Get();
-                if (env.UnderWineLike)
-                {
-                    MessageBox.Show("UWUVCI cannot tell if you went through the tutorial or not. We will assume you did, but if you didn't, in the main application click the gear icon, and then click the button that says 'Show Tutorial Screens'.",
-                        "UWUVCI Tutorial..?", MessageBoxButton.OK, MessageBoxImage.Question);
-                    JsonSettingsManager.Settings.IsFirstLaunch = false;
-                    JsonSettingsManager.SaveSettings();
-                    LaunchMainApplication(e);
-                }
-                else
-                {
-                    new IntroductionWindow().ShowDialog();
-                }
-            }
+                new IntroductionWindow().ShowDialog();
         }
 
         private static void GlobalTextBox_PreviewDragOver(object sender, DragEventArgs e)
