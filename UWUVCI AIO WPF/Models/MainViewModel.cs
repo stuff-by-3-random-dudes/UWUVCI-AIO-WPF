@@ -499,6 +499,15 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public static string AppRoot =>
+            Path.GetFullPath(AppContext.BaseDirectory); // stable even under Wine/macOS
+
+        public static string DefaultBasePath =>
+            Path.Combine(AppRoot, "bin", "BaseGames");
+
+        public static string DefaultOutPath =>
+            Path.Combine(AppRoot, "InjectedGames");
+
         public bool NKITFLAG { get; set; } = false;
 
         public MainWindow mw;
@@ -609,6 +618,7 @@ namespace UWUVCI_AIO_WPF
         }
         public MainViewModel()
         {
+            JsonSettingsManager.Settings.PathsSet = true;
             if (!Environment.Is64BitOperatingSystem)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
@@ -674,12 +684,11 @@ namespace UWUVCI_AIO_WPF
         private void InitializePaths()
         {
             if (string.IsNullOrEmpty(JsonSettingsManager.Settings.OutPath))
-                JsonSettingsManager.Settings.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+                JsonSettingsManager.Settings.OutPath = AppPaths.DefaultOutPath;
 
             if (string.IsNullOrEmpty(JsonSettingsManager.Settings.BasePath))
-                JsonSettingsManager.Settings.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+                JsonSettingsManager.Settings.BasePath = AppPaths.DefaultBasePath;
         }
-
 
         public string turbocd()
         {
@@ -1039,39 +1048,55 @@ namespace UWUVCI_AIO_WPF
         }
         public void Pack(bool loadiine)
         {
-            string consoleName =  GameConfiguration.Console.ToString();
-
-            if (GC)
+            string consoleName = GameConfiguration.Console.ToString();
+            if (GC) 
                 consoleName = GameConsoles.GCN.ToString();
 
             ValidatePathsStillExist();
+
             if (loadiine)
                 Injection.Loadiine(GameConfiguration.GameName, consoleName);
-
             else
             {
-                if (gameConfiguration.GameName != null)
+                if (!string.IsNullOrEmpty(gameConfiguration.GameName))
                 {
-                    Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-                    gameConfiguration.GameName = gameConfiguration.GameName.Replace("|", " ");
-                    gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
+                    // Keep only letters, numbers, space, dash — match your downstream assumptions.
+                    var reg = new Regex(@"[^A-Za-z0-9 \-]");
+                    gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName.Replace("|", " "), "");
                 }
 
-                Task.Run(() => { Injection.Packing(GameConfiguration.GameName, consoleName, this); });
+                Exception packError = null;
+                var done = new ManualResetEventSlim(false);
 
-                DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
-                try
+                Task.Run(() =>
                 {
-                    dw.changeOwner(mw);
-                }
-                catch (Exception) { }
+                    try { Injection.Packing(GameConfiguration.GameName, consoleName, this); }
+                    catch (Exception ex) { packError = ex; }
+                    finally { done.Set(); }
+                });
+
+                var dw = new DownloadWait("Packing Inject - Please Wait", "", this);
+                try { dw.changeOwner(mw); } catch { }
                 dw.ShowDialog();
 
+                done.Wait(); // ensure background finished before continuing
+
+                if (packError != null)
+                {
+                    OpenDialog("Packing failed", packError.Message);
+                    return;
+                }
+
                 Progress = 0;
+
                 string extra = "";
                 string names = "Copy to SD";
-                if (GameConfiguration.Console == GameConsoles.WII) extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad. \n If Stuck in a BlackScreen, you need to unplug your WiiU.";
-                if (GameConfiguration.Console == GameConsoles.WII && romPath.ToLower().Contains(".wad")) extra += "\n Make sure that the chosen WAD is installed in your vWii!";
+                if (GameConfiguration.Console == GameConsoles.WII)
+                {
+                    extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad. \n If Stuck in a BlackScreen, you need to unplug your WiiU.";
+                    if (romPath?.ToLower().Contains(".wad") == true)
+                        extra += "\n Make sure that the chosen WAD is installed in your vWii!";
+                }
                 if (GC)
                 {
                     extra = "\n Make sure to have Nintendon't + config on your SD.\n You can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings. ";
@@ -1079,11 +1104,11 @@ namespace UWUVCI_AIO_WPF
                 }
                 gc2rom = "";
 
-                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", JsonSettingsManager.Settings.OutPath); try
-                {
-                    cm.Owner = mw;
-                }
-                catch (Exception) { }
+                var cm = new Custom_Message(
+                    "Injection Complete",
+                    $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ",
+                    JsonSettingsManager.Settings.OutPath);
+                try { cm.Owner = mw; } catch { /* ignore */ }
                 cm.ShowDialog();
             }
             LGameBasesString.Clear();
@@ -1101,6 +1126,7 @@ namespace UWUVCI_AIO_WPF
             foldername = "";
             mw.ListView_Click(mw.listCONS, null);
         }
+
 
         private void ClearImage()
         {
@@ -1702,14 +1728,14 @@ namespace UWUVCI_AIO_WPF
                                 break;
                             case GameConsoles.WII:
                                 if (test == GameConsoles.GCN)
-                                    dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
+                                    dialog.Filter = "GCN ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 else
                                     dialog.Filter = "All Supported Types (*.*) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso; *.dol; *.wad|Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
                                     // dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
 
                                 break;
                             case GameConsoles.GCN:
-                                dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
+                                dialog.Filter = "GCN ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 break;
                         }
                     }
@@ -2061,34 +2087,72 @@ namespace UWUVCI_AIO_WPF
 
         public bool ValidatePathsStillExist()
         {
-            string basePath = JsonSettingsManager.Settings.BasePath;
-            string outPath = JsonSettingsManager.Settings.OutPath;
+            var basePath = JsonSettingsManager.Settings.BasePath;
+            var outPath = JsonSettingsManager.Settings.OutPath;
 
-            bool baseExists = EnsureDirectoryExists(ref basePath, "bin/BaseGames");
-            bool injectExists = EnsureDirectoryExists(ref outPath, "InjectedGames");
+            var baseRes = EnsureDirectoryExists(ref basePath, "Base");
+            var outRes = EnsureDirectoryExists(ref outPath, "Out");
 
-            if (baseExists && injectExists)
+            // If user had set a custom path but it doesn't exist, prompt instead of silently changing it.
+            if (baseRes == EnsureDirResult.InvalidKept || outRes == EnsureDirResult.InvalidKept)
+                return false;
+
+            JsonSettingsManager.Settings.BasePath = basePath!;
+            JsonSettingsManager.Settings.OutPath = outPath!;
+            JsonSettingsManager.Settings.PathsSet = true;
+            JsonSettingsManager.SaveSettings();
+            return true;
+        }
+
+
+        public static class AppPaths
+        {
+            public static string AppRoot
             {
-                JsonSettingsManager.Settings.BasePath = basePath;
-                JsonSettingsManager.Settings.OutPath = outPath;
-                JsonSettingsManager.Settings.PathsSet = true;
-                JsonSettingsManager.SaveSettings();
-                return true;
+                get
+                {
+                    var asm = System.Reflection.Assembly.GetEntryAssembly()
+                           ?? System.Reflection.Assembly.GetExecutingAssembly();
+                    var exePath = asm.Location;
+                    return Path.GetDirectoryName(exePath)
+                           ?? throw new InvalidOperationException("Unable to resolve app root.");
+                }
             }
 
-            return false;
+            public static string DefaultBasePath => Path.Combine(AppRoot, "bin", "BaseGames");
+            public static string DefaultOutPath => Path.Combine(AppRoot, "InjectedGames");
         }
 
-        private bool EnsureDirectoryExists(ref string path, string defaultSubDir)
+        public enum EnsureDirResult
         {
-            if (Directory.Exists(path))
-                return true;
-
-            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), defaultSubDir);
-            Directory.CreateDirectory(fullPath);
-            path = fullPath;
-            return false;
+            Exists,     // path existed and is usable
+            Created,    // fallback was created and assigned
+            InvalidKept // caller-provided path was invalid; we did not mutate it
         }
+
+        private static EnsureDirResult EnsureDirectoryExists(ref string? path, string defaultKey)
+        {
+            // If caller already points to a real directory, keep it.
+            if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
+                return EnsureDirResult.Exists;
+
+            // For a non-empty custom path that doesn't exist, don't mutate it silently.
+            if (!string.IsNullOrWhiteSpace(path))
+                return EnsureDirResult.InvalidKept;
+
+            // Choose fallback based on key and create it.
+            string fallback = defaultKey switch
+            {
+                "Base" => AppPaths.DefaultBasePath,
+                "Out" => AppPaths.DefaultOutPath,
+                _ => Path.Combine(AppPaths.AppRoot, defaultKey) // generic safety
+            };
+
+            Directory.CreateDirectory(fallback);
+            path = fallback; // only time we mutate
+            return EnsureDirResult.Created;
+        }
+
 
         public void GetBases(GameConsoles console)
         {
@@ -2105,11 +2169,22 @@ namespace UWUVCI_AIO_WPF
 
         public GameBases getBasefromName(string name)
         {
-            string nameWithoutRegion = name.Substring(0, name.Length - 3);
-            string region = name.Substring(name.Length - 2);
+            if (string.IsNullOrWhiteSpace(name) || name == "Custom")
+                return new GameBases { Name = "Custom", Region = Regions.EU };
 
-            return LNDS.Concat(LN64).Concat(LNES).Concat(LSNES).Concat(LGBA).Concat(LTG16).Concat(LMSX).Concat(LWII)
-                       .FirstOrDefault(b => b.Name == nameWithoutRegion && b.Region.ToString() == region);
+            if (name.Length < 3) return null; // not enough room for " XX"
+
+            // Expect "...<space><2-letter region>"
+            // e.g., "Super Mario Sunshine US"
+            string regionStr = name.Substring(name.Length - 2);          // last 2
+            string baseName = name.Substring(0, name.Length - 3);       // drop " XX"
+
+            var all = LNDS.Concat(LN64).Concat(LNES).Concat(LSNES)
+                          .Concat(LGBA).Concat(LTG16).Concat(LMSX).Concat(LWII);
+
+            return all.FirstOrDefault(b =>
+                string.Equals(b.Name, baseName, StringComparison.Ordinal) &&
+                string.Equals(b.Region.ToString(), regionStr, StringComparison.OrdinalIgnoreCase));
         }
 
 
@@ -2305,35 +2380,64 @@ namespace UWUVCI_AIO_WPF
         public void Download()
         {
             ValidatePathsStillExist();
-            if (CheckForInternetConnection())
+
+            if (!CheckForInternetConnection())
+                return;
+
+            // spin up cancellation in case you want to hook a cancel button later
+            var cts = new CancellationTokenSource();
+            DownloadWait dw;
+
+            if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
             {
-                DownloadWait dw;
-                
-                if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
-                {
-                    double speed = TestDownloadSpeed();  // in MB/s
-                    TimeSpan estimatedTime = CalculateEstimatedTime(speed);
+                double speed = TestDownloadSpeed();  // in MB/s
+                TimeSpan estimatedTime = CalculateEstimatedTime(speed);
 
-                    // Start the actual download
-                    Task.Run(() => { Injection.Download(this); });
+                // Run the new async injection download in background
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Injection.DownloadAsync(this, cts.Token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Download failed: " + ex.Message);
+                    }
+                }, cts.Token);
 
-                    // Display the waiting dialog with the estimated time
-                    dw = new DownloadWait("Downloading Base - Please Wait", estimatedTime, this);
-                }
-                else
-                {
-                    Task.Run(() => { Injection.Download(this); });
-                    dw = new DownloadWait("Downloading Base - Please Wait", "", this);
-                }
-                try
-                {
-                    dw.changeOwner(mw);
-                }
-                catch (Exception) { }
-                dw.ShowDialog();
-                Progress = 0;
+                // Show waiting dialog with ETA and pass cts
+                dw = new DownloadWait("Downloading Base - Please Wait", this, cts, true);
             }
+            else
+            {
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Injection.DownloadAsync(this, cts.Token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Download failed: " + ex.Message);
+                    }
+                }, cts.Token);
+
+                dw = new DownloadWait("Downloading Base - Please Wait", this, cts, true);
+            }
+
+            try
+            {
+                dw.changeOwner(mw);
+            }
+            catch (Exception) { }
+
+            dw.ShowDialog();
+
+            Progress = 0;
         }
+
+
 
         private double TestDownloadSpeed()
         {
