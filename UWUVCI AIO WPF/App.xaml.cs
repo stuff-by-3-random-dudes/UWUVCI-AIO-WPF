@@ -198,8 +198,11 @@ namespace UWUVCI_AIO_WPF
             if (e.Args.Length >= 1)
                 foreach (var s in e.Args)
                 {
-                    if (s == "--skip") check = false;
-                    if (s == "--spacebypass") bypass = true;
+                    if (s == "--skip") 
+                        check = false;
+
+                    if (s == "--spacebypass") 
+                        bypass = true;
                 }
 
             Process[] pname = Process.GetProcessesByName("UWUVCI AIO");
