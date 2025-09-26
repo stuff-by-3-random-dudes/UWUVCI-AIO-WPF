@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
@@ -140,7 +141,6 @@ namespace UWUVCI_AIO_WPF
 
                 }
 
-
                 fs.Close();
             }
         }
@@ -203,7 +203,7 @@ namespace UWUVCI_AIO_WPF
                     long neededspace = mvm.GC ? 10000000000 : 15000000000;
 
                     if (freeSpaceInBytes < neededspace)
-                        throw new Exception("12G");
+                        throw new Exception("13G");
                 }
 
                 if (Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
@@ -258,7 +258,7 @@ namespace UWUVCI_AIO_WPF
                     return false;
                 }
 
-                var errorMessage = "Injection Failed due to unknown circumstances. Accent marks in the install path for UWUVCI or in the rom path is known to cause issues. Please contact us on the UWUVCI discord if you need any assistance.";
+                var errorMessage = "Injection Failed due to unknown circumstances.";
 
                 if (e.Message == "MISSINGF")
                     errorMessage = "Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base!";
@@ -273,7 +273,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "If you import a config you NEED to reselect a base";
                 else if (e.Message.Contains("WII"))
                     errorMessage = $"{e.Message.Replace("Wii", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
-                else if (e.Message.Contains("12G"))
+                else if (e.Message.Contains("13G"))
                     errorMessage = $"Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
                 else if (e.Message.Contains("nkit"))
                     errorMessage = $"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.";
@@ -289,7 +289,7 @@ namespace UWUVCI_AIO_WPF
                 if (!IsNativeWindows)
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
 
-                MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file and on the UWUVCI Discord\n\nError Message:\n" + e.Message, "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 Logger.Log(e.Message);
                 Clean();
                 return false;
@@ -401,7 +401,7 @@ namespace UWUVCI_AIO_WPF
                         WII(RomPath, mvm);
                     break;
                 case GameConsoles.GCN:
-                    GC(RomPath, mvm, force);
+                    GCN(RomPath, mvm, force);
                     break;
             }
         }
@@ -575,13 +575,17 @@ namespace UWUVCI_AIO_WPF
         private static void PatchDol(string consoleName, string mainDolPath, MainViewModel mvm)
         {
             // --- Normalize inputs that might arrive as POSIX to Windows-view once ---
-            string ToWin(string p)
+            static string ToWin(string p)
             {
-                if (string.IsNullOrEmpty(p)) return p ?? "";
+                if (string.IsNullOrEmpty(p)) 
+                    return p ?? "";
+
                 if (p.Length > 2 && char.IsLetter(p[0]) && p[1] == ':' && (p[2] == '\\' || p[2] == '/'))
                     return p.Replace('/', '\\');                   // already Windows
+
                 if (p[0] == '/')                                   // POSIX -> Z:\...
                     return @"Z:\" + p.TrimStart('/').Replace('/', '\\');
+
                 return p.Replace('/', '\\');
             }
             mainDolPath = ToWin(mainDolPath);
@@ -632,7 +636,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                // Non-Wii path stays native to your code
+                // Non-Wii path stays native
                 var dol = new Dol();
                 var allCodes = new List<GctCode>();
                 foreach (var filePath in convertedGctFiles)
@@ -640,9 +644,6 @@ namespace UWUVCI_AIO_WPF
                 dol.PatchDolFile(mainDolPath, allCodes);
             }
         }
-
-
-
 
         private static void GctPatch(MainViewModel mvm, string consoleName, string isoPath)
         {
@@ -663,8 +664,24 @@ namespace UWUVCI_AIO_WPF
 
         private static void WII(string romPath, MainViewModel mvm)
         {
+            // --- small logger helpers ---
+            void Log(string msg)
+            {
+                var line = $"[WII] {DateTime.Now:HH:mm:ss} {msg}";
+                Console.WriteLine(line);
+                try { Logger.Log(line); } catch { /* ignore */ }
+            }
+            string SizeOf(string p) => File.Exists(p) ? new FileInfo(p).Length.ToString("N0") + " bytes" : "missing";
+            Stopwatch StepTimer(string name, int step)
+            {
+                Log($"STEP {step}: {name} — START");
+                return Stopwatch.StartNew();
+            }
+            void EndTimer(Stopwatch sw, int step) => Log($"STEP {step}: done in {sw.Elapsed.TotalSeconds:F2}s");
+
             // Normalize possible POSIX input (e.g., dragged file on mac) to Windows view
             romPath = ToolRunner.ToWindowsView(romPath);
+            Log($"Input ROM: {romPath}");
 
             var savedir = Directory.GetCurrentDirectory();
 
@@ -674,49 +691,103 @@ namespace UWUVCI_AIO_WPF
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
             var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
 
+            Log($"Paths: preIso={preIsoWin}, tempDir={tempDirWin}, gameIso={gameIsoWin}, tikTmd={tikTmdWin}");
+            Directory.CreateDirectory(tempPath);
+
             // ---- 1) Ensure pre.iso exists (copy or convert NKIT/WBFS) ----
-            if (new FileInfo(romPath).Extension.IndexOf("iso", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                mvm.msg = "Copying ROM...";
-                File.Copy(romPath, preIsoWin, overwrite: true);
-                mvm.Progress = 15;
-            }
-            else if (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0
-                                 || new FileInfo(romPath).Extension.IndexOf("wbfs", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                mvm.msg = (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0)
-                            ? "Converting NKIT to ISO"
-                            : "Converting WBFS to ISO...";
+                var step = StepTimer("Prepare pre.iso", 1);
+                var ext = (Path.GetExtension(romPath) ?? "").ToLowerInvariant();
 
-                ToolRunner.RunTool(
-                    "wit",
-                    toolsPath,
-                    $"copy --source \"{romPath}\" --dest \"{preIsoWin}\" -I",
-                    showWindow: mvm.debug
-                );
+                if (ext.Contains("iso"))
+                {
+                    mvm.msg = "Copying ROM...";
+                    Log($"Copy ISO → {preIsoWin}");
+                    File.Copy(romPath, preIsoWin, overwrite: true);
 
-                if (romPath.IndexOf("wbfs", StringComparison.OrdinalIgnoreCase) < 0 && !File.Exists(preIsoWin))
-                    throw new Exception("nkit");
+                    // NEW: fence + visibility logs
+                    ToolRunner.LogFileVisibility("[after File.Copy] pre.iso", preIsoWin);
+                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
+                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after copy.", preIsoWin);
 
-                mvm.Progress = 15;
+                    Log($"pre.iso size: {SizeOf(preIsoWin)}");
+                    mvm.Progress = 15;
+                }
+                else if (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0
+                                     || ext.Contains("wbfs"))
+                {
+                    mvm.msg = (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0)
+                                ? "Converting NKIT to ISO"
+                                : "Converting WBFS to ISO...";
+
+                    var witArgs = $"copy --source \"{romPath}\" --dest \"{preIsoWin}\" -I";
+                    Log($"Calling wit: {witArgs}");
+                    try
+                    {
+                        ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"ERROR in STEP 1 (wit copy): {ex.Message}");
+                        throw;
+                    }
+
+                    // NEW: fence + visibility logs (important under Wine/mac)
+                    ToolRunner.LogFileVisibility("[after wit copy] pre.iso", preIsoWin);
+                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
+                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after wit copy.", preIsoWin);
+
+                    // keep your NKIT guard
+                    if (!ext.Contains("wbfs") && !File.Exists(preIsoWin))
+                    {
+                        Log("pre.iso not found after NKIT conversion (Wine view).");
+                        throw new Exception("nkit");
+                    }
+
+                    Log($"pre.iso size: {SizeOf(preIsoWin)}");
+                    mvm.Progress = 15;
+                }
+                else
+                {
+                    Log($"Unsupported input extension '{ext}'. Continuing may fail later.");
+                }
+
+                EndTimer(step, 1);
             }
 
             // ---- 2) Manual XML edits ----
-            mvm.msg = "Trying to change the Manual...";
-            byte[] chars = new byte[4];
-            using (var fstrm = new FileStream(preIsoWin, FileMode.Open, FileAccess.Read)) fstrm.Read(chars, 0, 4);
-            string procod = ByteArrayToString(chars);
-            string neededformanual = procod.ToHex();
-            string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
-            var doc = new XmlDocument();
-            doc.Load(metaXml);
-            doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
-            doc.Save(metaXml);
-            mvm.Progress = 25;
+            {
+                var step = StepTimer("Edit meta.xml reserved_flag2", 2);
+                mvm.msg = "Trying to change the Manual...";
+
+                // NEW: assert visibility again, with a crisp error
+                ToolRunner.LogFileVisibility("[step 2 pre-check] pre.iso", preIsoWin);
+                if (!File.Exists(preIsoWin))
+                    throw new FileNotFoundException("pre.iso missing before meta.xml edit. (Wine/.NET view)", preIsoWin);
+
+                byte[] chars = new byte[4];
+                using (var fstrm = new FileStream(preIsoWin, FileMode.Open, FileAccess.Read))
+                    fstrm.Read(chars, 0, 4);
+
+                string procod = ByteArrayToString(chars);
+                string neededformanual = procod.ToHex();
+                string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
+                Log($"ROM code={procod}, hex={neededformanual}, meta={metaXml}");
+
+                var doc = new XmlDocument();
+                doc.Load(metaXml);
+                doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
+                doc.Save(metaXml);
+
+                mvm.Progress = 25;
+                EndTimer(step, 2);
+            }
 
             // ---- 3) Regionfrii ----
             if (mvm.regionfrii)
             {
+                var step = StepTimer("Apply RegionFrii", 3);
+                Log($"regionfrii flags: US={mvm.regionfriius}, JP={mvm.regionfriijp}");
                 using FileStream fs = new FileStream(preIsoWin, FileMode.Open, FileAccess.ReadWrite);
                 fs.Seek(0x4E003, SeekOrigin.Begin);
                 if (mvm.regionfriius)
@@ -737,46 +808,68 @@ namespace UWUVCI_AIO_WPF
                     fs.Seek(0x4E010, SeekOrigin.Begin);
                     fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
                 }
+                EndTimer(step, 3);
             }
 
             // ---- 4) Extract via wit (trim or whole) ----
-            Directory.CreateDirectory(tempDirWin);
-            string psel = mvm.donttrim ? "WHOLE" : "data";
-            mvm.msg = mvm.donttrim ? "Trimming ROM..." : "Prepping ROM...";
+            {
+                var step = StepTimer("Extract pre.iso", 4);
+                string psel = mvm.donttrim ? "WHOLE" : "data";
+                mvm.msg = mvm.donttrim ? "Trimming ROM..." : "Prepping ROM...";
+                var witArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1";
 
-            ToolRunner.RunTool(
-                "wit",
-                toolsPath,
-                $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1",
-                showWindow: mvm.debug
-            );
-            mvm.Progress = 30;
+                Log($"Calling wit: {witArgs}");
+                try
+                {
+                    ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
+                }
+                catch (Exception ex)
+                {
+                    Log($"ERROR in STEP 4 (wit extract): {ex.Message}");
+                    throw;
+                }
+                mvm.Progress = 30;
+                EndTimer(step, 4);
+            }
 
             // ---- 5) GCT patch  ----
-            GctPatch(mvm, "Wii", preIsoWin);
+            {
+                var step = StepTimer("Apply GCT patch", 5);
+                Log($"GctPatch -> console=Wii, preISO={preIsoWin}");
+                GctPatch(mvm, "Wii", preIsoWin);
+                EndTimer(step, 5);
+            }
 
             // ---- 6) main.dol patch  ----
-            bool dolPatch = mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter;
-            if (dolPatch)
             {
-                mvm.msg = "Patching main.dol file";
-                mvm.Progress = 33;
+                var step = StepTimer("Patch main.dol (deflicker/dither/VFilter)", 6);
+                bool dolPatch = mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter;
+                Log($"dolPatch flags: deflicker={mvm.RemoveDeflicker}, dithering={mvm.RemoveDithering}, halfV={mvm.HalfVFilter}");
+                if (dolPatch)
+                {
+                    mvm.msg = "Patching main.dol file";
+                    mvm.Progress = 33;
 
-                var mainDolPath = Directory.GetFiles(tempDirWin, "main.dol", SearchOption.AllDirectories).FirstOrDefault();
-                var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
-
-                DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
-                File.Delete(mainDolPath);
-                File.Move(output, mainDolPath);
+                    var mainDolPath = Directory.GetFiles(tempDirWin, "main.dol", SearchOption.AllDirectories).FirstOrDefault() ?? throw new Exception("main.dol not found in extracted tree.");
+                    var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
+                    Log($"Patching {mainDolPath} -> {output}");
+                    DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
+                    File.Delete(mainDolPath);
+                    File.Move(output, mainDolPath);
+                }
+                EndTimer(step, 6);
             }
 
             // ---- 7) Classic Controller patch  ----
             if (mvm.Index == 4)
             {
+                var step = StepTimer("Force CC patch", 7);
                 mvvm.msg = "Patching ROM (Force CC)...";
+                var targetDol = Path.Combine(tempDirWin, "DATA", "sys", "main.dol");
+                Log($"GetExtTypePatcher.exe target: {targetDol}");
                 using Process tik = new Process();
                 tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                tik.StartInfo.Arguments = $"\"{Path.Combine(tempDirWin, "DATA", "sys", "main.dol")}\" -nc";
+                tik.StartInfo.Arguments = $"\"{targetDol}\" -nc";
                 tik.StartInfo.UseShellExecute = false;
                 tik.StartInfo.CreateNoWindow = true;
                 tik.StartInfo.RedirectStandardOutput = true;
@@ -785,15 +878,23 @@ namespace UWUVCI_AIO_WPF
                 Thread.Sleep(2000);
                 tik.StandardInput.WriteLine();
                 tik.WaitForExit();
+                Log($"GetExtTypePatcher exit={tik.ExitCode}");
                 mvm.Progress = 35;
+                EndTimer(step, 7);
             }
 
             // ---- 8) Video patch via wii-vmc.exe ----
             if (mvm.Patch)
             {
+                var step = StepTimer("Video patch (wii-vmc)", 8);
                 mvm.msg = "Video Patching ROM...";
-                File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), Path.Combine(tempDirWin, "DATA", "sys", "wii-vmc.exe"), true);
-                Directory.SetCurrentDirectory(Path.Combine(tempDirWin, "DATA", "sys"));
+                var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
+                Directory.CreateDirectory(sysDir);
+                var vmcPath = Path.Combine(sysDir, "wii-vmc.exe");
+                File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), vmcPath, true);
+                Log($"wii-vmc.exe copied → {vmcPath}");
+                var prev = Directory.GetCurrentDirectory();
+                Directory.SetCurrentDirectory(sysDir);
 
                 using (Process vmc = new Process())
                 {
@@ -810,6 +911,7 @@ namespace UWUVCI_AIO_WPF
                     vmc.StartInfo.RedirectStandardOutput = true;
                     vmc.StartInfo.RedirectStandardInput = true;
 
+                    Log($"wii-vmc args: {vmc.StartInfo.Arguments}");
                     vmc.Start();
                     Thread.Sleep(1000);
                     vmc.StandardInput.WriteLine("a");
@@ -818,77 +920,114 @@ namespace UWUVCI_AIO_WPF
                     Thread.Sleep(2000);
                     vmc.StandardInput.WriteLine();
                     vmc.WaitForExit();
+                    Log($"wii-vmc exit={vmc.ExitCode}");
                     File.Delete("wii-vmc.exe");
                 }
 
-                Directory.SetCurrentDirectory(savedir);
+                Directory.SetCurrentDirectory(prev);
                 mvm.Progress = 40;
+                EndTimer(step, 8);
             }
 
             // ---- 9) Repack via wit ----
-            mvm.msg = mvm.donttrim ? "Creating ISO from patched ROM..." : "Creating ISO from trimmed ROM...";
-            var copyFlags = mvm.donttrim ? "--psel WHOLE --iso" : "--links --iso";
+            {
+                var step = StepTimer("Repack to game.iso", 9);
+                mvm.msg = mvm.donttrim ? "Creating ISO from patched ROM..." : "Creating ISO from trimmed ROM...";
+                var copyFlags = mvm.donttrim ? "--psel WHOLE --iso" : "--links --iso";
+                var witArgs = $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}";
+                Log($"Calling wit: {witArgs}");
+                try
+                {
+                    ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
+                }
+                catch (Exception ex)
+                {
+                    Log($"ERROR in STEP 9 (wit copy): {ex.Message}");
+                    throw;
+                }
+                Log($"game.iso size: {SizeOf(gameIsoWin)}");
 
-            ToolRunner.RunTool(
-                "wit",
-                toolsPath,
-                $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}",
-                showWindow: mvm.debug
-            );
-
-            Directory.Delete(tempDirWin, true);
-            File.Delete(preIsoWin);
+                Directory.Delete(tempDirWin, true);
+                File.Delete(preIsoWin);
+                EndTimer(step, 9);
+            }
 
             // ---- 10) Extract TIK/TMD via wit ----
-            mvm.Progress = 50;
-            mvm.msg = "Replacing TIK and TMD...";
-            Directory.CreateDirectory(tikTmdWin);
+            {
+                var step = StepTimer("Extract TIK/TMD", 10);
+                mvm.Progress = 50;
+                mvm.msg = "Replacing TIK and TMD...";
 
-            ToolRunner.RunTool(
-                "wit",
-                toolsPath,
-                $"extract \"{gameIsoWin}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdWin}\" -vv1",
-                showWindow: mvm.debug
-            );
+                // Ensure destination DOES NOT exist (wit wants to create it)
+                if (Directory.Exists(tikTmdWin))
+                {
+                    Log($"Cleaning existing TIKTMD dir: {tikTmdWin}");
+                    try { Directory.Delete(tikTmdWin, recursive: true); } catch { /* ignore, wit will fail loudly if not gone */ }
+                }
 
-            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
-                File.Delete(sFile);
+                // Let wit create the folder; add -o/--overwrite for safety (supported by wit)
+                var witArgs = $"extract \"{gameIsoWin}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdWin}\" -vv1 -o";
+                Log($"Calling wit: {witArgs}");
+                ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
 
-            File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), true);
-            File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), true);
-            Directory.Delete(tikTmdWin, true);
+                Log($"tmd.bin: {SizeOf(Path.Combine(tikTmdWin, "tmd.bin"))}, ticket.bin: {SizeOf(Path.Combine(tikTmdWin, "ticket.bin"))}");
+
+                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
+                    File.Delete(sFile);
+
+                File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), overwrite: true);
+                File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), overwrite: true);
+
+                // Now it's safe to clean it up
+                try { Directory.Delete(tikTmdWin, true); } catch { /* best effort */ }
+
+                EndTimer(step, 10);
+            }
+
 
             // ---- 11) Inject into content via nfs2iso2nfs.exe ----
-            mvm.Progress = 60;
-            mvm.msg = "Injecting ROM...";
-
-            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
-                File.Delete(sFile);
-
-            File.Move(gameIsoWin, Path.Combine(baseRomPath, "content", "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe"), true);
-
-            Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
-            using (Process iso2nfs = new Process())
             {
-                if (!mvm.debug) iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                var step = StepTimer("Inject (nfs2iso2nfs)", 11);
+                mvm.Progress = 60;
+                mvm.msg = "Injecting ROM...";
 
-                iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
-                string extra = "";
-                if (mvm.Index == 2) { extra = "-horizontal "; }
-                if (mvm.Index == 3) { extra = "-wiimote "; }
-                if (mvm.Index == 4) { extra = "-instantcc "; }
-                if (mvm.Index == 5) { extra = "-nocc "; }
-                if (mvm.LR) { extra += "-lrpatch "; }
-                iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso game.iso";
-                iso2nfs.Start();
-                iso2nfs.WaitForExit();
-                File.Delete("nfs2iso2nfs.exe");
-                File.Delete("game.iso");
+                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
+                    File.Delete(sFile);
+
+                var finalIso = Path.Combine(baseRomPath, "content", "game.iso");
+                Log($"Move {gameIsoWin} → {finalIso}");
+                FileHelpers.MoveOverwrite(gameIsoWin, finalIso);
+
+                var tool = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
+                var outTool = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
+                File.Copy(tool, outTool, true);
+
+                var prev = Directory.GetCurrentDirectory();
+                Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+                using (Process iso2nfs = new Process())
+                {
+                    if (!mvm.debug) iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                    string extra = "";
+                    if (mvm.Index == 2) { extra = "-horizontal "; }
+                    if (mvm.Index == 3) { extra = "-wiimote "; }
+                    if (mvm.Index == 4) { extra = "-instantcc "; }
+                    if (mvm.Index == 5) { extra = "-nocc "; }
+                    if (mvm.LR) { extra += "-lrpatch "; }
+                    iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso game.iso";
+                    Log($"nfs2iso2nfs args: {iso2nfs.StartInfo.Arguments}");
+                    iso2nfs.Start();
+                    iso2nfs.WaitForExit();
+                    Log($"nfs2iso2nfs exit={iso2nfs.ExitCode}");
+                    File.Delete("nfs2iso2nfs.exe");
+                    File.Delete("game.iso");
+                }
+                Directory.SetCurrentDirectory(prev);
+
+                mvm.Progress = 80;
+                EndTimer(step, 11);
             }
-            Directory.SetCurrentDirectory(savedir);
-
-            mvm.Progress = 80;
         }
 
         private static void ConvertToIso(string sourcePath, string outputFileName, bool debugMode)
@@ -928,7 +1067,7 @@ namespace UWUVCI_AIO_WPF
             File.Move(nkitIsoPath, Path.Combine(tempPath, "TempBase", "files", outputFileName));
         }
 
-        private static void GC(string romPath, MainViewModel mvm, bool force)
+        private static void GCN(string romPath, MainViewModel mvm, bool force)
         {
             // If romPath might be POSIX (mac/linux), normalize to Windows-view once.
             romPath = ToolRunner.ReplaceArgsWithWindowsFlavor(
@@ -1315,103 +1454,216 @@ namespace UWUVCI_AIO_WPF
             cm.ShowDialog();
             Clean();
         }
-        [STAThread]
+
         public static void Packing(string gameName, string gameConsole, MainViewModel mvm)
         {
-            mvm.msg = "Checking Tools...";
+            // --- step 0: preflight/tool check ---
+            mvm.msg = "Checking tools...";
             mvm.InjcttoolCheck();
             mvm.Progress = 20;
-            mvm.msg = "Creating Outputfolder...";
-            Regex reg = new Regex("[^a-zA-Z0-9 -]");
-            if (gameName == null || gameName == string.Empty) gameName = "NoName";
-           
-            //string outputPath = Path.Combine(JsonSettingsManager.Settings.InjectionPath, gameName);
-            string outputPath = Path.Combine(JsonSettingsManager.Settings.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}");
-            outputPath = outputPath.Replace("|", " ");
-            mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|"," ")}";
-            int i = 0;
+
+            // --- step 1: sanitize name + decide output folder ---
+            mvm.msg = "Creating output folder...";
+            // Keep your original sanitization intent, but make it robust
+            string Sanitize(string s)
+            {
+                if (string.IsNullOrWhiteSpace(s)) return "NoName";
+                s = s.Replace("|", " ");
+                // allow letters, numbers, space, dash; drop everything else
+                s = Regex.Replace(s, "[^a-zA-Z0-9 \\-]", "");
+                // collapse runs of spaces/dashes
+                s = Regex.Replace(s, "[\\s\\-]+", " ").Trim();
+                return s.Length == 0 ? "NoName" : s;
+            }
+
+            var safeGameName = Sanitize(gameName ?? "NoName");
+            var outRoot = JsonSettingsManager.Settings.OutPath;                 // absolute, user-chosen
+            var basePath = baseRomPath;                                         // absolute path to baserom (your global)
+            var folderBase = $"[WUP][{gameConsole}] {safeGameName}";
+            string outputPath = Path.Combine(outRoot, folderBase);
+
+            // de-dup if it already exists
+            int suffix = 0;
             while (Directory.Exists(outputPath))
             {
-                outputPath = Path.Combine(JsonSettingsManager.Settings.OutPath, $"[WUP][{gameConsole}] {reg.Replace(gameName,"").Replace("|", " ")}_{i}");
-                mvvm.foldername = $"[WUP][{gameConsole}] {reg.Replace(gameName, "").Replace("|", " ")}_{i}";
-                i++;
+                suffix++;
+                outputPath = Path.Combine(outRoot, $"{folderBase}_{suffix}");
             }
-            var oldpath = Directory.GetCurrentDirectory();
+
+            // preserve your global foldername side-effect
+            mvvm.foldername = Path.GetFileName(outputPath);
+
             mvm.Progress = 40;
             mvm.msg = "Packing...";
+
+            // --- step 2: clear CNUSPACKER cache safely (best-effort) ---
             try
             {
-                Directory.Delete(Environment.GetEnvironmentVariable("LocalAppData") + @"\temp\.net\CNUSPACKER", true);
+                var local = Environment.GetEnvironmentVariable("LocalAppData");
+                if (!string.IsNullOrEmpty(local))
+                {
+                    var cache = Path.Combine(local, @"temp\.net\CNUSPACKER");
+                    if (Directory.Exists(cache))
+                        Directory.Delete(cache, true);
+                }
             }
-            catch { }
+            catch { /* non-fatal */ }
+
+            // --- step 3: ensure dirs + pin CWD to outRoot (avoids stray Downloads/Release) ---
+            var oldCwd = Environment.CurrentDirectory;
             try
             {
-                var cmdLine = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
-                var regex = new Regex(@"(\"".+?\"")|(\S+)", RegexOptions.Compiled);
-                var args = new List<string>();
+                Directory.CreateDirectory(outRoot);
+                Directory.CreateDirectory(outputPath);
+                Environment.CurrentDirectory = outRoot;
 
-                foreach (Match match in regex.Matches(cmdLine))
-                    args.Add(match.Value.Trim('\"'));
+                // Build args exactly how CNUSPACKER expects them
+                var args = new[]
+                {
+                    "-in", basePath,
+                    "-out", outputPath,
+                    "-encryptKeyWith", JsonSettingsManager.Settings.Ckey
+                };
 
-                CNUSPACKER.Program.Main(args.ToArray());
+                // Capture CNUSPACKER console so we can diagnose path weirdness
+                var oldOut = Console.Out;
+                var oldErr = Console.Error;
+                using var swOut = new StringWriter();
+                using var swErr = new StringWriter();
+                Console.SetOut(swOut);
+                Console.SetError(swErr);
 
-                Directory.SetCurrentDirectory(oldpath);
-            } catch(Exception ex )
-            {
-                Logger.Log(ex.Message);
-                throw ex;
+                try
+                {
+                    // Call the DLL entry point directly (synchronous)
+                    CNUSPACKER.Program.Main(args);
+                }
+                catch (Exception ex)
+                {
+                    // flush captured output into your logger to help debug
+                    try
+                    {
+                        Logger.Log("[CNUSPACKER stdout]\n" + swOut.ToString());
+                        Logger.Log("[CNUSPACKER stderr]\n" + swErr.ToString());
+                    }
+                    catch { /* ignore logging failures */ }
+
+                    // bubble up with context
+                    throw new Exception("CNUSPACKER failed. See logs for details.", ex);
+                }
+                finally
+                {
+                    // restore console streams
+                    Console.SetOut(oldOut);
+                    Console.SetError(oldErr);
+
+                    // always log what CNUSPACKER wrote
+                    try
+                    {
+                        Logger.Log("[CNUSPACKER stdout]\n" + swOut.ToString());
+                        Logger.Log("[CNUSPACKER stderr]\n" + swErr.ToString());
+                    }
+                    catch { /* ignore logging failures */ }
+                }
             }
+            finally
+            {
+                // Always restore CWD
+                Environment.CurrentDirectory = oldCwd;
+            }
+
+            // --- step 4: wrap-up/cleanup ---
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
-            Clean();
+            try
+            {
+                Clean(); // your existing cleanup
+            }
+            catch (Exception ex)
+            {
+                // non-fatal: log and continue
+                try { Logger.Log("Clean() failed: " + ex.Message); } catch { }
+            }
+
             mvm.Progress = 100;
-            
             mvm.msg = "";
         }
-        
-        public static void Download(MainViewModel mvm)
+
+        public static async Task DownloadAsync(MainViewModel mvm, CancellationToken ct)
         {
+            // set up working dirs
             var curdir = Directory.GetCurrentDirectory();
-            mvm.InjcttoolCheck();
-            GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
+            if (Directory.Exists(tempPath))
+                Directory.Delete(tempPath, true);
 
-            //GetKeyOfBase
-            TKeys key = mvm.getTkey(b);
-            if (mvm.GameConfiguration.Console == GameConsoles.WII || mvm.GameConfiguration.Console == GameConsoles.GCN)
+            Directory.CreateDirectory(tempPath);
+
+            try
             {
-                if (Directory.Exists(tempPath)) 
-                    Directory.Delete(tempPath, true);
+                mvm.InjcttoolCheck();
+                GameBases b = mvm.getBasefromName(mvm.SelectedBaseAsString);
+                TKeys key = mvm.getTkey(b);
 
-                Directory.CreateDirectory(tempPath);
-
-                // Call the download method with progress reporting
                 var downloader = new Downloader(null, null);
-                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).GetAwaiter().GetResult();
 
-                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
-                mvm.Progress = 99;
-                foreach (string sFile in Directory.GetFiles(Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]", "content"), "*.nfs"))
+                // Progress adapter: scale download progress (0–100%) into 20–80%
+                var progress = new Progress<(double percent, string message)>(update =>
+                {
+                    // scale into 20–80% range
+                    double scaled = 20 + (update.percent * 0.6);
+                    if (scaled > 80) scaled = 80;
+
+                    mvm.Progress = Convert.ToInt16(scaled);
+                    mvm.msg = update.message;
+                });
+
+                // --- Download phase ---
+                var result = await downloader.DownloadAsync(
+                    new TitleData(b.Tid, key.Tkey),
+                    Path.Combine(tempPath, "download"),
+                    progress,
+                    ct).ConfigureAwait(false);
+
+                if (!result.Success)
+                {
+                    mvm.msg = "Download failed: " + result.Error;
+                    return;
+                }
+
+                // --- Decrypt phase (80–100%) ---
+                mvm.msg = "Decrypting content...";
+                mvm.Progress = 85; // step into decrypt range
+
+                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[]
+                {
+                    JsonSettingsManager.Settings.Ckey,
+                    Path.Combine(tempPath, "download", b.Tid),
+                    Path.Combine(JsonSettingsManager.Settings.BasePath,
+                    $"{b.Name.Replace(":", "")} [{b.Region}]")
+                });
+
+                mvm.Progress = 95;
+                mvm.msg = "Cleaning up...";
+
+                // cleanup step
+                foreach (string sFile in Directory.GetFiles(
+                             Path.Combine(JsonSettingsManager.Settings.BasePath,
+                                 $"{b.Name.Replace(":", "")} [{b.Region}]", "content"),
+                             "*.nfs"))
+                {
                     File.Delete(sFile);
+                }
 
+                // only now hit 100 → window will auto-close
                 mvm.Progress = 100;
+                mvm.msg = "Done.";
             }
-            else
+            finally
             {
-                if (Directory.Exists(tempPath))
-                    Directory.Delete(tempPath, true);
-
-                Directory.CreateDirectory(tempPath);
-
-                // Call the download method with progress reporting
-                var downloader = new Downloader(null, null);
-                downloader.DownloadAsync(new TitleData(b.Tid, key.Tkey), Path.Combine(tempPath, "download")).GetAwaiter().GetResult();
-
-                mvm.Progress = 75;
-                CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, Path.Combine(tempPath, "download", b.Tid), Path.Combine(JsonSettingsManager.Settings.BasePath, $"{b.Name.Replace(":", "")} [{b.Region}]") });
-                mvm.Progress = 100;
+                Directory.SetCurrentDirectory(curdir);
             }
-            Directory.SetCurrentDirectory(curdir);
         }
+
 
         public static string ExtractBase(string path, GameConsoles console)
         {
@@ -1624,203 +1876,274 @@ namespace UWUVCI_AIO_WPF
 
         private static void GBA(string injectRomPath, N64Conf config)
         {
-            bool delete = false;
-            if (!new FileInfo(injectRomPath).Extension.Contains("gba"))
+            // --- small logger helpers ---
+            void Log(string msg)
             {
-                mvvm.msg = "Injecting GB/GBC ROM into goomba...";
+                var line = $"[GBA] {DateTime.Now:HH:mm:ss} {msg}";
+                Console.WriteLine(line);
+                try { Logger.Log(line); } catch { /* ignore */ }
+            }
+            string SizeOf(string p) => File.Exists(p) ? new FileInfo(p).Length.ToString("N0") + " bytes" : "missing";
 
-                // Concatenate goomba.gba and the ROM into goombamenu.gba
-                string goombaGbaPath = Path.Combine(toolsPath, "goomba.gba");
-                string goombaMenuPath = Path.Combine(toolsPath, "goombamenu.gba");
-
-                // Read both files and concatenate them
-                using (FileStream output = new FileStream(goombaMenuPath, FileMode.Create))
-                {
-                    // Copy goomba.gba into goombamenu.gba
-                    using (FileStream goombaGbaStream = new FileStream(goombaGbaPath, FileMode.Open))
-                        goombaGbaStream.CopyTo(output);
-
-                    // Append the injectRomPath (GB/GBC ROM) to goombamenu.gba
-                    using FileStream injectRomStream = new FileStream(injectRomPath, FileMode.Open);
-                    injectRomStream.CopyTo(output);
-                }
-
-                mvvm.Progress = 20;
-
-                mvvm.msg = "Padding goomba ROM...";
-
-                // Padding to 32MB (33554432 bytes)
-                byte[] rom = new byte[33554432];
-                FileStream fs = new FileStream(goombaMenuPath, FileMode.Open);
-                fs.Read(rom, 0, (int)fs.Length);
-                fs.Close();
-
-                // Write the padded ROM to goombaPadded.gba
-                string goombaPaddedPath = Path.Combine(toolsPath, "goombaPadded.gba");
-                File.WriteAllBytes(goombaPaddedPath, rom);
-
-                injectRomPath = goombaPaddedPath; // Set the injectRomPath to the padded ROM
-                delete = true;
-                mvvm.Progress = 40;
+            // Convenience wrapper for MArchiveBatchTool.exe (or native fallback later)
+            void RunMArchive(string args, string label, bool longWaitBump = false)
+            {
+                mvvm.msg = label;
+                Log($"MArchiveBatchTool {args}");
+                ToolRunner.RunToolWithFallback(
+                    toolBaseName: "MArchiveBatchTool",
+                    toolsPathWin: toolsPath,
+                    argsWindowsPaths: args,
+                    showWindow: mvvm.debug
+                );
+                if (longWaitBump) mvvm.Progress += 15; else mvvm.Progress += 5;
             }
 
-            if (mvvm.PokePatch)
-            {
-                mvvm.msg = "Applying PokePatch";
-                File.Copy(injectRomPath, Path.Combine(tempPath, "rom.gba"));
-                injectRomPath = Path.Combine(tempPath, "rom.gba");
-                PokePatch(injectRomPath);
-                delete = true;
-                mvvm.PokePatch = false;
-                mvvm.Progress = 50;
-            }
+            bool deleteTempRom = false;
+            string workingRom = injectRomPath;
 
-            using (Process psb = new Process())
-            {
-                mvvm.msg = "Injecting ROM...";
-                psb.StartInfo.UseShellExecute = false;
-                psb.StartInfo.CreateNoWindow = true;
-                psb.StartInfo.FileName = Path.Combine(toolsPath, "psb.exe");
-                psb.StartInfo.Arguments = $"\"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\" \"{injectRomPath}\" \"{Path.Combine(baseRomPath, "content", "alldata.psb.m")}\"";
-                //psb.StartInfo.RedirectStandardError = true;
-                //psb.StartInfo.RedirectStandardOutput = true;
-                psb.Start();
-
-                //var error = psb.StandardError.ReadToEndAsync();
-                //var output = psb.StandardOutput.ReadToEndAsync();
-
-                psb.WaitForExit();
-
-                //if (!string.IsNullOrEmpty(error.Result))
-                //throw new Exception(error.Result + "\nFile:" + new StackFrame(0, true).GetFileName() + "\nLine: " + new StackFrame(0, true).GetFileLineNumber());
-
-                mvvm.Progress = 50;
-            }
-
-            if (config.DarkFilter == false)
-            {
-                var mArchiveExePath = Path.Combine(toolsPath, "MArchiveBatchTool.exe");
-                var allDataPath = Path.Combine(baseRomPath, "content", "alldata.psb.m");
-
-                // Step 1: Extract all data (longer wait time)
-                RunProcess(mArchiveExePath, $"archive extract \"{allDataPath}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80", true);
-                mvvm.Progress += 5;
-
-                var lastModDirect = new DirectoryInfo(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"))
-                    .GetDirectories()
-                    .OrderByDescending(d => d.LastWriteTimeUtc)
-                    .LastOrDefault();
-
-                var titleprofPsbM = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.m");
-
-                // Step 2: Unpack title_prof.psb.m
-                RunProcess(mArchiveExePath, $"m unpack \"{titleprofPsbM}\" zlib MX8wgGEJ2+M47 80", true);
-                mvvm.Progress += 5;
-
-                var titleprofPsb = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb");
-
-                // Step 3: Deserialize title_prof.psb
-                RunProcess(mArchiveExePath, $"psb deserialize \"{titleprofPsb}\"", true);
-                mvvm.Progress += 5;
-
-                var titleprofPsbJson = Path.Combine(lastModDirect.FullName, "config", "title_prof.psb.json");
-                var titleprofPsbJson_Modified = Path.Combine(lastModDirect.FullName, "config", "modified_title_prof.psb.json");
-
-                // Step 4: Modify the JSON
-                using (StreamReader sr = File.OpenText(titleprofPsbJson))
-                {
-                    var json = sr.ReadToEnd();
-                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                    jsonObj["root"]["m2epi"]["brightness"] = 1;
-
-                    json = JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
-                    File.WriteAllText(titleprofPsbJson_Modified, json);
-                    sr.Close();
-                }
-                File.Delete(titleprofPsbJson);
-                File.Move(titleprofPsbJson_Modified, titleprofPsbJson);
-
-                // Step 5: Serialize the JSON back to PSB
-                RunProcess(mArchiveExePath, $"psb serialize \"{titleprofPsbJson}\"", true);
-                mvvm.Progress += 5;
-
-                // Step 6: Pack the modified PSB back to a file
-                RunProcess(mArchiveExePath, $"m pack \"{titleprofPsb}\" zlib MX8wgGEJ2+M47 80", true);
-                mvvm.Progress += 5;
-
-                File.Delete(titleprofPsbJson);
-
-                // Step 7: Rebuild the archive (longer wait time)
-                RunProcess(mArchiveExePath, $"archive build --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80 \"{Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted")}\" \"{Path.Combine(baseRomPath, "content", "alldata")}\"", true);
-                mvvm.Progress += 15;
-
-                // Clean up extracted data
-                Directory.Delete(Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted"), true);
-                File.Delete(Path.Combine(baseRomPath, "content", "alldata.psb"));
-            }
-
-            if (delete)
-            {
-                File.Delete(injectRomPath);
-                if (File.Exists(Path.Combine(toolsPath, "goombamenu.gba"))) File.Delete(Path.Combine(toolsPath, "goombamenu.gba"));
-            }
-        }
-
-        // Stupid me complaining, function to create and run the process
-        private static void RunProcess(string fileName, string arguments, bool indefiniteWait = false, int waitTime = 3000)
-        {
-            using var process = new Process();
-            var startInfo = new ProcessStartInfo
-            {
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                Arguments = arguments,
-                FileName = fileName
-            };
-
-            process.StartInfo = startInfo;
-            process.Start();
-
-            if (indefiniteWait)
-                process.WaitForExit();
-            else
-                process.WaitForExit(waitTime);
-        }
-
-        private static void NDS(string injectRomPath)
-        {
             try
             {
-                string romName = GetRomNameFromZip();
-                mvvm.msg = "Removing BaseRom...";
-                ReplaceRomWithInjected(romName, injectRomPath);
-
-                if (mvvm.DSLayout) 
+                // --- If not a .gba, wrap with goomba (GB/GBC -> GBA) ---
+                if (!string.Equals(Path.GetExtension(workingRom), ".gba", StringComparison.OrdinalIgnoreCase))
                 {
-                    mvvm.msg = "Adding additional DS layout screens...";
+                    mvvm.msg = "Injecting GB/GBC ROM into goomba...";
+                    Log($"Input is not .gba -> building goomba menu with {workingRom}");
 
-                    using (var zip = ZipFile.Open(Path.Combine(toolsPath, "DSLayoutScreens.zip"), ZipArchiveMode.Read))
-                        zip.ExtractToDirectory(Path.Combine(tempPath, "DSLayoutScreens"));
+                    string goombaGbaPath = Path.Combine(toolsPath, "goomba.gba");
+                    string goombaMenuPath = Path.Combine(tempPath, "goombamenu.gba");  // temp instead of tools
+                    Directory.CreateDirectory(tempPath);
 
-                    // Yes this is a typo but it's becuase I fucked up when I uploaded the original file.
-                    DirectoryCopy(Path.Combine(tempPath, "DSLayoutScreens", (mvvm.STLayout ? "Phatnom Hourglass" : "All")), baseRomPath, true);
+                    // Concatenate goomba.gba + ROM
+                    using (var output = new FileStream(goombaMenuPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        using (var src = new FileStream(goombaGbaPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            src.CopyTo(output);
+
+                        using (var romSrc = new FileStream(workingRom, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            romSrc.CopyTo(output);
+                    }
+                    Log($"goombamenu.gba -> {goombaMenuPath} ({SizeOf(goombaMenuPath)})");
+                    mvvm.Progress = 20;
+
+                    // Pad to 32 MB without loading the whole file in RAM
+                    mvvm.msg = "Padding goomba ROM...";
+                    string goombaPaddedPath = Path.Combine(tempPath, "goombaPadded.gba");
+                    const long targetSize = 32L * 1024 * 1024; // 32 MiB
+
+                    using (var src = new FileStream(goombaMenuPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    using (var dst = new FileStream(goombaPaddedPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        src.CopyTo(dst);
+                        if (dst.Length < targetSize)
+                        {
+                            // Grow file by seeking to target-1 and writing one zero byte.
+                            dst.Seek(targetSize - 1, SeekOrigin.Begin);
+                            dst.WriteByte(0);
+                        }
+                    }
+                    Log($"goombaPadded.gba -> {goombaPaddedPath} ({SizeOf(goombaPaddedPath)})");
+
+                    workingRom = goombaPaddedPath;
+                    deleteTempRom = true;
+                    mvvm.Progress = 40;
                 }
-                if (mvvm.RendererScale || mvvm.Brightness != 80 || mvvm.PixelArtUpscaler != 0)
+
+                // --- Optional PokePatch ---
+                if (mvvm.PokePatch)
                 {
-                    mvvm.msg = "Updating configuration_cafe.json...";
-                    UpdateConfigurationCafeJson();
+                    mvvm.msg = "Applying PokePatch";
+                    Log("PokePatch requested");
+
+                    Directory.CreateDirectory(tempPath);
+                    string localRom = Path.Combine(tempPath, "rom.gba");
+                    File.Copy(workingRom, localRom, overwrite: true);
+                    Log($"Copied for patch: {localRom} ({SizeOf(localRom)})");
+
+                    PokePatch(localRom);
+
+                    workingRom = localRom;
+                    deleteTempRom = true;
+                    mvvm.PokePatch = false; // consume the flag
+                    mvvm.Progress = 50;
                 }
 
-                RecompressRom(romName);
+                // --- Inject into alldata.psb.m via psb tool ---
+                mvvm.msg = "Injecting ROM...";
+                string alldata = Path.Combine(baseRomPath, "content", "alldata.psb.m");
+                Log($"psb: \"{alldata}\" <- \"{workingRom}\"");
+                ToolRunner.RunToolWithFallback(
+                    toolBaseName: "psb",
+                    toolsPathWin: toolsPath,
+                    argsWindowsPaths: $"\"{alldata}\" \"{workingRom}\" \"{alldata}\"",
+                    showWindow: mvvm.debug
+                );
+                Log($"After psb injection: {alldata} ({SizeOf(alldata)})");
+                mvvm.Progress = 50;
+
+                // --- Dark filter handling (when disabled) ---
+                if (config.DarkFilter == false)
+                {
+                    Log("DarkFilter disabled -> patching title_prof to brightness=1");
+                    string extractedDir = Path.Combine(baseRomPath, "content", "alldata.psb.m_extracted");
+                    string builtDir = Path.Combine(baseRomPath, "content", "alldata");
+                    Directory.CreateDirectory(builtDir);
+
+                    // 1) Extract archive (longer)
+                    RunMArchive($"archive extract \"{alldata}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80", "Extracting archive...", longWaitBump: true);
+
+                    // Find the newest extraction folder (your original logic: "last" by LastWriteTime)
+                    var rootExtract = new DirectoryInfo(extractedDir);
+                    var last = rootExtract.Exists
+                        ? rootExtract.GetDirectories().OrderBy(d => d.LastWriteTimeUtc).LastOrDefault()
+                        : null;
+                    if (last == null)
+                        throw new InvalidOperationException("Extraction folder not found after archive extract.");
+
+                    var titleprofPsbM = Path.Combine(last.FullName, "config", "title_prof.psb.m");
+                    Log($"Located title_prof.psb.m: {titleprofPsbM}");
+
+                    // 2) Unpack PSB
+                    RunMArchive($"m unpack \"{titleprofPsbM}\" zlib MX8wgGEJ2+M47 80", "Unpacking PSB...");
+
+                    var titleprofPsb = Path.Combine(last.FullName, "config", "title_prof.psb");
+                    Log($"Unpacked -> {titleprofPsb} ({SizeOf(titleprofPsb)})");
+
+                    // 3) Deserialize to JSON
+                    RunMArchive($"psb deserialize \"{titleprofPsb}\"", "Deserializing PSB...");
+
+                    var titleprofJson = Path.Combine(last.FullName, "config", "title_prof.psb.json");
+                    Log($"Deserialized JSON -> {titleprofJson} ({SizeOf(titleprofJson)})");
+
+                    // 4) Modify JSON
+                    var tmpJson = Path.Combine(last.FullName, "config", "modified_title_prof.psb.json");
+                    using (var sr = File.OpenText(titleprofJson))
+                    {
+                        var json = sr.ReadToEnd();
+                        dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                        jsonObj["root"]["m2epi"]["brightness"] = 1; // turn off dark filter
+                        json = JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+                        File.WriteAllText(tmpJson, json);
+                    }
+                    File.Delete(titleprofJson);
+                    File.Move(tmpJson, titleprofJson);
+                    Log("Brightness set to 1 in JSON");
+
+                    // 5) Serialize JSON back to PSB
+                    RunMArchive($"psb serialize \"{titleprofJson}\"", "Serializing PSB...");
+
+                    // 6) Pack modified PSB back (re-encrypted)
+                    RunMArchive($"m pack \"{titleprofPsb}\" zlib MX8wgGEJ2+M47 80", "Packing PSB...");
+
+                    // 7) Rebuild the archive (longer)
+                    RunMArchive($"archive build --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80 \"{extractedDir}\" \"{builtDir}\"", "Rebuilding archive...", longWaitBump: true);
+
+                    // Clean up extraction
+                    try
+                    {
+                        if (Directory.Exists(extractedDir))
+                        {
+                            Directory.Delete(extractedDir, recursive: true);
+                            Log($"Cleaned: {extractedDir}");
+                        }
+
+                        var alldataPsb = Path.Combine(baseRomPath, "content", "alldata.psb");
+                        if (File.Exists(alldataPsb))
+                        {
+                            File.Delete(alldataPsb);
+                            Log($"Removed: {alldataPsb}");
+                        }
+                    }
+                    catch (Exception clex)
+                    {
+                        Log($"Cleanup warning: {clex.Message}");
+                    }
+                }
+
                 mvvm.Progress = 80;
             }
             catch (Exception ex)
             {
-                // Log the error
-                Console.WriteLine($"An error occurred in NDS method: {ex.Message}");
+                Log($"ERROR: {ex}");
+                throw;
+            }
+            finally
+            {
+                // temp clean-up
+                try
+                {
+                    if (deleteTempRom && File.Exists(workingRom))
+                    {
+                        File.Delete(workingRom);
+                        Log($"Deleted temp ROM: {workingRom}");
+                    }
+
+                    string gm = Path.Combine(tempPath, "goombamenu.gba");
+                    if (File.Exists(gm))
+                    {
+                        File.Delete(gm);
+                        Log($"Deleted temp: {gm}");
+                    }
+                }
+                catch (Exception clex)
+                {
+                    Log($"Temp cleanup warning: {clex.Message}");
+                }
+            }
+        }
+
+        private static void NDS(string injectRomPath)
+        {
+            // --- small logger helpers ---
+            void Log(string msg)
+            {
+                var line = $"[NDS] {DateTime.Now:HH:mm:ss} {msg}";
+                Console.WriteLine(line);
+                try { Logger.Log(line); } catch { }
+            }
+            string SizeOf(string p) => File.Exists(p) ? new FileInfo(p).Length.ToString("N0") + " bytes" : "missing";
+
+            try
+            {
+                string romName = GetRomNameFromZip();
+                Log($"Base ROM name in zip: {romName}");
+                mvvm.msg = "Removing BaseRom...";
+                ReplaceRomWithInjected(romName, injectRomPath);
+                Log($"Injected file placed as working ROM: {romName}");
+
+                if (mvvm.DSLayout)
+                {
+                    mvvm.msg = "Adding additional DS layout screens...";
+                    var dest = Path.Combine(tempPath, "DSLayoutScreens");
+                    if (Directory.Exists(dest)) Directory.Delete(dest, true);
+                    using (var zip = ZipFile.Open(Path.Combine(toolsPath, "DSLayoutScreens.zip"), ZipArchiveMode.Read))
+                        zip.ExtractToDirectory(dest);
+
+                    var folder = Path.Combine(dest, (mvvm.STLayout ? "Phatnom Hourglass" : "All"));
+                    Log($"Copying DS layout assets from: {folder}");
+                    DirectoryCopy(folder, baseRomPath, true);
+                }
+
+                if (mvvm.RendererScale || mvvm.Brightness != 80 || mvvm.PixelArtUpscaler != 0)
+                {
+                    mvvm.msg = "Updating configuration_cafe.json...";
+                    Log("Updating configuration_cafe.json based on UI settings");
+                    UpdateConfigurationCafeJson();
+                }
+
+                RecompressRom(romName);
+                var outZip = Path.Combine(baseRomPath, "content", "0010", "rom.zip");
+                Log($"Recompressed zip -> {outZip} ({SizeOf(outZip)})");
+
+                mvvm.Progress = 80;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[NDS] ERROR: {ex}");
                 throw;
             }
         }
+
 
         private static void UpdateConfigurationCafeJson()
         {
@@ -1833,7 +2156,7 @@ namespace UWUVCI_AIO_WPF
             var jsonObject = JObject.Parse(jsonContent);
 
             // Update the values
-            jsonObject["configuration"]["3DRendering"]["RenderScale"] = (mvvm.RendererScale ? 0 : 1);
+            jsonObject["configuration"]["3DRendering"]["RenderScale"] = (mvvm.RendererScale ? 2 : 1);
             jsonObject["configuration"]["Display"]["Brightness"] = mvvm.Brightness;
             jsonObject["configuration"]["Display"]["PixelArtUpscaler"] = mvvm.PixelArtUpscaler;
 
@@ -1888,38 +2211,180 @@ namespace UWUVCI_AIO_WPF
             File.Delete(romPath);
         }
 
-
         private static void N64(string injectRomPath, N64Conf config)
         {
-            try
+            string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
+            string mainIni = Path.Combine(baseRomPath, "content", "config", $"{Path.GetFileName(mainRomPath)}.ini");
+            using (Process n64convert = new Process())
             {
-                InjectRom(injectRomPath);
-                if (config.WideScreen || config.DarkFilter)
-                    ApplyCustomSettings(config);
+                mvvm.msg = "Injecting ROM...";
+                n64convert.StartInfo.UseShellExecute = false;
+                n64convert.StartInfo.CreateNoWindow = true;
+                n64convert.StartInfo.FileName = Path.Combine(toolsPath, "N64Converter.exe");
+                n64convert.StartInfo.Arguments = $"\"{injectRomPath}\" \"{mainRomPath}\"";
 
-                ApplyIniSettings(config);
-                mvvm.Progress = 80;
+                n64convert.Start();
+                n64convert.WaitForExit();
+                mvvm.Progress = 60;
+
             }
-            catch (Exception ex)
+
+            if (config.WideScreen || config.DarkFilter)
             {
-                // Log the error
-                Console.WriteLine($"An error occurred in N64 method: {ex.Message}");
-                throw;
+                using (var fileStream = File.Open(Path.Combine(baseRomPath, "content", "FrameLayout.arc"), FileMode.Open))
+                {
+                    uint offset = 0;
+                    uint size = 0;
+                    byte[] offsetB = new byte[4];
+                    byte[] sizeB = new byte[4];
+                    byte[] nameB = new byte[0x18];
+                    var header = new byte[4];
+
+                    byte[] oneOut = BitConverter.GetBytes((float)1);
+                    byte[] zeroOut = BitConverter.GetBytes((float)0);
+
+                    byte darkFilter = (byte)(config.DarkFilter ? 0 : 1);
+                    byte[] wideScreen = config.WideScreen ? new byte[] { 0x44, 0xF0, 0, 0 } : new byte[] { 0x44, 0xB4, 0, 0 };
+
+                    fileStream.Read(header, 0, 4);
+
+                    if (header[0] == 'S' && header[1] == 'A' && header[2] == 'R' && header[3] == 'C')
+                    {
+                        fileStream.Position = 0x0C;
+                        fileStream.Read(offsetB, 0, 4);
+
+                        offset = (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                        fileStream.Position = 0x38;
+                        fileStream.Read(offsetB, 0, 4);
+                        offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                        fileStream.Position = offset;
+                        fileStream.Read(header, 0, 4);
+
+                        if (header[0] == 'F' && header[1] == 'L' && header[2] == 'Y' && header[3] == 'T')
+                        {
+                            fileStream.Position = offset + 0x04;
+                            fileStream.Read(offsetB, 0, 4);
+
+                            offsetB[0] = 0;
+                            offsetB[1] = 0;
+
+                            offset += (uint)(offsetB[0] << 24 | offsetB[1] << 16 | offsetB[2] << 8 | offsetB[3]);
+
+                            fileStream.Position = offset;
+
+                            while (true)
+                            {
+                                fileStream.Read(header, 0, 4);
+                                fileStream.Read(sizeB, 0, 4);
+                                size = (uint)(sizeB[0] << 24 | sizeB[1] << 16 | sizeB[2] << 8 | sizeB[3]);
+
+                                if (header[0] == 'p' && header[1] == 'i' && header[2] == 'c' && header[3] == '1')
+                                {
+                                    fileStream.Position = offset + 0x0C;
+                                    fileStream.Read(nameB, 0, 0x18);
+                                    int count = Array.IndexOf(nameB, (byte)0);
+                                    string name = Encoding.ASCII.GetString(nameB, 0, count);
+
+                                    if (name == "frame")
+                                    {
+                                        fileStream.Position = offset + 0x2C;
+                                        fileStream.WriteByte(zeroOut[3]);
+                                        fileStream.WriteByte(zeroOut[2]);
+                                        fileStream.WriteByte(zeroOut[1]);
+                                        fileStream.WriteByte(zeroOut[0]);
+
+                                        fileStream.Position = offset + 0x30;//TranslationX
+                                        fileStream.WriteByte(zeroOut[3]);
+                                        fileStream.WriteByte(zeroOut[2]);
+                                        fileStream.WriteByte(zeroOut[1]);
+                                        fileStream.WriteByte(zeroOut[0]);
+
+                                        fileStream.Position = offset + 0x44;//ScaleX
+                                        fileStream.WriteByte(oneOut[3]);
+                                        fileStream.WriteByte(oneOut[2]);
+                                        fileStream.WriteByte(oneOut[1]);
+                                        fileStream.WriteByte(oneOut[0]);
+
+                                        fileStream.Position = offset + 0x48;//ScaleY
+                                        fileStream.WriteByte(oneOut[3]);
+                                        fileStream.WriteByte(oneOut[2]);
+                                        fileStream.WriteByte(oneOut[1]);
+                                        fileStream.WriteByte(oneOut[0]);
+
+                                        fileStream.Position = offset + 0x4C;//Widescreen
+                                        fileStream.Write(wideScreen, 0, 4);
+                                    }
+                                    else if (name == "frame_mask")
+                                    {
+                                        fileStream.Position = offset + 0x08;//Dark filter
+                                        fileStream.WriteByte(darkFilter);
+                                    }
+                                    else if (name == "power_save_bg")
+                                    {
+                                        //This means we finished frame_mask and frame edits so we can end the loop
+                                        break;
+                                    }
+
+                                    offset += size;
+                                    fileStream.Position = offset;
+                                }
+                                else if (offset + size >= fileStream.Length)
+                                {
+                                    //do nothing
+                                }
+                                else
+                                {
+                                    offset += size;
+                                    fileStream.Position = offset;
+                                }
+                            }
+                        }
+                    }
+                    fileStream.Close();
+                }
+                mvvm.Progress = 70;
             }
+
+            mvvm.msg = "Copying INI...";
+            if (config.INIBin == null)
+            {
+                if (config.INIPath == null)
+                {
+                    File.Delete(mainIni);
+                    File.Copy(Path.Combine(toolsPath, "blank.ini"), mainIni);
+                }
+                else
+                {
+                    File.Delete(mainIni);
+                    File.Copy(config.INIPath, mainIni);
+                }
+            }
+            else
+            {
+                ReadFileFromBin(config.INIBin, "custom.ini");
+                File.Delete(mainIni);
+                File.Move("custom.ini", mainIni);
+            }
+            mvvm.Progress = 80;
+
+
+
         }
 
-        private static void InjectRom(string injectRomPath)
+        private static void InjectRom(string injectRomPath, Action<string> Log)
         {
             string mainRomPath = Directory.GetFiles(Path.Combine(baseRomPath, "content", "rom"))[0];
-
-            using Process n64convert = new Process();
             mvvm.msg = "Injecting ROM...";
-            n64convert.StartInfo.UseShellExecute = false;
-            n64convert.StartInfo.CreateNoWindow = true;
-            n64convert.StartInfo.FileName = Path.Combine(toolsPath, "N64Converter.exe");
-            n64convert.StartInfo.Arguments = $"\"{injectRomPath}\" \"{mainRomPath}\"";
-            n64convert.Start();
-            n64convert.WaitForExit();
+            Log($"N64Converter: \"{injectRomPath}\" -> \"{mainRomPath}\"");
+
+            ToolRunner.RunToolWithFallback(
+                toolBaseName: "N64Converter",
+                toolsPathWin: toolsPath,
+                argsWindowsPaths: $"\"{injectRomPath}\" \"{mainRomPath}\"",
+                showWindow: mvvm.debug);
+
             mvvm.Progress = 60;
         }
 
