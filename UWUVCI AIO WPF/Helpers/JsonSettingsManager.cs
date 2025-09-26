@@ -10,7 +10,7 @@ namespace UWUVCI_AIO_WPF.Helpers
         private static string AppDataPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "UWUVCI-V3");
-        private static string SettingsFile = Path.Combine(AppDataPath, "settings.json");
+        public static string SettingsFile = Path.Combine(AppDataPath, "settings.json");
 
         public static JsonAppSettings Settings { get; private set; } = new JsonAppSettings();
 
