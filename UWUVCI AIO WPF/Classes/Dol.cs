@@ -82,10 +82,9 @@ namespace UWUVCI_AIO_WPF.Classes
                     }
                 }
 
-                string outputPath = Path.Combine(Path.GetDirectoryName(dolFilePath), "patched_dol.dol");
-                File.WriteAllBytes(outputPath, dolData);
+                File.WriteAllBytes(dolFilePath, dolData);
 
-                Logger.Log($"Patched DOL saved to: {outputPath}");
+                Logger.Log($"Patched DOL saved to: {dolFilePath}");
             }
             catch (Exception ex)
             {
