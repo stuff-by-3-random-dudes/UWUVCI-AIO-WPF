@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -18,7 +19,11 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private int motion = 1;
         private double accumulatedProgress = 0.0;
         private double progressIncrementPerSecond = 0.0;
-        public DownloadWait(string doing, string msg, MainViewModel mvm)
+        private int stallCounter = 0;
+        private double lastProgress = -1;
+        private readonly CancellationTokenSource _cts;
+
+        public DownloadWait(string doing, string msg, MainViewModel mvm, bool showCancel = false)
         {
             try
             {
@@ -34,97 +39,93 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             this.mvm = mvm;
             InitializeComponent();
             Key.Text = doing;
-           
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += timer_Tick;
-            timer.Start();
-        }
-        public DownloadWait(string doing, string msg, MainViewModel mvm, bool t)
-        {
-            try
-            {
-                if (Owner?.GetType() != typeof(MainWindow))
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
-            catch (Exception)
-            {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
-            this.mvm = mvm;
-            InitializeComponent();
-            Key.Text = doing;
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += timer_Tick;
-            
-        }
 
-        public DownloadWait(string doing, TimeSpan estimatedTime, MainViewModel mvm)
-        {
-            // Initialization same as original constructor
-            try
-            {
-                if (Owner?.GetType() == typeof(MainWindow))
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            }
-            catch (Exception)
-            {
-                WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
-            this.mvm = mvm;
-            InitializeComponent();
-            Key.Text = doing;
-
-            // Handle estimated time
-            if (estimatedTime != TimeSpan.MaxValue)
-                remainingTime = estimatedTime;
-            else
-                // Can't estimate, just starting with zero
-                remainingTime = TimeSpan.Zero; 
+            CancelButton.Visibility = showCancel ? Visibility.Visible : Visibility.Collapsed;
 
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
         }
+        public DownloadWait(string doing, MainViewModel mvm, CancellationTokenSource cts, bool showCancel = false)
+        {
+            InitializeComponent();
+            this.mvm = mvm;
+            _cts = cts;
+            Key.Text = doing;
+
+            CancelButton.Visibility = showCancel ? Visibility.Visible : Visibility.Collapsed;
+
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
+
         private void Window_Minimize(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
         }
 
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            _cts.Cancel();
+            msgT.Text = "Cancelling…";
+            CancelButton.IsEnabled = false;
+            pb.IsIndeterminate = true;
+
+            timer.Stop();
+            Close();
+        }
+
+        private void wind_Closed(object sender, EventArgs e)
+        {
+            timer.Stop();
+            try
+            {
+                if ((FindResource("mvm") as MainViewModel).mw != null)
+                    (FindResource("mvm") as MainViewModel).mw.Topmost = false;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
         private void timer_Tick(object sender, EventArgs e)
         {
             msgT.Text = mvm.msg;
-            pb.Value = mvm.Progress;
 
             if (Key.Text.Contains("Downloading Base"))
             {
+                // Map actual downloader progress (0–100) into the 20–80% range
+                double shownProgress = 20 + (mvm.Progress * 0.6);
+
+                if (shownProgress > 80)
+                    shownProgress = 80;
+                if (shownProgress < 20)
+                    shownProgress = 20;
+
+                pb.Value = shownProgress;
+
                 if (mvm.Progress >= 96)
                 {
-                    msgT.Text += $"Verifying download...";
-                    
-                    if (motion == 6)
-                        motion = 1;
-
+                    msgT.Text += " Verifying download";
+                    if (motion == 6) motion = 1;
                     for (var i = 0; i < motion; i++)
                         msgT.Text += ".";
-
                     motion++;
                 }
-                // Check if remainingTime has been initialized (i.e., not zero)
                 else if (remainingTime != TimeSpan.Zero)
                 {
                     if (remainingTime.TotalSeconds > 0)
                     {
-                        msgT.Text += $"Estimated time remaining: {remainingTime.Minutes} minutes {remainingTime.Seconds} seconds";
+                        msgT.Text += $" Estimated time remaining: {remainingTime.Minutes}m {remainingTime.Seconds}s";
 
                         if (mvm.Progress < 95)
                         {
-                            // Calculate the progress increment if not already calculated
                             if (progressIncrementPerSecond == 0.0)
                                 progressIncrementPerSecond = (95 - mvm.Progress) / remainingTime.TotalSeconds;
 
                             accumulatedProgress += progressIncrementPerSecond;
-
                             while (accumulatedProgress >= 1)
                             {
                                 mvm.Progress++;
@@ -136,14 +137,10 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     }
                     else
                     {
-                        msgT.Text += $"Completing download, eta not available";
-
-                        if (motion == 6)
-                            motion = 1;
-
+                        msgT.Text += " Completing download, ETA not available";
+                        if (motion == 6) motion = 1;
                         for (var i = 0; i < motion; i++)
                             msgT.Text += ".";
-
                         motion++;
                     }
                 }
@@ -153,12 +150,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                         mvm.Progress += 1;
                 }
             }
+            else
+            {
+                // Non-base downloads just bind raw progress
+                pb.Value = mvm.Progress;
+            }
+
             if (mvm.Progress == 100)
             {
                 timer.Stop();
                 Close();
             }
         }
+
 
         public void changeOwner(MainWindow ow)
         {
@@ -174,21 +178,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             catch (Exception)
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
-        }
-
-        private void wind_Closed(object sender, EventArgs e)
-        {
-            try
-            {
-                if ((FindResource("mvm") as MainViewModel).mw != null)
-                {
-                    (FindResource("mvm") as MainViewModel).mw.Topmost = false;
-                }
-            }
-            catch (Exception )
-            {
-
             }
         }
     }
