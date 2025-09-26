@@ -1,3 +1,0 @@
-2025-07-29 20:54:59 - Settings loaded successfully.
-2025-07-29 20:55:00 - Settings saved successfully.
-2025-07-29 20:55:00 - Missing tools detected.

@@ -1,4 +1,0 @@
-2025-07-29 20:51:17 - Settings loaded successfully.
-2025-07-29 20:51:18 - Settings saved successfully.
-2025-07-29 20:51:18 - Created Tools folder.
-2025-07-29 20:51:18 - Missing tools detected.
