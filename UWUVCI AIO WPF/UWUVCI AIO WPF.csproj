@@ -33,6 +33,7 @@
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -55,7 +56,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>b.ico</ApplicationIcon>
@@ -65,6 +66,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>UWUVCI_AIO_WPF.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>8BB4B196638F15B7593D3597C5A8A3BE5313F8D7</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>UWUVCI AIO WPF_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoUpdater.NET, Version=1.9.2.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
@@ -227,8 +237,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WiiUDownloaderLibrary">
-      <HintPath>.\WiiUDownloaderLibrary.dll</HintPath>
+    <Reference Include="WiiUDownloaderLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiiUDownloaderLibrary.1.0.0\lib\netstandard2.0\WiiUDownloaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -259,6 +269,7 @@
     <Compile Include="Models\DolSection.cs" />
     <Compile Include="Models\GctCode.cs" />
     <Compile Include="Models\JsonAppSettings.cs" />
+    <Compile Include="Models\SettingsViewModel.cs" />
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
@@ -285,6 +296,9 @@
     </Compile>
     <Compile Include="UI\Frames\Path\Paths.xaml.cs">
       <DependentUpon>Paths.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\ApplicationSettings.xaml.cs">
+      <DependentUpon>ApplicationSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\CloseWindow.xaml.cs">
       <DependentUpon>CloseWindow.xaml</DependentUpon>
@@ -405,6 +419,10 @@
     <Page Include="UI\Frames\StartFrame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\ApplicationSettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\CloseWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -547,6 +565,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="UWUVCI AIO WPF_TemporaryKey.pfx" />
     <Resource Include="Font\font.otf" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
