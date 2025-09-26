@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UWUVCI_AIO_WPF.Helpers;
 
@@ -25,7 +25,8 @@ namespace UWUVCI_AIO_WPF.Models
             return extension switch
             {
                 ".gct" => ParseGctFile(filePath),
-                ".txt" => ParseOcarinaOrDolphinTxtFile(filePath).Item1,
+                //txt currently doesn't work and I really don't feel like taking on that complexity
+                //".txt" => ParseOcarinaOrDolphinTxtFile(filePath).Item1,
                 _ => throw new NotSupportedException($"Unsupported file format: {extension}")
             };
         }
@@ -163,15 +164,14 @@ namespace UWUVCI_AIO_WPF.Models
             }
 
             using var fs = new FileStream(gctFilePath, FileMode.Create, FileAccess.Write);
+            using var bw = new BinaryWriter(fs);
+
             Logger.Log($"Writing {codes.Count} cheat codes to {gctFilePath}");
 
-            // Optionally write Game ID if provided
-            if (!string.IsNullOrEmpty(gameId))
-            {
-                byte[] gameIdBytes = Encoding.ASCII.GetBytes(gameId.PadRight(8, '\0')); // Ensure 8 bytes
-                fs.Write(gameIdBytes, 0, 8);
-            }
+            // Write Gecko magic header (must always be first)
+            bw.Write(BitConverter.GetBytes(0x00D0C0DE).Reverse().ToArray());
 
+            // Write all codes
             foreach (var code in codes)
             {
                 byte[] addressBytes = BitConverter.GetBytes(code.Address);
@@ -183,13 +183,13 @@ namespace UWUVCI_AIO_WPF.Models
                     Array.Reverse(valueBytes);
                 }
 
-                fs.Write(addressBytes, 0, 4);
-                fs.Write(valueBytes, 0, 4);
+                bw.Write(addressBytes);
+                bw.Write(valueBytes);
             }
 
-            // Write GCT terminator
-            fs.Write(BitConverter.GetBytes(0xF0000000), 0, 4);
-            fs.Write(BitConverter.GetBytes(0x00000000), 0, 4);
+            // Write Gecko magic terminator
+            bw.Write(BitConverter.GetBytes(0xF0000000).Reverse().ToArray());
+            bw.Write(BitConverter.GetBytes(0x00000000).Reverse().ToArray());
 
             Logger.Log($"GCT file successfully written to {gctFilePath}");
         }

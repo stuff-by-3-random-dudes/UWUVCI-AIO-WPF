@@ -1103,7 +1103,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             using var dialog = new System.Windows.Forms.OpenFileDialog();
             dialog.Multiselect = true;
-            dialog.Filter = "GCT or TXT Files (*.gct, *.txt)|*.gct;*.txt";
+            dialog.Filter = "GCT Files (*.gct)|*.gct";
 
             System.Windows.Forms.DialogResult res = dialog.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
