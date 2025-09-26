@@ -242,7 +242,7 @@ namespace UWUVCI_AIO_WPF
                 5 => "UWUVCI AIO - TurboGrafX-16 VC INJECT",
                 6 => "UWUVCI AIO - MSX VC INJECT",
                 7 => "UWUVCI AIO - Wii VC INJECT",
-                8 => "UWUVCI AIO - GC VC INJECT",
+                8 => "UWUVCI AIO - GCN VC INJECT",
                 _ => tbTitleBar.Text
             };
 
