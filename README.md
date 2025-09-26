@@ -4,7 +4,7 @@
 This is **not** the official version of [UWUVCI-AIO-WPF](https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF).  
 This fork contains **my own changes, modifications, and improvements**. If you are looking for the original version, please check out the official repo linked above.  
 
-If you use this fork and run into issues, please note that there is **no official support provided** — use at your own discretion.  
+If you use this fork and run into issues, please note that there is **no official support provided**, use at your own discretion.  
 
 ---
 
