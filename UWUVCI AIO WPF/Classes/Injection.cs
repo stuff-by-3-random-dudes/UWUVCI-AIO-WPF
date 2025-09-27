@@ -737,7 +737,7 @@ namespace UWUVCI_AIO_WPF
                     if (!ToolRunner.WaitForWineVisibility(preIsoWin))
                         throw new FileNotFoundException("pre.iso not visible to Wine/.NET after wit copy.", preIsoWin);
 
-                    // keep your NKIT guard
+                    // NKIT guard
                     if (!ext.Contains("wbfs") && !File.Exists(preIsoWin))
                     {
                         Log("pre.iso not found after NKIT conversion (Wine view).");
@@ -1479,7 +1479,7 @@ namespace UWUVCI_AIO_WPF
 
             // --- step 1: sanitize name + decide output folder ---
             mvm.msg = "Creating output folder...";
-            // Keep your original sanitization intent, but make it robust
+
             string Sanitize(string s)
             {
                 if (string.IsNullOrWhiteSpace(s)) return "NoName";
@@ -1505,7 +1505,6 @@ namespace UWUVCI_AIO_WPF
                 outputPath = Path.Combine(outRoot, $"{folderBase}_{suffix}");
             }
 
-            // preserve your global foldername side-effect
             mvvm.foldername = Path.GetFileName(outputPath);
 
             mvm.Progress = 40;
@@ -1555,7 +1554,6 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception ex)
                 {
-                    // flush captured output into your logger to help debug
                     try
                     {
                         Logger.Log("[CNUSPACKER stdout]\n" + swOut.ToString());
@@ -1592,7 +1590,7 @@ namespace UWUVCI_AIO_WPF
             mvm.msg = "Cleaning...";
             try
             {
-                Clean(); // your existing cleanup
+                Clean(); 
             }
             catch (Exception ex)
             {
@@ -2007,13 +2005,11 @@ namespace UWUVCI_AIO_WPF
                     // 1) Extract archive (longer)
                     RunMArchive($"archive extract \"{alldata}\" --codec zlib --seed MX8wgGEJ2+M47 --keyLength 80", "Extracting archive...", longWaitBump: true);
 
-                    // Find the newest extraction folder (your original logic: "last" by LastWriteTime)
                     var rootExtract = new DirectoryInfo(extractedDir);
-                    var last = rootExtract.Exists
+
+                    var last = (rootExtract.Exists
                         ? rootExtract.GetDirectories().OrderBy(d => d.LastWriteTimeUtc).LastOrDefault()
-                        : null;
-                    if (last == null)
-                        throw new InvalidOperationException("Extraction folder not found after archive extract.");
+                        : null) ?? throw new InvalidOperationException("Extraction folder not found after archive extract.");
 
                     var titleprofPsbM = Path.Combine(last.FullName, "config", "title_prof.psb.m");
                     Log($"Located title_prof.psb.m: {titleprofPsbM}");
