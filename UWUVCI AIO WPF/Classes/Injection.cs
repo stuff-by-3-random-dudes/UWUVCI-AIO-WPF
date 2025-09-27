@@ -815,7 +815,7 @@ namespace UWUVCI_AIO_WPF
             {
                 var step = StepTimer("Extract pre.iso", 4);
                 string psel = mvm.donttrim ? "WHOLE" : "data";
-                mvm.msg = mvm.donttrim ? "Trimming ROM..." : "Prepping ROM...";
+                mvm.msg = mvm.donttrim ? "Prepping ROM..." : "Trimming ROM...";
                 var witArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1";
 
                 Log($"Calling wit: {witArgs}");
