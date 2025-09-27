@@ -26,14 +26,14 @@
         <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,74,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True" Visibility="Hidden" IsTabStop="False"/>
         <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,67,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Visibility="Hidden" IsTabStop="False"/>
         <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,478,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1" Visibility="Hidden" IsTabStop="False"/>
-        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="617,182,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2" IsTabStop="False"/>
+        <!--<Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="617,182,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2" IsTabStop="False"/>-->
         <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden" IsTabStop="False"/>
         <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="617,226,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3" IsTabStop="False"/>
         <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="337,357,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4" IsTabStop="False"/>
         <Button Content="Show Tutorial Screens" HorizontalAlignment="Left" Margin="337,402,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" IsTabStop="False" Click="ShowTutorialScreens_Click" x:Name="ShowTutorialScreens"/>
         <Button Content="Open App Settings" 
         HorizontalAlignment="Left" 
-        Margin="337,442,0,0" 
+        Margin="337,447,0,0" 
         VerticalAlignment="Top" 
         Width="425" 
         RenderTransformOrigin="-0.099,0.116" 
