@@ -1124,7 +1124,9 @@ namespace UWUVCI_AIO_WPF
                         p.WaitForExit();
                     }
                     var outIso = Path.Combine(toolsPath, "out.iso");
-                    if (!File.Exists(outIso)) throw new Exception("nkit");
+                    if (!File.Exists(outIso)) 
+                        throw new Exception("nkit");
+
                     FileHelpers.MoveOverwrite(outIso, targetGameInBase);
                 }
                 else
@@ -1146,7 +1148,9 @@ namespace UWUVCI_AIO_WPF
                         p.WaitForExit();
                     }
                     var outNkit = Path.Combine(toolsPath, "out.nkit.iso");
-                    if (!File.Exists(outNkit)) throw new Exception("nkit");
+                    if (!File.Exists(outNkit)) 
+                        throw new Exception("nkit");
+
                     FileHelpers.MoveOverwrite(outNkit, targetGameInBase);
                 }
                 else
@@ -1172,7 +1176,9 @@ namespace UWUVCI_AIO_WPF
                             p.WaitForExit();
                         }
                         var outIso1 = Path.Combine(toolsPath, "out(Disc 1).iso");
-                        if (!File.Exists(outIso1)) throw new Exception("nkit");
+                        if (!File.Exists(outIso1)) 
+                            throw new Exception("nkit");
+
                         FileHelpers.MoveOverwrite(outIso1, disc2Out);
                     }
                     else
@@ -1193,7 +1199,9 @@ namespace UWUVCI_AIO_WPF
                             p.WaitForExit();
                         }
                         var outNkit1 = Path.Combine(toolsPath, "out(Disc 1).nkit.iso");
-                        if (!File.Exists(outNkit1)) throw new Exception("nkit");
+                        if (!File.Exists(outNkit1)) 
+                            throw new Exception("nkit");
+
                         FileHelpers.MoveOverwrite(outNkit1, disc2Out);
                     }
                     else
@@ -1210,7 +1218,9 @@ namespace UWUVCI_AIO_WPF
                                 p.WaitForExit();
                             }
                             var outNkit1 = Path.Combine(toolsPath, "out(Disc 1).nkit.iso");
-                            if (!File.Exists(outNkit1)) throw new Exception("nkit");
+                            if (!File.Exists(outNkit1)) 
+                                throw new Exception("nkit");
+
                             FileHelpers.MoveOverwrite(outNkit1, disc2Out);
                         }
                         else
@@ -1236,8 +1246,10 @@ namespace UWUVCI_AIO_WPF
             mvvm.Progress = 50;
             mvm.msg = "Trying to save rom code...";
             byte[] chars = new byte[4];
+
             using (var fstrm = new FileStream(Path.Combine(tempPath, "TempBase", "files", "game.iso"), FileMode.Open, FileAccess.Read))
                 fstrm.Read(chars, 0, 4);
+
             string procod = ByteArrayToString(chars);
             var metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             var doc = new XmlDocument();
@@ -1259,6 +1271,7 @@ namespace UWUVCI_AIO_WPF
 
             foreach (var sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
                 File.Delete(sFile);
+
             File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), true);
             File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), true);
             Directory.Delete(tikTmdWin, true);
