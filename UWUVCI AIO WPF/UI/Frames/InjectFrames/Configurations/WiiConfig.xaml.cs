@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
-using UWUVCI_AIO_WPF.Properties;
 using UWUVCI_AIO_WPF.UI.Windows;
 using WiiUDownloaderLibrary;
 

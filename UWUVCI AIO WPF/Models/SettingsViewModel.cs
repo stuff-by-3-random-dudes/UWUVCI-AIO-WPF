@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms; // FolderBrowserDialog
 using System.Windows.Input;
 using UWUVCI_AIO_WPF.Helpers;
-using UWUVCI_AIO_WPF.Models;
 using static UWUVCI_AIO_WPF.MainViewModel;
 
 namespace UWUVCI_AIO_WPF.Models

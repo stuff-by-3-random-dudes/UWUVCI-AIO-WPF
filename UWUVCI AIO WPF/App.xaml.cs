@@ -10,7 +10,6 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.UI.Windows;
-using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
 
 namespace UWUVCI_AIO_WPF
 {

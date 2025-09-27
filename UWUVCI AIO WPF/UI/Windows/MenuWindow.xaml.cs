@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Diagnostics;
 using NAudio.Wave;
-using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Frames;
 using GameBaseClassLibrary;
 using UWUVCI_AIO_WPF.UI.Frames.Path;

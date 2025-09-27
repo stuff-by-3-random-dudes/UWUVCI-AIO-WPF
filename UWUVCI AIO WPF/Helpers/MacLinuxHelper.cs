@@ -1,11 +1,8 @@
-﻿using Microsoft.Win32;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Management;
 using System.Windows;
 using UWUVCI_AIO_WPF.Models;
 
@@ -68,7 +65,6 @@ namespace UWUVCI_AIO_WPF.Helpers
             WriteFailedStepToJson(functionName, toolName, arguments, realPath);
             DisplayMessageBoxAboutTheHelper();
         }
-
 
         public sealed class RuntimeEnv
         {

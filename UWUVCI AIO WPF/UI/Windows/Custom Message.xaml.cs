@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
