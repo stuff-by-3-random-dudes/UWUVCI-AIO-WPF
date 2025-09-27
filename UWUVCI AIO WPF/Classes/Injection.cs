@@ -1206,7 +1206,7 @@ namespace UWUVCI_AIO_WPF
                     }
                     else
                     {
-                        // If someone passed GCZ here unexpectedly, mirror your old path and convert; else plain copy.
+                        // If someone passed GCZ here unexpectedly, mirror the Nico code I copied and pasted.
                         if (romPath.ToLower().Contains("gcz"))
                         {
                             using (Process p = new Process())
