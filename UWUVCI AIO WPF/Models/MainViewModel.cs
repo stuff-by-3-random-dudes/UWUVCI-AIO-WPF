@@ -525,10 +525,13 @@ namespace UWUVCI_AIO_WPF
                 if (button)
                 {
                     var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
-                    var releases = Task.Run(() => client.Repository.Release.GetAll("ZestyTS", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
+
+
+                    var releasesTask = Task.Run(async () => await client.Repository.Release.GetAll("ZestyTS", "UWUVCI-AIO-WPF").ConfigureAwait(false));
                     int comparison;
                     try
                     {
+                        var releases = releasesTask.Result;
                         var latestString = Regex.Replace(releases[0].TagName, "[^0-9.]", "");
                         var latestLength = latestString.Split('.').Length;
                         var localLength = version.Split('.').Length;
@@ -1060,7 +1063,7 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!string.IsNullOrEmpty(gameConfiguration.GameName))
                 {
-                    // Keep only letters, numbers, space, dash — match your downstream assumptions.
+                    // Keep only letters, numbers, space, dash
                     var reg = new Regex(@"[^A-Za-z0-9 \-]");
                     gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName.Replace("|", " "), "");
                 }
