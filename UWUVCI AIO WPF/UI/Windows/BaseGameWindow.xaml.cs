@@ -34,8 +34,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to the next window (MacLinuxWindow)
-            var macLinuxWindow = new MacLinuxWindow();
-            macLinuxWindow.Show();
+            var closeWindow = new CloseWindow();
+            closeWindow.Show();
             Close();
         }
 

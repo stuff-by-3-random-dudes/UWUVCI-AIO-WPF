@@ -54,9 +54,9 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // Navigate to the previous window (MacLinuxWindow)
-            var macLinuxWindow = new MacLinuxWindow();
-            macLinuxWindow.Show();
+            // Navigate to the previous window
+            var baseGameWindow = new BaseGameWindow();
+            baseGameWindow.Show();
             Close();
         }
 
