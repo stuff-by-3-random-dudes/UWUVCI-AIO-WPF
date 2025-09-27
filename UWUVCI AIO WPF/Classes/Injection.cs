@@ -1083,7 +1083,9 @@ namespace UWUVCI_AIO_WPF
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
             var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
 
-            if (Directory.Exists(tempBaseWin)) Directory.Delete(tempBaseWin, true);
+            if (Directory.Exists(tempBaseWin)) 
+                Directory.Delete(tempBaseWin, true);
+
             Directory.CreateDirectory(tempBaseWin);
 
             // Unpack BASE.zip
@@ -1247,7 +1249,7 @@ namespace UWUVCI_AIO_WPF
 
             // ---- Extract TIK/TMD via wit ----
             mvm.msg = "Replacing TIK and TMD...";
-            Directory.CreateDirectory(tikTmdWin);
+
             ToolRunner.RunTool(
                 "wit",
                 toolsPath,
