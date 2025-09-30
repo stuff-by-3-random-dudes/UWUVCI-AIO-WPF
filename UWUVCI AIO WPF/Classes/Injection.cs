@@ -1694,7 +1694,7 @@ namespace UWUVCI_AIO_WPF
             return outputPath;
         }
         // This function changes TitleID, ProductCode and GameName in app.xml (ID) and meta.xml (ID, ProductCode, Name)
-        private static void EditXML(string gameNameOr, int index, string code)
+        private static void EditXML(string gameNameOr, int index, string code, string shortName = "")
         {
             string gameName = string.Empty;
             if(gameNameOr != null || !string.IsNullOrWhiteSpace(gameNameOr))
@@ -1706,6 +1706,9 @@ namespace UWUVCI_AIO_WPF
                     gameName = split[0] + "," + split[1];
                 }
             }
+
+            if (string.IsNullOrEmpty(shortName))
+                shortName = gameName.Split(',')[0];
 
             string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
             string appXml = Path.Combine(baseRomPath, "code", "app.xml");
@@ -1750,18 +1753,18 @@ namespace UWUVCI_AIO_WPF
                 doc.SelectSingleNode("menu/group_id").InnerText = $"0000{ID2}";
                 if (gameName != null && gameName != string.Empty)
                 {
-                    doc.SelectSingleNode("menu/shortname_ja").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_fr").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_de").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_en").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_it").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_es").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_zhs").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_ko").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_nl").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_pt").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_ru").InnerText = gameName.Split(',')[0];
-                    doc.SelectSingleNode("menu/shortname_zht").InnerText = gameName.Split(',')[0];
+                    doc.SelectSingleNode("menu/shortname_ja").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_fr").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_de").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_en").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_it").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_es").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_zhs").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_ko").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_nl").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_pt").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_ru").InnerText = shortName;
+                    doc.SelectSingleNode("menu/shortname_zht").InnerText = shortName;
                 }
 
                 doc.Save(metaXml);
