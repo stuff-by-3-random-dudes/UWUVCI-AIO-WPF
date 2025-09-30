@@ -1375,14 +1375,14 @@ namespace UWUVCI_AIO_WPF
             if (CheckForInternetConnection())
             {
                 string[] bases = ToolCheck.ToolNames;
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
                     {
                         DeleteTool(s);
-                        DownloadTool(s, this);
+                        await DownloadToolAsync(s, this);
                         Progress += Convert.ToInt32(l);
                     }
                     Progress = 100;
@@ -1859,7 +1859,7 @@ namespace UWUVCI_AIO_WPF
             }
             Directory.SetCurrentDirectory(olddir);
         }
-        public static void DownloadTool(string name, MainViewModel mvm)
+        public static async Task DownloadToolAsync(string name, MainViewModel mvm)
         {
             string olddir = Directory.GetCurrentDirectory();
             try
@@ -1867,34 +1867,60 @@ namespace UWUVCI_AIO_WPF
                 if (Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
                     olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
                 else
-                {
-                    string basePath = $@"bin\Tools\";
-                    Directory.SetCurrentDirectory(basePath);
-                }
+                    Directory.SetCurrentDirectory(@"bin\Tools\");
+
                 do
                 {
                     if (File.Exists(name))
                         File.Delete(name);
 
                     using var client = new WebClient();
-                    client.DownloadFile(getDownloadLink(name, true), name);
+                    try
+                    {
+                        await client.DownloadFileTaskAsync(
+                            new Uri(getDownloadLink(name, true)),
+                            name
+                        );
+                    }
+                    catch (WebException webEx)
+                    {
+                        if (webEx.Response is HttpWebResponse response)
+                        {
+                            Logger.Log($"Download failed for {name} - HTTP {(int)response.StatusCode} {response.StatusDescription}");
+                            throw new Exception($"Download failed: {(int)response.StatusCode} {response.StatusDescription}");
+                        }
+                        else
+                        {
+                            Logger.Log($"Download failed for {name}: {webEx.Message}");
+                            throw; // bubble up
+                        }
+                    }
+
                 } while (!ToolCheck.IsToolRight(name));
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Custom_Message cm = new Custom_Message("Error 006: \"Unable to Download Tool\"", " There was an Error downloading the Tool. \n The Programm will now terminate.");
+                Logger.Log($"Error downloading tool {name}: {e.Message}");
+                var cm = new Custom_Message(
+                    "Error 006: \"Unable to Download Tool\"",
+                    $"There was an error downloading the tool \"{name}\".\n\nDetails: {e.Message}"
+                );
                 try
                 {
                     cm.Owner = mvm.mw;
                 }
-                catch (Exception) { }
+                catch { }
                 cm.ShowDialog();
 
                 Environment.Exit(1);
             }
-            Directory.SetCurrentDirectory(olddir);
+            finally
+            {
+                Directory.SetCurrentDirectory(olddir);
+            }
         }
+
+
         private static string getDownloadLink(string toolname, bool tool)
         {
             try
@@ -1961,7 +1987,7 @@ namespace UWUVCI_AIO_WPF
                 if (missingTools.Count > 0)
                 {
                     foreach (MissingTool m in missingTools)
-                        DownloadTool(m.Name, this);
+                        DownloadToolAsync(m.Name, this).GetAwaiter().GetResult();
 
                     InjcttoolCheck();
                 }
@@ -1972,29 +1998,31 @@ namespace UWUVCI_AIO_WPF
                 InjcttoolCheck();
             }
         }
-        private void ThreadDownload(List<MissingTool> missingTools)
+        private async Task ThreadDownloadAsync(List<MissingTool> missingTools)
         {
-            var thread = new Thread(() =>
+            double l = 100.0 / missingTools.Count;
+            int total = 0;
+
+            foreach (MissingTool m in missingTools)
             {
-                double l = 100 / missingTools.Count;
-
-                foreach (MissingTool m in missingTools)
+                if (m.Name == "blank.ini")
                 {
-                    if (m.Name == "blank.ini")
-                    {
-                        StreamWriter sw = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini"));
-                        sw.Close();
-                    }
-                    else
-                        DownloadTool(m.Name, this);
-
-                    Progress += Convert.ToInt32(l);
+                    using var sw = new StreamWriter(
+                        Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini")
+                    );
                 }
-                Progress = 100;
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+                else
+                {
+                    await DownloadToolAsync(m.Name, this);
+                }
+
+                total += (int)l;
+                Progress = total;
+            }
+
+            Progress = 100;
         }
+
         private void timer_Tick2(object sender, EventArgs e)
         {
             if (Progress == 100)
@@ -2016,7 +2044,7 @@ namespace UWUVCI_AIO_WPF
                     Logger.Log("Missing tools detected.");
                     if (CheckForInternetConnection())
                     {
-                        Task.Run(() => ThreadDownload(missingTools));
+                        Task.Run(async () => await ThreadDownloadAsync(missingTools));
                         ShowDownloadWaitDialog();
 
                         // Retry logic after downloading
@@ -2055,7 +2083,7 @@ namespace UWUVCI_AIO_WPF
         {
             DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
             try
-            {
+             {
                 dw.changeOwner(mw);
             }
             catch (Exception) 
