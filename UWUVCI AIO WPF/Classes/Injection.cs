@@ -230,7 +230,7 @@ namespace UWUVCI_AIO_WPF
                 RunSpecificInjection(Configuration, (mvm.GC ? GameConsoles.GCN : Configuration.Console), RomPath, force, mvm);
 
                 mvm.msg = "Editing XML...";
-                EditXML(Configuration.GameName, mvm.Index, code);
+                EditXML(Configuration.GameName, mvm.Index, code, Configuration.GameShortName);
                 mvm.Progress = 90;
                 mvm.msg = "Changing Images...";
                 Images(Configuration);
@@ -278,7 +278,7 @@ namespace UWUVCI_AIO_WPF
                 else if (e.Message.Contains("nkit"))
                     errorMessage = $"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.";
                 else if (e.Message.Contains("meta.xml"))
-                    errorMessage = "Looks to be your meta.xml file isn't missing from your directory. If you downloaded your base, redownload it, if it's a custom base then the folder selected might be wrong or the layout is messed up.";
+                    errorMessage = "Looks to be your meta.xml file is missing from your directory. If you downloaded your base, redownload it, if it's a custom base then the folder selected might be wrong or the layout is messed up.";
                 else if (e.Message.Contains("pre.iso"))
                     errorMessage = "Looks to be that there is something about your game that UWUVCI doesn't like, you are most likely injecting with a wbfs or nkit.iso file, this file has data trimmed." +
                         "\nFAQ: #17, #27, #29";
@@ -469,7 +469,6 @@ namespace UWUVCI_AIO_WPF
 
             // 2) wit extract (TIK/TMD out of game.iso)
             mvm.msg = "Replacing TIK and TMD...";
-            Directory.CreateDirectory(tikTmdWin);
 
             ToolRunner.RunTool(
                 toolBaseName: "wit",
@@ -713,8 +712,7 @@ namespace UWUVCI_AIO_WPF
                     Log($"pre.iso size: {SizeOf(preIsoWin)}");
                     mvm.Progress = 15;
                 }
-                else if (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0
-                                     || ext.Contains("wbfs"))
+                else if (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0 || ext.Contains("wbfs"))
                 {
                     mvm.msg = (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0)
                                 ? "Converting NKIT to ISO"
@@ -814,142 +812,177 @@ namespace UWUVCI_AIO_WPF
             // ---- 4) Extract via wit (trim or whole) ----
             {
                 var step = StepTimer("Extract pre.iso", 4);
-                string psel = mvm.donttrim ? "WHOLE" : "data";
-                mvm.msg = mvm.donttrim ? "Prepping ROM..." : "Trimming ROM...";
-                var witArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1";
-
-                Log($"Calling wit: {witArgs}");
-                try
+                if (mvm.Index == 4 || !mvm.donttrim || mvm.Patch)
                 {
-                    ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
+                    string psel = mvm.donttrim ? "WHOLE" : "data";
+                    mvm.msg = mvm.donttrim ? "Prepping ROM..." : "Trimming ROM...";
+                    var witArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1";
+
+                    Log($"Calling wit: {witArgs}");
+                    try
+                    {
+                        ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"ERROR in STEP 4 (wit extract): {ex.Message}");
+                        throw;
+                    }
+                    EndTimer(step, 4);
+                    mvm.Progress = 30;
+
+                    // ---- 5) GCT patch  ----
+                    {
+                        step = StepTimer("Apply GCT patch", 5);
+                        Log($"GctPatch -> console=Wii, preISO={preIsoWin}");
+                        GctPatch(mvm, "Wii", preIsoWin);
+                        EndTimer(step, 5);
+                    }
+
+                    // ---- 6) main.dol patch  ----
+                    {
+                        step = StepTimer("Patch main.dol (deflicker/dither/VFilter)", 6);
+                        bool dolPatch = mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter;
+                        Log($"dolPatch flags: deflicker={mvm.RemoveDeflicker}, dithering={mvm.RemoveDithering}, halfV={mvm.HalfVFilter}");
+                        if (dolPatch)
+                        {
+                            mvm.msg = "Patching main.dol file";
+                            mvm.Progress = 33;
+
+                            var mainDolPath = Directory.GetFiles(tempDirWin, "main.dol", SearchOption.AllDirectories).FirstOrDefault() ?? throw new Exception("main.dol not found in extracted tree.");
+                            var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
+                            Log($"Patching {mainDolPath} -> {output}");
+                            DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
+                            File.Delete(mainDolPath);
+                            File.Move(output, mainDolPath);
+                        }
+                        EndTimer(step, 6);
+                    }
+
+                    // ---- 7) Classic Controller patch  ----
+ 
+                    if (mvm.Index == 4)
+                    {
+                        step = StepTimer("Force CC patch", 7);
+                        mvvm.msg = "Patching ROM (Force CC)...";
+                        var targetDol = Path.Combine(tempDirWin, "DATA", "sys", "main.dol");
+                        Log($"GetExtTypePatcher.exe target: {targetDol}");
+                        using Process tik = new Process();
+                        tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                        tik.StartInfo.Arguments = $"\"{targetDol}\" -nc";
+                        tik.StartInfo.UseShellExecute = false;
+                        tik.StartInfo.CreateNoWindow = true;
+                        tik.StartInfo.RedirectStandardOutput = true;
+                        tik.StartInfo.RedirectStandardInput = true;
+                        tik.Start();
+                        Thread.Sleep(2000);
+                        tik.StandardInput.WriteLine();
+                        tik.WaitForExit();
+                        Log($"GetExtTypePatcher exit={tik.ExitCode}");
+                        mvm.Progress = 35;
+                        EndTimer(step, 7);
+                    }
+
+                    if (mvm.jppatch)
+                    {
+                        step = StepTimer("Apply JPPatch", 3);
+                        mvm.msg = "Language Patching ROM...";
+                        using (BinaryWriter writer = new BinaryWriter(new FileStream(Path.Combine(tempPath, "TEMP", "sys", "main.dol"), FileMode.Open)))
+                        {
+                            byte[] stuff = new byte[] { 0x38, 0x60 };
+                            writer.Seek(0x4CBDAC, SeekOrigin.Begin);
+                            writer.Write(stuff);
+                            writer.Seek(0x4CBDAF, SeekOrigin.Begin);
+                            stuff = new byte[] { 0x00 };
+                            writer.Write(stuff);
+                            writer.Close();
+                        }
+                        EndTimer(step, 3);
+                    }
+
+                    // ---- 8) Video patch via wii-vmc.exe ----
+                    if (mvm.Patch)
+                    {
+                        step = StepTimer("Video patch (wii-vmc)", 8);
+                        mvm.msg = "Video Patching ROM...";
+
+                        var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
+                        Directory.CreateDirectory(sysDir);
+                        var vmcPath = Path.Combine(sysDir, "wii-vmc.exe");
+
+                        File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), vmcPath, true);
+                        Log($"wii-vmc.exe copied → {vmcPath}");
+                        var prev = Directory.GetCurrentDirectory();
+                        Directory.SetCurrentDirectory(sysDir);
+
+                        using (Process vmc = new Process())
+                        {
+                            string extra = "";
+                            if (mvm.Index == 2)
+                                extra = "-horizontal ";
+                            if (mvm.Index == 3)
+                                extra = "-wiimote ";
+                            if (mvm.Index == 4)
+                                extra = "-instantcc ";
+                            if (mvm.Index == 5)
+                                extra = "-nocc ";
+                            if (mvm.LR)
+                                extra += "-lrpatch ";
+
+                            vmc.StartInfo.FileName = "wii-vmc.exe";
+                            vmc.StartInfo.Arguments = $"-enc {extra}-iso main.dol";
+                            vmc.StartInfo.UseShellExecute = false;
+                            vmc.StartInfo.CreateNoWindow = true;
+                            vmc.StartInfo.RedirectStandardOutput = true;
+                            vmc.StartInfo.RedirectStandardInput = true;
+
+                            Log($"wii-vmc args: {vmc.StartInfo.Arguments}");
+                            vmc.Start();
+                            Thread.Sleep(1000);
+                            vmc.StandardInput.WriteLine("a");
+                            Thread.Sleep(2000);
+                            vmc.StandardInput.WriteLine(mvm.toPal ? "1" : "2");
+                            Thread.Sleep(2000);
+                            vmc.StandardInput.WriteLine();
+                            vmc.WaitForExit();
+                            Log($"wii-vmc exit={vmc.ExitCode}");
+                            File.Delete("wii-vmc.exe");
+                        }
+
+                        Directory.SetCurrentDirectory(prev);
+                        mvm.Progress = 40;
+                        EndTimer(step, 8);
+                    }
+
+                    // ---- 9) Repack via wit ----
+                    {
+                        step = StepTimer("Repack to game.iso", 9);
+                        mvm.msg = mvm.donttrim ? "Creating ISO from patched ROM..." : "Creating ISO from trimmed ROM...";
+                        var copyFlags = mvm.donttrim ? "--psel WHOLE --iso" : "--links --iso";
+                        witArgs = $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}";
+                        Log($"Calling wit: {witArgs}");
+                        try
+                        {
+                            ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log($"ERROR in STEP 9 (wit copy): {ex.Message}");
+                            throw;
+                        }
+                        Log($"game.iso size: {SizeOf(gameIsoWin)}");
+
+                        Directory.Delete(tempDirWin, true);
+                        File.Delete(preIsoWin);
+                        EndTimer(step, 9);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    Log($"ERROR in STEP 4 (wit extract): {ex.Message}");
-                    throw;
+                    File.Move(preIsoWin, gameIsoWin);
+                    mvm.Progress = 40;
+                    EndTimer(step, 9);
                 }
-                mvm.Progress = 30;
-                EndTimer(step, 4);
-            }
-
-            // ---- 5) GCT patch  ----
-            {
-                var step = StepTimer("Apply GCT patch", 5);
-                Log($"GctPatch -> console=Wii, preISO={preIsoWin}");
-                GctPatch(mvm, "Wii", preIsoWin);
-                EndTimer(step, 5);
-            }
-
-            // ---- 6) main.dol patch  ----
-            {
-                var step = StepTimer("Patch main.dol (deflicker/dither/VFilter)", 6);
-                bool dolPatch = mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter;
-                Log($"dolPatch flags: deflicker={mvm.RemoveDeflicker}, dithering={mvm.RemoveDithering}, halfV={mvm.HalfVFilter}");
-                if (dolPatch)
-                {
-                    mvm.msg = "Patching main.dol file";
-                    mvm.Progress = 33;
-
-                    var mainDolPath = Directory.GetFiles(tempDirWin, "main.dol", SearchOption.AllDirectories).FirstOrDefault() ?? throw new Exception("main.dol not found in extracted tree.");
-                    var output = Path.Combine(Path.GetDirectoryName(mainDolPath), "patched.dol");
-                    Log($"Patching {mainDolPath} -> {output}");
-                    DeflickerDitheringRemover.ProcessFile(mainDolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
-                    File.Delete(mainDolPath);
-                    File.Move(output, mainDolPath);
-                }
-                EndTimer(step, 6);
-            }
-
-            // ---- 7) Classic Controller patch  ----
-            if (mvm.Index == 4)
-            {
-                var step = StepTimer("Force CC patch", 7);
-                mvvm.msg = "Patching ROM (Force CC)...";
-                var targetDol = Path.Combine(tempDirWin, "DATA", "sys", "main.dol");
-                Log($"GetExtTypePatcher.exe target: {targetDol}");
-                using Process tik = new Process();
-                tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
-                tik.StartInfo.Arguments = $"\"{targetDol}\" -nc";
-                tik.StartInfo.UseShellExecute = false;
-                tik.StartInfo.CreateNoWindow = true;
-                tik.StartInfo.RedirectStandardOutput = true;
-                tik.StartInfo.RedirectStandardInput = true;
-                tik.Start();
-                Thread.Sleep(2000);
-                tik.StandardInput.WriteLine();
-                tik.WaitForExit();
-                Log($"GetExtTypePatcher exit={tik.ExitCode}");
-                mvm.Progress = 35;
-                EndTimer(step, 7);
-            }
-
-            // ---- 8) Video patch via wii-vmc.exe ----
-            if (mvm.Patch)
-            {
-                var step = StepTimer("Video patch (wii-vmc)", 8);
-                mvm.msg = "Video Patching ROM...";
-                var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
-                Directory.CreateDirectory(sysDir);
-                var vmcPath = Path.Combine(sysDir, "wii-vmc.exe");
-                File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), vmcPath, true);
-                Log($"wii-vmc.exe copied → {vmcPath}");
-                var prev = Directory.GetCurrentDirectory();
-                Directory.SetCurrentDirectory(sysDir);
-
-                using (Process vmc = new Process())
-                {
-                    vmc.StartInfo.FileName = "wii-vmc.exe";
-                    string extra = "";
-                    if (mvm.Index == 2) extra = "-horizontal ";
-                    if (mvm.Index == 3) extra = "-wiimote ";
-                    if (mvm.Index == 4) extra = "-instantcc ";
-                    if (mvm.Index == 5) extra = "-nocc ";
-                    if (mvm.LR) extra += "-lrpatch ";
-                    vmc.StartInfo.Arguments = $"-enc {extra}-iso main.dol";
-                    vmc.StartInfo.UseShellExecute = false;
-                    vmc.StartInfo.CreateNoWindow = true;
-                    vmc.StartInfo.RedirectStandardOutput = true;
-                    vmc.StartInfo.RedirectStandardInput = true;
-
-                    Log($"wii-vmc args: {vmc.StartInfo.Arguments}");
-                    vmc.Start();
-                    Thread.Sleep(1000);
-                    vmc.StandardInput.WriteLine("a");
-                    Thread.Sleep(2000);
-                    vmc.StandardInput.WriteLine(mvm.toPal ? "1" : "2");
-                    Thread.Sleep(2000);
-                    vmc.StandardInput.WriteLine();
-                    vmc.WaitForExit();
-                    Log($"wii-vmc exit={vmc.ExitCode}");
-                    File.Delete("wii-vmc.exe");
-                }
-
-                Directory.SetCurrentDirectory(prev);
-                mvm.Progress = 40;
-                EndTimer(step, 8);
-            }
-
-            // ---- 9) Repack via wit ----
-            {
-                var step = StepTimer("Repack to game.iso", 9);
-                mvm.msg = mvm.donttrim ? "Creating ISO from patched ROM..." : "Creating ISO from trimmed ROM...";
-                var copyFlags = mvm.donttrim ? "--psel WHOLE --iso" : "--links --iso";
-                var witArgs = $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}";
-                Log($"Calling wit: {witArgs}");
-                try
-                {
-                    ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
-                }
-                catch (Exception ex)
-                {
-                    Log($"ERROR in STEP 9 (wit copy): {ex.Message}");
-                    throw;
-                }
-                Log($"game.iso size: {SizeOf(gameIsoWin)}");
-
-                Directory.Delete(tempDirWin, true);
-                File.Delete(preIsoWin);
-                EndTimer(step, 9);
             }
 
             // ---- 10) Extract TIK/TMD via wit ----
