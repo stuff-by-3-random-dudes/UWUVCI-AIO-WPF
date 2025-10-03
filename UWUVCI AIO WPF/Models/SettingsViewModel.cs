@@ -55,7 +55,7 @@ namespace UWUVCI_AIO_WPF.Models
             OpenSettingsFileCommand = new RelayCommand(_ => OpenPath(JsonSettingsManager.SettingsFile));
             OpenBaseFolderCommand = new RelayCommand(_ => OpenPath(BasePath));
             OpenOutFolderCommand = new RelayCommand(_ => OpenPath(OutPath));
-            OpenLogFolderCommand = new RelayCommand(_ => OpenPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs"));
+            OpenLogFolderCommand = new RelayCommand(_ => OpenPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs")));
             SaveCommand = new RelayCommand(_ => Save());
         }
 
