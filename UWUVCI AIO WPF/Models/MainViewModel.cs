@@ -514,87 +514,64 @@ namespace UWUVCI_AIO_WPF
         private CustomBaseFrame cb = null;
         DispatcherTimer timer = new DispatcherTimer();
         public bool PokePatch = false;
-        public void Update(bool button)
+        public void Update(bool userRequested)
         {
-            if (CheckForInternetConnection())
-            {
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-                string version = fvi.FileVersion;
+            if (!CheckForInternetConnection())
+                return;
 
-                if (button)
-                {
-                    var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            var localVersionString = fvi.FileVersion;
 
 
-                    var releasesTask = Task.Run(async () => await client.Repository.Release.GetAll("ZestyTS", "UWUVCI-AIO-WPF").ConfigureAwait(false));
-                    int comparison;
-                    try
-                    {
-                        var releases = releasesTask.Result;
-                        var latestString = Regex.Replace(releases[0].TagName, "[^0-9.]", "");
-                        var latestLength = latestString.Split('.').Length;
-                        var localLength = version.Split('.').Length;
+            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
 
-                        for (var i = 0; i < localLength - latestLength; i++)
-                            latestString += ".0";
-
-                        var latestVersion = new Version(latestString);
-                        var localVersion = new Version(version);
-                        comparison = localVersion.CompareTo(latestVersion);
-                    }
-                    catch
-                    {
-                        //Someone messed up versioning, so eff it just don't even bother then
-                        return;
-                    }
-                    //You idiot, when tf did you flip this back?
-                    if (comparison < 0)
-                    {
-                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/ZestyTS/UWUVCI-AIO-WPF/releases/latest");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
-                    }
-                    else
-                    {
-                        var cm = new Custom_Message("No Update Available", "This is currently the latest version.");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
-                    }
-                }
-            }
-        }
-
-        private int GetNewVersion()
-        {
+            int comparison;
             try
             {
-                WebRequest request;
-                //get download link from uwuvciapi
+                // No need for Task.Run
+                var releases = client.Repository.Release
+                    .GetAll("ZestyTS", "UWUVCI-AIO-WPF")
+                    .GetAwaiter().GetResult();
 
-                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
+                // Clean tag like "v1.2.3" -> "1.2.3"
+                var latestString = new string(releases[0].TagName.Where(c => char.IsDigit(c) || c == '.').ToArray());
 
-                var response = request.GetResponse();
-                using Stream dataStream = response.GetResponseStream();
-                // Open the stream using a StreamReader for easy access.  
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.  
-                string responseFromServer = reader.ReadToEnd();
-                // Display the content.  
-                return Convert.ToInt32(responseFromServer);
+                // Normalize lengths
+                while (latestString.Split('.').Length < localVersionString.Split('.').Length)
+                    latestString += ".0";
+                while (localVersionString.Split('.').Length < latestString.Split('.').Length)
+                    localVersionString += ".0";
 
+                var latestVersion = new Version(latestString);
+                var localVersion = new Version(localVersionString);
+                comparison = localVersion.CompareTo(latestVersion);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return 100000;
+                // Log issue but don’t crash
+                Console.WriteLine($"Update check failed: {ex.Message}");
+                return;
+            }
+
+            Custom_Message cm;
+            if (comparison < 0)
+            {
+                cm = new Custom_Message("Update Available!",
+                    "You can get it from: https://github.com/ZestyTS/UWUVCI-AIO-WPF/releases/latest");
+
+                try { cm.Owner = mw; } catch { }
+                cm.ShowDialog();
+            }
+            else
+            {
+                if (userRequested)
+                {
+                    cm = new Custom_Message("No Update Available", "This is currently the latest version.");
+
+                    try { cm.Owner = mw; } catch { }
+                    cm.ShowDialog();
+                }
             }
         }
 
@@ -638,7 +615,7 @@ namespace UWUVCI_AIO_WPF
             JsonSettingsManager.SaveSettings();
             ArePathsSet();
 
-            Update(false);
+            Update(true);
 
             toolCheck();
             BaseCheck();
