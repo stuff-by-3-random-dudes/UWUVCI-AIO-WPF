@@ -1945,7 +1945,10 @@ namespace UWUVCI_AIO_WPF
                     argsWindowsPaths: args,
                     showWindow: mvvm.debug
                 );
-                if (longWaitBump) mvvm.Progress += 15; else mvvm.Progress += 5;
+                if (longWaitBump) 
+                    mvvm.Progress += 15; 
+                else 
+                    mvvm.Progress += 5;
             }
 
             bool deleteTempRom = false;
