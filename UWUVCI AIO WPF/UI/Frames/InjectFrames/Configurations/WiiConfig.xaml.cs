@@ -5,6 +5,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -412,34 +413,46 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void InjectGame(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(tv.Text))
-                mvm.GameConfiguration.TGATv.ImgPath = tv.Text;
-            else if (!tv.Text.Equals("Added via Config") && !tv.Text.Equals("Downloaded from Cucholix Repo"))
-                mvm.GameConfiguration.TGATv.ImgPath = null;
+            // --- Local helpers ---
+            static bool IsSentinel(string text) =>
+                text.Equals("Added via Config", StringComparison.OrdinalIgnoreCase) ||
+                text.Equals("Downloaded from Cucholix Repo", StringComparison.OrdinalIgnoreCase);
 
-            if (File.Exists(ic.Text))
-                mvm.GameConfiguration.TGAIco.ImgPath = ic.Text;
-            else if (!ic.Text.Equals("Added via Config") && !ic.Text.Equals("Downloaded from Cucholix Repo"))
-                mvm.GameConfiguration.TGAIco.ImgPath = null;
+            void SetImgPath(string text, Action<string> setter)
+            {
+                if (File.Exists(text))
+                    setter(text);
+                else if (!IsSentinel(text))
+                    setter(null);
+            }
 
-            if (File.Exists(log.Text))
-                mvm.GameConfiguration.TGALog.ImgPath = log.Text;
-            else if (!log.Text.Equals("Added via Config") && !log.Text.Equals("Downloaded from Cucholix Repo"))
-                mvm.GameConfiguration.TGALog.ImgPath = null;
+            void SafeDelete(string path, bool isDirectory = false)
+            {
+                try
+                {
+                    if (isDirectory && Directory.Exists(path))
+                        Directory.Delete(path, true);
+                    else if (File.Exists(path))
+                        File.Delete(path);
+                }
+                catch { /* ignore */ }
+            }
 
-            if (File.Exists(drc.Text))
-                mvm.GameConfiguration.TGADrc.ImgPath = drc.Text;
-            else if (!drc.Text.Equals("Added via Config") && !drc.Text.Equals("Downloaded from Cucholix Repo"))
-                mvm.GameConfiguration.TGADrc.ImgPath = null;
+            // --- Image setup ---
+            SetImgPath(tv.Text, v => mvm.GameConfiguration.TGATv.ImgPath = v);
+            SetImgPath(ic.Text, v => mvm.GameConfiguration.TGAIco.ImgPath = v);
+            SetImgPath(log.Text, v => mvm.GameConfiguration.TGALog.ImgPath = v);
+            SetImgPath(drc.Text, v => mvm.GameConfiguration.TGADrc.ImgPath = v);
 
             mvm.Index = gamepad.SelectedIndex;
             mvm.LR = (bool)LR.IsChecked;
             mvm.GameConfiguration.GameName = gn.Text;
             mvm.GctPath = gctPath.Text;
 
+            // --- C2W / ancast logic ---
             if (!string.IsNullOrEmpty(ancastKey.Text))
             {
-                ancastKey.Text = ancastKey.Text.ToUpper();
+                ancastKey.Text = ancastKey.Text.ToUpper().Trim();
 
                 var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
                 var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
@@ -448,98 +461,107 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
                 var imgFile = System.IO.Path.Combine(c2wPath, "c2w.img");
                 var c2wFile = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
+                var c2pFile = System.IO.Path.Combine(c2wPath, "c2p.img");
 
-                var sourceData = ancastKey.Text;
-                var tempSource = Encoding.ASCII.GetBytes(sourceData);
-                var tmpHash = MD5.Create().ComputeHash(tempSource);
-                var hash = BitConverter.ToString(tmpHash);
+                var hash = BitConverter.ToString(
+                    MD5.Create().ComputeHash(Encoding.ASCII.GetBytes(ancastKey.Text.ToUpper()))
+                );
 
-                if (hash == "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
-                {
-                    JsonSettingsManager.Settings.Ancast = ancastKey.Text;
-                    string[] ancastKeyCopy = { ancastKey.Text };
-
-                    Task.Run(() =>
-                    {
-                        mvm.Progress += 5;
-
-                        Directory.CreateDirectory(tempPath + "\\C2W");
-
-                        var titleIds = new List<string>()
-                        {
-                            "0005001010004000",
-                            "0005001010004001"
-                        };
-
-                        foreach (var titleId in titleIds)
-                        {
-                            new Downloader(null, null).DownloadAsync(titleId, downloadPath).GetAwaiter().GetResult();
-                            mvm.Progress += 5;
-                        }
-
-                        foreach (var titleId in titleIds)
-                        {
-                            CSharpDecrypt.CSharpDecrypt.Decrypt(new string[] { JsonSettingsManager.Settings.Ckey, System.IO.Path.Combine(downloadPath, titleId), c2wPath });
-                            mvm.Progress += 5;
-                        }
-
-                        File.WriteAllLines(c2wPath + "\\starbuck_key.txt", ancastKeyCopy);
-
-                        File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile, true);
-
-                        File.Copy(imgFileCode, imgFile, true);
-
-                        mvm.Progress += 5;
-
-                        var currentDir = Directory.GetCurrentDirectory();
-                        Directory.SetCurrentDirectory(c2wPath);
-                        using (Process c2w = new Process())
-                        {
-                            c2w.StartInfo.FileName = "c2w_patcher.exe";
-                            c2w.StartInfo.Arguments = $"-nc";
-                            c2w.Start();
-                            c2w.WaitForExit();
-                        }
-                        Directory.SetCurrentDirectory(currentDir);
-
-                        File.Copy(System.IO.Path.Combine(c2wPath, "c2p.img"), imgFileCode, true);
-                        mvm.Progress = 100;
-                    }).GetAwaiter().GetResult();
-                }
-                else
+               
+                if (hash != "31-8D-1F-9D-98-FB-08-E7-7C-7F-E1-77-AA-49-05-43")
                 {
                     var cm = new Custom_Message("C2W Error", "Ancast code is incorrect.\nNot continuing with inject.");
+                    try { cm.Owner = mvm.mw; } catch { }
                     cm.ShowDialog();
                     return;
                 }
 
+                JsonSettingsManager.Settings.Ancast = ancastKey.Text;
+                string[] ancastKeyCopy = { ancastKey.Text };
+
+                // Run patching work on a worker thread so UI isn’t blocked
+                var worker = new Thread(async () =>
+                {
+                    try
+                    {
+                        mvm.Progress = 10;
+                        Directory.CreateDirectory(c2wPath);
+
+                        var titleIds = new[] { "0005001010004000", "0005001010004001" };
+
+                        foreach (var titleId in titleIds)
+                        {
+                            await new Downloader(null, null)
+                                .DownloadAsync(titleId, downloadPath);
+                            mvm.Progress += 10;
+                        }
+
+                        foreach (var titleId in titleIds)
+                        {
+                            CSharpDecrypt.CSharpDecrypt.Decrypt(new[]
+                            {
+                                JsonSettingsManager.Settings.Ckey,
+                                System.IO.Path.Combine(downloadPath, titleId),
+                                c2wPath
+                            });
+                            mvm.Progress += 10;
+                        }
+
+                        File.WriteAllLines(System.IO.Path.Combine(c2wPath, "starbuck_key.txt"), ancastKeyCopy);
+
+                        File.Copy(System.IO.Path.Combine(toolsPath, "c2w_patcher.exe"), c2wFile, true);
+                        File.Copy(imgFileCode, imgFile, true);
+
+                        mvm.Progress += 10;
+
+                        var prev = Directory.GetCurrentDirectory();
+                        try
+                        {
+                            Directory.SetCurrentDirectory(c2wPath);
+                            using var proc = new Process();
+                            proc.StartInfo.FileName = "c2w_patcher.exe";
+                            proc.StartInfo.Arguments = "-nc";
+                            proc.Start();
+                            proc.WaitForExit();
+                        }
+                        finally
+                        {
+                            Directory.SetCurrentDirectory(prev);
+                        }
+
+                        mvm.Progress = 100;
+                    }
+                    catch
+                    {
+                        mvm.Progress = 0;
+                        throw;
+                    }
+                });
+
+                worker.Start();
+
+                // Show wait dialog while worker runs
                 var message = new DownloadWait("Setting Up C2W - Please Wait", "", mvm);
-                try
-                {
-                    message.changeOwner(mvm.mw);
-                }
-                catch (Exception) { }
+                try { message.changeOwner(mvm.mw); } catch { }
                 message.ShowDialog();
+
+                worker.Join(); // make sure it finished
+
+                // Cleanup
                 mvm.Progress = 0;
-                File.Delete(imgFileCode);
-                try
-                {
-                    Directory.Delete(downloadPath, true);
-                }
-                catch { }
-                File.Delete(c2wFile);
-                File.Delete(c2wPath + "\\starbuck_key.txt");
-                File.Delete(System.IO.Path.Combine(c2wPath, "c2p.img"));
-                File.Delete(imgFileCode);
-                try
-                {
-                    Directory.Delete(System.IO.Path.Combine(c2wPath, "code"), true);
-                }
-                catch { }
+                SafeDelete(imgFileCode);
+                File.Copy(c2pFile, imgFileCode, true);
+                SafeDelete(c2wFile);
+                SafeDelete(System.IO.Path.Combine(c2wPath, "starbuck_key.txt"));
+                SafeDelete(c2pFile);
+                SafeDelete(downloadPath, isDirectory: true);
+                SafeDelete(imgFile);
             }
 
+            // --- Main injection ---
             mvm.Inject(false);
         }
+
 
         private void Set_TvTex(object sender, RoutedEventArgs e)
         {
@@ -903,6 +925,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 if (File.Exists(mvm.BootSound))
                     SoundImg.Visibility = !new FileInfo(mvm.BootSound).Extension.Contains("btsnd") ? Visibility.Visible : Visibility.Hidden;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
             }
             catch (Exception)
             {
