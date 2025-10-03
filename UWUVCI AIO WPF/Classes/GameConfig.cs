@@ -40,6 +40,7 @@ namespace UWUVCI_AIO_WPF
 
         public bool pixelperfect = false;
         public string GameName { get; set; }
+        public string GameShortName { get; set; }
 
         public bool vm = false;
         public bool vmtopal = false;

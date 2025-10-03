@@ -834,6 +834,7 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.TGAIco.ImgBin != null && GameConfiguration.TGAIco.ImgBin.Length > 0) backup.TGAIco.ImgPath = "Added via Config";
             if (GameConfiguration.N64Stuff.INIBin != null && GameConfiguration.N64Stuff.INIBin.Length > 0) backup.N64Stuff.INIPath = "Added via Config";
             if (GameConfiguration.GameName == "" || GameConfiguration.GameName == null) backup.GameName = "NoName";
+            if (GameConfiguration.GameShortName == "" || GameConfiguration.GameShortName == null) backup.GameShortName = "NoShortName";
             GameConfiguration.Index = Index;
             CheckAndFixConfigFolder();
             var sanitizedGameName = backup.GameName;
@@ -1066,6 +1067,9 @@ namespace UWUVCI_AIO_WPF
                     // Keep only letters, numbers, space, dash
                     var reg = new Regex(@"[^A-Za-z0-9 \-]");
                     gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName.Replace("|", " "), "");
+
+                    if (!string.IsNullOrEmpty(gameConfiguration.GameShortName))
+                        gameConfiguration.GameShortName = reg.Replace(gameConfiguration.GameShortName.Replace("|", " "), "");
                 }
 
                 Exception packError = null;

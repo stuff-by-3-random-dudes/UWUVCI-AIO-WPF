@@ -459,6 +459,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             }
             
         }
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
 
         public void Dispose()
         {

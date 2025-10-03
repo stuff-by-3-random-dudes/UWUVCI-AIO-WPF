@@ -593,6 +593,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
         }
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
         private void rbRDF_GBA_Click(object sender, RoutedEventArgs e)
         {
             mvm.GameConfiguration.GBAStuff.DarkFilter = false;
