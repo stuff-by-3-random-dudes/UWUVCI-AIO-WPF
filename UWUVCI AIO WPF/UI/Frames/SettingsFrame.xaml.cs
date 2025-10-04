@@ -94,11 +94,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             Process[] pname = Process.GetProcessesByName("NintendontConfig");
             if (pname.Length == 0)
-            {
                 Process.Start(@"bin\Tools\NintendontConfig.exe");
-            }
-                
         }
+
+        private void OpenCompatSubmit_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new CompatEntryWindow();
+            win.Owner = Window.GetWindow(this);
+            win.ShowDialog();
+        }
+
 
         private void Button_Click_10(object sender, RoutedEventArgs e)
         {

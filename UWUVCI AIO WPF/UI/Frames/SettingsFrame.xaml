@@ -41,6 +41,17 @@
         Click="OpenAppSettings_Click"
         x:Name="OpenAppSettings"/>
 
+        <Button Content="Submit Compatibility Entry"
+        HorizontalAlignment="Left"
+        Margin="337,490,0,0"
+        VerticalAlignment="Top"
+        Width="425"
+        RenderTransformOrigin="-0.099,0.116"
+        IsTabStop="False"
+        Click="OpenCompatSubmit_Click"
+        x:Name="OpenCompatSubmit"/>
+
+
         <Button Content="Credits" HorizontalAlignment="Left" Margin="1022,548,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5" IsTabStop="False"/>
         <Button Content="Update Tools" HorizontalAlignment="Left" Margin="495,226,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7" IsTabStop="False"/>
         <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="337,226,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6" IsTabStop="False"/>
