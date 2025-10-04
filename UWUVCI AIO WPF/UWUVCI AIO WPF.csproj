@@ -37,7 +37,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -259,6 +259,7 @@
     <Compile Include="Classes\GameCubeISO.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
+    <Compile Include="Services\GitHubCompatService.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
@@ -266,6 +267,7 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\MacLinuxHelper.cs" />
     <Compile Include="Helpers\ToolRunner.cs" />
+    <Compile Include="Models\CompatModels.cs" />
     <Compile Include="Models\DolSection.cs" />
     <Compile Include="Models\GctCode.cs" />
     <Compile Include="Models\JsonAppSettings.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
+    <Compile Include="Services\LocalInstallGuard.cs" />
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
     </Compile>
@@ -302,6 +305,9 @@
     </Compile>
     <Compile Include="UI\Windows\CloseWindow.xaml.cs">
       <DependentUpon>CloseWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\CompatEntryWindow.xaml.cs">
+      <DependentUpon>CompatEntryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\MacLinuxWindow.xaml.cs">
       <DependentUpon>MacLinuxWindow.xaml</DependentUpon>
@@ -427,6 +433,10 @@
     <Page Include="UI\Windows\CloseWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Windows\CompatEntryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Windows\MacLinuxWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
