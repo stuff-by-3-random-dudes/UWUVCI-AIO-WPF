@@ -5,6 +5,10 @@ VisualStudioVersion = 17.9.34714.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UWUVCI AIO WPF", "UWUVCI AIO WPF\UWUVCI AIO WPF.csproj", "{6A60AB0E-4597-4ECA-AEFB-D63A26CA7B54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenGenerator", "TokenGenerator\TokenGenerator.csproj", "{3FD20339-61B9-4D26-BD9D-CCE1DB2CC18F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UWUVCI MSTest", "UWUVCI MSTest\UWUVCI MSTest.csproj", "{9897DA37-A2C0-4095-BD7F-C6B93FCF32AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6A60AB0E-4597-4ECA-AEFB-D63A26CA7B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A60AB0E-4597-4ECA-AEFB-D63A26CA7B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A60AB0E-4597-4ECA-AEFB-D63A26CA7B54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FD20339-61B9-4D26-BD9D-CCE1DB2CC18F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FD20339-61B9-4D26-BD9D-CCE1DB2CC18F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FD20339-61B9-4D26-BD9D-CCE1DB2CC18F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FD20339-61B9-4D26-BD9D-CCE1DB2CC18F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9897DA37-A2C0-4095-BD7F-C6B93FCF32AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9897DA37-A2C0-4095-BD7F-C6B93FCF32AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9897DA37-A2C0-4095-BD7F-C6B93FCF32AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9897DA37-A2C0-4095-BD7F-C6B93FCF32AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
