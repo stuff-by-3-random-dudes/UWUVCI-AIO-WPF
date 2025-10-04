@@ -615,7 +615,7 @@ namespace UWUVCI_AIO_WPF
             JsonSettingsManager.SaveSettings();
             ArePathsSet();
 
-            Update(true);
+            Update(false);
 
             toolCheck();
             BaseCheck();
