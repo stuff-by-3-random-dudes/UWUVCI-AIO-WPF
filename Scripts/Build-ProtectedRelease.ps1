@@ -1,10 +1,11 @@
 <#
 .SYNOPSIS
   Builds a protected version of UWUVCI AIO WPF with version bump,
-  AES key rotation, and LocalInstallGuard enforcement.
+  AES key rotation, GitHub token injection, and LocalInstallGuard enforcement.
 
 .DESCRIPTION
   - Rotates AES key parts in LocalInstallGuard.cs via Rotate-InstallKey.ps1
+  - Injects obfuscated GitHub token into GitHubCompatService.cs via Inject-ObfuscatedToken.ps1
   - Bumps AssemblyVersion / <Version> automatically
   - Enables EnforceProtection
   - Builds in Release mode
@@ -23,7 +24,9 @@ param(
 
 Write-Host "=== Building protected Release of $Project ===" -ForegroundColor Cyan
 
-# ---- STEP 0: Rotate AES Key Parts ----
+# ---------------------------------------------------------------------
+# STEP 0: Rotate AES Key Parts
+# ---------------------------------------------------------------------
 $rotateScript = Join-Path (Join-Path (Get-Location) "Scripts") "Rotate-InstallKey.ps1"
 if (Test-Path $rotateScript) {
     Write-Host "🔁 Running Rotate-InstallKey.ps1..."
@@ -36,9 +39,14 @@ if (Test-Path $rotateScript) {
     Write-Warning "⚠️ Rotate-InstallKey.ps1 not found — skipping rotation."
 }
 
-# ---- STEP 1: Locate required files ----
+# ---------------------------------------------------------------------
+# STEP 1: Locate required files
+# ---------------------------------------------------------------------
 $guardFile = Get-ChildItem -Path . -Recurse -Filter "LocalInstallGuard.cs" | Select-Object -First 1
 if (-not $guardFile) { Write-Error "❌ Could not find LocalInstallGuard.cs!"; exit 1 }
+
+$githubCompatFile = Get-ChildItem -Path . -Recurse -Filter "GitHubCompatService.cs" | Select-Object -First 1
+if (-not $githubCompatFile) { Write-Error "❌ Could not find GitHubCompatService.cs!"; exit 1 }
 
 $solution = Get-ChildItem -Filter "*.sln" | Select-Object -First 1
 if (-not $solution) { Write-Error "❌ No .sln file found!"; exit 1 }
@@ -46,9 +54,14 @@ if (-not $solution) { Write-Error "❌ No .sln file found!"; exit 1 }
 $assemblyInfo = Get-ChildItem -Recurse -Filter "AssemblyInfo.cs" | Select-Object -First 1
 $projFile = Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object -First 1
 
-# ---- STEP 2: Backup originals ----
+# ---------------------------------------------------------------------
+# STEP 2: Backup originals
+# ---------------------------------------------------------------------
 $backupGuard = "$($guardFile.FullName).bak"
 Copy-Item $guardFile.FullName $backupGuard -Force
+
+$backupCompat = "$($githubCompatFile.FullName).bak"
+Copy-Item $githubCompatFile.FullName $backupCompat -Force
 
 $backupAsm = $null
 if ($assemblyInfo) {
@@ -60,7 +73,9 @@ elseif ($projFile) {
     Copy-Item $projFile.FullName $backupAsm -Force
 }
 
-# ---- STEP 3: Helper functions ----
+# ---------------------------------------------------------------------
+# STEP 3: Helper functions
+# ---------------------------------------------------------------------
 function Get-AppVersion {
     if ($assemblyInfo) {
         $match = Select-String -Path $assemblyInfo.FullName -Pattern 'AssemblyVersion\("([^"]+)"\)' | Select-Object -First 1
@@ -94,31 +109,59 @@ function Set-NewVersion($newVersion) {
     }
 }
 
-# ---- STEP 4: Enable Protection ----
+# ---------------------------------------------------------------------
+# STEP 4: Enable Protection in LocalInstallGuard
+# ---------------------------------------------------------------------
 $content = Get-Content $guardFile.FullName -Raw
 $content = $content -replace "const bool EnforceProtection = false;", "const bool EnforceProtection = true;"
 Set-Content -Path $guardFile.FullName -Value $content -Encoding UTF8
 Write-Host "🧩 LocalInstallGuard protection enabled."
 
-# ---- STEP 5: Bump version ----
+# ---------------------------------------------------------------------
+# STEP 5: Inject Obfuscated GitHub Token
+# ---------------------------------------------------------------------
+$injectScript = Join-Path (Join-Path (Get-Location) "Scripts") "Inject-ObfuscatedToken.ps1"
+if (Test-Path $injectScript) {
+    Write-Host "🔐 Running Inject-ObfuscatedToken.ps1..."
+    & $injectScript
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "❌ Inject-ObfuscatedToken.ps1 failed."
+        # Restore files before exiting
+        Move-Item $backupGuard $guardFile.FullName -Force
+        Move-Item $backupCompat $githubCompatFile.FullName -Force
+        if ($backupAsm) { Move-Item $backupAsm ($backupAsm -replace '.bak$', '') -Force }
+        exit 1
+    }
+} else {
+    Write-Warning "⚠️ Inject-ObfuscatedToken.ps1 not found — skipping token injection."
+}
+
+# ---------------------------------------------------------------------
+# STEP 6: Bump version
+# ---------------------------------------------------------------------
 $oldVersion = Get-AppVersion
 $newVersion = Bump-Version $oldVersion
 Set-NewVersion $newVersion
 Write-Host "📦 Version bumped: $oldVersion → $newVersion"
 
-# ---- STEP 6: Build ----
+# ---------------------------------------------------------------------
+# STEP 7: Build
+# ---------------------------------------------------------------------
 Write-Host "🏗️ Building $($solution.Name) ($Configuration)..."
 dotnet build $solution.FullName -c $Configuration /p:Platform="Any CPU"
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "❌ Build failed."
     Move-Item $backupGuard $guardFile.FullName -Force
+    Move-Item $backupCompat $githubCompatFile.FullName -Force
     if ($backupAsm) { Move-Item $backupAsm ($backupAsm -replace '.bak$', '') -Force }
     exit 1
 }
 Write-Host "✅ Build completed."
 
-# ---- STEP 7: Optional ZIP ----
+# ---------------------------------------------------------------------
+# STEP 8: Optional ZIP
+# ---------------------------------------------------------------------
 if ($ZipOutput) {
     $outputDir = Join-Path "bin" $Configuration
     $timestamp = Get-Date -Format "yyyyMMdd_HHmm"
@@ -127,7 +170,9 @@ if ($ZipOutput) {
     Compress-Archive -Path "$outputDir/*" -DestinationPath $zipName -Force
 }
 
-# ---- STEP 7.5: Record release metadata ----
+# ---------------------------------------------------------------------
+# STEP 9: Record release metadata
+# ---------------------------------------------------------------------
 $manifestPath = Join-Path "Scripts" "release-manifest.json"
 if (-not (Test-Path $manifestPath)) {
     "[]" | Set-Content -Path $manifestPath -Encoding UTF8
@@ -164,12 +209,14 @@ catch {
     Write-Warning "⚠️ Failed to update release manifest: $_"
 }
 
-
-# ---- STEP 8: Restore original files ----
+# ---------------------------------------------------------------------
+# STEP 10: Restore original files
+# ---------------------------------------------------------------------
 Move-Item $backupGuard $guardFile.FullName -Force
+Move-Item $backupCompat $githubCompatFile.FullName -Force
 if ($backupAsm) {
     Move-Item $backupAsm ($backupAsm -replace '.bak$', '') -Force
 }
 
-Write-Host "♻️ LocalInstallGuard + version restored."
+Write-Host "♻️ LocalInstallGuard + GitHubCompatService + version restored."
 Write-Host "🎉 Protected build complete: version $newVersion" -ForegroundColor Green
