@@ -63,7 +63,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else
             {
-                MessageBox.Show("ReadMe.txt not found!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                UWUVCI_MessageBox.Show("ReadMe.txt not found!", "Error", UWUVCI_MessageBoxType.Ok);
             }
         }
 
