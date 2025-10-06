@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using UWUVCI_AIO_WPF.Helpers;
+using UWUVCI_AIO_WPF.Services;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF
@@ -50,9 +51,9 @@ namespace UWUVCI_AIO_WPF
             // Check if running from OneDrive
             if (IsRunningFromOneDrive())
             {
-                MessageBox.Show("UWUVCI AIO cannot be run from a OneDrive folder due to compatibility issues. \n\n" +
+                UWUVCI_MessageBox.Show("UWUVCI AIO cannot be run from a OneDrive folder due to compatibility issues. \n\n" +
                     "Please move it to another location (e.g., C:\\Programs or C:\\Users\\YourName\\UWUVCI_AIO) before launching.",
-                    "Error: OneDrive Detected", MessageBoxButton.OK, MessageBoxImage.Error);
+                    "Error: OneDrive Detected", UWUVCI_MessageBoxType.Ok);
                 Environment.Exit(1); // Terminate the application
             }
 
@@ -64,8 +65,22 @@ namespace UWUVCI_AIO_WPF
                 File.Delete("tools.json");
 
             _startupArgs = e;
+
             JsonSettingsManager.LoadSettings();
 
+            if (!LocalInstallGuard.EnsureInstalled())
+            {
+                UWUVCI_MessageBox.Show(
+                    "This copy of UWUVCI V3 appears to be invalid or was copied from another system.\n\n" +
+                    "Please download a legitimate copy from the official source.",
+                    "License Verification Failed",
+                    UWUVCI_MessageBoxType.Ok
+                );
+                Environment.Exit(1);
+                return;
+            }
+
+            //TODO: ADD THE ! WHEN PUBLISHING
             if (!JsonSettingsManager.Settings.IsFirstLaunch)
                 LaunchMainApplication(e);
             else
@@ -122,27 +137,27 @@ namespace UWUVCI_AIO_WPF
                                     switch (mvm.GameConfiguration.Console)
                                     {
                                         case GameConsoles.NDS:
-                                            mvm.getBootIMGNDS(mvm.RomPath);
+                                            mvm.getBootIMGNDS(mvm);
                                             break;
                                         case GameConsoles.NES:
-                                            mvm.getBootIMGNES(mvm.RomPath);
+                                            mvm.getBootIMGNES(mvm);
                                             break;
                                         case GameConsoles.SNES:
-                                            mvm.getBootIMGSNES(mvm.RomPath);
+                                            mvm.getBootIMGSNES(mvm);
                                             break;
                                         case GameConsoles.MSX:
-                                            mvm.getBootIMGMSX(mvm.RomPath);
+                                            mvm.getBootIMGMSX(mvm);
                                             break;
                                         case GameConsoles.N64:
-                                            mvm.getBootIMGN64(mvm.RomPath);
+                                            mvm.getBootIMGN64(mvm);
                                             break;
                                         case GameConsoles.GBA:
                                             var fileExtension = Path.GetExtension(filePath).ToLower();
                                             if (fileExtension != ".gb" && fileExtension != ".gbc")
-                                                mvm.getBootIMGGBA(mvm.RomPath);
+                                                mvm.getBootIMGGBA(mvm);
                                             break;
                                         case GameConsoles.TG16:
-                                            mvm.getBootIMGTG(mvm.RomPath);
+                                            mvm.getBootIMGTG(mvm);
                                             break;
                                         default:
                                             Console.WriteLine("Unsupported console type: " + mvm.GameConfiguration.Console);
@@ -183,7 +198,7 @@ namespace UWUVCI_AIO_WPF
 
         private void LaunchMainApplication(StartupEventArgs e)
         {
-            if (Directory.Exists(@"custom") && File.Exists(@"custom\main.dol"))
+          if (Directory.Exists(@"custom") && File.Exists(@"custom\main.dol"))
             {
                 if (!Directory.Exists(@"bin\Tools"))
                     Directory.CreateDirectory(@"bin\Tools");

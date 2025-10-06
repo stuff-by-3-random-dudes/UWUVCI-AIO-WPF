@@ -337,7 +337,7 @@ namespace UWUVCI_AIO_WPF
         private int pixelArtUpscaler = 0;
         private bool dsLayout = false;
         private bool stLayout = false;
-
+        public bool CanOfferImageContribution { get; set; } = false;
         public bool RendererScale
         {
             get { return rendererScale; }
@@ -439,6 +439,7 @@ namespace UWUVCI_AIO_WPF
         public bool toPal = false;
         public string GctPath = "";
         private string Msg;
+        public string repoId { get; set; } = "";
 
         private string Gc2rom = "";
 
@@ -1262,8 +1263,6 @@ namespace UWUVCI_AIO_WPF
                     Inject(force);
                 }
             }
-
-
         }
         private void BaseCheck()
         {
@@ -1578,46 +1577,45 @@ namespace UWUVCI_AIO_WPF
                 GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
                 IFormatter formatter = new BinaryFormatter();
                 GameConfig check = (GameConfig)formatter.Deserialize(decompressedConfigStream);
-                if (check.Console == console) return true;
+
+                if (check.Console == console) 
+                    return true;
 
             }
             return false;
         }
         public void selectConfig(GameConsoles console)
         {
-            string ret = string.Empty;
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            using var dialog = new OpenFileDialog();
+
+            dialog.InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "configs");
+            dialog.Filter = "UWUVCI Config (*.uwuvci) | *.uwuvci";
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
             {
-                dialog.InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "configs");
-                dialog.Filter = "UWUVCI Config (*.uwuvci) | *.uwuvci";
-                DialogResult res = dialog.ShowDialog();
-                if (res == DialogResult.OK)
+                string ret = dialog.FileName;
+                if (GetConsoleOfConfig(ret, console))
                 {
-                    ret = dialog.FileName;
-                    if (GetConsoleOfConfig(ret, console))
+                    ImportConfig(ret);
+                    Custom_Message cm = new Custom_Message("Import Complete", " Importing of Config completed. \n Please reselect a Base!");
+                    try
                     {
-                        ImportConfig(ret);
-                        Custom_Message cm = new Custom_Message("Import Complete", " Importing of Config completed. \n Please reselect a Base!");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
+                        cm.Owner = mw;
                     }
-                    else
+                    catch (Exception) { }
+                    cm.ShowDialog();
+                }
+                else
+                {
+                    Custom_Message cm = new Custom_Message("Import Failed", $" The config you are trying to import is not made for {console.ToString()} Injections. \n Please choose a config made for these kind of Injections or choose a different kind of Injection");
+                    try
                     {
-                        Custom_Message cm = new Custom_Message("Import Failed", $" The config you are trying to import is not made for {console.ToString()} Injections. \n Please choose a config made for these kind of Injections or choose a different kind of Injection");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
+                        cm.Owner = mw;
                     }
+                    catch (Exception) { }
+                    cm.ShowDialog();
                 }
             }
-
         }
         private bool RemoteFileExists(string url)
         {
@@ -1673,7 +1671,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
 
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            using (var dialog = new OpenFileDialog())
             {
                 if (ROM)
                 {
@@ -2602,8 +2600,9 @@ namespace UWUVCI_AIO_WPF
             return !Directory.EnumerateFileSystemEntries(path).Any();
         }
 
-        public void getBootIMGGBA(string rom)
+        public void getBootIMGGBA(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string repoid = "";
@@ -2632,7 +2631,7 @@ namespace UWUVCI_AIO_WPF
                     SystemType + repoid.Substring(0, 3) + "J"
                 };
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA, mvm);
             }
             catch (Exception e)
             {
@@ -2645,8 +2644,9 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
         }
-        public void getBootIMGSNES(string rom)
+        public void getBootIMGSNES(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "snes/";
@@ -2655,7 +2655,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES, mvm);
             } 
             catch (Exception e)
             {
@@ -2669,8 +2669,9 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void getBootIMGMSX(string rom)
+        public void getBootIMGMSX(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "msx/";
@@ -2679,7 +2680,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX, mvm);
             }
             catch (Exception e)
             {
@@ -2692,8 +2693,9 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
         }
-        public void getBootIMGTG(string rom)
+        public void getBootIMGTG(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "tg16/";
@@ -2702,7 +2704,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16, mvm);
             }
             catch (Exception e)
             {
@@ -2851,23 +2853,27 @@ namespace UWUVCI_AIO_WPF
             return getCodeOfNumbers(Convert.ToInt32(first10));
         }
 
-        private void FetchAndProcessRepoImages(string systemType, string repoid, List<string> repoids, GameConsoles console)
+        private void FetchAndProcessRepoImages(string systemType, string repoid, List<string> repoids, GameConsoles console, MainViewModel mvm)
         {
-            if (CheckForInternetConnectionWOWarning())
-            {
-                GetRepoImages(systemType, repoid, repoids);
-                checkForAdditionalFiles(console, repoids);
-            }
+            if (!CheckForInternetConnectionWOWarning())
+                return;
+
+            var hasImages = GetRepoImages(systemType, repoid, repoids);
+            checkForAdditionalFiles(console, repoids);
+
+            mvm.CanOfferImageContribution = !hasImages;
+            mvm.repoId = repoid;
         }
 
-        public void getBootIMGNES(string rom)
+        public void getBootIMGNES(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "nes/";
                 string repoid = GetFakeNESProdcode(rom);
                 List<string> repoids = new List<string> { SystemType + repoid };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES, mvm);
             }
             catch (Exception e)
             {
@@ -2880,8 +2886,9 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
         }
-        public void getBootIMGNDS(string rom)
+        public void getBootIMGNDS(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string repoid = "";
@@ -2910,7 +2917,7 @@ namespace UWUVCI_AIO_WPF
                     SystemType + repoid.Substring(0, 3) + "J"
                 };
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS, mvm);
             }
             catch (Exception e)
             {
@@ -2924,8 +2931,9 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        public void getBootIMGN64(string rom)
+        public void getBootIMGN64(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string repoid = "";
@@ -2947,7 +2955,7 @@ namespace UWUVCI_AIO_WPF
 
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64, mvm);
             }
             catch (Exception e)
             {
@@ -3031,8 +3039,9 @@ namespace UWUVCI_AIO_WPF
             return new ASCIIEncoding().GetString(arr);
         }
 
-        public string getInternalWIIGCNName(string OpenGame, bool gc)
+        public string getInternalWIIGCNName(MainViewModel mvm, bool gc)
         {
+            var OpenGame = mvm.romPath;
             string ret = "";
             try
             {
@@ -3074,7 +3083,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII);
+                FetchAndProcessRepoImages(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII, mvm);
             }
             catch (Exception)
             {
@@ -3391,7 +3400,7 @@ namespace UWUVCI_AIO_WPF
         /// <param name="SystemType">The type of system (e.g., "Wii", "N64").</param>
         /// <param name="repoid">The repository ID for the image.</param>
         /// <param name="repoids">An optional list of repository IDs to check for images.</param>
-        private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
+        private bool GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             string[] extensions = { "png", "jpg", "jpeg", "tga" };
@@ -3409,10 +3418,10 @@ namespace UWUVCI_AIO_WPF
                     if (RemoteFileExists(imageUrl))
                     {
                         HandleImageLoading(imageUrl, extension, id);
-                        return;
+                        return true;
                     }
                 }
-
+            return false;
         }
 
         /// <summary>
