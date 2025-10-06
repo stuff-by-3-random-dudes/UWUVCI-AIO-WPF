@@ -309,7 +309,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                     if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol") && !path.ToLower().Contains(".wad"))
                     {
-                        string rom = mvm.getInternalWIIGCNName(mvm.RomPath, false);
+                        string rom = mvm.getInternalWIIGCNName(mvm, false);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);

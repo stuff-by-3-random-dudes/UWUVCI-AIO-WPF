@@ -115,7 +115,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 FileInfo inf = new FileInfo(path);
                 if (inf.Extension.ToLower() != ".gb" && inf.Extension.ToLower() != ".gbc")
                 {
-                    mvm.getBootIMGGBA(mvm.RomPath);
+                    mvm.getBootIMGGBA(mvm);
                 }
                 
             }

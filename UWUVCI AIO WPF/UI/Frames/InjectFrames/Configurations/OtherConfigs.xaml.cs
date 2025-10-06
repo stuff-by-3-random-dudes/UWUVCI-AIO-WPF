@@ -91,13 +91,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.CanInject = true;
 
                     if (mvm.GameConfiguration.Console == GameConsoles.NDS)
-                        mvm.getBootIMGNDS(mvm.RomPath);
+                        mvm.getBootIMGNDS(mvm);
                     else if (mvm.GameConfiguration.Console == GameConsoles.NES)
-                        mvm.getBootIMGNES(mvm.RomPath);
+                        mvm.getBootIMGNES(mvm);
                     else if (mvm.GameConfiguration.Console == GameConsoles.SNES)
-                        mvm.getBootIMGSNES(mvm.RomPath);
+                        mvm.getBootIMGSNES(mvm);
                     else if (mvm.GameConfiguration.Console == GameConsoles.MSX)
-                        mvm.getBootIMGMSX(mvm.RomPath);
+                        mvm.getBootIMGMSX(mvm);
                 }
             }
             catch(Exception ex)

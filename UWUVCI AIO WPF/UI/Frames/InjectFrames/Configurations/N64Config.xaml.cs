@@ -80,7 +80,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
 
                 }
-                mvm.getBootIMGN64(mvm.RomPath);
+                mvm.getBootIMGN64(mvm);
             }
         }
 

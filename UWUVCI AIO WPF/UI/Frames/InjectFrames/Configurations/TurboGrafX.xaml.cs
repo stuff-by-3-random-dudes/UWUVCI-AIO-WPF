@@ -104,7 +104,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.RomSet = true;
                 if (!cd)
                 {
-                    mvm.getBootIMGTG(mvm.RomPath);
+                    mvm.getBootIMGTG(mvm);
                 }
                 if (mvm.BaseDownloaded)
                 {

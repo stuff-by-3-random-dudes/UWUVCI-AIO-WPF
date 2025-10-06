@@ -224,7 +224,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     {
                         trimn.IsChecked = false;
                         trimn_Click(null, null);
-                        string rom = mvm.getInternalWIIGCNName(mvm.RomPath, true);
+                        string rom = mvm.getInternalWIIGCNName(mvm, true);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
