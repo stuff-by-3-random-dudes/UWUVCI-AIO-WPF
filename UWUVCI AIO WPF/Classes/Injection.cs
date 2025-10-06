@@ -241,9 +241,105 @@ namespace UWUVCI_AIO_WPF
                     bootsound(mvm.BootSound);
                 }
 
-
                 mvm.Progress = 100;
 
+                // --- Community Image Contribution Prompt ---
+                try
+                {
+                    bool hasCustomImages =
+                        mvm.CanOfferImageContribution &&
+                        (
+                            !string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGADrc?.ImgPath) ||
+                            !string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGALog?.ImgPath) ||
+                            !string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGAIco?.ImgPath) ||
+                            !string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv?.ImgPath)
+                        );
+
+                    if (hasCustomImages)
+                    {
+                        UWUVCI_MessageBoxResult messageBoxResult = UWUVCI_MessageBoxResult.No;
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            messageBoxResult = UWUVCI_MessageBox.Show(
+                                "Found Custom Images",
+                                "You’ve provided custom boot images for this inject.\n\n" +
+                                "Would you like to share them with the community?\n\n" +
+                                "UWUVCI-ContriBot will automatically create a pull request containing your images.",
+                                UWUVCI_MessageBoxType.YesNo, mvm.mw
+                            );
+                        });
+
+                        if (messageBoxResult == UWUVCI_MessageBoxResult.Yes)
+                        {
+                            string consoleName = Configuration.Console.ToString();
+                            string gameName = Configuration.GameName ?? "Unknown Game";
+                            string repoId = mvm.repoId;
+                            string owner = "UWUVCI-Prime";
+                            string repo = "UWUVCI-Images";
+                            string appVersion = FileVersionInfo
+                                .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location)
+                                .FileVersion ?? "unknown";
+
+                            var imagePaths = new[]
+                            {
+                                mvm.GameConfiguration.TGAIco?.ImgPath,
+                                mvm.GameConfiguration.TGATv?.ImgPath,
+                                mvm.GameConfiguration.TGADrc?.ImgPath,
+                                mvm.GameConfiguration.TGALog?.ImgPath
+                            }.Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
+
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                UWUVCI_MessageBox.Show(
+                                    "Submission Started",
+                                    "Your images are being submitted in the background.\nA pull request will be created if successful.",
+                                    UWUVCI_MessageBoxType.Ok, mvm.mw
+                                );
+                            });
+
+                            _ = Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    var service = new Services.GitHubImageService();
+                                    var prUrl = await service.SubmitImagePrAsync(
+                                        owner,
+                                        repo,
+                                        consoleName,
+                                        repoId,
+                                        gameName,
+                                        appVersion,
+                                        imagePaths
+                                    );
+
+                                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                                    {
+                                        UWUVCI_MessageBox.Show(
+                                            "Images Submitted",
+                                            $"Your images have been submitted successfully!\n\nA Pull Request has been created:\n{prUrl}",
+                                            UWUVCI_MessageBoxType.Ok, mvm.mw
+                                        );
+                                    });
+                                }
+                                catch (Exception ex)
+                                {
+                                    await Application.Current.Dispatcher.InvokeAsync(() =>
+                                    {
+                                        UWUVCI_MessageBox.Show(
+                                            "Image Submission Failed",
+                                            $"An error occurred while submitting your images.\n\n{ex.Message}",
+                                            UWUVCI_MessageBoxType.Ok, mvm.mw
+                                        );
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Error while offering image contribution: {ex.Message}");
+                }
 
                 code = null;
                 return true;
@@ -289,7 +385,7 @@ namespace UWUVCI_AIO_WPF
                 if (!IsNativeWindows)
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
 
-                MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file", "Injection Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                UWUVCI_MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file", "Injection Failed", UWUVCI_MessageBoxType.Ok);
                 Logger.Log(e.Message);
                 Clean();
                 return false;
