@@ -19,7 +19,6 @@
                 </TransformGroup>
             </Border.RenderTransform>
         </Border>
-        <TextBlock HorizontalAlignment="Left" Margin="337,188,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
         <TextBlock HorizontalAlignment="Left" Margin="325,482,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,541,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,67,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
