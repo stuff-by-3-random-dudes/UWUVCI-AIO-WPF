@@ -1,25 +1,31 @@
 <#
 .SYNOPSIS
-  Obfuscate a GitHub Personal Access Token and inject into GitHubCompatService.cs.
+  Obfuscate a GitHub PAT and inject it into GitHubCompatService.cs between marker comments.
 
 .DESCRIPTION
   - Reads token from env var GITHUB_PAT or prompts interactively.
-  - Generates a random xorKey (N bytes).
-  - Encodes token as Base64, XORs bytes, splits into NUM_PARTS parts.
-  - Produces C# snippet and replaces the region between
+  - Generates a random xorKey (4 bytes by default).
+  - Encodes the token as Base64, XORs the bytes, splits them into NUM_PARTS pieces.
+  - Replaces the code in GitHubCompatService.cs between the markers:
       // BEGIN_TOKEN_REGION
       // END_TOKEN_REGION
-    inside GitHubCompatService.cs.
-  - Backs up original file to .bak. By default restores automatically after exit if -RestoreOriginal is specified.
+    with a compiled C# snippet that reconstructs the token at runtime.
+  - Creates a backup file GitHubCompatService.cs.bak by default.
 
 .PARAMETER ProjectRoot
-  Path of project root. Defaults to current dir.
+  Root path to search for GitHubCompatService.cs. Default: current directory.
 
 .PARAMETER NumParts
-  Number of split parts. Default 4.
+  Number of parts to split the obfuscated bytes into. Default: 4.
 
-.PARAMETER RestoreOriginal
-  If present (default true), restore original file after exit. Use -NoRestore to keep the injected file.
+.PARAMETER NoBackup
+  Do not create a .bak backup (not recommended).
+
+.PARAMETER NoRestore
+  Do not attempt to restore original file on failure/exit (caller responsible).
+
+.PARAMETER Restore
+  If present, restore from .bak and exit.
 
 .EXAMPLE
   pwsh ./Scripts/Inject-ObfuscatedToken.ps1
@@ -29,145 +35,166 @@
 param(
     [string]$ProjectRoot = (Get-Location).Path,
     [int]$NumParts = 4,
-    [switch]$NoRestore
+    [switch]$NoBackup,
+    [switch]$NoRestore,
+    [switch]$Restore
 )
 
-function Prompt-For-Token {
-    Write-Host "Enter GitHub PAT (ghp_... ). Will not echo:" -NoNewline
-    $secure = Read-Host -AsSecureString
-    if (-not $secure) { return $null }
-    $ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-    try {
-        [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
-    } finally {
-        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
-    }
-}
+function Write-Err([string]$m) { Write-Host "ERROR: $m" -ForegroundColor Red }
+function Write-Ok([string]$m) { Write-Host "$m" -ForegroundColor Green }
 
-# Find the target file
-$target = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "GitHubCompatService.cs" | Select-Object -First 1
+# --- Locate target file ---
+$target = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "GitHubCompatService.cs" -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $target) {
-    Write-Error "Could not find GitHubCompatService.cs under $ProjectRoot"
-    exit 1
+    Write-Err "Could not find GitHubCompatService.cs under '$ProjectRoot'."
+    exit 2
 }
 $targetPath = $target.FullName
 Write-Host "Target: $targetPath"
 
-# Read token from env var or prompt
+# --- Restore mode: restore .bak if present then exit ---
+if ($Restore) {
+    $bak = "$targetPath.bak"
+    if (Test-Path $bak) {
+        Move-Item -Force $bak $targetPath
+        Write-Ok "Restored original file from: $bak"
+        exit 0
+    } else {
+        Write-Err "Restore requested but backup not found: $bak"
+        exit 3
+    }
+}
+
+# --- Read token from env or prompt securely ---
 $envToken = $env:GITHUB_PAT
 if (![string]::IsNullOrWhiteSpace($envToken)) {
     $token = $envToken.Trim()
     Write-Host "Using GITHUB_PAT from environment."
 } else {
-    $token = Prompt-For-Token
-    if (-not $token) {
-        Write-Error "No token supplied. Aborting."
-        exit 1
+    Write-Host "Enter GitHub PAT (ghp_... or gho_...). Input will be hidden."
+    $secure = Read-Host -AsSecureString
+    if (-not $secure) {
+        Write-Err "No token provided. Aborting."
+        exit 4
     }
+    $ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+    try { $token = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr) } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr) }
+    $token = $token.Trim()
 }
 
-# Normalize token
-$token = $token.Trim()
+if ($token.Length -lt 10 -or (-not ($token.StartsWith("ghp_") -or $token.StartsWith("gho_")))) {
+    Write-Err "Token validation failed. Token must start with 'ghp_' or 'gho_'."
+    exit 5
+}
 
-# Convert token -> base64 string -> bytes
+# --- Prepare bytes: base64(token) -> bytes ---
 $base64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($token))
 $bytes = [System.Text.Encoding]::UTF8.GetBytes($base64)
 
-# Generate a random xorKey (length 4..8; choose 4 for compactness)
-$rand = New-Object System.Random
+# --- Generate xorKey (4 bytes by default) ---
+$rand = [System.Security.Cryptography.RandomNumberGenerator]::Create()
 $xorLen = 4
-$xorKey = (1..$xorLen | ForEach-Object { [byte]($rand.Next(0x10,0xF0)) })
+$xorKey = New-Object 'System.Byte[]' ($xorLen)
+$rand.GetBytes($xorKey)
 
-# XOR bytes
-for ($i=0; $i -lt $bytes.Length; $i++) {
+# --- XOR the bytes in-place ---
+for ($i = 0; $i -lt $bytes.Length; $i++) {
     $bytes[$i] = $bytes[$i] -bxor $xorKey[$i % $xorKey.Length]
 }
 
-# Split into parts
+# --- Split into parts ---
+if ($NumParts -lt 1) { $NumParts = 4 }
 $chunkSize = [math]::Ceiling($bytes.Length / $NumParts)
 $parts = @()
-for ($i=0; $i -lt $NumParts; $i++) {
-    $start = $i * $chunkSize
-    $slice = @()
-    for ($j = $start; ($j -lt $start + $chunkSize) -and ($j -lt $bytes.Length); $j++) {
-        $slice += $bytes[$j]
+for ($p = 0; $p -lt $NumParts; $p++) {
+    $start = $p * $chunkSize
+    $slice = New-Object 'System.Collections.Generic.List[byte]'
+    for ($j = $start; ($j -lt $start + $chunkSize) -and ($j -lt $bytes.Length); $j++) { $slice.Add($bytes[$j]) }
+    $parts += ,($slice.ToArray())
+}
+
+# --- Create backup ---
+$bakPath = "$targetPath.bak"
+if (-not $NoBackup) {
+    try {
+        Copy-Item -Path $targetPath -Destination $bakPath -Force
+        Write-Host "Backup created: $bakPath"
+    } catch {
+        Write-Err "Failed to create backup: $_"
+        if (-not $NoRestore) { Write-Host "No restore will be attempted."; }
+        exit 6
     }
-    $parts += ,$slice
+} else {
+    Write-Host "Skipping backup as requested (NoBackup)."
 }
 
-# Build C# snippet to inject
-$xorKeyLiteral = "new byte[] { " + ($xorKey | ForEach-Object { "0x" + ($_).ToString("X2") } -join ", ") + " }"
+# --- Build C# injection snippet ---
+# produce xorKey literal
+$xorLiteral = "new byte[] { " + ($xorKey | ForEach-Object { "0x{0:X2}" -f $_ } -join ", ") + " }"
 
-$partsLiterals = for ($i=0; $i -lt $parts.Count; $i++) {
+# produce int[] partN lines
+$partLines = for ($i = 0; $i -lt $parts.Count; $i++) {
     $arr = $parts[$i]
-    $elem = $arr -join ", "
-    "int[] part$($i+1) = new int[] { $elem };"
+    $values = if ($arr.Length -gt 0) { $arr -join ", " } else { "" }
+    "int[] part$($i+1) = new int[] { $values };"
 }
 
-# Decoding C# snippet
+# produce parts-array initializer for byte[][] (convert int[] to byte[] at runtime)
+$partsArrayInit = "var partsArray = new byte[][] { " + (
+    (1..$parts.Count) | ForEach-Object { "part$($_).Select(v => (byte)v).ToArray()" } -join ", "
+) + " };"
+
+# final decode snippet (keeps markers)
 $decodeSnippet = @"
     // BEGIN_TOKEN_REGION
-    byte[] xorKey = $xorKeyLiteral;
-$(($partsLiterals -join "`n    "))
-    var all = part1.Concat(part2).Concat(part3).Concat(part4)
-                   .Select((x, idx) => (byte)(x ^ xorKey[idx % xorKey.Length]))
-                   .ToArray();
+    // This region is replaced by Inject-ObfuscatedToken.ps1 for protected builds.
+    byte[] xorKey = $xorLiteral;
+$(($partLines -join "`n    "))
+
+    $partsArrayInit
+
+    var all = partsArray.SelectMany(p => p)
+                        .Select((b, idx) => (byte)(b ^ xorKey[idx % xorKey.Length]))
+                        .ToArray();
     var base64Str = System.Text.Encoding.UTF8.GetString(all);
     var token = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64Str));
     return token;
     // END_TOKEN_REGION
 "@
 
-# NOTE: For general NumParts not equal 4, adjust the concat line programmatically.
-if ($NumParts -ne 4) {
-    # create dynamic concat
-    $concatParts = (1..$NumParts | ForEach-Object { "part$_" }) -join ","
-    $concatLine = "var all = (" + ($concatParts) + ").SelectMany(p => p).Select((x, idx) => (byte)(x ^ xorKey[idx % xorKey.Length])).ToArray();"
-    # fallback: generate alternate snippet
-    $decodeSnippet = @"
-    // BEGIN_TOKEN_REGION
-    byte[] xorKey = $xorKeyLiteral;
-$(($partsLiterals -join "`n    "))
-    // Dynamic concatenation for $NumParts parts
-    var partsList = new System.Collections.Generic.List<byte[]>();
-$(1..$NumParts | ForEach-Object { "    partsList.Add(part$($_).Select(v => (byte)v).ToArray());" } -join "`n")
-    var allList = new System.Collections.Generic.List<byte>();
-    foreach(var p in partsList) { allList.AddRange(p); }
-    var all = allList.Select((x, idx) => (byte)(x ^ xorKey[idx % xorKey.Length])).ToArray();
-    var base64Str = System.Text.Encoding.UTF8.GetString(all);
-    var token = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64Str));
-    return token;
-    // END_TOKEN_REGION
-"@
+# --- Inject into file between markers ---
+try {
+    $content = Get-Content -Raw -Path $targetPath
+    if ($content -notmatch "// BEGIN_TOKEN_REGION") {
+        Write-Err "Target file does not contain marker '// BEGIN_TOKEN_REGION'. Aborting injection."
+        if (-not $NoBackup -and (Test-Path $bakPath) -and -not $NoRestore) { Move-Item -Force $bakPath $targetPath }
+        exit 7
+    }
+
+    # replace everything between the two markers (including them)
+    $pattern = "(?s)// BEGIN_TOKEN_REGION.*?// END_TOKEN_REGION"
+    $newContent = [regex]::Replace($content, $pattern, $decodeSnippet)
+
+    Set-Content -Path $targetPath -Value $newContent -Encoding UTF8
+
+    Write-Ok "Injected token snippet into $targetPath"
+}
+catch {
+    Write-Err "Injection failed: $_"
+    if (-not $NoBackup -and (Test-Path $bakPath) -and -not $NoRestore) {
+        try { Move-Item -Force $bakPath $targetPath; Write-Host "Restored backup after failure." }
+        catch { Write-Err "Restore also failed: $_" }
+    }
+    exit 8
 }
 
-# Backup target
-$bak = "$targetPath.bak"
-Copy-Item -Path $targetPath -Destination $bak -Force
-Write-Host "Backup created: $bak"
+# --- Output an audit hash of the obfuscated bytes (safe) ---
+try {
+    $sha = [System.BitConverter]::ToString((New-Object System.Security.Cryptography.SHA256Managed).ComputeHash($bytes)).Replace("-", "").ToLower()
+    Write-Host "Obfuscated bytes SHA256: $sha"
+} catch { }
 
-# Read file and replace region between BEGIN_TOKEN_REGION and END_TOKEN_REGION
-$content = Get-Content $targetPath -Raw
+Write-Ok "Done. Note: Backup is at: $bakPath (unless NoBackup was specified)."
+if ($NoRestore) { Write-Warning "NoRestore specified: script will NOT attempt an automatic restore." }
 
-if ($content -notmatch "// BEGIN_TOKEN_REGION") {
-    Write-Error "Target file does not contain BEGIN_TOKEN_REGION marker. Aborting."
-    exit 1
-}
-
-# Replace between markers
-$pattern = "(?s)// BEGIN_TOKEN_REGION.*?// END_TOKEN_REGION"
-$newContent = [regex]::Replace($content, $pattern, $decodeSnippet)
-
-Set-Content -Path $targetPath -Value $newContent -Encoding UTF8
-Write-Host "Injected obfuscated token into $targetPath"
-
-if ($NoRestore) {
-    Write-Warning "NoRestore specified: will NOT restore original file after this script exits."
-    Write-Host "If you intend to leave token in file for packaging, ensure you do not commit it."
-    exit 0
-}
-
-# By default restore after script exit? We expect caller (Build script) to remove restore if they want to keep token.
-# We'll return 0 for success. Caller can decide whether to keep or restore.
-Write-Host "Injection done. Caller should decide whether to keep or restore the file (default recommended: restore)."
 exit 0
