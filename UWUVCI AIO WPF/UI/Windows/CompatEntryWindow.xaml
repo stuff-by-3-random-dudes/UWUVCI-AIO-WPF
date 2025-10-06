@@ -1,8 +1,10 @@
 ﻿<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.CompatEntryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Submit Compatibility Entry" Height="420" Width="560"
-        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+        Title="Submit Compatibility Entry"
+        Height="440" Width="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,12 +17,13 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="*"  />
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- Console -->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Console:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox x:Name="ConsoleBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" SelectionChanged="ConsoleBox_SelectionChanged">
+        <ComboBox x:Name="ConsoleBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
+                  SelectionChanged="ConsoleBox_SelectionChanged">
             <ComboBoxItem Content="NES"/>
             <ComboBoxItem Content="SNES"/>
             <ComboBoxItem Content="GBA"/>
@@ -31,12 +34,12 @@
             <ComboBoxItem Content="NDS"/>
         </ComboBox>
 
-        <!-- Game fields -->
+        <!-- Game Fields -->
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Game Name:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <TextBox   x:Name="GameNameBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"/>
+        <TextBox x:Name="GameNameBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"/>
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Game Region:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox  x:Name="GameRegionBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8">
+        <ComboBox x:Name="GameRegionBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8">
             <ComboBoxItem Content="USA"/>
             <ComboBoxItem Content="EUR"/>
             <ComboBoxItem Content="JPN"/>
@@ -46,10 +49,10 @@
         </ComboBox>
 
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Base Name:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <TextBox   x:Name="BaseNameBox" Grid.Row="3" Grid.Column="1" Margin="0,0,0,8"/>
+        <TextBox x:Name="BaseNameBox" Grid.Row="3" Grid.Column="1" Margin="0,0,0,8"/>
 
         <TextBlock Grid.Row="4" Grid.Column="0" Text="Base Region:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox  x:Name="BaseRegionBox" Grid.Row="4" Grid.Column="1" Margin="0,0,0,8">
+        <ComboBox x:Name="BaseRegionBox" Grid.Row="4" Grid.Column="1" Margin="0,0,0,8">
             <ComboBoxItem Content="USA"/>
             <ComboBoxItem Content="EUR"/>
             <ComboBoxItem Content="JPN"/>
@@ -58,7 +61,7 @@
             <ComboBoxItem Content="Other"/>
         </ComboBox>
 
-        <!-- Status + Conditional fields -->
+        <!-- Status + Conditional Panels -->
         <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Vertical">
 
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
@@ -82,12 +85,19 @@
 
             <!-- NDS-only -->
             <StackPanel x:Name="NdsPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,0,8">
-                <TextBlock Text="RenderSize:" Width="160" VerticalAlignment="Center"/>
-                <TextBox x:Name="RenderSizeBox" Width="200" ToolTip="Examples: 1x, 2x, Native"/>
+                <TextBlock Text="Render Size:" Width="160" VerticalAlignment="Center"/>
+                <TextBox x:Name="RenderSizeBox" Width="80" PreviewTextInput="RenderSizeBox_PreviewTextInput" ToolTip="Enter a number (e.g. 2 → '2x')"/>
+                <TextBlock Text="x" FontSize="16" Margin="5,0,0,0" VerticalAlignment="Center"/>
             </StackPanel>
 
-            <TextBlock Text="Notes:"/>
-            <TextBox x:Name="NotesBox" AcceptsReturn="True" Height="100" TextWrapping="Wrap"/>
+            <!-- Notes -->
+            <TextBlock Text="Notes:" Margin="0,0,0,4"/>
+            <TextBox x:Name="NotesBox"
+                     AcceptsReturn="True"
+                     Height="100"
+                     TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto"
+                     ToolTip="Add any comments or observations." Text=""/>
         </StackPanel>
 
         <!-- Buttons -->

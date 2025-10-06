@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows;
-using UWUVCI_AIO_WPF.Helpers;
+using System.Windows.Controls;
+using System.Windows.Input;
+using UWUVCI_AIO_WPF.Services;
 using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -20,17 +25,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             GameRegionBox.SelectedIndex = 0;
             BaseRegionBox.SelectedIndex = 0;
-            StatusBox.SelectedIndex = 2; // default = Works
+            StatusBox.SelectedIndex = 2; // Default = Works
         }
 
         // --------------------
         // Event handlers
         // --------------------
-        private void ConsoleBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ConsoleBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string console = GetSelectedText(ConsoleBox);
             WiiPanel.Visibility = console == "Wii" ? Visibility.Visible : Visibility.Collapsed;
             NdsPanel.Visibility = console == "NDS" ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void RenderSizeBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Allow only numbers
+            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e) => Close();
@@ -39,8 +50,21 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
+                var assembly = Assembly.GetExecutingAssembly();
+                var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+                var appVersion = fvi.FileVersion ?? "unknown";
+
                 var console = GetSelectedText(ConsoleBox);
+                if (string.IsNullOrEmpty(console))
+                {
+                    UWUVCI_MessageBox.Show("Please select a console.", "Validation Error", UWUVCI_MessageBoxType.Ok);
+                    return;
+                }
+
                 var entry = BuildBaseEntry();
+
+                // Append version note to Notes
+                entry.Notes = $"{entry.Notes} (UWUVCI Version: {appVersion})".Trim();
 
                 int? gamepad = null;
                 string renderSize = null;
@@ -51,38 +75,40 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 else if (console == "NDS")
                 {
-                    renderSize = RenderSizeBox.Text?.Trim();
+                    var input = RenderSizeBox.Text?.Trim();
+                    renderSize = string.IsNullOrEmpty(input) ? "" : $"{input}x";
                 }
 
-                // repo target (make configurable if you like)
-                const string owner = "UWUVCI-PRIME";
+                // Repo target (you can move these to settings later)
+                const string owner = "UWUVCI-Prime";
                 const string repo = "UWUVCI-Compatibility";
 
                 IsEnabled = false;
-                Cursor = System.Windows.Input.Cursors.Wait;
+                Cursor = Cursors.Wait;
 
-                var prUrl = await GitHubCompatService.SubmitEntryAsync(owner, repo, console, entry, gamepad, renderSize);
-                MessageBox.Show($"Pull Request created:\n{prUrl}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                var prUrl = await GitHubCompatService.SubmitEntryAsync(owner, repo, console, entry, gamepad, renderSize, appVersion);
+
+                UWUVCI_MessageBox.Show($"Pull Request created successfully:\n{prUrl}", "Success", UWUVCI_MessageBoxType.Ok);
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to create PR:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                UWUVCI_MessageBox.Show("Failed to create PR:\n" + ex.Message, "Error", UWUVCI_MessageBoxType.Ok);
             }
             finally
             {
                 IsEnabled = true;
-                Cursor = System.Windows.Input.Cursors.Arrow;
+                Cursor = Cursors.Arrow;
             }
         }
 
         // --------------------
         // Helpers
         // --------------------
-        private string GetSelectedText(System.Windows.Controls.ComboBox box)
-            => (box.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() ?? "";
+        private string GetSelectedText(ComboBox box)
+            => (box.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "";
 
-        private int ParseIntFromCombo(System.Windows.Controls.ComboBox box, string fieldName)
+        private int ParseIntFromCombo(ComboBox box, string fieldName)
         {
             var text = GetSelectedText(box);
             if (!int.TryParse(text.Substring(0, 1), out var val))
@@ -99,7 +125,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             var statusText = GetSelectedText(StatusBox);
 
             if (string.IsNullOrEmpty(gameName) || string.IsNullOrEmpty(gameRegion) ||
-                string.IsNullOrEmpty(baseName) || string.IsNullOrEmpty(baseRegion) || string.IsNullOrEmpty(statusText))
+                string.IsNullOrEmpty(baseName) || string.IsNullOrEmpty(baseRegion) ||
+                string.IsNullOrEmpty(statusText))
             {
                 throw new InvalidOperationException("All required fields must be completed.");
             }
@@ -114,7 +141,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 BaseName = baseName,
                 BaseRegion = baseRegion,
                 Status = status,
-                Notes = string.IsNullOrWhiteSpace(NotesBox.Text) ? "None" : NotesBox.Text.Trim()
+                Notes = NotesBox.Text?.Trim()
             };
         }
     }
