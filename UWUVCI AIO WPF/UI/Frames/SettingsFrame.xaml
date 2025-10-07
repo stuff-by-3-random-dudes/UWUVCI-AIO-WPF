@@ -19,20 +19,20 @@
                 </TransformGroup>
             </Border.RenderTransform>
         </Border>
-        <TextBlock HorizontalAlignment="Left" Margin="325,482,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
+        <!--<TextBlock HorizontalAlignment="Left" Margin="325,482,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,541,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <TextBlock HorizontalAlignment="Left" Margin="325,67,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
         <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,74,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True" Visibility="Hidden" IsTabStop="False"/>
         <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,67,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Visibility="Hidden" IsTabStop="False"/>
         <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,478,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1" Visibility="Hidden" IsTabStop="False"/>
-        <!--<Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="617,182,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2" IsTabStop="False"/>-->
-        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden" IsTabStop="False"/>
-        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="617,226,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3" IsTabStop="False"/>
-        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="337,357,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4" IsTabStop="False"/>
-        <Button Content="Show Tutorial Screens" HorizontalAlignment="Left" Margin="337,402,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" IsTabStop="False" Click="ShowTutorialScreens_Click" x:Name="ShowTutorialScreens"/>
+        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="617,182,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2" IsTabStop="False"/>
+        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden" IsTabStop="False"/>-->
+        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="617,126,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3" IsTabStop="False"/>
+        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="337,257,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4" IsTabStop="False"/>
+        <Button Content="Show Tutorial Screens" HorizontalAlignment="Left" Margin="337,302,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" IsTabStop="False" Click="ShowTutorialScreens_Click" x:Name="ShowTutorialScreens"/>
         <Button Content="Open App Settings" 
         HorizontalAlignment="Left" 
-        Margin="337,447,0,0" 
+        Margin="337,347,0,0" 
         VerticalAlignment="Top" 
         Width="425" 
         RenderTransformOrigin="-0.099,0.116" 
@@ -42,7 +42,7 @@
 
         <Button Content="Submit Compatibility Entry"
         HorizontalAlignment="Left"
-        Margin="337,490,0,0"
+        Margin="337,390,0,0"
         VerticalAlignment="Top"
         Width="425"
         RenderTransformOrigin="-0.099,0.116"
@@ -52,12 +52,12 @@
 
 
         <Button Content="Credits" HorizontalAlignment="Left" Margin="1022,548,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5" IsTabStop="False"/>
-        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="495,226,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7" IsTabStop="False"/>
-        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="337,226,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6" IsTabStop="False"/>
+        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="495,126,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7" IsTabStop="False"/>
+        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="337,126,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6" IsTabStop="False"/>
         <TextBlock HorizontalAlignment="Left" Margin="1022,10,0,0" TextWrapping="Wrap" Text="v2.1 BETA" VerticalAlignment="Top" FontSize="20" Width="98" Visibility="Hidden"/>
-        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="617,270,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8" IsTabStop="False"/>
-        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="337,314,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9" IsTabStop="False"/>
-        <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="337,270,0,0" VerticalAlignment="Top" Width="275" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10" IsTabStop="False"/>
+        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="617,170,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8" IsTabStop="False"/>
+        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="337,214,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9" IsTabStop="False"/>
+        <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="337,170,0,0" VerticalAlignment="Top" Width="275" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10" IsTabStop="False"/>
         <Button Content="Button" HorizontalAlignment="Left" Margin="337,422,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_11"  IsTabStop="False" Visibility="Hidden"/>
         <Grid Margin="0,0,5,10"/>
         <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="12,7,0,0" VerticalAlignment="Top" Width="1108"/>

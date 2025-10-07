@@ -34,11 +34,11 @@
                  MaxLength="250"
                  IsTabStop="False"/>
 
-        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,478,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame" Focusable="False" IsTabStop="False"/>
-        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,301,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex" IsTabStop="False" Height="30"/>
-        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,220,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex" IsTabStop="False" Height="24"/>
-        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,261,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex" IsTabStop="False" Height="26"/>
-        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,179,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex" IsTabStop="False" Height="27"/>
+        <Button Content="Inject" HorizontalAlignment="Left" Margin="506,479,0,0" VerticalAlignment="Top" Width="127" IsEnabled="{Binding CanInject}" Click="InjectGame" Focusable="False" IsTabStop="False" Height="28"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,301,0,0" VerticalAlignment="Top" Width="127" Click="Set_LogoTex" IsTabStop="False" Height="28"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,220,0,0" VerticalAlignment="Top" Width="127" Click="Set_TvTex" IsTabStop="False" Height="28"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,261,0,0" VerticalAlignment="Top" Width="127" Click="Set_DrcTex" IsTabStop="False" Height="28"/>
+        <Button Content="Create File" HorizontalAlignment="Left" Margin="506,179,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex" IsTabStop="False" Height="28"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,71,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection" IsTabStop="False"/>
         <ComboBox HorizontalAlignment="Left" Margin="10,132,0,0" VerticalAlignment="Top" Width="246" x:Name="gamepad" SelectionChanged="gamepad_SelectionChanged" IsTabStop="False" Height="38"/>
         <Button Content="Select GCT File" 
@@ -53,7 +53,7 @@
         <TextBox materialDesign:HintAssist.Hint="GCT PATH (OPTIONAL)" 
             x:Name="gctPath" 
             Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-            Margin="272,102,157,335" 
+            Margin="272,100,157,337" 
             Background="{x:Null}" 
             Foreground="Black" 
             SelectionBrush="#FF00C3D7" 
