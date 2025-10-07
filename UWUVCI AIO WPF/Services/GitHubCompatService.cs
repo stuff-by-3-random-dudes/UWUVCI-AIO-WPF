@@ -17,10 +17,10 @@ namespace UWUVCI_AIO_WPF.Services
         public static string GetFileNameForConsole(string consoleKey) => consoleKey switch
         {
             "NES" => "NESCompat.json",
-            "SNES" => "SNESCompat.json",
+            "SNES" => "SNECompat.json",
             "GBA" => "GBACompat.json",
             "N64" => "N64Compat.json",
-            "TG16" => "TG16Compat.json",
+            "TG16" => "TG1Compat.json",
             "MSX" => "MSXCompat.json",
             "Wii" => "WiiCompat.json",
             "NDS" => "NDSCompat.json",
