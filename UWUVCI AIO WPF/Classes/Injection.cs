@@ -265,8 +265,11 @@ namespace UWUVCI_AIO_WPF
                                 "You’ve provided custom boot images for this inject.\n\n" +
                                 "Would you like to share them with the community?\n\n" +
                                 "UWUVCI-ContriBot will automatically create a pull request containing your images.",
-                                UWUVCI_MessageBoxType.YesNo, mvm.mw
+                                UWUVCI_MessageBoxType.YesNo,
+                                UWUVCI_MessageBoxIcon.Info,
+                                mvm.mw
                             );
+
                         });
 
                         if (messageBoxResult == UWUVCI_MessageBoxResult.Yes)
@@ -293,7 +296,10 @@ namespace UWUVCI_AIO_WPF
                                 UWUVCI_MessageBox.Show(
                                     "Submission Started",
                                     "Your images are being submitted in the background.\nA pull request will be created if successful.",
-                                    UWUVCI_MessageBoxType.Ok, mvm.mw
+                                    UWUVCI_MessageBoxType.Ok,
+                                    UWUVCI_MessageBoxIcon.Success,
+                                    mvm.mw,
+                                    isModal: false
                                 );
                             });
 
@@ -317,7 +323,10 @@ namespace UWUVCI_AIO_WPF
                                         UWUVCI_MessageBox.Show(
                                             "Images Submitted",
                                             $"Your images have been submitted successfully!\n\nA Pull Request has been created:\n{prUrl}",
-                                            UWUVCI_MessageBoxType.Ok, mvm.mw
+                                            UWUVCI_MessageBoxType.Ok,
+                                            UWUVCI_MessageBoxIcon.Success,
+                                            mvm.mw,
+                                            isModal: false
                                         );
                                     });
                                 }
@@ -328,8 +337,11 @@ namespace UWUVCI_AIO_WPF
                                         UWUVCI_MessageBox.Show(
                                             "Image Submission Failed",
                                             $"An error occurred while submitting your images.\n\n{ex.Message}",
-                                            UWUVCI_MessageBoxType.Ok, mvm.mw
+                                            UWUVCI_MessageBoxType.Ok,
+                                            UWUVCI_MessageBoxIcon.Error,
+                                            mvm.mw
                                         );
+
                                     });
                                 }
                             });
@@ -385,7 +397,13 @@ namespace UWUVCI_AIO_WPF
                 if (!IsNativeWindows)
                     errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
 
-                UWUVCI_MessageBox.Show(errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file", "Injection Failed", UWUVCI_MessageBoxType.Ok);
+                UWUVCI_MessageBox.Show(
+                    "Injection Failed",
+                    errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file.",
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+
                 Logger.Log(e.Message);
                 Clean();
                 return false;

@@ -51,9 +51,13 @@ namespace UWUVCI_AIO_WPF
             // Check if running from OneDrive
             if (IsRunningFromOneDrive())
             {
-                UWUVCI_MessageBox.Show("Error: OneDrive Detected", "UWUVCI AIO cannot be run from a OneDrive folder due to compatibility issues. \n\n" +
+                UWUVCI_MessageBox.Show(
+                    "Error: OneDrive Detected",
+                    "UWUVCI AIO cannot be run from a OneDrive folder due to compatibility issues.\n\n" +
                     "Please move it to another location (e.g., C:\\Programs or C:\\Users\\YourName\\UWUVCI_AIO) before launching.",
-                     UWUVCI_MessageBoxType.Ok);
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
                 Environment.Exit(1); // Terminate the application
             }
 
@@ -70,12 +74,15 @@ namespace UWUVCI_AIO_WPF
 
             if (!LocalInstallGuard.EnsureInstalled())
             {
-                UWUVCI_MessageBox.Show("License Verification Failed",
+                UWUVCI_MessageBox.Show(
+                    "License Verification Failed",
                     "This copy of UWUVCI V3 appears to be invalid or was copied from another system.\n\n" +
                     "Please download a legitimate copy from the official source.",
-                    UWUVCI_MessageBoxType.Ok
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
                 );
                 Environment.Exit(1);
+
                 return;
             }
 

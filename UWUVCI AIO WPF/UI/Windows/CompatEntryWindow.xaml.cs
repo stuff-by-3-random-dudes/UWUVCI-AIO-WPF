@@ -57,7 +57,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 var console = GetSelectedText(ConsoleBox);
                 if (string.IsNullOrEmpty(console))
                 {
-                    UWUVCI_MessageBox.Show("Validation Error", "Please select a console.", UWUVCI_MessageBoxType.Ok);
+                    UWUVCI_MessageBox.Show(
+                        "Validation Error",
+                        "Please select a console.",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Warning
+                    );
+
                     return;
                 }
 
@@ -88,12 +94,26 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
                 var prUrl = await GitHubCompatService.SubmitEntryAsync(owner, repo, console, entry, gamepad, renderSize, appVersion);
 
-                UWUVCI_MessageBox.Show("Success", $"Pull Request created successfully:\n{prUrl}", UWUVCI_MessageBoxType.Ok);
+                UWUVCI_MessageBox.Show(
+                    "Success",
+                    $"Pull Request created successfully:\n{prUrl}",
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Success,
+                    null,
+                    isModal: false
+                );
+
                 Close();
             }
             catch (Exception ex)
             {
-                UWUVCI_MessageBox.Show("Error", "Failed to create PR:\n" + ex.Message, UWUVCI_MessageBoxType.Ok);
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Failed to create PR:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+
             }
             finally
             {
