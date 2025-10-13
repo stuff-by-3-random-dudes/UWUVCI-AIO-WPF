@@ -29,6 +29,18 @@ namespace UWUVCI_AIO_WPF.Services
             string appVersion,
             params string[] imagePaths)
         {
+
+            const string BlackListUrl = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/main/uwuvci_installer_creator/app/blacklist.json";
+
+            // Check blacklist before continuing
+            bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListUrl, timeoutMs: 4000);
+            if (isBlacklisted)
+            {
+                // Simulate a generic failure so it looks normal to the end-user.
+                // Keep the message vague — do not reveal that they are blacklisted.
+                throw new InvalidOperationException("Failed to submit images due to a network error. Please try again later.");
+            }
+
             if (imagePaths == null || imagePaths.Length == 0)
                 throw new ArgumentException("No image paths provided for upload.");
 
@@ -80,8 +92,20 @@ namespace UWUVCI_AIO_WPF.Services
                 }
             }
 
+            // Compute local hashed fingerprint (Base64 SHA256)
+            string submitterFingerprint = null;
+            try
+            {
+                submitterFingerprint = DeviceFingerprint.GetHashedFingerprint();
+            }
+            catch
+            {
+                // If fingerprint fails for any reason, keep it null don't want this to break submission.
+                submitterFingerprint = null;
+            }
+
             // --- Build PR body and open PR ---
-            var prBody = BuildPrBody(consoleKey, gameName, appVersion, imagePaths);
+            var prBody = BuildPrBody(consoleKey, gameName, appVersion, imagePaths, submitterFingerprint);
             var pr = await RetryAsync(() =>
                 client.PullRequest.Create(owner, repo,
                     new NewPullRequest($"[Images] {gameName} ({consoleKey})", branchName, baseBranch)
@@ -92,13 +116,20 @@ namespace UWUVCI_AIO_WPF.Services
             return pr.HtmlUrl;
         }
 
-        private string BuildPrBody(string consoleKey, string gameName, string appVersion, string[] imagePaths)
+        private string BuildPrBody(string consoleKey, string gameName, string appVersion, string[] imagePaths, string fingerprintBase64 = null)
         {
             var now = GetTimestampUtc();
 
             var imageList = string.Join("\n", imagePaths.Select(p => $"- {Path.GetFileName(p)}"));
             if (string.IsNullOrWhiteSpace(imageList))
                 imageList = "(none)";
+
+            var fingerprintSection = "";
+            if (!string.IsNullOrWhiteSpace(fingerprintBase64))
+            {
+                // Use a clear marker "FP:" so it's easy to search
+                fingerprintSection = $"\n- **Submitter fingerprint (FP):** `{fingerprintBase64}`\n";
+            }
 
             return $@"
 ### 🖼️ Image Submission
@@ -121,7 +152,7 @@ namespace UWUVCI_AIO_WPF.Services
 
 ### 🔗 Metadata
 - Generated at: {now}  
-- App Version: {appVersion}
+- App Version: {appVersion}{fingerprintSection}
 ".Trim();
         }
     }
