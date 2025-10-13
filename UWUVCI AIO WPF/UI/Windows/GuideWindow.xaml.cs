@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -51,25 +52,42 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void ReadMeButton_Click(object sender, RoutedEventArgs e)
         {
-            // Open ReadMe file in the default text editor
-            string readMePath = Path.Combine(Directory.GetCurrentDirectory(), "ReadMe.txt");
-            if (File.Exists(readMePath))
+            try
             {
-                Process.Start(new ProcessStartInfo
+                var helpWindow = new HelpWindow()
                 {
-                    FileName = readMePath,
-                    UseShellExecute = true
-                });
+                    Owner = Application.Current.MainWindow
+                };
+                helpWindow.ShowDialog();
             }
-            else
+            catch (Exception ex)
             {
                 UWUVCI_MessageBox.Show(
                     "Error",
-                    "ReadMe.txt not found!",
+                    "Failed to load the online ReadMe. Attempting to open the local copy.\n\n" + ex.Message,
                     UWUVCI_MessageBoxType.Ok,
-                    UWUVCI_MessageBoxIcon.Warning
+                    UWUVCI_MessageBoxIcon.Error
                 );
 
+                // Fallback: open local ReadMe.txt if available
+                string localPath = Path.Combine(Directory.GetCurrentDirectory(), "ReadMe.txt");
+                if (File.Exists(localPath))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = localPath,
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Error",
+                        "Local ReadMe.txt not found either!",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Warning
+                    );
+                }
             }
         }
 

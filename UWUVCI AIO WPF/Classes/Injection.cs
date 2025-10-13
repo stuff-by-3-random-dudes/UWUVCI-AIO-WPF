@@ -399,7 +399,7 @@ namespace UWUVCI_AIO_WPF
 
                 UWUVCI_MessageBox.Show(
                     "Injection Failed",
-                    errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.txt file.",
+                    errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.",
                     UWUVCI_MessageBoxType.Ok,
                     UWUVCI_MessageBoxIcon.Error
                 );

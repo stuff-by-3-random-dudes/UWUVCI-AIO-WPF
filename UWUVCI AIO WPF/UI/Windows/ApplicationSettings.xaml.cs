@@ -98,5 +98,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 AncastBox.Focus();
             }
         }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            var helpWindow = new HelpWindow
+            {
+                Owner = this
+            };
+            helpWindow.ShowDialog();
+        }
+
     }
 }
