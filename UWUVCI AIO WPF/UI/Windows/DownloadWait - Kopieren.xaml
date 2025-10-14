@@ -25,7 +25,46 @@
         <TextBlock HorizontalAlignment="Left" Margin="315,7,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16" IsHitTestVisible="False"/>
         <ComboBox HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Width="313" Name="sd" Foreground="Black" SelectionChanged="sd_SelectionChanged"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,61,0,0" TextWrapping="Wrap" Text="Choose your SD Card:" VerticalAlignment="Top" Foreground="Black" />
-        <Button Content="Setup SD Card" HorizontalAlignment="Left" Margin="199,129,0,0" VerticalAlignment="Top" Width="124" Height="28" IsEnabled="False" Name="setup" Click="setup_Click"/>
+        <!-- Progress Bar -->
+        <ProgressBar x:Name="CopyProgress"
+             HorizontalAlignment="Left"
+             Margin="10,114,0,0"
+             VerticalAlignment="Top"
+             Width="313"
+             Height="8"
+             Minimum="0"
+             Maximum="100"
+             Value="0"
+             Foreground="{DynamicResource PrimaryHueMidBrush}"
+             Style="{StaticResource MaterialDesignCircularProgressBar}"
+             materialDesign:ColorZoneAssist.Mode="PrimaryDark"
+             Visibility="Collapsed" />
+
+        <!-- Indeterminate Loading -->
+        <ProgressBar x:Name="CopyProgressIndeterminate"
+             HorizontalAlignment="Left"
+             Margin="10,114,0,0"
+             VerticalAlignment="Top"
+             Width="313"
+             Height="8"
+             IsIndeterminate="True"
+             Foreground="{DynamicResource PrimaryHueMidBrush}"
+             Style="{StaticResource MaterialDesignLinearProgressBar}"
+             materialDesign:ColorZoneAssist.Mode="PrimaryDark"
+             Visibility="Collapsed" />
+
+        <!-- Progress Text -->
+        <TextBlock x:Name="CopyProgressText"
+           HorizontalAlignment="Center"
+           Margin="0,124,0,0"
+           VerticalAlignment="Top"
+           FontSize="12"
+           Foreground="Black"
+           Text="0%"
+           Visibility="Collapsed" />
+
+
+        <Button Content="Setup SD Card" HorizontalAlignment="Left" Margin="199,140,0,0" VerticalAlignment="Top" Width="124" Height="26" IsEnabled="False" Name="setup" Click="setup_Click"/>
         <Label Content="" Margin="10,131,263,-131" Name="status"/>
         <Border  BorderThickness="1.5,1.5,1.5,1.5" BorderBrush="#FF2196F3" HorizontalAlignment="Left" Height="175" VerticalAlignment="Top" Width="337">
 
