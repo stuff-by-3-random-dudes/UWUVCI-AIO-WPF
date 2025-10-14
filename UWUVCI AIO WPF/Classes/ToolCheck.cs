@@ -39,7 +39,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "cygwin1.dll",
             "cygz.dll",
             "cyggcc_s-1.dll",
-            "NintendontConfig.exe",
             "BASE.zip",
             "tga2png.exe",
             "iconTex.tga",
