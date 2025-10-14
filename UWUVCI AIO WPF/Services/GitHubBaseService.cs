@@ -18,19 +18,13 @@ namespace UWUVCI_AIO_WPF.Services
         // ===============================
         private string GetToken()
         {
-            // ===== COPY INTO GetToken() =====
-            byte[] xorKey = new byte[] { 0xE9, 0x3A, 0xEF, 0xEE };
-            int[] part1 = new int[] { 179, 8, 135, 153, 177, 11, 159, 183, 191, 80, 161, 218, 188, 124 };
-            int[] part2 = new int[] { 159, 182, 191, 9, 169, 134, 141, 9, 162, 153, 191, 87, 139, 131 };
-            int[] part3 = new int[] { 188, 81, 151, 172, 188, 9, 186, 222, 191, 87, 186, 219, 167, 84 };
-            int[] part4 = new int[] { 136, 220, 164, 80, 173, 143, 184, 86, 135, 187, 167, 123, 210, 211 };
-
-            // ===== Decoding logic =====
-            // Combine and decode:
-            var all = part1.Concat(part2).Concat(part3).Concat(part4)
-                .Select((x, i) => (byte)(x ^ xorKey[i % xorKey.Length])).ToArray();
-            return Encoding.UTF8.GetString(Convert.FromBase64String(Encoding.UTF8.GetString(all)));
-            // =================================
+#if DEBUG
+            string envToken = "";
+            return envToken;
+#endif
+            // BEGIN_TOKEN_REGION
+            throw new InvalidOperationException("Token not injected — build script must run first.");
+            // END_TOKEN_REGION
         }
         public GitHubClient CreateClient()
         {
