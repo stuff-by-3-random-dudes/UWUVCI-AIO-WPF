@@ -260,6 +260,9 @@
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
+    <Compile Include="Models\NintendontConfig.cs" />
+    <Compile Include="Models\NintendontPresets.cs" />
+    <Compile Include="Services\DeviceFingerprint.cs" />
     <Compile Include="Services\GitHubBaseService.cs" />
     <Compile Include="Services\GitHubCompatService.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
@@ -279,6 +282,7 @@
     <Compile Include="Classes\ToolCheck.cs" />
     <Compile Include="Services\GitHubImageService.cs" />
     <Compile Include="Services\LocalInstallGuard.cs" />
+    <Compile Include="Services\NintendontConfigService.cs" />
     <Compile Include="Services\ReadMeManager.cs" />
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
@@ -366,6 +370,9 @@
     </Compile>
     <Compile Include="UI\Windows\IntroductionWindow.xaml.cs">
       <DependentUpon>IntroductionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\NintendontConfigWindow.xaml.cs">
+      <DependentUpon>NintendontConfigWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\UWUVCI_MessageBox.xaml.cs">
       <DependentUpon>UWUVCI_MessageBox.xaml</DependentUpon>
@@ -562,6 +569,10 @@
       <DependentUpon>MenuWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\Windows\NintendontConfigWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\UWUVCI_MessageBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

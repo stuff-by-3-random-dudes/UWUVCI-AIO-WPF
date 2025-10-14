@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using UWUVCI_AIO_WPF.Helpers;
+using UWUVCI_AIO_WPF.Modules.Nintendont;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 
@@ -92,10 +93,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
-            Process[] pname = Process.GetProcessesByName("NintendontConfig");
-            if (pname.Length == 0)
-                Process.Start(@"bin\Tools\NintendontConfig.exe");
+         
+            // Ensure only one instance of the config window at a time
+            foreach (Window win in Application.Current.Windows)
+            {
+                if (win is NintendontConfigWindow)
+                {
+                    win.Activate();
+                    return;
+                }
+            }
+
+            // Open the new integrated WPF Nintendont Configurator
+            var window = new NintendontConfigWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+            window.ShowDialog();
         }
+
 
         private void OpenCompatSubmit_Click(object sender, RoutedEventArgs e)
         {
