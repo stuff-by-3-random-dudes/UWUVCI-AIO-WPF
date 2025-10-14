@@ -79,23 +79,21 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     content = File.ReadAllText(LocalReadMePath);
 
                 if (string.IsNullOrWhiteSpace(content))
-                    DisplayText("⚠️ Unable to load ReadMe — no internet or local file found.");
+                    DisplayText("Unable to load ReadMe — no internet or local file found.");
                 else
                     DisplayText(content, parseLinks: true);
             }
             catch (Exception ex)
             {
-                DisplayText($"⚠️ Error loading ReadMe:\n{ex.Message}");
+                DisplayText($"Error loading ReadMe:\n{ex.Message}");
             }
         }
 
         private async Task<string> DownloadReadMeAsync()
         {
-            using (var client = new WebClient())
-            {
-                client.Encoding = System.Text.Encoding.UTF8;
-                return await client.DownloadStringTaskAsync(RemoteReadMeUrl);
-            }
+            using var client = new WebClient();
+            client.Encoding = System.Text.Encoding.UTF8;
+            return await client.DownloadStringTaskAsync(RemoteReadMeUrl);
         }
 
         // ✅ Display text with optional clickable links
