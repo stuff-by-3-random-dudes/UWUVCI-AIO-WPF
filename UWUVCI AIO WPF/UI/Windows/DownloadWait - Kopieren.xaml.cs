@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -410,7 +411,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
         }
 
-        private static async Task CopyDirectoryAsync(string sourceDir, string destDir, Action<int, string>? progressCallback = null)
+        private static async Task CopyDirectoryAsync(string sourceDir, string destDir, Action<int, string>? progressCallback = null, int maxParallel = 4)
         {
             if (!Directory.Exists(sourceDir))
                 throw new DirectoryNotFoundException($"Source directory not found: {sourceDir}");
@@ -421,28 +422,41 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             int totalFiles = allFiles.Length;
             int copied = 0;
 
-            foreach (string file in allFiles)
+            using SemaphoreSlim concurrencyLimiter = new SemaphoreSlim(maxParallel);
+            var copyTasks = allFiles.Select(async file =>
             {
-                string relativePath = file.Substring(sourceDir.Length + 1);
-                string destFilePath = Path.Combine(destDir, relativePath);
-                string destDirPath = Path.GetDirectoryName(destFilePath)!;
-
-                if (!Directory.Exists(destDirPath))
-                    Directory.CreateDirectory(destDirPath);
-
+                await concurrencyLimiter.WaitAsync();
                 try
                 {
+                    string relativePath = file.Substring(sourceDir.Length + 1);
+                    string destFilePath = Path.Combine(destDir, relativePath);
+                    string destDirPath = Path.GetDirectoryName(destFilePath)!;
+
+                    if (!Directory.Exists(destDirPath))
+                        Directory.CreateDirectory(destDirPath);
+
                     await CopyFileBufferedAsync(file, destFilePath);
-                    copied++;
-                    int progressPercent = (int)((double)copied / totalFiles * 100);
-                    progressCallback?.Invoke(progressPercent, $"Copying file {copied}/{totalFiles}...");
+
+                    int progressNow = Interlocked.Increment(ref copied);
+                    if (progressNow % 5 == 0 || progressNow == totalFiles)
+                    {
+                        int percent = (int)((double)progressNow / totalFiles * 100);
+                        progressCallback?.Invoke(percent, $"Copying file {progressNow}/{totalFiles}...");
+                    }
                 }
                 catch (Exception ex)
                 {
                     Logger.Log($"Failed to copy {file}: {ex.Message}");
                 }
-            }
+                finally
+                {
+                    concurrencyLimiter.Release();
+                }
+            }).ToArray();
+
+            await Task.WhenAll(copyTasks);
         }
+
 
         private static async Task CopyFileBufferedAsync(string sourceFile, string destinationFile)
         {
