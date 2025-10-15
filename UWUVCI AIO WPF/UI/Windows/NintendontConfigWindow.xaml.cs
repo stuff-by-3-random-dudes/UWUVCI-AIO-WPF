@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using UWUVCI_AIO_WPF.Models;
-using UWUVCI_AIO_WPF.Services;
+using System.Windows.Media.Animation;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.Modules.Nintendont
@@ -30,8 +28,32 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             // Fill static lists
             ReloadDrives();
 
+            // ----- Preset setup -----
             PresetBox.ItemsSource = NintendontPresets.AllPresets.Select(p => p.Name).ToList();
-            if (PresetBox.Items.Count > 0) PresetBox.SelectedIndex = 0;
+
+            // Default preset = Recommended
+            var defaultPreset = NintendontPresets.Default;
+            var defaultIndex = NintendontPresets.AllPresets.FindIndex(p => p.Name == defaultPreset.Name);
+            if (defaultIndex >= 0)
+            {
+                PresetBox.SelectedIndex = defaultIndex;
+                if (PresetDescription != null)
+                    PresetDescription.Text = defaultPreset.Description;
+            }
+
+            // Update config + description when preset changes
+            PresetBox.SelectionChanged += (s, e) =>
+            {
+                var selectedName = PresetBox.SelectedItem as string;
+                var preset = NintendontPresets.AllPresets.FirstOrDefault(p => p.Name == selectedName);
+                if (preset != null)
+                {
+                    _cfg = preset.ApplyTo(NintendontConfig.CreateDefault());
+                    ApplyModelToUi(_cfg);
+                    AnimatePresetDescription(preset.Description);
+                }
+            };
+            // --------------------------
 
             VideoForceBox.ItemsSource = new[] { "Auto", "Force", "Force (Deflicker)", "None" };
             VideoTypeBox.ItemsSource = new[] { "Auto", "NTSC", "MPAL", "PAL50", "PAL60" };
@@ -40,7 +62,7 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             GamepadSlotBox.ItemsSource = new[] { "1", "2", "3", "4" };
             MaxPadsBox.ItemsSource = new[] { "1", "2", "3", "4" };
 
-            // Wire up clicks (kept out of XAML to avoid compile issues earlier)
+            // Wire up clicks
             BtnCloseFooter.Click += (s, e) => Close();
             BtnReloadDrives.Click += (s, e) => ReloadDrives();
             BtnOpen.Click += async (s, e) => await OpenExistingAsync();
@@ -50,7 +72,6 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             BtnSaveAs.Click += async (s, e) => await SaveAsAsync();
 
             DriveBox.SelectionChanged += (s, e) => OnDriveChanged();
-            PresetBox.SelectionChanged += (s, e) => ApplyPreset();
             VideoForceBox.SelectionChanged += (s, e) => OnVideoForceChanged();
             VideoTypeBox.SelectionChanged += (s, e) => OnVideoTypeChanged();
             ChkAutoWidth.Checked += (s, e) => UpdateWidthUi();
@@ -59,6 +80,34 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
 
             ApplyModelToUi(_cfg);
             UpdateMemcardUi();
+        }
+
+        // Smoothly fades in the description text when it changes
+        private void AnimatePresetDescription(string newText)
+        {
+            if (PresetDescription == null || PresetDescriptionContainer == null)
+                return;
+
+            var fadeOut = new DoubleAnimation
+            {
+                To = 0,
+                Duration = TimeSpan.FromMilliseconds(150),
+                FillBehavior = FillBehavior.Stop
+            };
+
+            fadeOut.Completed += (s, e) =>
+            {
+                PresetDescription.Text = newText;
+                var fadeIn = new DoubleAnimation
+                {
+                    To = 1,
+                    Duration = TimeSpan.FromMilliseconds(200),
+                    FillBehavior = FillBehavior.Stop
+                };
+                PresetDescription.BeginAnimation(OpacityProperty, fadeIn);
+            };
+
+            PresetDescription.BeginAnimation(OpacityProperty, fadeOut);
         }
 
         // ---------- UI <-> Model ----------

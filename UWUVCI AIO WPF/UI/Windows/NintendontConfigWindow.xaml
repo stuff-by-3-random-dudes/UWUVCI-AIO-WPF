@@ -148,6 +148,19 @@
                         <TextBlock Text="Preset" FontWeight="SemiBold"/>
                         <ComboBox x:Name="PresetBox" Width="200" Height="32" Margin="0,4,0,0"
                                   ToolTip="Load a preset (Normal, Widescreen, Debug, Arcade)."/>
+                        <Border x:Name="PresetDescriptionContainer"
+                            CornerRadius="6"
+                            Background="#1A000000"
+                            Padding="6"
+                            Margin="0,4,0,0">
+                            <TextBlock x:Name="PresetDescription"
+                               Text="(Choose a preset to see details)"
+                               TextWrapping="Wrap"
+                               Foreground="Gray"
+                               FontSize="12"
+                               Width="220"
+                               Opacity="1"/>
+                        </Border>
                     </StackPanel>
                 </StackPanel>
 
@@ -308,7 +321,7 @@
 
                 <!-- ========== RIGHT COLUMN ================================= -->
 
-                <StackPanel Margin="1,0,20,-12" Grid.Column="1">
+                <StackPanel Margin="1,0,20,0" Grid.Column="1">
 
                     <!-- System -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
