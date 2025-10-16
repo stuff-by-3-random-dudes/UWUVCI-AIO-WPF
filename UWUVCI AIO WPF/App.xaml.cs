@@ -2,7 +2,9 @@
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +18,7 @@ namespace UWUVCI_AIO_WPF
 {
     public partial class App : Application
     {
-        Timer t = new Timer(5000);
+        System.Timers.Timer t = new System.Timers.Timer(5000);
         private StartupEventArgs _startupArgs;
         private static string AppDataPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -27,7 +29,7 @@ namespace UWUVCI_AIO_WPF
             // --- Force software rendering under Wine/Proton/CrossOver ---
             try
             {
-                if (ToolRunner.UnderWine())  // or: if (EnvDetect.Get().UnderWineLike)
+                if (ToolRunner.UnderWine()) // or: if (EnvDetect.Get().UnderWineLike)
                 {
                     RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
@@ -82,12 +84,20 @@ namespace UWUVCI_AIO_WPF
                     UWUVCI_MessageBoxIcon.Error
                 );
                 Environment.Exit(1);
-
                 return;
             }
 
-            //TODO: ADD THE ! WHEN PUBLISHING
-            if (!JsonSettingsManager.Settings.IsFirstLaunch)
+            // --- FORCE INVARIANT (English-based) CULTURE ---
+            // This prevents Turkish locale issues
+            var invariant = CultureInfo.InvariantCulture;
+
+            Thread.CurrentThread.CurrentCulture = invariant;
+            Thread.CurrentThread.CurrentUICulture = invariant;
+            CultureInfo.DefaultThreadCurrentCulture = invariant;
+            CultureInfo.DefaultThreadCurrentUICulture = invariant;
+
+            // --- Continue to main app ---
+            if (JsonSettingsManager.Settings.IsFirstLaunch)
                 LaunchMainApplication(e);
             else
                 new IntroductionWindow().ShowDialog();
@@ -98,6 +108,7 @@ namespace UWUVCI_AIO_WPF
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
         }
+
         private bool IsRunningFromOneDrive()
         {
             string exePath = Process.GetCurrentProcess().MainModule.FileName;
@@ -131,71 +142,40 @@ namespace UWUVCI_AIO_WPF
 
                             switch (txtBox.Name)
                             {
-                                case "rp":  // Special handling for ROM Path
+                                case "rp":  // ROM Path
                                     mvm.RomSet = true;
                                     mvm.RomPath = filePath;
                                     if (mvm.BaseDownloaded)
-                                    {
                                         mvm.CanInject = true;
-                                    }
 
-                                    // Call the correct `getBootIMG*()` method dynamically
                                     switch (mvm.GameConfiguration.Console)
                                     {
-                                        case GameConsoles.NDS:
-                                            mvm.getBootIMGNDS(mvm);
-                                            break;
-                                        case GameConsoles.NES:
-                                            mvm.getBootIMGNES(mvm);
-                                            break;
-                                        case GameConsoles.SNES:
-                                            mvm.getBootIMGSNES(mvm);
-                                            break;
-                                        case GameConsoles.MSX:
-                                            mvm.getBootIMGMSX(mvm);
-                                            break;
-                                        case GameConsoles.N64:
-                                            mvm.getBootIMGN64(mvm);
-                                            break;
+                                        case GameConsoles.NDS: mvm.getBootIMGNDS(mvm); break;
+                                        case GameConsoles.NES: mvm.getBootIMGNES(mvm); break;
+                                        case GameConsoles.SNES: mvm.getBootIMGSNES(mvm); break;
+                                        case GameConsoles.MSX: mvm.getBootIMGMSX(mvm); break;
+                                        case GameConsoles.N64: mvm.getBootIMGN64(mvm); break;
                                         case GameConsoles.GBA:
                                             var fileExtension = Path.GetExtension(filePath).ToLower();
                                             if (fileExtension != ".gb" && fileExtension != ".gbc")
                                                 mvm.getBootIMGGBA(mvm);
                                             break;
-                                        case GameConsoles.TG16:
-                                            mvm.getBootIMGTG(mvm);
-                                            break;
-                                        default:
-                                            Console.WriteLine("Unsupported console type: " + mvm.GameConfiguration.Console);
-                                            break;
+                                        case GameConsoles.TG16: mvm.getBootIMGTG(mvm); break;
                                     }
                                     break;
 
-                                case "ic":
-                                    mvm.GameConfiguration.TGAIco.ImgPath = filePath;
-                                    break;
-                                case "tv":
-                                    mvm.GameConfiguration.TGATv.ImgPath = filePath;
-                                    break;
-                                case "drc":
-                                    mvm.GameConfiguration.TGADrc.ImgPath = filePath;
-                                    break;
-                                case "log":
-                                    mvm.GameConfiguration.TGALog.ImgPath = filePath;
-                                    break;
-                                case "ini":
-                                    mvm.GameConfiguration.N64Stuff.INIPath = filePath;
-                                    break;
-                                case "sound":
-                                    mvm.BootSound = filePath;
-                                    break;
+                                case "ic": mvm.GameConfiguration.TGAIco.ImgPath = filePath; break;
+                                case "tv": mvm.GameConfiguration.TGATv.ImgPath = filePath; break;
+                                case "drc": mvm.GameConfiguration.TGADrc.ImgPath = filePath; break;
+                                case "log": mvm.GameConfiguration.TGALog.ImgPath = filePath; break;
+                                case "ini": mvm.GameConfiguration.N64Stuff.INIPath = filePath; break;
+                                case "sound": mvm.BootSound = filePath; break;
                             }
                         }
                     }
                 }
             }
         }
-
 
         public void LaunchMainApplication()
         {
@@ -204,7 +184,7 @@ namespace UWUVCI_AIO_WPF
 
         private void LaunchMainApplication(StartupEventArgs e)
         {
-          if (Directory.Exists(@"custom") && File.Exists(@"custom\main.dol"))
+            if (Directory.Exists(@"custom") && File.Exists(@"custom\main.dol"))
             {
                 if (!Directory.Exists(@"bin\Tools"))
                     Directory.CreateDirectory(@"bin\Tools");
@@ -216,14 +196,13 @@ namespace UWUVCI_AIO_WPF
             bool check = true;
             bool bypass = false;
             if (e.Args.Length >= 1)
+            {
                 foreach (var s in e.Args)
                 {
-                    if (s == "--skip") 
-                        check = false;
-
-                    if (s == "--spacebypass") 
-                        bypass = true;
+                    if (s == "--skip") check = false;
+                    if (s == "--spacebypass") bypass = true;
                 }
+            }
 
             Process[] pname = Process.GetProcessesByName("UWUVCI AIO");
             if (pname.Length > 1 && check)
@@ -231,7 +210,7 @@ namespace UWUVCI_AIO_WPF
                 t.Elapsed += KillProg;
                 t.Start();
                 Custom_Message cm = new Custom_Message("Another Instance Running",
-                    " You already got another instance of UWUVCI AIO running. \n This instance will terminate in 5 seconds. ");
+                    "You already have another instance of UWUVCI AIO running.\nThis instance will terminate in 5 seconds.");
                 cm.ShowDialog();
                 KillProg(null, null);
             }
@@ -240,12 +219,13 @@ namespace UWUVCI_AIO_WPF
                 MainWindow wnd = new MainWindow();
                 double height = SystemParameters.PrimaryScreenHeight;
                 double width = SystemParameters.PrimaryScreenWidth;
+
                 if (width < 1150 || height < 700)
                 {
                     t.Elapsed += KillProg;
                     t.Start();
                     Custom_Message cm = new Custom_Message("Resolution not supported",
-                        "Your screen resolution is not supported, please use a resolution of at least 1152x864\nIf your resolution is higher than this, then it's because of your zoom level, either way, please change your display settings.\nThis instance will terminate in 5 seconds.");
+                        "Your screen resolution is not supported.\nPlease use at least 1152x864 or adjust your zoom level.\nThis instance will terminate in 5 seconds.");
                     cm.ShowDialog();
                     KillProg(null, null);
                 }
