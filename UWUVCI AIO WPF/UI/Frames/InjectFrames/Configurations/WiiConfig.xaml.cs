@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -977,57 +978,37 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void trimn_Click(object sender, RoutedEventArgs e)
         {
-            if (!mvm.donttrim)
-            {
-                mvm.toPal = false;
-                mvm.Patch = false;
-                vmcsmoll.IsChecked = true;
-                vmcsmoll.IsEnabled = false;
-                pal.IsEnabled = false;
-                ntsc.IsEnabled = false;
-                mvm.donttrim = true;
-                mvm.jppatch = false;
-                int last = gamepad.SelectedIndex;
+            // Toggle the flag
+            mvm.donttrim = !mvm.donttrim;
 
-                List<string> gpEmu = new List<string>
-                {
-                    "Do not use. WiiMotes only",
-                    "Classic Controller",
-                    "Horizontal WiiMote",
-                    "Vertical WiiMote",
-                    "[NEEDS TRIMMING] Force Classic Controller",
-                    "Force No Classic Controller"
-                };
-
-                gamepad.ItemsSource = gpEmu;
-                gamepad.SelectedIndex = last;
-                jppatch.IsEnabled = false;
-            }
+            // --- Tooltip flip ---
+            if (mvm.donttrim)
+                trimn.ToolTip = "Trim is disabled — ISO will be preserved as whole/raw.";
             else
+                trimn.ToolTip = "Enable this if you don’t want to trim the ISO.";
+
+            // --- Shared gamepad list logic ---
+            int last = gamepad.SelectedIndex;
+            var gpEmu = new List<string>
             {
-                int last = gamepad.SelectedIndex;
-                vmcsmoll.IsEnabled = true;
-                pal.IsEnabled = true;
-                ntsc.IsEnabled = true;
-                mvm.donttrim = false;
-                jppatch.IsEnabled = true;
+                "Do not use. WiiMotes only",
+                "Classic Controller",
+                "Horizontal WiiMote",
+                "Vertical WiiMote",
+                "Force Classic Controller",
+                "Force No Classic Controller"
+            };
 
-                List<string> gpEmu = new List<string>
-                {
-                    "Do not use. WiiMotes only",
-                    "Classic Controller",
-                    "Horizontal WiiMote",
-                    "Vertical WiiMote",
-                    "Force Classic Controller",
-                    "Force No Classic Controller"
-                };
+            gamepad.ItemsSource = gpEmu;
+            gamepad.SelectedIndex = last;
 
-                gamepad.ItemsSource = gpEmu;
-                gamepad.ItemsSource = gpEmu;
-                gamepad.SelectedIndex = last;
-            }
-
+            // I'm writting this in here in case Nico did something weird elsewhere that I dont' know about.
+            vmcsmoll.IsEnabled = true;
+            pal.IsEnabled = true;
+            ntsc.IsEnabled = true;
+            jppatch.IsEnabled = true;
         }
+
 
         private void jppatch_Click(object sender, RoutedEventArgs e)
         {
