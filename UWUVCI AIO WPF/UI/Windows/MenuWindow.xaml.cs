@@ -366,7 +366,7 @@ namespace UWUVCI_AIO_WPF
                 var fileName = Application.ResourceAssembly.Location;
                 foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
                 {
-                    if (Path.GetFileName(file).ToLower().Contains("vwii"))
+                    if (Path.GetFileName(file).ToLowerInvariant().Contains("vwii"))
                     {
                         fileName = file;
                         break;

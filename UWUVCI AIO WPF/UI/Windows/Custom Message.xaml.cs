@@ -59,7 +59,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     btnClose.Content = "No";
                 }
             }
-            if(title.Equals("Image Warning") || message.ToLower().Contains("dsi") ||message.ToLower().Contains("gcz") || message.ToLower().Contains("co-processor"))
+            if(title.Equals("Image Warning") || message.ToLowerInvariant().Contains("dsi") ||message.ToLower().Contains("gcz") || message.ToLower().Contains("co-processor"))
             {
                 dont.Visibility = Visibility.Visible;
             }
@@ -156,7 +156,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void nc_Click(object sender, RoutedEventArgs e)
         {
             Close();
-            var containNintendont = Message.Content.ToString().ToLower().Contains("nintendont");
+            var containNintendont = Message.Content.ToString().ToLowerInvariant().Contains("nintendont");
 
             SDSetup sd = new SDSetup(containNintendont ? true : false, path);
             try
@@ -201,7 +201,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (dont.IsChecked == true)
             {
-                var messageLower = Message.Content.ToString().ToLower();
+                var messageLower = Message.Content.ToString().ToLowerInvariant();
                 if (messageLower.Contains("gcz"))
                 {
                     JsonSettingsManager.Settings.gczw = true;

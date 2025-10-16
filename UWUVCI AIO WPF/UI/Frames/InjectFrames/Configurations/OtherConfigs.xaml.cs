@@ -415,7 +415,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 else
                     title = $"{mvm.GameConfiguration.Console} Inject Guide";
 
-                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLower(),title);
+                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLowerInvariant(),title);
                 try
                 {
                     webbrowser.Owner = mvm.mw;

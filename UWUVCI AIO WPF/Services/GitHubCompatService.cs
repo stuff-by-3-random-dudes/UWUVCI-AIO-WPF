@@ -48,7 +48,7 @@ namespace UWUVCI_AIO_WPF.Services
             // Deserialize and alphabetize entries
             string updatedJson = UpdateCompatFile(consoleKey, baseEntry, json, gamepadOpt, renderSizeOpt);
 
-            var branchName = await Core.CreateBranchAsync(client, owner, repo, mainBranch, $"compat-{consoleKey.ToLower()}");
+            var branchName = await Core.CreateBranchAsync(client, owner, repo, mainBranch, $"compat-{consoleKey.ToLowerInvariant()}");
 
             var update = new UpdateFileRequest(
                 $"Add compatibility entry: {baseEntry.GameName} ({consoleKey})",

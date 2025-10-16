@@ -291,7 +291,7 @@ namespace UWUVCI_AIO_WPF
             var s = ByteArrayToString(procode);
 
             fs.Close();
-            NKITFLAG = s.ToLower().Contains("nkit");
+            NKITFLAG = s.ToLowerInvariant().Contains("nkit");
         }
 
         public bool CheckTime(DateTime creationTime)
@@ -2298,7 +2298,7 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkcKey(string key)
         {
-            string lowerKey = key.ToLower();
+            string lowerKey = key.ToLowerInvariant();
             int keyHash = lowerKey.GetHashCode();
 
             if (keyHash == 1274359530 || GetDeterministicHashCode(lowerKey) == -485504051)
@@ -2314,17 +2314,17 @@ namespace UWUVCI_AIO_WPF
 
         public bool isCkeySet()
         {
-            string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLower();
+            string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLowerInvariant();
             ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
             return ckeys;
         }
 
         public bool checkKey(string key)
         {
-            string lowerKey = key.ToLower();
+            string lowerKey = key.ToLowerInvariant();
             if (GbTemp.KeyHash == lowerKey.GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(lowerKey))
             {
-                string consoleName = GetConsoleOfBase(gbTemp).ToString().ToLower();
+                string consoleName = GetConsoleOfBase(gbTemp).ToString().ToLowerInvariant();
                 string keyFilePath = $@"bin\keys\{consoleName}.vck";
                 UpdateKeyInFile(lowerKey, keyFilePath, GbTemp, GetConsoleOfBase(gbTemp));
                 return true;

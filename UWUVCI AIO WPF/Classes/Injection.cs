@@ -1260,7 +1260,7 @@ namespace UWUVCI_AIO_WPF
             if (mvm.donttrim)
             {
                 // Keep full ISO. If NKIT or GCZ -> convert to ISO first.
-                if (romPath.ToLower().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
+                if (romPath.ToLowerInvariant().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
                 {
                     using (Process p = new Process())
                     {
@@ -1284,7 +1284,7 @@ namespace UWUVCI_AIO_WPF
             else
             {
                 // Trim: convert ISO/GCM/GCZ → NKIT (then stored as game.iso in base)
-                if (romPath.ToLower().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
+                if (romPath.ToLowerInvariant().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
                 {
                     using (Process p = new Process())
                     {
@@ -1479,14 +1479,14 @@ namespace UWUVCI_AIO_WPF
             var isoPath = Path.Combine(tempPath, "TempBase", "files");
             if (mvm.donttrim)
             {
-                if (romPath.ToLower().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
+                if (romPath.ToLowerInvariant().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
                     ConvertToIso(romPath, "out.iso", mvm.debug);
                 else
                     File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
             }
             else
             {
-                if (romPath.ToLower().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
+                if (romPath.ToLowerInvariant().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
                     ConvertToNKit(romPath, "out.nkit.iso", mvm.debug);
                 else
                     File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "game.iso"));
@@ -1504,7 +1504,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 else
                 {
-                    if (mvm.gc2rom.ToLower().Contains("iso") || mvm.gc2rom.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
+                    if (mvm.gc2rom.ToLowerInvariant().Contains("iso") || mvm.gc2rom.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
                         ConvertToNKit(mvm.gc2rom, "out(Disc 1).nkit.iso", mvm.debug);
                     else
                         File.Copy(romPath, Path.Combine(tempPath, "TempBase", "files", "disc2.iso"));

@@ -257,7 +257,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 int TitleIDInt = 0;
                 bool isok = false;
-                if (path.ToLower().Contains(".gcz") || path.ToLower().Contains(".dol") || path.ToLower().Contains(".wad"))
+                if (path.ToLowerInvariant().Contains(".gcz") || path.ToLowerInvariant().Contains(".dol") || path.ToLowerInvariant().Contains(".wad"))
                     isok = true;
                 else
                 {
@@ -307,7 +307,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     if (mvm.BaseDownloaded)
                         mvm.CanInject = true;
 
-                    if (!path.ToLower().Contains(".gcz") && !path.ToLower().Contains(".dol") && !path.ToLower().Contains(".wad"))
+                    if (!path.ToLowerInvariant().Contains(".gcz") && !path.ToLowerInvariant().Contains(".dol") && !path.ToLowerInvariant().Contains(".wad"))
                     {
                         string rom = mvm.getInternalWIIGCNName(mvm, false);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
@@ -320,13 +320,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         if (!string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv.ImgPath))
                             tv.Text = mvm.GameConfiguration.TGATv.ImgPath;
 
-                        if (path.ToLower().Contains("iso"))
+                        if (path.ToLowerInvariant().Contains("iso"))
                         {
                             trimn.IsEnabled = true;
                             mvm.IsIsoNkit();
                         }
                     }
-                    else if (path.ToLower().Contains(".dol"))
+                    else if (path.ToLowerInvariant().Contains(".dol"))
                     {
                         ancastKey.IsEnabled = true;
                         ancast_Button.IsEnabled = true;
@@ -347,7 +347,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         gamepad.IsEnabled = false;
                         LR.IsEnabled = false;
                     }
-                    else if (path.ToLower().Contains(".wad"))
+                    else if (path.ToLowerInvariant().Contains(".wad"))
                     {
                         mvm.NKITFLAG = false;
                         trimn.IsEnabled = false;
