@@ -120,7 +120,6 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             win.ShowDialog();
         }
 
-
         private void Button_Click_10(object sender, RoutedEventArgs e)
         {
             JsonSettingsManager.Settings.dont = false;
@@ -132,18 +131,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            using (LogoCreator ic = new LogoCreator())
+            using LogoCreator ic = new LogoCreator();
+            try
             {
-                try
-                {
-                    ic.Owner = (FindResource("mvm") as MainViewModel).mw;
-                }
-                catch (Exception)
-                {
-
-                }
-                ic.ShowDialog();
+                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
             }
+            catch (Exception)
+            {
+
+            }
+            ic.ShowDialog();
         }
 
         private void Button_Click_12(object sender, RoutedEventArgs e)
@@ -158,8 +155,26 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void ShowTutorialScreens_Click(object sender, RoutedEventArgs e)
         {
-            new IntroductionWindow().ShowDialog();
+            try
+            {
+                var tutorial = new TutorialWizard
+                {
+                    Owner = Window.GetWindow(this),
+                    Tag = "manual"
+                };
+                tutorial.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error Opening Tutorial",
+                    "The Tutorial Wizard could not be opened.\n\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
         }
+
 
         private void OpenAppSettings_Click(object sender, RoutedEventArgs e)
         {

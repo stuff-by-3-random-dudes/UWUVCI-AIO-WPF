@@ -10,7 +10,7 @@
     <RootNamespace>UWUVCI_AIO_WPF</RootNamespace>
     <AssemblyName>UWUVCI AIO WPF</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -311,17 +311,11 @@
     <Compile Include="UI\Windows\ApplicationSettings.xaml.cs">
       <DependentUpon>ApplicationSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Windows\CloseWindow.xaml.cs">
-      <DependentUpon>CloseWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Windows\CompatEntryWindow.xaml.cs">
       <DependentUpon>CompatEntryWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\HelpWindows.xaml.cs">
       <DependentUpon>HelpWindows.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\MacLinuxWindow.xaml.cs">
-      <DependentUpon>MacLinuxWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\Custom Message - Kopieren.xaml.cs">
       <DependentUpon>Custom Message - Kopieren.xaml</DependentUpon>
@@ -337,9 +331,6 @@
     </Compile>
     <Compile Include="UI\Windows\EnterKey.xaml.cs">
       <DependentUpon>EnterKey.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\BaseGameWindow.xaml.cs">
-      <DependentUpon>BaseGameWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml.cs">
       <DependentUpon>ImageCreator - Kopieren - Kopieren %282%29.xaml</DependentUpon>
@@ -365,14 +356,11 @@
     <Compile Include="UI\Windows\IMG_Message.xaml.cs">
       <DependentUpon>IMG_Message.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Windows\GuideWindow.xaml.cs">
-      <DependentUpon>GuideWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\IntroductionWindow.xaml.cs">
-      <DependentUpon>IntroductionWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Windows\NintendontConfigWindow.xaml.cs">
       <DependentUpon>NintendontConfigWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\TutorialWizard.xaml.cs">
+      <DependentUpon>TutorialWizard.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\UWUVCI_MessageBox.xaml.cs">
       <DependentUpon>UWUVCI_MessageBox.xaml</DependentUpon>
@@ -447,10 +435,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\Windows\CloseWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="UI\Windows\CompatEntryWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -458,10 +442,6 @@
     <Page Include="UI\Windows\HelpWindows.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\MacLinuxWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\Custom Message - Kopieren.xaml">
       <SubType>Designer</SubType>
@@ -482,10 +462,6 @@
     <Page Include="UI\Windows\EnterKey.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\BaseGameWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -516,14 +492,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\IMG_Message.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\GuideWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\IntroductionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -570,6 +538,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\Windows\NintendontConfigWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\TutorialWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

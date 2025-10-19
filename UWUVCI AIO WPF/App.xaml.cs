@@ -97,10 +97,10 @@ namespace UWUVCI_AIO_WPF
             CultureInfo.DefaultThreadCurrentUICulture = invariant;
 
             // --- Continue to main app ---
-            if (JsonSettingsManager.Settings.IsFirstLaunch)
+            if (!JsonSettingsManager.Settings.IsFirstLaunch)
                 LaunchMainApplication(e);
             else
-                new IntroductionWindow().ShowDialog();
+                new TutorialWizard().ShowDialog();
         }
 
         private static void GlobalTextBox_PreviewDragOver(object sender, DragEventArgs e)

@@ -17,6 +17,7 @@
         public bool gczw { get; set; } = false;
         public string Ancast { get; set; } = "";
         public bool IsFirstLaunch { get; set; } = true;
+        public bool HasAcknowledgedTutorial { get; set; } = false;
     }
 
 }
