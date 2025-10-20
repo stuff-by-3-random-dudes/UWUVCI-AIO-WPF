@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -66,6 +68,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 Title = "UWUVCI Patch Notes Viewer";
                 DisplayText("Loading Patch Notes...");
                 await LoadTextFileAsync(LocalPatchNotesPath, RemotePatchNotesUrl);
+                Background = new SolidColorBrush(Color.FromRgb(250, 250, 255)); // subtle blue-white
             }
             else
             {
@@ -133,45 +136,219 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void DisplayText(string text, bool parseLinks = false)
         {
             ReadMeViewer.Document.Blocks.Clear();
-            var para = new Paragraph { Margin = new Thickness(0) };
+            ReadMeViewer.Document.LineHeight = 22; // consistent line spacing
 
-            if (!parseLinks)
-            {
-                para.Inlines.Add(new Run(text));
-                ReadMeViewer.Document.Blocks.Add(para);
-                return;
-            }
-
+            var urlRegex = new Regex(@"https?://[^\s]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             string[] lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-            Regex urlRegex = new Regex(@"https?://[^\s]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            foreach (var line in lines)
+            bool firstVersionShown = false;
+
+            foreach (string rawLine in lines)
             {
-                int lastIndex = 0;
-                foreach (Match m in urlRegex.Matches(line))
+                string line = rawLine.TrimEnd();
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                // ==========================================
+                // 1. Section Dividers (==== / ----)
+                // ==========================================
+                if (Regex.IsMatch(line, @"^[=\-]{5,}$"))
                 {
-                    if (m.Index > lastIndex)
-                        para.Inlines.Add(new Run(line.Substring(lastIndex, m.Index - lastIndex)));
-
-                    var link = new Hyperlink(new Run(m.Value))
+                    var sep = new Paragraph(new Run(" "))
                     {
-                        NavigateUri = new Uri(m.Value),
-                        Foreground = Brushes.DodgerBlue
+                        Margin = new Thickness(0, 6, 0, 6),
+                        BorderBrush = new SolidColorBrush(Color.FromRgb(21, 101, 192)), // blue accent
+                        BorderThickness = new Thickness(0, 0, 0, 2)
                     };
-                    link.RequestNavigate += (s, e) => System.Diagnostics.Process.Start(e.Uri.ToString());
-                    para.Inlines.Add(link);
-
-                    lastIndex = m.Index + m.Length;
+                    ReadMeViewer.Document.Blocks.Add(sep);
+                    continue;
                 }
 
-                if (lastIndex < line.Length)
-                    para.Inlines.Add(new Run(line.Substring(lastIndex)));
+                // ==========================================
+                // 2. Version Header (Patch Notes)
+                // ==========================================
+                if (line.StartsWith("Version ", StringComparison.OrdinalIgnoreCase))
+                {
+                    bool isFirstVersion = !firstVersionShown;
+                    firstVersionShown = true;
 
-                para.Inlines.Add(new LineBreak());
+                    // Extract release date if available
+                    DateTime? releaseDate = null;
+                    var match = Regex.Match(line, @"\b(\w+)\s+(\d{1,2}),\s*(\d{4})\b");
+                    if (match.Success && DateTime.TryParse($"{match.Groups[1].Value} {match.Groups[2].Value}, {match.Groups[3].Value}", out var parsed))
+                        releaseDate = parsed;
+
+                    var run = new Run(line)
+                    {
+                        FontWeight = FontWeights.Bold,
+                        FontSize = 17,
+                        Foreground = new SolidColorBrush(Color.FromRgb(33, 150, 243)) // blue header
+                    };
+
+                    var p = new Paragraph { Margin = new Thickness(0, 10, 0, 3) };
+                    p.Inlines.Add(run);
+
+                    // Add "⭐ NEW" tag for most recent version
+                    if (isFirstVersion && (!releaseDate.HasValue || (DateTime.Now - releaseDate.Value).TotalDays <= 7))
+                    {
+                        var tag = new Run("  ⭐ NEW")
+                        {
+                            Foreground = new SolidColorBrush(Color.FromRgb(255, 152, 0)), // orange
+                            FontWeight = FontWeights.Bold,
+                            FontSize = 15
+                        };
+                        p.Inlines.Add(tag);
+                    }
+
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 3. Major Section Titles (e.g. PROJECT OVERVIEW / FAQ)
+                // ==========================================
+                if (Regex.IsMatch(line, @"^[A-Z\s]{4,}$") && line.Length < 60)
+                {
+                    var title = new Run(line.Trim())
+                    {
+                        FontSize = 20,
+                        FontWeight = FontWeights.Bold,
+                        Foreground = new SolidColorBrush(Color.FromRgb(33, 150, 243))
+                    };
+                    var p = new Paragraph(title) { Margin = new Thickness(0, 10, 0, 4) };
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 4. Section Headers (**Improvements**, **Fixes**, etc.)
+                // ==========================================
+                if (line.StartsWith("**") && line.EndsWith("**"))
+                {
+                    string inner = line.Trim('*');
+                    var run = new Run(inner)
+                    {
+                        FontWeight = FontWeights.Bold,
+                        FontSize = 15,
+                        Foreground = new SolidColorBrush(Color.FromRgb(255, 87, 34)) // orange accent
+                    };
+                    var p = new Paragraph(run) { Margin = new Thickness(0, 4, 0, 2) };
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 5. FAQ Questions (Q#)
+                // ==========================================
+                if (Regex.IsMatch(line, @"^Q\d+\)"))
+                {
+                    var match = Regex.Match(line, @"^(Q\d+\))\s*(.*)");
+                    if (match.Success)
+                    {
+                        var p = new Paragraph { Margin = new Thickness(0, 8, 0, 2) };
+                        p.Inlines.Add(new Run(match.Groups[1].Value + " ")
+                        {
+                            Foreground = new SolidColorBrush(Color.FromRgb(0, 188, 212)), // cyan Q#
+                            FontWeight = FontWeights.Bold
+                        });
+                        p.Inlines.Add(new Run(match.Groups[2].Value)
+                        {
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.Black
+                        });
+                        ReadMeViewer.Document.Blocks.Add(p);
+                        continue;
+                    }
+                }
+
+                // ==========================================
+                // 6. FAQ Answers (A))
+                // ==========================================
+                if (Regex.IsMatch(line, @"^A\)"))
+                {
+                    var p = new Paragraph(new Run(line))
+                    {
+                        Margin = new Thickness(20, 0, 0, 6)
+                    };
+                    p.Inlines.FirstInline.Foreground = new SolidColorBrush(Color.FromRgb(33, 33, 33));
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 7. Keyword Highlight (Error / Fix / Note)
+                // ==========================================
+                if (Regex.IsMatch(line, @"\b(error|fix|warning|note|important|issue)\b", RegexOptions.IgnoreCase))
+                {
+                    var run = new Run(line)
+                    {
+                        Foreground = new SolidColorBrush(Color.FromRgb(255, 152, 0)), // orange
+                        FontWeight = FontWeights.SemiBold
+                    };
+                    var p = new Paragraph(run) { Margin = new Thickness(0, 2, 0, 2) };
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 8. Bullet Points (- ...)
+                // ==========================================
+                if (line.StartsWith("- ") || line.StartsWith("• "))
+                {
+                    var bulletText = Regex.Replace(line, @"^[-•]\s*", "• ");
+                    var bullet = new Run(bulletText)
+                    {
+                        FontSize = 14,
+                        Foreground = Brushes.Black
+                    };
+                    var p = new Paragraph(bullet) { Margin = new Thickness(24, 0, 0, 0) };
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 9. Hyperlink Detection
+                // ==========================================
+                if (urlRegex.IsMatch(line))
+                {
+                    var p = new Paragraph { Margin = new Thickness(0) };
+                    int lastIndex = 0;
+
+                    foreach (Match m in urlRegex.Matches(line))
+                    {
+                        if (m.Index > lastIndex)
+                            p.Inlines.Add(new Run(line.Substring(lastIndex, m.Index - lastIndex)));
+
+                        var link = new Hyperlink(new Run(m.Value))
+                        {
+                            NavigateUri = new Uri(m.Value),
+                            Foreground = Brushes.DodgerBlue
+                        };
+                        link.RequestNavigate += (s, e) =>
+                            Process.Start(new ProcessStartInfo(e.Uri.ToString()) { UseShellExecute = true });
+
+                        p.Inlines.Add(link);
+                        lastIndex = m.Index + m.Length;
+                    }
+
+                    if (lastIndex < line.Length)
+                        p.Inlines.Add(new Run(line.Substring(lastIndex)));
+
+                    ReadMeViewer.Document.Blocks.Add(p);
+                    continue;
+                }
+
+                // ==========================================
+                // 10. Default Text
+                // ==========================================
+                var defaultParagraph = new Paragraph(new Run(line))
+                {
+                    Margin = new Thickness(0, 0, 0, 2)
+                };
+                ReadMeViewer.Document.Blocks.Add(defaultParagraph);
             }
-
-            ReadMeViewer.Document.Blocks.Add(para);
         }
+
 
         // -------- Search Logic --------
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
