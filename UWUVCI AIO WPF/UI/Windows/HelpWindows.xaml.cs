@@ -32,7 +32,12 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public HelpWindow(string mode = "readme")
         {
             InitializeComponent();
+
             _mode = mode.ToLowerInvariant();
+            WindowTitleText.Text = _mode == "patchnotes"
+                ? "📝 UWUVCI Patch Notes Viewer"
+                : "📘 UWUVCI ReadMe Viewer";
+
             Loaded += HelpWindow_Loaded;
             PreviewKeyDown += HelpWindow_PreviewKeyDown;
 

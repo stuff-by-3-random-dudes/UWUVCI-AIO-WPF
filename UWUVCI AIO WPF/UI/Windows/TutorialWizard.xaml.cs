@@ -128,12 +128,44 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void PatchNotesButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = "https://uwuvci.net/patchnotes",
-                UseShellExecute = true
-            });
+                var patchWindow = new HelpWindow("patchnotes")
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                patchWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Failed to load the Patch Notes. Attempting to open the local copy.\n\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+
+                string localPath = Path.Combine(Directory.GetCurrentDirectory(), "PatchNotes.txt");
+                if (File.Exists(localPath))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = localPath,
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Error",
+                        "Local PatchNotes.txt not found either!",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Warning
+                    );
+                }
+            }
         }
+
 
         private void ZestyButton_Click(object sender, RoutedEventArgs e)
         {

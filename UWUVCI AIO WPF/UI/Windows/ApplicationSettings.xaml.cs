@@ -108,5 +108,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             helpWindow.ShowDialog();
         }
 
+        private void OpenPatchNotes_Click(object sender, RoutedEventArgs e)
+        {
+            var patchNotes = new HelpWindow("patchnotes")
+            {
+                Owner = this
+            };
+            patchNotes.ShowDialog();
+        }
+
     }
 }

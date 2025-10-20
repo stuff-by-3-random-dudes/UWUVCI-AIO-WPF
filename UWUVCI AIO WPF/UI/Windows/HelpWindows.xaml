@@ -26,21 +26,23 @@
 
             <!-- Header -->
             <DockPanel Grid.Row="0" Margin="0,0,0,12">
-                <TextBlock Text="📘 UWUVCI ReadMe Viewer"
-                           FontSize="22"
-                           FontWeight="Bold"
-                           Foreground="#1A1A1A"
-                           DockPanel.Dock="Left"/>
+                <TextBlock x:Name="WindowTitleText"
+               Text="📘 UWUVCI ReadMe Viewer"
+               FontSize="22"
+               FontWeight="Bold"
+               Foreground="#1A1A1A"
+               DockPanel.Dock="Left"/>
                 <Button Content="✕"
-                        Width="32"
-                        Height="32"
-                        Background="Transparent"
-                        BorderBrush="{x:Null}"
-                        Foreground="#666"
-                        FontWeight="Bold"
-                        Click="Close_Click"
-                        ToolTip="Close"/>
+                    Width="32"
+                    Height="32"
+                    Background="Transparent"
+                    BorderBrush="{x:Null}"
+                    Foreground="#666"
+                    FontWeight="Bold"
+                    Click="Close_Click"
+                    ToolTip="Close"/>
             </DockPanel>
+
 
             <!-- Search controls -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
