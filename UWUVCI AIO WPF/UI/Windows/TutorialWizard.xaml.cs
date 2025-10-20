@@ -100,7 +100,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 if (AgreementPanel.Visibility == Visibility.Visible && AgreementCheck.IsChecked != true)
                 {
-                    MessageBox.Show("Please confirm you have read and understood the tutorial and FAQ before continuing.", "Confirmation Required");
+                    UWUVCI_MessageBox.Show("Confirmation Required","Please confirm you have read and understood the tutorial and FAQ before continuing.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Info, this);
                     return;
                 }
 
@@ -165,7 +165,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
             }
         }
-
 
         private void ZestyButton_Click(object sender, RoutedEventArgs e)
         {
