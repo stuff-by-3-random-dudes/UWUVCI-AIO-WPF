@@ -11,9 +11,9 @@ Official source:
 If you're looking for the FAQ, keep scrolling.
 If you're curious about the Discord, the latest updates, or video guides, you’ll find everything below.
 
-------------------------------------------------------------
+============================================================
  Community & Resources
-------------------------------------------------------------
+============================================================
 • Discord:
   https://discord.gg/mPZpqJJVmZ
 
@@ -23,18 +23,18 @@ If you're curious about the Discord, the latest updates, or video guides, you’
 • Official UWUVCI 3 Video Series:
   https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
-------------------------------------------------------------
+============================================================
  Project Overview
-------------------------------------------------------------
+============================================================
 By the time you're reading this, **active development on UWUVCI-3 has concluded.**
 Future development continues under UWUVCI-Prime (v4), which adds full Mac and Linux support.
 
 I’m **ZestyTS**, and since late 2020 I’ve been the primary developer maintaining and improving UWUVCI-3.
 My goal was to fix legacy bugs, modernize the code, and make the program stable, fast, and cross-platform friendly.
 
-------------------------------------------------------------
+============================================================
  Major Features Introduced in UWUVCI v3
-------------------------------------------------------------
+============================================================
 These are the major features and improvements I personally implemented:
 
 • Widescreen support for N64
@@ -55,25 +55,25 @@ These are the major features and improvements I personally implemented:
 
 In short — UWUVCI v3 became more self-contained, faster, and significantly more stable.
 
-------------------------------------------------------------
+============================================================
  Support the Developers
-------------------------------------------------------------
+============================================================
 ❤️ Donate to me (ZestyTS):  
   https://ko-fi.com/zestyts
 
 💚 Donate to the original creator (NicoAICP):  
   https://ko-fi.com/uwuvci
 
-------------------------------------------------------------
+============================================================
  Frequently Asked Questions (FAQ)
-------------------------------------------------------------
+============================================================
 Maintained by ZestyTS (2020–2025)  
 This FAQ was rewritten during v3.Z-B after major system updates.
 Please read carefully before assuming something is broken.
 
-------------------------------------------------------------
+============================================================
  🔰 Getting Started
-------------------------------------------------------------
+============================================================
 
 Q1) I don’t know how to use UWUVCI.  
 A) Go here:  
@@ -119,9 +119,9 @@ A) Nintendo’s servers can lag. Try again later.
    • Normal injects: under 5 minutes  
    • Large games (e.g. Xenoblade): longer (~8 GB)
 
-------------------------------------------------------------
+============================================================
  ⚙️ Setup & General Issues
-------------------------------------------------------------
+============================================================
 
 Q8) Antivirus flagged UWUVCI?  
 A) False positive — whitelist it. Nothing malicious is inside.
@@ -156,9 +156,9 @@ A) Check that:
    • Antivirus isn’t blocking background tools  
    • You extracted the ZIP before running
 
-------------------------------------------------------------
+============================================================
  💾 Injection & Compatibility
-------------------------------------------------------------
+============================================================
 
 Q14) Inject created but game doesn’t launch properly.  
 A) Check all of these:  
@@ -226,9 +226,9 @@ A) Mods are unsupported.
    If it runs on real hardware, it might work here — but ask the mod’s community.  
    UWUVCI can’t guarantee mod compatibility.
 
-------------------------------------------------------------
+============================================================
  🧰 Advanced Troubleshooting
-------------------------------------------------------------
+============================================================
 
 Q24) “UWUVCI still won’t open” after installing .NET.  
 A) Check Windows Event Viewer for crash details.  
@@ -269,16 +269,16 @@ A) **Read it.**
    If it says “drive full,” free up space.  
    It’s not random — it’s there to help you.
 
-------------------------------------------------------------
+============================================================
  📺 Extra Resources
-------------------------------------------------------------
+============================================================
 Official Video Guide:  
   https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id  
 
 Discord Support:  
   https://discord.gg/mPZpqJJVmZ
 
-------------------------------------------------------------
+============================================================
  End of ReadMe
-------------------------------------------------------------
+============================================================
 Maintained by ZestyTS — UWUVCI v3, the final and most stable version.
