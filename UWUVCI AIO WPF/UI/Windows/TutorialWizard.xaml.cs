@@ -107,6 +107,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 // Determine if this was launched manually or automatically
                 if (Tag as string != "manual")
                 {
+                    JsonSettingsManager.Settings.HasAcknowledgedTutorial = true;
                     JsonSettingsManager.Settings.IsFirstLaunch = false;
                     JsonSettingsManager.SaveSettings();
                     ((App)Application.Current).LaunchMainApplication();

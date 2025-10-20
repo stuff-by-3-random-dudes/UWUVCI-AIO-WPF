@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Timers;
 using System.Windows;
@@ -67,9 +68,6 @@ namespace UWUVCI_AIO_WPF
             EventManager.RegisterClassHandler(typeof(TextBox), UIElement.PreviewDragOverEvent, new DragEventHandler(GlobalTextBox_PreviewDragOver));
             EventManager.RegisterClassHandler(typeof(TextBox), UIElement.PreviewDropEvent, new DragEventHandler(GlobalTextBox_PreviewDrop));
 
-            if (File.Exists("tools.json"))
-                File.Delete("tools.json");
-
             _startupArgs = e;
 
             JsonSettingsManager.LoadSettings();
@@ -96,11 +94,43 @@ namespace UWUVCI_AIO_WPF
             CultureInfo.DefaultThreadCurrentCulture = invariant;
             CultureInfo.DefaultThreadCurrentUICulture = invariant;
 
-            // --- Continue to main app ---
-            if (!JsonSettingsManager.Settings.IsFirstLaunch)
-                LaunchMainApplication(e);
-            else
+            // --- VERSION DETECTION ---
+            Version currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            string currentVersionString = currentVersion?.ToString() ?? "0.0.0.0";
+            string lastVersionSeen = JsonSettingsManager.Settings.LastVersionSeen ?? "0.0.0.0";
+
+            bool shouldShowTutorial = false;
+
+            if (JsonSettingsManager.Settings.IsFirstLaunch)
+            {
+                shouldShowTutorial = true;
+            }
+            else if (Version.TryParse(lastVersionSeen, out var lastVersion) && currentVersion > lastVersion)
+            {
+                // App has been updated since last launch
+                shouldShowTutorial = true;
+            }
+            else if (JsonSettingsManager.Settings.ForceTutorialOnNextLaunch)
+            {
+                // Manual developer override flag
+                shouldShowTutorial = true;
+            }
+
+            // --- HANDLE TUTORIAL ---
+            if (shouldShowTutorial)
+            {
                 new TutorialWizard().ShowDialog();
+
+                // Update settings
+                JsonSettingsManager.Settings.IsFirstLaunch = false;
+                JsonSettingsManager.Settings.LastVersionSeen = currentVersionString;
+                JsonSettingsManager.Settings.ForceTutorialOnNextLaunch = false;
+                JsonSettingsManager.SaveSettings();
+            }
+            else
+            {
+                LaunchMainApplication(e);
+            }
         }
 
         private static void GlobalTextBox_PreviewDragOver(object sender, DragEventArgs e)
