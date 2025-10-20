@@ -17,21 +17,29 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private static readonly string RemoteReadMeUrl =
             "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/refs/heads/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/Readme.txt";
 
+        private static readonly string RemotePatchNotesUrl =
+            "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/refs/heads/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/PatchNotes.txt";
+
         private static readonly string LocalReadMePath =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ReadMe.txt");
 
-        private DispatcherTimer _searchTimer;
+        private static readonly string LocalPatchNotesPath =
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PatchNotes.txt");
 
-        public HelpWindow()
+        private DispatcherTimer _searchTimer;
+        private readonly string _mode; // "readme" or "patchnotes"
+
+        public HelpWindow(string mode = "readme")
         {
             InitializeComponent();
+            _mode = mode.ToLowerInvariant();
             Loaded += HelpWindow_Loaded;
             PreviewKeyDown += HelpWindow_PreviewKeyDown;
 
-            // Dynamic page wrapping based on window size
+            // dynamic wrap adjustment
             SizeChanged += (s, e) =>
             {
-                var scrollBarWidth = SystemParameters.VerticalScrollBarWidth; 
+                var scrollBarWidth = SystemParameters.VerticalScrollBarWidth;
                 ReadMeViewer.Document.PageWidth = e.NewSize.Width - scrollBarWidth - 140;
             };
 
@@ -48,60 +56,79 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private async void HelpWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await LoadReadMeAsync();
+            if (_mode == "patchnotes")
+            {
+                Title = "UWUVCI Patch Notes Viewer";
+                DisplayText("Loading Patch Notes...");
+                await LoadTextFileAsync(LocalPatchNotesPath, RemotePatchNotesUrl);
+            }
+            else
+            {
+                Title = "UWUVCI ReadMe Viewer";
+                DisplayText("Loading ReadMe...");
+                await LoadTextFileAsync(LocalReadMePath, RemoteReadMeUrl);
+            }
         }
 
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            DisplayText("Refreshing latest ReadMe...");
-            await LoadReadMeAsync(forceOnline: true);
+            if (_mode == "patchnotes")
+                DisplayText("Refreshing latest Patch Notes...");
+            else
+                DisplayText("Refreshing latest ReadMe...");
+
+            await LoadTextFileAsync(
+                _mode == "patchnotes" ? LocalPatchNotesPath : LocalReadMePath,
+                _mode == "patchnotes" ? RemotePatchNotesUrl : RemoteReadMeUrl,
+                forceOnline: true
+            );
         }
 
-        private async Task LoadReadMeAsync(bool forceOnline = false)
+        private async Task LoadTextFileAsync(string localPath, string remoteUrl, bool forceOnline = false)
         {
             try
             {
                 string content = null;
-                if (forceOnline || !File.Exists(LocalReadMePath))
+
+                if (forceOnline || !File.Exists(localPath))
                 {
                     try
                     {
-                        content = await DownloadReadMeAsync();
-                        File.WriteAllText(LocalReadMePath, content);
+                        content = await DownloadTextAsync(remoteUrl);
+                        File.WriteAllText(localPath, content);
                     }
                     catch
                     {
-                        // Ignore, fallback below
+                        // Ignore and fallback to local
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(content) && File.Exists(LocalReadMePath))
-                    content = File.ReadAllText(LocalReadMePath);
+                if (string.IsNullOrWhiteSpace(content) && File.Exists(localPath))
+                    content = File.ReadAllText(localPath);
 
                 if (string.IsNullOrWhiteSpace(content))
-                    DisplayText("Unable to load ReadMe — no internet or local file found.");
+                    DisplayText("Unable to load file — no internet or local copy found.");
                 else
                     DisplayText(content, parseLinks: true);
             }
             catch (Exception ex)
             {
-                DisplayText($"Error loading ReadMe:\n{ex.Message}");
+                DisplayText($"Error loading file:\n{ex.Message}");
             }
         }
 
-        private async Task<string> DownloadReadMeAsync()
+        private async Task<string> DownloadTextAsync(string url)
         {
             using var client = new WebClient();
             client.Encoding = System.Text.Encoding.UTF8;
-            return await client.DownloadStringTaskAsync(RemoteReadMeUrl);
+            return await client.DownloadStringTaskAsync(url);
         }
 
-        // ✅ Display text with optional clickable links
+        // -------- Display Logic --------
         private void DisplayText(string text, bool parseLinks = false)
         {
             ReadMeViewer.Document.Blocks.Clear();
-            var para = new Paragraph();
-            para.Margin = new Thickness(0);
+            var para = new Paragraph { Margin = new Thickness(0) };
 
             if (!parseLinks)
             {
@@ -110,7 +137,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 return;
             }
 
-            // Turn URLs into clickable links
             string[] lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             Regex urlRegex = new Regex(@"https?://[^\s]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -142,7 +168,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             ReadMeViewer.Document.Blocks.Add(para);
         }
 
-        // ✅ Smarter search with debounce + async highlighting
+        // -------- Search Logic --------
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             _searchTimer.Stop();
@@ -161,7 +187,6 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 return;
             }
 
-            // Run asynchronously to avoid freezing the UI
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 int count = 0;
@@ -219,9 +244,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void SearchBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
-            {
                 HighlightSearch(SearchBox.Text);
-            }
         }
     }
 }
