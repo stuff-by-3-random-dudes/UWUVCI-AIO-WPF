@@ -17,6 +17,8 @@
         public bool gczw { get; set; } = false;
         public string Ancast { get; set; } = "";
         public bool IsFirstLaunch { get; set; } = true;
+        public string LastVersionSeen { get; set; } = "0.0.0";
+        public bool ForceTutorialOnNextLaunch { get; set; } = false;
         public bool HasAcknowledgedTutorial { get; set; } = false;
     }
 
