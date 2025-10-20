@@ -203,7 +203,7 @@ namespace UWUVCI_AIO_WPF
                     long neededspace = mvm.GC ? 10000000000 : 15000000000;
 
                     if (freeSpaceInBytes < neededspace)
-                        throw new Exception("13G");
+                        throw new Exception("Insufficient Storage");
                 }
 
                 if (Configuration.BaseRom == null || Configuration.BaseRom.Name == null)
@@ -222,7 +222,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 if (!Directory.Exists(Path.Combine(baseRomPath, "code")) || !Directory.Exists(Path.Combine(baseRomPath, "content")) || !Directory.Exists(Path.Combine(baseRomPath, "meta")))
                 {
-                    throw new Exception("MISSINGF");
+                    throw new Exception("Incomplete Base");
                 }
                 mvm.Progress = 10;
                 mvm.msg = "Injecting ROM...";
@@ -368,7 +368,7 @@ namespace UWUVCI_AIO_WPF
 
                 var errorMessage = "Injection Failed due to unknown circumstances.";
 
-                if (e.Message == "MISSINGF")
+                if (e.Message == "Incomplete Base")
                     errorMessage = "Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base!";
                 else if (e.Message.Contains("Images"))
                     errorMessage = "Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit\n\nIf the image/s that's being used is automatically grabbed for you, then don't use them." +
@@ -381,7 +381,7 @@ namespace UWUVCI_AIO_WPF
                     errorMessage = "If you import a config you NEED to reselect a base";
                 else if (e.Message.Contains("WII"))
                     errorMessage = $"{e.Message.Replace("Wii", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
-                else if (e.Message.Contains("13G"))
+                else if (e.Message.Contains("Insufficient Storage"))
                     errorMessage = $"Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
                 else if (e.Message.Contains("nkit"))
                     errorMessage = $"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.";
