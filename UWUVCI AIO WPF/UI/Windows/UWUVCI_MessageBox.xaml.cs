@@ -34,32 +34,34 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void ApplyTheme(UWUVCI_MessageBoxIcon icon)
         {
             SolidColorBrush brush;
-            string geometryData;
+            Geometry geometry;
 
-            if (icon == UWUVCI_MessageBoxIcon.Info)
+            switch (icon)
             {
-                brush = new SolidColorBrush(Color.FromRgb(33, 150, 243)); // blue
-                geometryData = "M12,0A12,12 0 1,0 24,12A12,12 0 1,0 12,0ZM12,4A1.5,1.5 0 1,1 10.5,5.5A1.5,1.5 0 0,1 12,4ZM13.5,19H10.5V10H13.5Z";
-            }
-            else if (icon == UWUVCI_MessageBoxIcon.Success)
-            {
-                brush = new SolidColorBrush(Color.FromRgb(76, 175, 80)); // green
-                geometryData = "M12 0A12 12 0 1 0 24 12A12 12 0 1 0 12 0ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8Z";
-            }
-            else if (icon == UWUVCI_MessageBoxIcon.Warning)
-            {
-                brush = new SolidColorBrush(Color.FromRgb(255, 193, 7)); // amber
-                geometryData = "M1,21H23L12,2ZM13,16H11V10H13ZM13,20H11V18H13Z";
-            }
-            else // Error
-            {
-                brush = new SolidColorBrush(Color.FromRgb(244, 67, 54)); // red
-                geometryData = "M12,0A12,12 0 1,0 24,12A12,12 0 1,0 12,0ZM13.5,13.5V6.5H10.5V13.5ZM13.5,17.5V14.5H10.5V17.5Z";
-            }
+                case UWUVCI_MessageBoxIcon.Success:
+                    brush = new SolidColorBrush(Color.FromRgb(76, 175, 80)); // green
+                    geometry = (Geometry)FindResource("IconSuccessGeometry");
+                    break;
 
+                case UWUVCI_MessageBoxIcon.Warning:
+                    brush = new SolidColorBrush(Color.FromRgb(255, 193, 7)); // amber
+                    geometry = (Geometry)FindResource("IconWarningGeometry");
+                    break;
+
+                case UWUVCI_MessageBoxIcon.Error:
+                    brush = new SolidColorBrush(Color.FromRgb(244, 67, 54)); // red
+                    geometry = (Geometry)FindResource("IconErrorGeometry");
+                    break;
+
+                default:
+                    brush = new SolidColorBrush(Color.FromRgb(33, 150, 243)); // blue
+                    geometry = (Geometry)FindResource("IconInfoGeometry");
+                    break;
+            }
+            IconBack.Fill = new SolidColorBrush(Color.FromArgb(32, brush.Color.R, brush.Color.G, brush.Color.B));
             IconPath.Fill = brush;
+            IconPath.Data = geometry;
             BorderRoot.BorderBrush = brush;
-            IconPath.Data = Geometry.Parse(geometryData);
         }
 
         private void ShowButtons(UWUVCI_MessageBoxType type)
