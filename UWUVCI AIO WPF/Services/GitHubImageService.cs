@@ -1,9 +1,7 @@
-﻿using Newtonsoft.Json;
-using Octokit;
+﻿using Octokit;
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace UWUVCI_AIO_WPF.Services
@@ -14,8 +12,6 @@ namespace UWUVCI_AIO_WPF.Services
     /// </summary>
     public class GitHubImageService : GitHubBaseService
     {
-        private const string BotName = "UWUVCI-ContriBot";
-
         /// <summary>
         /// Submits or updates a PR with one or more image files (icon, TV, DRC, etc.)
         /// inside the UWUVCI-Images repo under a console/game-specific directory.
@@ -30,10 +26,8 @@ namespace UWUVCI_AIO_WPF.Services
             params string[] imagePaths)
         {
 
-            const string BlackListUrl = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/main/uwuvci_installer_creator/app/blacklist.json";
-
             // Check blacklist before continuing
-            bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListUrl, timeoutMs: 4000);
+            bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListURL, timeoutMs: 4000);
             if (isBlacklisted)
             {
                 // Simulate a generic failure so it looks normal to the end-user.

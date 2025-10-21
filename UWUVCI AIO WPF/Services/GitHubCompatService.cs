@@ -9,7 +9,6 @@ namespace UWUVCI_AIO_WPF.Services
 {
     public class GitHubCompatService : GitHubBaseService
     {
-
         // --- Utility mapping ---
         public string GetFileNameForConsole(string consoleKey) => consoleKey switch
         {
@@ -34,10 +33,8 @@ namespace UWUVCI_AIO_WPF.Services
             string appVersion = "unknown")
         {
 
-            const string BlackListUrl = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/main/uwuvci_installer_creator/app/blacklist.json";
-
             // Check blacklist before continuing
-            bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListUrl, timeoutMs: 4000);
+            bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListURL, timeoutMs: 4000);
             if (isBlacklisted)
             {
                 // Simulate a generic failure so it looks normal to the end-user.
