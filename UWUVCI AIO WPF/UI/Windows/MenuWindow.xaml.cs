@@ -1,15 +1,16 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using NAudio.Wave;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Diagnostics;
-using NAudio.Wave;
 using UWUVCI_AIO_WPF.UI.Frames;
-using GameBaseClassLibrary;
 using UWUVCI_AIO_WPF.UI.Frames.Path;
 
 namespace UWUVCI_AIO_WPF
@@ -67,6 +68,13 @@ namespace UWUVCI_AIO_WPF
             InitializeComponent();
             load_frame.Content = new StartFrame();
             (FindResource("mvm") as MainViewModel).setMW(this);
+
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
+
+            // Set the window title dynamically
+            Title = $"UWUVCI v{version.Major}.{version.Minor}.{version.Build}  ({buildDate:MMM dd, yyyy})";
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
