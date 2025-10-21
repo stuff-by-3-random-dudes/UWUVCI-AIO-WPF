@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,7 +15,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         public StartFrame()
         {
             InitializeComponent();
-            tb.Text += "\n\nIf any Issues happen during injection and you updated from the old version using the AutoUpdater, please go to settings and click Update Tools.";
+            tb.Text += "\n\n Want to go through the tutorial again? Click on the gear icon, and click 'Show Tutorial Screens'.";
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
