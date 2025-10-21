@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Modules.Nintendont
 {

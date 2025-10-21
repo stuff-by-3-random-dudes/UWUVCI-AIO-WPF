@@ -22,7 +22,6 @@ using UWUVCI_AIO_WPF.UI.Windows;
 using WiiUDownloaderLibrary;
 using WiiUDownloaderLibrary.Models;
 using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
-using MessageBox = System.Windows.MessageBox;
 
 namespace UWUVCI_AIO_WPF
 {

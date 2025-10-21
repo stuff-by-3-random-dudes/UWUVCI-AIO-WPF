@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using UWUVCI_AIO_WPF.Models;
-using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.Services
 {
