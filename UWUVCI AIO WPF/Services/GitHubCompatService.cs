@@ -7,14 +7,11 @@ using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Services
 {
-    public static class GitHubCompatService
+    public class GitHubCompatService : GitHubBaseService
     {
-        private static readonly GitHubBaseService Core = new GitHubCoreImpl();
-
-        private class GitHubCoreImpl : GitHubBaseService { }
 
         // --- Utility mapping ---
-        public static string GetFileNameForConsole(string consoleKey) => consoleKey switch
+        public string GetFileNameForConsole(string consoleKey) => consoleKey switch
         {
             "NES" => "NESCompat.json",
             "SNES" => "SNECompat.json",
@@ -27,7 +24,7 @@ namespace UWUVCI_AIO_WPF.Services
             _ => throw new ArgumentException($"Unsupported console: {consoleKey}")
         };
 
-        public static async Task<string> SubmitEntryAsync(
+        public async Task<string> SubmitEntryAsync(
             string owner,
             string repo,
             string consoleKey,
@@ -48,19 +45,19 @@ namespace UWUVCI_AIO_WPF.Services
                 throw new InvalidOperationException("Failed to submit compat entry due to a network error. Please try again later.");
             }
 
-            var client = Core.CreateClient();
-            var repository = await Core.RetryAsync(() => client.Repository.Get(owner, repo));
+            var client = CreateClient();
+            var repository = await RetryAsync(() => client.Repository.Get(owner, repo));
             var mainBranch = repository.DefaultBranch;
 
             var fileName = GetFileNameForConsole(consoleKey);
-            var file = await Core.RetryAsync(() => client.Repository.Content.GetAllContents(owner, repo, fileName));
+            var file = await RetryAsync(() => client.Repository.Content.GetAllContents(owner, repo, fileName));
             var json = file[0].Content;
             var sha = file[0].Sha;
 
             // Deserialize and alphabetize entries
             string updatedJson = UpdateCompatFile(consoleKey, baseEntry, json, gamepadOpt, renderSizeOpt);
 
-            var branchName = await Core.CreateBranchAsync(client, owner, repo, mainBranch, $"compat-{consoleKey.ToLowerInvariant()}");
+            var branchName = await CreateBranchAsync(client, owner, repo, mainBranch, $"compat-{consoleKey.ToLowerInvariant()}");
 
             var update = new UpdateFileRequest(
                 $"Add compatibility entry: {baseEntry.GameName} ({consoleKey})",
@@ -68,7 +65,7 @@ namespace UWUVCI_AIO_WPF.Services
                 sha,
                 branchName);
 
-            await Core.RetryAsync(() => client.Repository.Content.UpdateFile(owner, repo, fileName, update));
+            await RetryAsync(() => client.Repository.Content.UpdateFile(owner, repo, fileName, update));
 
             // Compute local hashed fingerprint (Base64 SHA256)
             string submitterFingerprint = null;
@@ -82,14 +79,14 @@ namespace UWUVCI_AIO_WPF.Services
                 submitterFingerprint = null;
             }
 
-            var pr = await Core.RetryAsync(() => client.PullRequest.Create(owner, repo,
+            var pr = await RetryAsync(() => client.PullRequest.Create(owner, repo,
                 new NewPullRequest($"[Compat] Add {baseEntry.GameName} ({consoleKey})", branchName, mainBranch)
                 { Body = BuildPrBody(consoleKey, baseEntry, gamepadOpt, renderSizeOpt, appVersion, submitterFingerprint) }));
 
             return pr.HtmlUrl;
         }
 
-        private static string UpdateCompatFile(string consoleKey, GameCompatEntry baseEntry, string json, int? gamepadOpt, string renderSizeOpt)
+        private string UpdateCompatFile(string consoleKey, GameCompatEntry baseEntry, string json, int? gamepadOpt, string renderSizeOpt)
         {
             if (consoleKey == "Wii")
             {
@@ -153,7 +150,7 @@ namespace UWUVCI_AIO_WPF.Services
             }
         }
 
-        private static string BuildPrBody(string consoleKey, GameCompatEntry entry, int? gamepadOpt, string renderSizeOpt, string appVersion, string fingerprintBase64)
+        private string BuildPrBody(string consoleKey, GameCompatEntry entry, int? gamepadOpt, string renderSizeOpt, string appVersion, string fingerprintBase64)
         {
             var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm 'UTC'");
             string extraFields = "";
