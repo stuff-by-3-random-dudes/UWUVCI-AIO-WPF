@@ -624,7 +624,7 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && JsonSettingsManager.Settings.SetBaseOnce && JsonSettingsManager.Settings.SetOutOnce)
             {
-                Custom_Message cm = new Custom_Message("Issue", " One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
+                Custom_Message cm = new Custom_Message("Issue", "One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
                 try
                 {
                     cm.Owner = mw;
@@ -647,7 +647,9 @@ namespace UWUVCI_AIO_WPF
 
             if (Directory.Exists(@"keys"))
             {
-                if (Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
+                if (Directory.Exists(@"bin\keys")) 
+                    Directory.Delete(@"bin\keys", true);
+
                 Injection.DirectoryCopy("keys", "bin/keys", true);
                 Directory.Delete("keys", true);
             }
