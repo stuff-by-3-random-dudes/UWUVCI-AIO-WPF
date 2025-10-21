@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using UWUVCI_AIO_WPF.Helpers;
@@ -19,7 +21,14 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             InitializeComponent();
             parent = mw;
-           // spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
+            // spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
+
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
+
+            // Set the window title dynamically
+            lblVersion.Content = $"v{version.Major}.{version.Minor}.{version.Build}  ({buildDate:MMM dd, yyyy})";
         }
         public void Dispose()
         {
