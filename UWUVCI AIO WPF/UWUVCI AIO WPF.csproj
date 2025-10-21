@@ -263,6 +263,7 @@
     <Compile Include="Models\NintendontConfig.cs" />
     <Compile Include="Models\NintendontPresets.cs" />
     <Compile Include="Services\DeviceFingerprint.cs" />
+    <Compile Include="Services\EnvironmentInfoService.cs" />
     <Compile Include="Services\GitHubBaseService.cs" />
     <Compile Include="Services\GitHubCompatService.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
