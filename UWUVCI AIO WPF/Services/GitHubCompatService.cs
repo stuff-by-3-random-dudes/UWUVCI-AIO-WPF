@@ -36,6 +36,18 @@ namespace UWUVCI_AIO_WPF.Services
             string renderSizeOpt = null,
             string appVersion = "unknown")
         {
+
+            const string BlackListUrl = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/main/uwuvci_installer_creator/app/blacklist.json";
+
+            // Check blacklist before continuing
+            bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListUrl, timeoutMs: 4000);
+            if (isBlacklisted)
+            {
+                // Simulate a generic failure so it looks normal to the end-user.
+                // Keep the message vague — do not reveal that they are blacklisted.
+                throw new InvalidOperationException("Failed to submit compat entry due to a network error. Please try again later.");
+            }
+
             var client = Core.CreateClient();
             var repository = await Core.RetryAsync(() => client.Repository.Get(owner, repo));
             var mainBranch = repository.DefaultBranch;
@@ -58,9 +70,21 @@ namespace UWUVCI_AIO_WPF.Services
 
             await Core.RetryAsync(() => client.Repository.Content.UpdateFile(owner, repo, fileName, update));
 
+            // Compute local hashed fingerprint (Base64 SHA256)
+            string submitterFingerprint = null;
+            try
+            {
+                submitterFingerprint = DeviceFingerprint.GetHashedFingerprint();
+            }
+            catch
+            {
+                // If fingerprint fails for any reason, keep it null don't want this to break submission.
+                submitterFingerprint = null;
+            }
+
             var pr = await Core.RetryAsync(() => client.PullRequest.Create(owner, repo,
                 new NewPullRequest($"[Compat] Add {baseEntry.GameName} ({consoleKey})", branchName, mainBranch)
-                { Body = BuildPrBody(consoleKey, baseEntry, gamepadOpt, renderSizeOpt, appVersion) }));
+                { Body = BuildPrBody(consoleKey, baseEntry, gamepadOpt, renderSizeOpt, appVersion, submitterFingerprint) }));
 
             return pr.HtmlUrl;
         }
@@ -129,7 +153,7 @@ namespace UWUVCI_AIO_WPF.Services
             }
         }
 
-        private static string BuildPrBody(string consoleKey, GameCompatEntry entry, int? gamepadOpt, string renderSizeOpt, string appVersion)
+        private static string BuildPrBody(string consoleKey, GameCompatEntry entry, int? gamepadOpt, string renderSizeOpt, string appVersion, string fingerprintBase64)
         {
             var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm 'UTC'");
             string extraFields = "";
@@ -144,6 +168,13 @@ namespace UWUVCI_AIO_WPF.Services
             else if (consoleKey == "NDS")
             {
                 extraFields = $"- **Render Size:** {renderSizeOpt}\n";
+            }
+
+            var fingerprintSection = "";
+            if (!string.IsNullOrWhiteSpace(fingerprintBase64))
+            {
+                // Use a clear marker "FP:" so it's easy to search
+                fingerprintSection = $"\n- **Submitter fingerprint (FP):** `{fingerprintBase64}`\n";
             }
 
             return $@"
@@ -179,7 +210,7 @@ namespace UWUVCI_AIO_WPF.Services
 
 ### 🔗 Metadata
 - Generated at: {now}  
-- App Version: {appVersion}
+- App Version: {appVersion}{fingerprintSection}
 ".TrimStart();
         }
     }

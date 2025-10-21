@@ -114,17 +114,22 @@
         </ComboBox>
 
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Base Name:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <TextBox x:Name="BaseNameBox" Grid.Row="3" Grid.Column="1" Margin="0,0,0,8"/>
+        <!-- Base Selection -->
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Base:" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Vertical">
+            <ComboBox x:Name="BaseBox"
+              Margin="0,0,0,6"
+              SelectionChanged="BaseBox_SelectionChanged"
+              IsEditable="False"
+              ToolTip="Select a base for this console"/>
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Base Region:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox x:Name="BaseRegionBox" Grid.Row="4" Grid.Column="1" Margin="0,0,0,8">
-            <ComboBoxItem Content="USA"/>
-            <ComboBoxItem Content="EUR"/>
-            <ComboBoxItem Content="JPN"/>
-            <ComboBoxItem Content="KOR"/>
-            <ComboBoxItem Content="AUS"/>
-            <ComboBoxItem Content="Other"/>
-        </ComboBox>
+            <!-- Hidden custom input field -->
+            <TextBox x:Name="CustomBaseBox"
+             Margin="0,0,0,8"
+             Visibility="Collapsed"
+             ToolTip="Only visible if you choose 'Custom'"
+             />
+        </StackPanel>
 
         <!-- Status + Conditional Panels -->
         <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Vertical">
