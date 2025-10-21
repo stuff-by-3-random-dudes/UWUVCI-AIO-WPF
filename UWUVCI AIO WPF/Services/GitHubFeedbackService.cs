@@ -3,17 +3,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.Services
 {
     public class GitHubFeedbackService : GitHubBaseService
     {
-
-        /// <summary>
-        /// Submit an anonymous issue. If type == "Bug Report" and includeSystemInfo == true,
-        /// the service will append environment info. If latestLogDir is provided, the newest
-        /// log file in that folder will be uploaded as a private Gist and linked in the issue.
-        /// </summary>
         public async Task<string> SubmitIssueAsync(
             string owner,
             string repo,
@@ -21,151 +16,137 @@ namespace UWUVCI_AIO_WPF.Services
             string description,
             string appVersion,
             bool includeSystemInfo = false,
-            string latestLogDir = null)
+            string logDirectory = null)
         {
-
-            // Fingerprint blacklist check
+            // Blacklist protection
             bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListURL, timeoutMs: 4000);
             if (isBlacklisted)
-                throw new InvalidOperationException("Network error. Please try again later."); // intentionally vague
+                return null;
 
             var client = CreateClient();
             var now = GetTimestampUtc();
 
-            // Compute local hashed fingerprint (Base64 SHA256)
-            string submitterFingerprint;
-            try
-            {
-                submitterFingerprint = DeviceFingerprint.GetHashedFingerprint();
-            }
-            catch
-            {
-                // If fingerprint fails for any reason, keep it null to avoid breaking submission.
-                submitterFingerprint = null;
-            }
+            string fingerprint = null;
+            try { fingerprint = DeviceFingerprint.GetHashedFingerprint(); } catch { }
 
             // Optional sections
-            string systemInfoBlock = string.Empty;
-            if (includeSystemInfo && string.Equals(type, "Bug Report", StringComparison.OrdinalIgnoreCase))
-            {
-                try
-                {
-                    // Use your Wine-safe helper
-                    var summary = EnvironmentInfoService.TryGetSummary();
-                    if (!string.IsNullOrWhiteSpace(summary))
-                    {
-                        systemInfoBlock =
-                            "\n---\n\n### 🖥️ System Info\n```\n" +
-                            summary.Trim() +
-                            "\n```";
-                    }
-                }
-                catch
-                {
-                    // Never block issue creation
-                }
-            }
+            string sysInfo = includeSystemInfo ? EnvironmentInfoService.TryGetSummary() : null;
+            string latestLog = !string.IsNullOrEmpty(logDirectory) && Directory.Exists(logDirectory)
+                ? GetMostRecentLogFile(logDirectory)
+                : null;
 
-            string logGistLinkBlock = string.Empty;
-            if (!string.IsNullOrWhiteSpace(latestLogDir))
-            {
-                try
-                {
-                    var gistUrl = await TryUploadLatestLogAsGistAsync(client, latestLogDir);
-                    if (!string.IsNullOrWhiteSpace(gistUrl))
-                    {
-                        logGistLinkBlock =
-                            "\n---\n\n### 📄 Latest Log\n" +
-                            "A copy of the latest log has been uploaded privately here:\n" +
-                            gistUrl;
-                    }
-                }
-                catch
-                {
-                    // Ignore gist upload failures silently
-                }
-            }
+            string logContent = TryReadLog(latestLog);
 
+            // Build title & body
             var title = $"[{type}] {TruncateTitle(description)}";
-            var body = BuildIssueBody(type, description, appVersion, submitterFingerprint, now, systemInfoBlock, logGistLinkBlock);
+            var body = BuildIssueBody(type, description, appVersion, fingerprint, now, sysInfo, logContent);
 
-            var newIssue = new NewIssue(title) { Body = body };
-            var issue = await RetryAsync(() => client.Issue.Create(owner, repo, newIssue));
+            // Create issue
+            var issue = await RetryAsync(() =>
+                client.Issue.Create(owner, repo, new NewIssue(title) { Body = body }));
 
             return issue.HtmlUrl;
         }
 
-        private async Task<string> TryUploadLatestLogAsGistAsync(GitHubClient client, string logDir)
+        // ------------------------
+        // 🔹 Helpers
+        // ------------------------
+
+        private static string GetMostRecentLogFile(string dir)
         {
-            if (!Directory.Exists(logDir))
-                return null;
-
-            var newest = new DirectoryInfo(logDir)
-                .EnumerateFiles("log_*.txt", SearchOption.TopDirectoryOnly)
-                .OrderByDescending(f => f.LastWriteTimeUtc)
-                .FirstOrDefault();
-
-            if (newest == null || !newest.Exists)
-                return null;
-
-            // Keep gist readable (<1–2 MB)
-            const int maxBytes = 1024 * 1024;
-            string content = File.ReadAllText(newest.FullName);
-            if (content.Length > maxBytes)
+            try
             {
-                content = "(truncated to last 1 MB)\n" + content.Substring(content.Length - maxBytes);
+                var files = new DirectoryInfo(dir).GetFiles("log_*.txt");
+                if (files.Length == 0) return null;
+                return files.OrderByDescending(f => f.LastWriteTimeUtc).First().FullName;
             }
-
-            var gist = new NewGist
-            {
-                Public = false,
-                Description = $"UWUVCI V3 Latest Log ({DateTime.UtcNow:yyyy-MM-dd HH:mm} UTC)"
-            };
-            gist.Files.Add(newest.Name, content);
-
-            var created = await RetryAsync(() => client.Gist.Create(gist));
-            return created?.HtmlUrl;
+            catch { return null; }
         }
 
-        private string TruncateTitle(string text)
+        private static string TryReadLog(string path)
         {
-            if (string.IsNullOrEmpty(text)) return "Feedback";
-            text = text.Replace("\n", " ").Replace("\r", " ");
-            return text.Length > 70 ? text.Substring(0, 70) + "..." : text;
+            try
+            {
+                if (string.IsNullOrEmpty(path) || !File.Exists(path))
+                    return null;
+
+                string content = File.ReadAllText(path);
+                if (string.IsNullOrWhiteSpace(content))
+                    return "(empty log file)";
+                if (content.Length > 50000)
+                    content = content.Substring(0, 50000) + "\n... [truncated]";
+                return content;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
-        private string BuildIssueBody(
+        private static string BuildIssueBody(
             string type,
-            string description,
-            string appVersion,
+            string desc,
+            string version,
             string fingerprint,
             string timestamp,
-            string systemInfoBlock,
-            string logGistLinkBlock)
+            string sysInfo,
+            string logContent)
         {
-            string fp = string.IsNullOrWhiteSpace(fingerprint) ? "(none)" : $"`{fingerprint}`";
+            var fp = string.IsNullOrWhiteSpace(fingerprint) ? "(none)" : $"`{fingerprint}`";
+            string sys = string.IsNullOrEmpty(sysInfo) ? "(not included)" : $"\n```\n{sysInfo}\n```";
 
-            return
-$@"### 📝 Feedback Submitted via UWUVCI AIO
+            // Build collapsible log section if a log is available
+            string logSection;
+            if (string.IsNullOrEmpty(logContent))
+            {
+                logSection = "(no log attached)";
+            }
+            else
+            {
+                logSection = $@"
+<details>
+<summary>📜 Click to expand latest log file</summary>
+{logContent}    
+</details>";
+            }
+
+            return $@"
+### 📝 Feedback Submitted via UWUVCI AIO
 
 **Type:** {type}  
 **Submitted via:** {BotName}  
 **Timestamp:** {timestamp}  
-**App Version:** {appVersion}  
+**App Version:** {version}  
 
 ---
 
 ### 🧩 Description
-{description}
-{systemInfoBlock}
-{logGistLinkBlock}
+{desc}
+
+---
+
+### 🖥️ System Info
+{sys}
+
+---
+
+### 📜 Log File
+{logSection}
 
 ---
 
 ### 🔍 Device Fingerprint
 {fp}
 
-*(This report was submitted anonymously.)*";
+*(This report was submitted anonymously.)*
+".Trim();
+        }
+
+        private static string TruncateTitle(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "Feedback";
+            text = text.Replace("\n", " ").Replace("\r", " ");
+            return text.Length > 70 ? text.Substring(0, 70) + "..." : text;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.FeedbackWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Submit Feedback"
-        Height="520" Width="600"
+        Title="Submit Feedback or Bug Report"
+        Height="560" Width="580"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         Background="#FFF3F3F3">
@@ -10,27 +10,13 @@
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Title -->
             <RowDefinition Height="Auto"/>
-            <!-- Info Banner -->
-            <RowDefinition Height="Auto"/>
-            <!-- Type Selector -->
             <RowDefinition Height="*"/>
-            <!-- Description -->
             <RowDefinition Height="Auto"/>
-            <!-- Buttons -->
         </Grid.RowDefinitions>
 
-        <!-- Title -->
-        <TextBlock Grid.Row="0"
-                   Text="Submit Feedback"
-                   FontSize="20"
-                   FontWeight="Bold"
-                   Margin="0,0,0,16"/>
-
         <!-- Info Banner -->
-        <Border Grid.Row="1"
-                Background="#FFFBE9E7"
+        <Border Background="#FFFBE9E7"
                 BorderBrush="#FFEF6C00"
                 BorderThickness="1"
                 Padding="10"
@@ -42,57 +28,54 @@ Do NOT use this for personal support — use the official support channels inste
                        FontWeight="Bold"/>
         </Border>
 
-        <!-- Type selector -->
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
-                    Margin="0,0,0,12">
-            <TextBlock Text="Type:"
-                       VerticalAlignment="Center"
-                       Width="90"
-                       Margin="0,0,10,0"/>
-            <ComboBox x:Name="TypeBox"
-                      Width="200"
-                      SelectedIndex="0">
+        <!-- Report Type -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Report Type:" Width="100" VerticalAlignment="Center"/>
+            <ComboBox x:Name="TypeBox" Width="200" SelectedIndex="0">
                 <ComboBoxItem Content="Bug Report"/>
                 <ComboBoxItem Content="Feature Request"/>
-                <ComboBoxItem Content="Enhancement"/>
                 <ComboBoxItem Content="Other"/>
             </ComboBox>
         </StackPanel>
 
-        <!-- Description box -->
-        <Border Grid.Row="3"
-                BorderBrush="#FF2196F3"
-                BorderThickness="1"
-                CornerRadius="5"
-                Background="White">
-            <TextBox x:Name="DescriptionBox"
-                     AcceptsReturn="True"
-                     TextWrapping="Wrap"
-                     VerticalScrollBarVisibility="Auto"
-                     BorderThickness="0"
-                     FontSize="14"
-                     Padding="6"
-                     ToolTip="Describe your issue or suggestion in as much detail as possible."
-                     />
-        </Border>
+        <!-- Description -->
+        <StackPanel Grid.Row="2" Orientation="Vertical">
+            <TextBlock Text="Description:" FontWeight="Bold" Margin="0,0,0,4"/>
+            <Border BorderBrush="#FF2196F3" BorderThickness="1" CornerRadius="4" Background="White">
+                <TextBox x:Name="DescriptionBox"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalScrollBarVisibility="Auto"
+                         Padding="6"
+                         MinHeight="220"
+                         FontSize="14"
+                         ToolTip="Describe the bug or feature suggestion in detail."/>
+            </Border>
+
+            <!-- Options -->
+            <StackPanel Orientation="Vertical" Margin="0,12,0,0">
+                <CheckBox x:Name="IncludeSystemInfoBox"
+                          Content="Include system information (recommended for bug reports)"
+                          Margin="0,0,0,6"/>
+                <CheckBox x:Name="IncludeLogFileBox"
+                          Content="Attach latest log file (from UWUVCI Logs folder)"
+                          Margin="0,0,0,6"/>
+            </StackPanel>
+        </StackPanel>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="4"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,16,0,0">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
             <Button Content="Cancel"
-                    Click="Cancel_Click"
-                    Background="#FF757575"
-                    Foreground="White"
+                    Width="100"
                     Margin="0,0,8,0"
-                    Padding="10,4"/>
+                    Click="Cancel_Click"/>
             <Button Content="Submit"
+                    Width="120"
                     Click="Submit_Click"
                     Background="#FF2196F3"
                     Foreground="White"
-                    Padding="10,4"/>
+                    FontWeight="SemiBold"
+                    Cursor="Hand"/>
         </StackPanel>
     </Grid>
 </Window>

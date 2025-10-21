@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using UWUVCI_AIO_WPF.Services;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -13,55 +14,122 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         public FeedbackWindow()
         {
             InitializeComponent();
-            TypeBox.SelectedIndex = 0;
+
+            // Wire up dropdown change
+            TypeBox.SelectionChanged += TypeBox_SelectionChanged;
+
+            // Default checkbox states
+            IncludeLogFileBox.IsChecked = true;
+            IncludeSystemInfoBox.IsChecked = true;
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e) => Close();
 
         private async void Submit_Click(object sender, RoutedEventArgs e)
         {
-            string type = (TypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Other";
-            string desc = DescriptionBox.Text?.Trim();
-
-            if (string.IsNullOrWhiteSpace(desc))
-            {
-                UWUVCI_MessageBox.Show("Validation Error", "Please provide a detailed description.",
-                    UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Warning);
-                return;
-            }
-
             try
             {
-                const string owner = "stuff-by-3-random-dudes";
-                const string repo = "UWUVCI-AIO-WPF";
+                string description = DescriptionBox.Text?.Trim();
+                string type = (TypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
 
+                if (string.IsNullOrEmpty(description))
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Validation Error",
+                        "Please enter a description before submitting.",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Warning
+                    );
+                    return;
+                }
+
+                // Gather app version
                 var assembly = Assembly.GetExecutingAssembly();
                 var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
                 var appVersion = fvi.FileVersion ?? "unknown";
 
-                string fingerprint = null;
-                try { fingerprint = DeviceFingerprint.GetHashedFingerprint(); } catch { }
+                // Check what to include
+                bool includeSys = IncludeSystemInfoBox.IsChecked == true;
+                bool includeLog = IncludeLogFileBox.IsChecked == true;
 
+                // Log directory (not file)
+                string logDir = includeLog
+                    ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs")
+                    : null;
+
+                // Disable window during submission
                 IsEnabled = false;
-                Cursor = System.Windows.Input.Cursors.Wait;
+                Cursor = Cursors.Wait;
 
-                var issueUrl = await new GitHubFeedbackService().SubmitIssueAsync(owner, repo, type, desc, appVersion);
+                const string owner = "stuff-by-3-random-dudes";
+                const string repo = "UWUVCI-AIO-WPF";
 
-                UWUVCI_MessageBox.Show("Success",
-                    $"Your report has been submitted successfully.\n\nYou can view it here:\n{issueUrl}",
-                    UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Success);
+                var service = new GitHubFeedbackService();
+                string issueUrl = await service.SubmitIssueAsync(
+                    owner,
+                    repo,
+                    type,
+                    description,
+                    appVersion,
+                    includeSys,
+                    logDir
+                );
+
+                if (string.IsNullOrEmpty(issueUrl))
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Access Restricted",
+                        "Your device is not allowed to submit feedback or reports.\n\nIf you believe this is an error, please contact support.",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Error,
+                        this
+                    );
+                }
+                else
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Success",
+                        $"Feedback submitted successfully!\n\n{issueUrl}",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Success,
+                        this
+                    );
+                }
 
                 Close();
             }
             catch (Exception ex)
             {
-                UWUVCI_MessageBox.Show("Error", $"Failed to submit report:\n{ex.Message}",
-                    UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error);
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Failed to submit feedback:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
             }
             finally
             {
                 IsEnabled = true;
-                Cursor = System.Windows.Input.Cursors.Arrow;
+                Cursor = Cursors.Arrow;
+            }
+        }
+
+        // ----------------------------
+        // Auto-toggle behavior
+        // ----------------------------
+        private void TypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selected = (TypeBox.SelectedItem as ComboBoxItem)?.Content?.ToString();
+
+            if (selected == "Bug Report")
+            {
+                IncludeSystemInfoBox.IsChecked = true;
+                IncludeLogFileBox.IsChecked = true;
+            }
+            else
+            {
+                IncludeSystemInfoBox.IsChecked = false;
+                IncludeLogFileBox.IsChecked = false;
             }
         }
     }
