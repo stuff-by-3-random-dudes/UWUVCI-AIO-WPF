@@ -184,12 +184,45 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
         }
 
-
         private void OpenAppSettings_Click(object sender, RoutedEventArgs e)
         {
-            ApplicationSettings appSettings = new ApplicationSettings();
-            appSettings.Owner = parent;
-            appSettings.ShowDialog();
+            try
+            {
+                ApplicationSettings appSettings = new ApplicationSettings();
+                appSettings.Owner = parent;
+                appSettings.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Unable to open Application Settings:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
         }
+
+        private void OpenFeedbackWindow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var feedbackWin = new FeedbackWindow
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                feedbackWin.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Unable to open Feedback window:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
     }
 }
