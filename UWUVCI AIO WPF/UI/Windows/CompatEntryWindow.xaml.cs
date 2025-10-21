@@ -105,14 +105,27 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
                 var prUrl = await new GitHubCompatService().SubmitEntryAsync(owner, repo, console, entry, gamepad, renderSize, appVersion);
 
-                UWUVCI_MessageBox.Show(
-                    "Success",
-                    $"Pull Request created successfully:\n{prUrl}",
-                    UWUVCI_MessageBoxType.Ok,
-                    UWUVCI_MessageBoxIcon.Success,
-                    null,
-                    isModal: false
-                );
+                if (string.IsNullOrEmpty(prUrl))
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Access Restricted",
+                        "Your device is not allowed to submit compat entries.\n\nIf you believe this is an error, please contact support.",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Error,
+                        this
+                    );
+                }
+                else
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Success",
+                        $"Pull Request created successfully:\n{prUrl}",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Success,
+                        this,
+                        isModal: false
+                    );
+                }
 
                 Close();
             }

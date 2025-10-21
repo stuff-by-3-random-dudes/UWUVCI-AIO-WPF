@@ -320,14 +320,27 @@ namespace UWUVCI_AIO_WPF
 
                                     await Application.Current.Dispatcher.InvokeAsync(() =>
                                     {
-                                        UWUVCI_MessageBox.Show(
-                                            "Images Submitted",
-                                            $"Your images have been submitted successfully!\n\nA Pull Request has been created:\n{prUrl}",
-                                            UWUVCI_MessageBoxType.Ok,
-                                            UWUVCI_MessageBoxIcon.Success,
-                                            mvm.mw,
-                                            isModal: false
-                                        );
+                                        if (string.IsNullOrWhiteSpace(prUrl))
+                                        {
+                                            UWUVCI_MessageBox.Show(
+                                                "Access Restricted",
+                                                "Your device is not allowed to submit images.\n\nIf you believe this is an error, please contact support.",
+                                                UWUVCI_MessageBoxType.Ok,
+                                                UWUVCI_MessageBoxIcon.Error,
+                                                mvm.mw
+                                            );
+                                        }
+                                        else
+                                        {
+                                            UWUVCI_MessageBox.Show(
+                                                "Images Submitted",
+                                                $"Your images have been submitted successfully!\n\nA Pull Request has been created:\n{prUrl}",
+                                                UWUVCI_MessageBoxType.Ok,
+                                                UWUVCI_MessageBoxIcon.Success,
+                                                mvm.mw,
+                                                isModal: false
+                                            );
+                                        }
                                     });
                                 }
                                 catch (Exception ex)

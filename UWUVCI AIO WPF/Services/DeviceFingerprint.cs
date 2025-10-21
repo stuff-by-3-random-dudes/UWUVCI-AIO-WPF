@@ -48,10 +48,9 @@ namespace UWUVCI_AIO_WPF.Services
                 if (nics.Length == 0)
                 {
                     // try again without OperationalStatus filter (some environments)
-                    nics = NetworkInterface.GetAllNetworkInterfaces()
+                    nics = [.. NetworkInterface.GetAllNetworkInterfaces()
                         .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                        .OrderByDescending(n => n.Speed)
-                        .ToArray();
+                        .OrderByDescending(n => n.Speed)];
                 }
 
                 if (nics.Length > 0)

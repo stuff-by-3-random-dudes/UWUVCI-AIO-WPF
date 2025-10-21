@@ -92,6 +92,10 @@
                     <Button Content="Submit Compatibility Entry"
                             Width="460"
                             Click="OpenCompatSubmit_Click"/>
+                    <Button Content="Submit Feedback or Bug Report"
+                            Width="460" Margin="0,8,0,0"
+                            Click="OpenFeedbackWindow_Click"
+                            ToolTip="Report bugs, suggest features, or give feedback anonymously."/>
                 </StackPanel>
 
                 <!-- FOOTER -->

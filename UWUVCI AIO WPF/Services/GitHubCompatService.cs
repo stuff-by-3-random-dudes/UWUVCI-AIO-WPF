@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using UWUVCI_AIO_WPF.Models;
+using UWUVCI_AIO_WPF.UI.Windows;
 
 namespace UWUVCI_AIO_WPF.Services
 {
@@ -36,11 +37,7 @@ namespace UWUVCI_AIO_WPF.Services
             // Check blacklist before continuing
             bool isBlacklisted = await DeviceBlacklistService.IsDeviceBlacklistedAsync(BlackListURL, timeoutMs: 4000);
             if (isBlacklisted)
-            {
-                // Simulate a generic failure so it looks normal to the end-user.
-                // Keep the message vague — do not reveal that they are blacklisted.
-                throw new InvalidOperationException("Failed to submit compat entry due to a network error. Please try again later.");
-            }
+                return null;
 
             var client = CreateClient();
             var repository = await RetryAsync(() => client.Repository.Get(owner, repo));
