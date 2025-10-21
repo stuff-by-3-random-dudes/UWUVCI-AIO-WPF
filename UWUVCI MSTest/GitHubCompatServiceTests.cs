@@ -42,7 +42,7 @@ namespace UWUVCI_MSTests
             // Act & Assert
             foreach (var console in knownConsoles)
             {
-                var fileName = GitHubCompatService.GetFileNameForConsole(console);
+                var fileName = new GitHubCompatService().GetFileNameForConsole(console);
                 Assert.IsTrue(fileName.EndsWith("Compat.json"), $"Invalid filename for {console}");
             }
         }
