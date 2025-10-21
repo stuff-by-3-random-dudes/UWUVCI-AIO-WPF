@@ -14,7 +14,7 @@ namespace UWUVCI_AIO_WPF.Services
     public abstract class GitHubBaseService
     {
         public const string BotName = "UWUVCI-ContriBot";
-        public const string BlackListURL = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/main/uwuvci_installer_creator/app/blacklist.json";
+        public const string BlackListURL = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/refs/heads/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/blacklist.json";
         // ===============================
         // TOKEN + CLIENT CREATION
         // ===============================
