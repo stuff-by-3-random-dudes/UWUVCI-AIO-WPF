@@ -103,7 +103,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 IsEnabled = false;
                 Cursor = Cursors.Wait;
 
-                var prUrl = await GitHubCompatService.SubmitEntryAsync(owner, repo, console, entry, gamepad, renderSize, appVersion);
+                var prUrl = await new GitHubCompatService().SubmitEntryAsync(owner, repo, console, entry, gamepad, renderSize, appVersion);
 
                 UWUVCI_MessageBox.Show(
                     "Success",

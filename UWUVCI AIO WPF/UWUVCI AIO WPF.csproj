@@ -280,6 +280,7 @@
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
+    <Compile Include="Services\GitHubFeedbackService.cs" />
     <Compile Include="Services\GitHubImageService.cs" />
     <Compile Include="Services\LocalInstallGuard.cs" />
     <Compile Include="Services\NintendontConfigService.cs" />
@@ -313,6 +314,9 @@
     </Compile>
     <Compile Include="UI\Windows\CompatEntryWindow.xaml.cs">
       <DependentUpon>CompatEntryWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\FeedBackWindow.xaml.cs">
+      <DependentUpon>FeedBackWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\HelpWindows.xaml.cs">
       <DependentUpon>HelpWindows.xaml</DependentUpon>
@@ -436,6 +440,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\CompatEntryWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\FeedBackWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
