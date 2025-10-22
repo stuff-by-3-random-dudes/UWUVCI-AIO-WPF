@@ -42,31 +42,34 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             switch (currentStep)
             {
                 case 0:
-                    BodyBlock.Text = "Welcome to the UWUVCI V3 tutorial! This short guide walks you through key setup and community info before you begin injecting.";
-                    DetailsBlock.Text = "After this tutorial, you won't see it again unless a major update is installed.";
-                    HelperNote.Text = "Click Next to continue.";
+                    BodyBlock.Text = "Welcome to the UWUVCI V3 tutorial! This short guide walks you through key setup and community info before you begin injecting. After this tutorial, you won't see it again unless a major update is installed.";
+                    DetailsBlock.Text = "This tool helps you create Virtual Console Injects (VCI) for consoles: NDS, GBA, N64, SNES, NES, TG16, MSX, Wii, and GCN.";
+                    HelperNote.Text = "Notes: GCN does not use VC, instead it uses Nintendont. Wii allows for creating Homebrew and WAD forwarders.";
                     break;
 
                 case 1:
-                    BodyBlock.Text = "Official video guides and FAQs are hosted on Zesty's Corner YouTube channel and the included ReadMe.";
-                    DetailsBlock.Text = "The ReadMe includes compatibility info, troubleshooting tips, and detailed explanations for each console type.";
-                    HelperNote.Text = "Please review both the ReadMe and the official videos before using UWUVCI.";
+                    BodyBlock.Text = "The only official videos for UWUVCI V3 can be found on Zesty's Corner YouTube channel, this includes setup, expectations, and supplment information. Click the button below to check it out.";
+                    DetailsBlock.Text = "There is also a ReadMe with useful information like the FAQ, which includes the video guide URL. The ReadMe file is located in the same directory as the executable, and is the same ReadMe file that was recommended in the installer to open.";
+                    HelperNote.Text = "The ReadMe can also be found by clicking the gear icon at the top right once you get into the app.";
                     ZestyButton.Visibility = Visibility.Visible;
-                    DiscordButton.Visibility = Visibility.Visible;
                     ReadMeButton.Visibility = Visibility.Visible;
                     break;
 
                 case 2:
-                    BodyBlock.Text = "Every inject requires a base game from the eShop. The base determines compatibility.";
-                    DetailsBlock.Text = "Check the compatibility list on the official UWUVCI site or from the '?' button in the app.";
+                    BodyBlock.Text = "A Base is an eshop game required for the inject. Outside of GCN and Wii games, the base matters.";
+                    DetailsBlock.Text = "Check the compatibility list on the official UWUVCI site, the FAQ, the discord, or from the '?' button in the app.";
                     HelperNote.Text = "If no entry exists for a base, it has not been documented yet.";
-                    PatchNotesButton.Visibility = Visibility.Visible;
+                    DiscordButton.Visibility = Visibility.Visible;
+                    ReadMeButton.Visibility = Visibility.Visible;
                     break;
 
                 case 3:
-                    BodyBlock.Text = "UWUVCI V3 is a Windows-native WPF application, but support exists for macOS and Linux via helper tools.";
-                    DetailsBlock.Text = "The helper app enables GameCube and Wii functionality on non-Windows platforms.";
-                    HelperNote.Text = "If the helper doesn't launch automatically, instructions will appear explaining what to do.";
+                    BodyBlock.Text = "UWUVCI V3 is a Windows-native WPF application, but support has been added for Unix (mac/Linux) so it should be near feature parity.";
+                    DetailsBlock.Text = "V3.200 is the update that brough it altogether.";
+                    HelperNote.Text = "If you got this update for free, it'll be cool if you could donate or check out a game I made.";
+                    DonateButton.Visibility = Visibility.Visible;
+                    GameButton.Visibility = Visibility.Visible;
+                    PatchNotesButton.Visibility = Visibility.Visible;
                     break;
 
                 case 4:
@@ -98,9 +101,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             else
             {
-                if (AgreementPanel.Visibility == Visibility.Visible && AgreementCheck.IsChecked != true)
+                var agreementNotChecked = AgreementPanel.Visibility == Visibility.Visible &&
+                    (AgreementCheck.IsChecked == false|| 
+                    AgreementCheck2.IsChecked == false || 
+                    AgreementCheck3.IsChecked == false);
+
+                if (agreementNotChecked)
                 {
-                    UWUVCI_MessageBox.Show("Confirmation Required","Please confirm you have read and understood the tutorial and FAQ before continuing.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Info, this);
+                    UWUVCI_MessageBox.Show("Confirmation Required","Please check all checkboxes to show agreement and understanding of the tutorial.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Info, this);
                     return;
                 }
 

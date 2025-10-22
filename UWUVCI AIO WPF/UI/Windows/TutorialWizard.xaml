@@ -141,6 +141,16 @@
                                   Foreground="#FF1A1A1A"
                                   FontSize="14"
                                   Margin="0,5,0,0"/>
+                        <CheckBox x:Name="AgreementCheck2"
+                                  Content="I agree that all of my submissions will be appropriate, and am okay with the fingerprint."
+                                  Foreground="#FF1A1A1A"
+                                  FontSize="14"
+                                  Margin="0,5,0,0"/>
+                        <CheckBox x:Name="AgreementCheck3"
+                                  Content="I will use the program appropriately and understand how and when to ask for support."
+                                  Foreground="#FF1A1A1A"
+                                  FontSize="14"
+                                  Margin="0,5,0,0"/>
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
