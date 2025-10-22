@@ -31,19 +31,19 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
                     c.MemcardMulti = true;
                     c.Cheats = true;
                     c.CcRumble = true;
-                    c.ForceWidescreen = true;
+                    c.ForceWidescreen = false;
                     c.ForceProgressive = true;
                     c.VideoForceMode = NintendontVideoForceMode.Auto;
                     c.VideoTypeMode = NintendontVideoTypeMode.Auto;
                     c.AutoVideoWidth = true;
-                    c.PatchPAL50 = true;
-                    c.UnlockReadSpeed = true;
+                    c.PatchPAL50 = false;
+                    c.UnlockReadSpeed = false;
                     c.MaxPads = 4;
                     c.LanguageIndex = 0;
                     return c;
                 }),
 
-            new NintendontPreset("Normal",
+            new NintendontPreset("Retro",
                 "Classic defaults – conservative and compatible for all setups.",
                 cfg =>
                 {
