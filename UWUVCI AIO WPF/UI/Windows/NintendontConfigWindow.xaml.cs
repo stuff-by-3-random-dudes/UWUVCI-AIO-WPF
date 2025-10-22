@@ -31,16 +31,6 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             // ----- Preset setup -----
             PresetBox.ItemsSource = NintendontPresets.AllPresets.Select(p => p.Name).ToList();
 
-            // Default preset = Recommended
-            var defaultPreset = NintendontPresets.Default;
-            var defaultIndex = NintendontPresets.AllPresets.FindIndex(p => p.Name == defaultPreset.Name);
-            if (defaultIndex >= 0)
-            {
-                PresetBox.SelectedIndex = defaultIndex;
-                if (PresetDescription != null)
-                    PresetDescription.Text = defaultPreset.Description;
-            }
-
             // Update config + description when preset changes
             PresetBox.SelectionChanged += (s, e) =>
             {
