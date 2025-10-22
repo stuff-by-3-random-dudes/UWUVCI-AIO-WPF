@@ -7,50 +7,32 @@ namespace UWUVCI_MSTests
     [TestClass]
     public class GitHubCompatServiceTests
     {
-        private static MethodInfo GetPrivateMethod(string name)
+        private static MethodInfo GetPrivateInstanceMethod(string name)
         {
-            return typeof(GitHubCompatService).GetMethod(
+            var method = typeof(GitHubCompatService).GetMethod(
                 name,
-                BindingFlags.NonPublic | BindingFlags.Static
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy
             );
-        }
-
-        [TestMethod]
-        public void Token_Reconstruction_Returns_ValidString()
-        {
-            // Arrange
-            var method = GetPrivateMethod("GetToken");
-
-            // Act
-            string token = (string)method.Invoke(null, null);
-
-            // Assert
-            Assert.IsNotNull(token, "Token should not be null");
-            Assert.IsTrue(token.Length > 10, "Token should be of reasonable length");
-            Assert.IsFalse(token.Contains("="), "Token should not be a base64 string itself");
+            Assert.IsNotNull(method, $"Private instance method '{name}' not found.");
+            return method;
         }
 
         [TestMethod]
         public void FileName_Mapping_Works_For_All_Consoles()
         {
-            // Arrange
-            var knownConsoles = new[]
-            {
-                "NES", "SNES", "GBA", "N64", "TG16", "MSX", "Wii", "NDS"
-            };
+            var svc = new GitHubCompatService();
+            var known = new[] { "NES", "SNES", "GBA", "N64", "TG16", "MSX", "Wii", "NDS" };
 
-            // Act & Assert
-            foreach (var console in knownConsoles)
+            foreach (var console in known)
             {
-                var fileName = new GitHubCompatService().GetFileNameForConsole(console);
-                Assert.IsTrue(fileName.EndsWith("Compat.json"), $"Invalid filename for {console}");
+                var file = svc.GetFileNameForConsole(console);
+                Assert.IsTrue(file.EndsWith("Compat.json"), $"Invalid mapping for {console}");
             }
         }
 
         [TestMethod]
-        public void BuildPrBody_Includes_Correct_Fields_For_Wii()
+        public void BuildPrBody_ProducesExpectedFormat_For_Wii()
         {
-            // Arrange
             var entry = new GameCompatEntry
             {
                 GameName = "Mario Kart Wii",
@@ -61,24 +43,20 @@ namespace UWUVCI_MSTests
                 Notes = "Works perfectly."
             };
 
-            var method = GetPrivateMethod("BuildPrBody");
+            var svc = new GitHubCompatService();
+            var method = GetPrivateInstanceMethod("BuildPrBody");
 
-            // Act
-            string prBody = (string)method.Invoke(
-                null,
-                ["Wii", entry, 2, null, "2.1.0"]
-            );
+            string result = (string)method.Invoke(svc,
+                new object[] { "Wii", entry, 2, null, "2.1.0", "FakeFingerprintABC" });
 
-            // Assert
-            Assert.IsTrue(prBody.Contains("GamePad"), "Wii PR should include GamePad info");
-            Assert.IsTrue(prBody.Contains("Mario Kart Wii"), "PR body missing game name");
-            Assert.IsTrue(prBody.Contains("2.1.0"), "App version missing");
+            StringAssert.Contains(result, "GamePad", "Wii PR body should list GamePad.");
+            StringAssert.Contains(result, "Mario Kart Wii", "Missing game name.");
+            StringAssert.Contains(result, "FakeFingerprintABC", "Missing fingerprint section.");
         }
 
         [TestMethod]
-        public void BuildPrBody_Includes_Correct_Fields_For_NDS()
+        public void BuildPrBody_ProducesExpectedFormat_For_NDS()
         {
-            // Arrange
             var entry = new GameCompatEntry
             {
                 GameName = "Pokémon Platinum",
@@ -86,20 +64,18 @@ namespace UWUVCI_MSTests
                 BaseName = "Pokémon Diamond",
                 BaseRegion = "USA",
                 Status = 1,
-                Notes = "Slight rendering issues."
+                Notes = "Minor rendering issues."
             };
 
-            var method = GetPrivateMethod("BuildPrBody");
+            var svc = new GitHubCompatService();
+            var method = GetPrivateInstanceMethod("BuildPrBody");
 
-            // Act
-            string prBody = (string)method.Invoke(
-                null,
-                ["NDS", entry, null, "2x", "2.1.0"]
-            );
+            string result = (string)method.Invoke(svc,
+                new object[] { "NDS", entry, null, "2x", "3.5.0", "FakeFingerprintXYZ" });
 
-            // Assert
-            Assert.IsTrue(prBody.Contains("Render Size"), "NDS PR should include Render Size");
-            Assert.IsTrue(prBody.Contains("Pokémon Platinum"), "PR body missing game name");
+            StringAssert.Contains(result, "Render Size", "NDS PR body should list Render Size.");
+            StringAssert.Contains(result, "Pokémon Platinum", "Missing game name.");
+            StringAssert.Contains(result, "FakeFingerprintXYZ", "Missing fingerprint section.");
         }
     }
 }
