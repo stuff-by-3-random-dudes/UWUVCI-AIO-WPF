@@ -367,67 +367,134 @@ namespace UWUVCI_AIO_WPF
 
                 code = null;
                 return true;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 mvm.Progress = 100;
-
                 code = null;
+
                 if (e.Message == "Failed this shit")
                 {
                     Clean();
                     return false;
                 }
 
-                var errorMessage = "Injection Failed due to unknown circumstances.";
+                string errorMessage =
+                    "The injection process encountered an unexpected error and could not complete successfully.";
 
+                // --- Specific error handling ---
                 if (e.Message == "Incomplete Base")
-                    errorMessage = "Injection Failed because there are base files missing. \nPlease redownload the base, or redump if you used a custom base!";
+                {
+                    errorMessage =
+                        "Missing or incomplete base files were detected.\n" +
+                        "Please redownload the base files, or re-dump your base if you created a custom one.";
+                }
                 else if (e.Message.Contains("Images"))
-                    errorMessage = "Injection Failed due to wrong BitDepth, please check if your Files are in a different bitdepth than 32bit or 24bit\n\nIf the image/s that's being used is automatically grabbed for you, then don't use them." +
-                        "\nFAQ: #28";
+                {
+                    errorMessage =
+                        "One or more image files are incompatible with the expected bit depth.\n" +
+                        "Ensure all images are 24-bit or 32-bit (no 8-bit or indexed formats).\n\n" +
+                        "If your images were automatically fetched, replace them with verified ones.\n" +
+                        "See the FAQ in the ReadMe for help.";
+                }
                 else if (e.Message.Contains("Size"))
-                    errorMessage = "Injection Failed due to Image Issues.Please check if your Images are made using following Information:\n\niconTex: \nDimensions: 128x128\nBitDepth: 32\n\nbootDrcTex: \nDimensions: 854x480\nBitDepth: 24\n\nbootTvTex: \nDimensions: 1280x720\nBitDepth: 24\n\nbootLogoTex: \nDimensions: 170x42\nBitDepth: 32";
+                {
+                    errorMessage =
+                        "🖼️ Image dimensions or bit depths appear to be incorrect.\n" +
+                        "Please verify your image specifications:\n\n" +
+                        "• iconTex → 128×128, 32-bit\n" +
+                        "• bootDrcTex → 854×480, 24-bit\n" +
+                        "• bootTvTex → 1280×720, 24-bit\n" +
+                        "• bootLogoTex → 170×42, 32-bit\n\n" +
+                        "Check the ReadMe’s FAQ for additional guidance.";
+                }
                 else if (e.Message.Contains("retro"))
-                    errorMessage = "The ROM you want to Inject is to big for selected Base!\nPlease try again with different Base";
+                {
+                    errorMessage =
+                        "💾 The selected ROM is too large for the chosen base.\n" +
+                        "Try again using a different base that supports larger ROMs.\n\n" +
+                        "See the ReadMe’s FAQ for details.";
+                }
                 else if (e.Message.Contains("BASE"))
-                    errorMessage = "If you import a config you NEED to reselect a base";
+                {
+                    errorMessage =
+                        "⚙️ Configuration imported successfully, but no base was re-selected.\n" +
+                        "After importing a config, you must re-select a base before injecting.\n\n" +
+                        "Refer to the FAQ in the ReadMe for steps.";
+                }
                 else if (e.Message.Contains("WII"))
-                    errorMessage = $"{e.Message.Replace("Wii", "")}\nPlease make sure that your ROM isn't flawed and that you have atleast 12 GB of free Storage left.";
+                {
+                    errorMessage =
+                        $"💽 {e.Message.Replace("Wii", "")}\n\n" +
+                        "Ensure your ROM isn’t corrupted and that you have at least 12 GB of free disk space.\n" +
+                        "Consult the ReadMe’s FAQ for help.";
+                }
                 else if (e.Message.Contains("Insufficient Storage"))
-                    errorMessage = $"Please make sure to have atleast {FormatBytes(15000000000)} of storage left on the drive where you stored the Injector.";
+                {
+                    errorMessage =
+                        $"💾 Not enough storage space available.\n" +
+                        $"Ensure at least {FormatBytes(15_000_000_000)} of free space on the drive where UWUVCI is installed.\n" +
+                        "See the ReadMe’s FAQ for more info.";
+                }
                 else if (e.Message.Contains("nkit"))
-                    errorMessage = $"There is an issue with your NKIT.\nPlease try the original ISO, or redump your game and try again with that dump.";
+                {
+                    errorMessage =
+                        "⚠️ The selected NKIT file is invalid or incomplete.\n" +
+                        "Use a full, unmodified ISO instead or re-dump your game properly.\n\n" +
+                        "See the FAQ in the ReadMe for guidance.";
+                }
                 else if (e.Message.Contains("meta.xml"))
-                    errorMessage = "Looks to be your meta.xml file is missing from your directory. If you downloaded your base, redownload it, if it's a custom base then the folder selected might be wrong or the layout is messed up.";
+                {
+                    errorMessage =
+                        "📄 The meta.xml file could not be found in your base directory.\n" +
+                        "If you downloaded your base, redownload it.\n" +
+                        "If using a custom base, verify your folder layout.\n\n" +
+                        "See the ReadMe’s FAQ for structure details.";
+                }
                 else if (e.Message.Contains("pre.iso"))
-                    errorMessage = "Looks to be that there is something about your game that UWUVCI doesn't like, you are most likely injecting with a wbfs or nkit.iso file, this file has data trimmed." +
-                        "\nFAQ: #17, #27, #29";
+                {
+                    errorMessage =
+                        "💿 The game image appears trimmed or unsupported (e.g., WBFS or NKIT.ISO).\n" +
+                        "Use a full, clean ISO dump instead.\n\n" +
+                        "Check the ReadMe’s FAQ for supported formats.";
+                }
                 else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
-                    errorMessage = "The images are most likely the culprit, try changing them around." +
-                        "\nFAQ: #28";
+                {
+                    errorMessage =
+                        "🖼️ An image-related issue occurred during processing.\n" +
+                        "Try changing or re-exporting your images in a standard format.\n\n" +
+                        "Refer to the ReadMe’s FAQ for troubleshooting steps.";
+                }
 
+                // --- Emulation warning ---
                 if (!IsNativeWindows)
-                    errorMessage += "\n\nYou look to be running this under some form of emulation instead of a native Windows OS. There are external tools that UWUVCI uses which are not managed by the UWUVCI team. These external tools may be causing you issues and we will not be able to resolve your issues.";
+                {
+                    errorMessage +=
+                        "\n\n⚠️ UWUVCI detected a non-Windows environment (Wine, Proton, etc.).\n" +
+                        "Some external tools may not function correctly under emulation.\n" +
+                        "For best results, use native Windows or a verified Wine configuration.\n" +
+                        "See the ReadMe’s FAQ for platform notes.";
+                }
 
+                // --- Final message to user ---
                 UWUVCI_MessageBox.Show(
-                    "Injection Failed",
-                    errorMessage + "\n\nDon't forget that there's an FAQ in the ReadMe.",
+                    "❌ Injection Failed",
+                    $"{errorMessage}\n\nRefer to the FAQ section in the ReadMe for more information.",
                     UWUVCI_MessageBoxType.Ok,
                     UWUVCI_MessageBoxIcon.Error
                 );
 
-                Logger.Log(e.Message);
+                Logger.Log($"Injection error: {e.Message}");
                 Clean();
                 return false;
             }
             finally
             {
-
                 mvm.Index = -1;
                 mvm.LR = false;
                 mvm.msg = "";
-
             }
+
 
         }
 
