@@ -162,9 +162,6 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             CheatPathBox.Text = "/codes";
             GamePathBox.Text = "/games";
 
-            StatusText.Text = string.Empty;
-            DownloadStatusText.Text = string.Empty;
-
             _suppressUiToModel = false;
         }
 
@@ -361,7 +358,6 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             try
             {
                 await _service.SaveConfigAsync(path, _cfg);
-                StatusText.Text = "Saved to " + path;
                 UWUVCI_MessageBox.Show("Saved", "nincfg.bin saved to SD.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Success, this, false);
             }
             catch (Exception ex)
@@ -386,7 +382,6 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
                 try
                 {
                     await _service.SaveConfigAsync(sfd.FileName, _cfg);
-                    StatusText.Text = "Saved to " + sfd.FileName;
                     UWUVCI_MessageBox.Show("Saved", "nincfg.bin saved.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Success, this, false);
                 }
                 catch (Exception ex)
@@ -404,17 +399,14 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
                 return;
             }
 
-            DownloadStatusText.Text = "Downloading…";
             try
             {
                 var target = Path.Combine(_selectedDriveRoot, @"apps\nintendont");
                 await _service.DownloadNintendontAsync(target);
-                DownloadStatusText.Text = "Download complete.";
                 UWUVCI_MessageBox.Show("Done", "Nintendont downloaded to:\n" + target, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Success, this, false);
             }
             catch (Exception ex)
             {
-                DownloadStatusText.Text = "Download failed.";
                 UWUVCI_MessageBox.Show("Download Failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
