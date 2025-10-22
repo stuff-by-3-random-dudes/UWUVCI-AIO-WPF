@@ -109,7 +109,7 @@
                     <!-- Ko-Fi Button -->
                     <Button Grid.Column="0"
                             Width="60" Height="50"
-                            ToolTip="Support UWUVCI on Ko-Fi"
+                            ToolTip="Support UWUVCI V3 on Ko-Fi"
                             Click="Button_Click_13"
                             Background="#2196F3"
                             BorderThickness="0"
