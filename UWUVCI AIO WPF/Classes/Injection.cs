@@ -373,6 +373,7 @@ namespace UWUVCI_AIO_WPF
                 mvm.Progress = 100;
                 code = null;
 
+                // Handle known internal cleanup triggers
                 if (e.Message == "Failed this shit")
                 {
                     Clean();
@@ -386,16 +387,15 @@ namespace UWUVCI_AIO_WPF
                 if (e.Message == "Incomplete Base")
                 {
                     errorMessage =
-                        "Missing or incomplete base files were detected.\n" +
+                        "❌ Missing or incomplete base files were detected.\n" +
                         "Please redownload the base files, or re-dump your base if you created a custom one.";
                 }
                 else if (e.Message.Contains("Images"))
                 {
                     errorMessage =
-                        "One or more image files are incompatible with the expected bit depth.\n" +
+                        "🖼️ One or more image files are incompatible with the expected bit depth.\n" +
                         "Ensure all images are 24-bit or 32-bit (no 8-bit or indexed formats).\n\n" +
-                        "If your images were automatically fetched, replace them with verified ones.\n" +
-                        "See the FAQ in the ReadMe for help.";
+                        "If your images were automatically fetched, replace them with verified ones.";
                 }
                 else if (e.Message.Contains("Size"))
                 {
@@ -405,81 +405,75 @@ namespace UWUVCI_AIO_WPF
                         "• iconTex → 128×128, 32-bit\n" +
                         "• bootDrcTex → 854×480, 24-bit\n" +
                         "• bootTvTex → 1280×720, 24-bit\n" +
-                        "• bootLogoTex → 170×42, 32-bit\n\n" +
-                        "Check the ReadMe’s FAQ for additional guidance.";
+                        "• bootLogoTex → 170×42, 32-bit";
                 }
                 else if (e.Message.Contains("retro"))
                 {
                     errorMessage =
                         "💾 The selected ROM is too large for the chosen base.\n" +
-                        "Try again using a different base that supports larger ROMs.\n\n" +
-                        "See the ReadMe’s FAQ for details.";
+                        "Try again using a different base that supports larger ROMs.";
                 }
                 else if (e.Message.Contains("BASE"))
                 {
                     errorMessage =
                         "⚙️ Configuration imported successfully, but no base was re-selected.\n" +
-                        "After importing a config, you must re-select a base before injecting.\n\n" +
-                        "Refer to the FAQ in the ReadMe for steps.";
+                        "After importing a config, please re-select your desired base before injecting.";
                 }
                 else if (e.Message.Contains("WII"))
                 {
                     errorMessage =
                         $"💽 {e.Message.Replace("Wii", "")}\n\n" +
-                        "Ensure your ROM isn’t corrupted and that you have at least 12 GB of free disk space.\n" +
-                        "Consult the ReadMe’s FAQ for help.";
+                        "Ensure your ROM isn’t corrupted and that you have at least 12 GB of free disk space available.";
                 }
                 else if (e.Message.Contains("Insufficient Storage"))
                 {
                     errorMessage =
                         $"💾 Not enough storage space available.\n" +
-                        $"Ensure at least {FormatBytes(15_000_000_000)} of free space on the drive where UWUVCI is installed.\n" +
-                        "See the ReadMe’s FAQ for more info.";
+                        $"Ensure at least {FormatBytes(15_000_000_000)} of free space on the drive where UWUVCI is installed.";
                 }
                 else if (e.Message.Contains("nkit"))
                 {
                     errorMessage =
                         "⚠️ The selected NKIT file is invalid or incomplete.\n" +
-                        "Use a full, unmodified ISO instead or re-dump your game properly.\n\n" +
-                        "See the FAQ in the ReadMe for guidance.";
+                        "Use a full, unmodified ISO instead or re-dump your game properly.";
                 }
                 else if (e.Message.Contains("meta.xml"))
                 {
                     errorMessage =
                         "📄 The meta.xml file could not be found in your base directory.\n" +
-                        "If you downloaded your base, redownload it.\n" +
-                        "If using a custom base, verify your folder layout.\n\n" +
-                        "See the ReadMe’s FAQ for structure details.";
+                        "If using a downloaded base, redownload it.\n" +
+                        "If using a custom base, verify your folder layout is correct.";
                 }
                 else if (e.Message.Contains("pre.iso"))
                 {
                     errorMessage =
-                        "💿 The game image appears trimmed or unsupported (e.g., WBFS or NKIT.ISO).\n" +
-                        "Use a full, clean ISO dump instead.\n\n" +
-                        "Check the ReadMe’s FAQ for supported formats.";
+                        "💿 The game image appears trimmed or in an unsupported format (e.g., WBFS or NKIT.ISO).\n" +
+                        "Use a full, clean ISO dump instead.";
                 }
                 else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
                 {
                     errorMessage =
                         "🖼️ An image-related issue occurred during processing.\n" +
-                        "Try changing or re-exporting your images in a standard format.\n\n" +
-                        "Refer to the ReadMe’s FAQ for troubleshooting steps.";
+                        "Try using different images or re-exporting them in a standard format.";
                 }
 
                 // --- Emulation warning ---
                 if (!IsNativeWindows)
                 {
                     errorMessage +=
-                        "\n\n⚠️ UWUVCI detected a non-Windows environment (Wine, Proton, etc.).\n" +
-                        "Some external tools may not function correctly under emulation.\n" +
-                        "For best results, use native Windows or a verified Wine configuration.\n" +
-                        "See the ReadMe’s FAQ for platform notes.";
+                        "\n\n⚠️ UWUVCI detected that you may be running under a compatibility layer (Wine, Proton, etc.).\n" +
+                        "Some external tools may not function correctly in non-Windows environments.\n" +
+                        "For best results, use native Windows or a verified Wine configuration.";
                 }
 
-                // --- Final message to user ---
+                // --- Add friendly FAQ reminder ---
+                errorMessage +=
+                    "\n\n💡 For more help, open the Settings (⚙️) at the top right and check the FAQ section in the ReadMe.";
+
+                // --- Display to user ---
                 UWUVCI_MessageBox.Show(
                     "❌ Injection Failed",
-                    $"{errorMessage}\n\nRefer to the FAQ section in the ReadMe for more information.",
+                    errorMessage,
                     UWUVCI_MessageBoxType.Ok,
                     UWUVCI_MessageBoxIcon.Error
                 );
@@ -494,7 +488,6 @@ namespace UWUVCI_AIO_WPF
                 mvm.LR = false;
                 mvm.msg = "";
             }
-
 
         }
 
