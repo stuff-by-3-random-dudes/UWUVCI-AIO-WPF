@@ -238,6 +238,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
             }
 
+            baseRegion = NormalizeRegion(baseRegion);
+
             // --- VALIDATION ---
             if (string.IsNullOrEmpty(gameName) ||
                 string.IsNullOrEmpty(gameRegion) ||
@@ -267,6 +269,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             };
         }
 
+        private static string NormalizeRegion(string region)
+        {
+            if (string.IsNullOrWhiteSpace(region))
+                return region;
+
+            return region.Trim().ToUpperInvariant() switch
+            {
+                "US" => "USA",
+                "EU" => "EUR",
+                "JP" => "JPN",
+                "KR" => "KOR",
+                "CN" => "CHN",
+                "TW" => "TWN",
+                _ => region // fallback if already correct or custom
+            };
+        }
 
         private void BaseBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
