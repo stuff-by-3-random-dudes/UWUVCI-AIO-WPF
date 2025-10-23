@@ -1,31 +1,32 @@
 ﻿using GameBaseClassLibrary;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using NAudio.Utils;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
-using System.Threading;
-using System.Windows.Threading;
-using System.Diagnostics;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Text.RegularExpressions;
-using NAudio.Wave;
-using System.Timers;
-using NAudio.Utils;
-using System.Security.Cryptography;
-using UWUVCI_AIO_WPF.Helpers;
 using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
 
 namespace UWUVCI_AIO_WPF
@@ -1619,20 +1620,15 @@ namespace UWUVCI_AIO_WPF
                 }
             }
         }
-        private bool RemoteFileExists(string url)
+        private async Task<bool> RemoteFileExistsAsync(HttpClient client, string url)
         {
             try
             {
-                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-                request.Method = "HEAD";
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                response.Close();
-                return (response.StatusCode == HttpStatusCode.OK);
+                using var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url),
+                    HttpCompletionOption.ResponseHeadersRead);
+                return response.IsSuccessStatusCode;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 
         public string GetFilePath(bool ROM, bool INI)
@@ -2633,7 +2629,7 @@ namespace UWUVCI_AIO_WPF
                     SystemType + repoid.Substring(0, 3) + "J"
                 };
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA, mvm);
+                _ = Task.Run(async () =>{ await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.GBA, mvm); });
             }
             catch (Exception e)
             {
@@ -2657,7 +2653,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES, mvm);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.SNES, mvm); });
             } 
             catch (Exception e)
             {
@@ -2682,7 +2678,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX, mvm);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.MSX, mvm); });
             }
             catch (Exception e)
             {
@@ -2706,7 +2702,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16, mvm);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.TG16, mvm); });
             }
             catch (Exception e)
             {
@@ -2855,13 +2851,18 @@ namespace UWUVCI_AIO_WPF
             return getCodeOfNumbers(Convert.ToInt32(first10));
         }
 
-        private void FetchAndProcessRepoImages(string systemType, string repoid, List<string> repoids, GameConsoles console, MainViewModel mvm)
+        private async Task FetchAndProcessRepoImagesAsync(
+            string systemType,
+            string repoid,
+            List<string> repoids,
+            GameConsoles console,
+            MainViewModel mvm)
         {
-            if (!CheckForInternetConnectionWOWarning())
+            if (!await CheckForInternetConnectionWOWarningAsync())
                 return;
 
-            var hasImages = GetRepoImages(systemType, repoid, repoids);
-            checkForAdditionalFiles(console, repoids);
+            bool hasImages = await GetRepoImagesAsync(systemType, repoid, repoids);
+            await CheckForAdditionalFilesAsync(console, repoids);
 
             mvm.CanOfferImageContribution = !hasImages;
             mvm.repoId = repoid;
@@ -2875,7 +2876,7 @@ namespace UWUVCI_AIO_WPF
                 string SystemType = "nes/";
                 string repoid = GetFakeNESProdcode(rom);
                 List<string> repoids = new List<string> { SystemType + repoid };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES, mvm);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.NES, mvm); });
             }
             catch (Exception e)
             {
@@ -2919,7 +2920,7 @@ namespace UWUVCI_AIO_WPF
                     SystemType + repoid.Substring(0, 3) + "J"
                 };
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS, mvm);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.NDS, mvm); });
             }
             catch (Exception e)
             {
@@ -2957,7 +2958,7 @@ namespace UWUVCI_AIO_WPF
 
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64, mvm);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.N64, mvm); });
             }
             catch (Exception e)
             {
@@ -3085,7 +3086,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII, mvm);
+                FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII, mvm);
             }
             catch (Exception)
             {
@@ -3143,15 +3144,15 @@ namespace UWUVCI_AIO_WPF
             cm.ShowDialog();
         }
 
-        public bool CheckForInternetConnectionWOWarning()
+        public async Task<bool> CheckForInternetConnectionWOWarningAsync()
         {
             try
             {
-                using var client = new WebClient();
-                client.Proxy = null;
-                client.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.BypassCache);
-                client.DownloadString("http://google.com/generate_204");
-                return true;
+                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+                client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
+
+                var response = await client.GetAsync("http://google.com/generate_204");
+                return response.IsSuccessStatusCode;
             }
             catch (WebException)
             {
@@ -3159,7 +3160,6 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception ex)
             {
-                // Optionally log the unexpected exception
                 Console.WriteLine($"Unexpected error: {ex.Message}");
                 return false;
             }
@@ -3170,11 +3170,10 @@ namespace UWUVCI_AIO_WPF
         /// </summary>
         /// <param name="console">The game console type.</param>
         /// <param name="repoids">List of repository IDs to check for additional files.</param>
-        private void checkForAdditionalFiles(GameConsoles console, List<string> repoids)
+        private async Task CheckForAdditionalFilesAsync(GameConsoles console, List<string> repoids)
         {
             string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
-            if (!Directory.Exists(repoPath))
-                Directory.CreateDirectory(repoPath);
+            Directory.CreateDirectory(repoPath);
 
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             bool iniFound = false;
@@ -3183,31 +3182,33 @@ namespace UWUVCI_AIO_WPF
             string bootSoundUrl = "";
             string bootSoundExtension = "btsnd";
 
-            // Check for INI file
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+
             if (console == GameConsoles.N64)
-            {
-                iniFound = TryFindFileInRepo(repoids, linkbase, "/game.ini", out iniUrl);
-            }
+                iniFound = await TryFindFileInRepoAsync(client, repoids, linkbase, "/game.ini", result => iniUrl = result);
 
-            // Check for BootSound file
-            bootSoundFound = TryFindFileInRepo(repoids, linkbase, $"/BootSound.{bootSoundExtension}", out bootSoundUrl);
+            bootSoundFound = await TryFindFileInRepoAsync(client, repoids, linkbase, $"/BootSound.{bootSoundExtension}", result => bootSoundUrl = result);
 
-            // Prompt user and download additional files if found
             if (iniFound || bootSoundFound)
             {
                 string message = GetAdditionalFilesMessage(iniFound, bootSoundFound);
-                var customMessage = new Custom_Message("Found additional Files", message);
-                SetWindowOwner(customMessage);
 
-                customMessage.ShowDialog();
+                // Run the WPF window on the UI thread
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    var customMessage = new Custom_Message("Found additional Files", message);
+                    SetWindowOwner(customMessage);
+                    customMessage.ShowDialog();
+                });
 
                 if (addi)
                 {
-                    DownloadAdditionalFiles(iniFound, iniUrl, bootSoundFound, bootSoundUrl, console, bootSoundExtension);
+                    await DownloadAdditionalFilesAsync(client, iniFound, iniUrl, bootSoundFound, bootSoundUrl, console, bootSoundExtension);
                     addi = false;
                 }
             }
         }
+
 
         /// <summary>
         /// Tries to find a specific file in the repository.
@@ -3217,15 +3218,17 @@ namespace UWUVCI_AIO_WPF
         /// <param name="filePath">Specific file path to look for.</param>
         /// <param name="fileUrl">The found file URL.</param>
         /// <returns>True if the file is found, otherwise false.</returns>
-        private bool TryFindFileInRepo(List<string> repoids, string linkbase, string filePath, out string fileUrl)
+        private async Task<bool> TryFindFileInRepoAsync(HttpClient client, List<string> repoids, string linkbase, string filePath, Action<string> resultSetter)
         {
-            foreach (var repoid in repoids)
+            foreach (string id in repoids)
             {
-                fileUrl = linkbase + repoid + filePath;
-                if (RemoteFileExists(fileUrl))
+                string url = $"{linkbase}{id}{filePath}";
+                if (await RemoteFileExistsAsync(client, url))
+                {
+                    resultSetter(url);
                     return true;
+                }
             }
-            fileUrl = string.Empty;
             return false;
         }
 
@@ -3272,49 +3275,38 @@ namespace UWUVCI_AIO_WPF
         /// <param name="bootSoundUrl">The URL of the BootSound file.</param>
         /// <param name="console">The game console type.</param>
         /// <param name="bootSoundExtension">The file extension for BootSound.</param>
-        private void DownloadAdditionalFiles(bool iniFound, string iniUrl, bool bootSoundFound, string bootSoundUrl, GameConsoles console, string bootSoundExtension)
+        private async Task DownloadAdditionalFilesAsync(HttpClient client, bool iniFound, string iniUrl, bool bootSoundFound, string bootSoundUrl, GameConsoles console, string bootSoundExtension)
         {
-            var client = new WebClient();
             string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
+            Directory.CreateDirectory(repoPath);
 
-            if (iniFound)
+            var tasks = new List<Task>();
+
+            if (iniFound && !string.IsNullOrEmpty(iniUrl))
             {
-                string iniFilePath = Path.Combine(repoPath, "game.ini");
-                client.DownloadFile(iniUrl, iniFilePath);
-                (Thing as N64Config).ini.Text = iniFilePath;
-                GameConfiguration.N64Stuff.INIPath = iniFilePath;
+                string iniDest = Path.Combine(repoPath, $"{console}_game.ini");
+                tasks.Add(DownloadFileAsync(client, iniUrl, iniDest));
             }
 
-            if (bootSoundFound)
+            if (bootSoundFound && !string.IsNullOrEmpty(bootSoundUrl))
             {
-                string bootSoundFilePath = Path.Combine(repoPath, $"bootSound.{bootSoundExtension}");
-                client.DownloadFile(bootSoundUrl, bootSoundFilePath);
-                BootSound = bootSoundFilePath;
+                string soundDest = Path.Combine(repoPath, $"{console}_BootSound.{bootSoundExtension}");
+                tasks.Add(DownloadFileAsync(client, bootSoundUrl, soundDest));
+            }
 
-                switch (console)
-                {
-                    case GameConsoles.NDS:
-                    case GameConsoles.NES:
-                    case GameConsoles.SNES:
-                    case GameConsoles.MSX:
-                        (Thing as OtherConfigs).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.GBA:
-                        (Thing as GBA).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.N64:
-                        (Thing as N64Config).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.WII:
-                        if (test == GameConsoles.GCN)
-                            (Thing as GCConfig).sound.Text = bootSoundFilePath;
-                        else
-                            (Thing as WiiConfig).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.TG16:
-                        (Thing as TurboGrafX).sound.Text = bootSoundFilePath;
-                        break;
-                }
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task DownloadFileAsync(HttpClient client, string url, string destinationPath)
+        {
+            try
+            {
+                var data = await client.GetByteArrayAsync(url);
+                File.WriteAllBytes(destinationPath, data);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to download {url}: {ex.Message}");
             }
         }
 
@@ -3402,29 +3394,42 @@ namespace UWUVCI_AIO_WPF
         /// <param name="SystemType">The type of system (e.g., "Wii", "N64").</param>
         /// <param name="repoid">The repository ID for the image.</param>
         /// <param name="repoids">An optional list of repository IDs to check for images.</param>
-        private bool GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
+        private async Task<bool> GetRepoImagesAsync(string systemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             string[] extensions = { "png", "jpg", "jpeg", "tga" };
 
-            // If no specific repoids are provided, generate possible repoids based on the given repoid
-            if (repoids == null || repoids?.Count == 0)
-                repoids = GenerateRepoIds(SystemType, repoid);
+            repoids ??= GenerateRepoIds(systemType, repoid);
 
-            // Iterate through all combinations of repoids and extensions to find an existing image
-            foreach (string extension in extensions)
-                foreach (string id in repoids)
-                {
-                    string imageUrl = $"{linkbase}{id}/iconTex.{extension}";
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
-                    if (RemoteFileExists(imageUrl))
-                    {
-                        HandleImageLoading(imageUrl, extension, id);
-                        return true;
-                    }
-                }
+            // Build ordered list of candidate URLs
+            var orderedUrls = (
+                from ext in extensions
+                from id in repoids
+                select new { Url = $"{linkbase}{id}/iconTex.{ext}", Extension = ext, RepoId = id }
+            ).ToList();
+
+            // Launch all HEAD requests in parallel, but don’t lose ordering
+            var tasks = orderedUrls.Select(async item =>
+            {
+                bool exists = await RemoteFileExistsAsync(client, item.Url);
+                return (item, exists);
+            }).ToList();
+
+            // Wait for all to finish, then pick the *first* success in original order
+            var results = await Task.WhenAll(tasks);
+            var firstSuccess = results.FirstOrDefault(r => r.exists);
+
+            if (firstSuccess.item != null)
+            {
+                HandleImageLoading(firstSuccess.item.Url, firstSuccess.item.Extension, firstSuccess.item.RepoId);
+                return true;
+            }
+
             return false;
         }
+
 
         /// <summary>
         /// Generates a list of possible repository IDs based on the system type and the provided repository ID.
@@ -3461,18 +3466,23 @@ namespace UWUVCI_AIO_WPF
             if (extension.Equals("tga", StringComparison.OrdinalIgnoreCase))
                 ShowTgaWarning();
 
-            var imgMessage = new IMG_Message(imageUrl, imageUrl.Replace("iconTex", "bootTvTex"), repoid);
-            try
+            void createAndShow()
             {
-                imgMessage.Owner = mw;
-            }
-            catch (Exception)
-            {
-                // Swallow exception to prevent crashing when setting the owner fails
+                var imgMessage = new IMG_Message(imageUrl, imageUrl.Replace("iconTex", "bootTvTex"), repoid);
+                try { imgMessage.Owner = mw; } catch { }
+                imgMessage.ShowDialog();
             }
 
-            imgMessage.ShowDialog();
+            if (System.Windows.Application.Current.Dispatcher.CheckAccess())
+            {
+                createAndShow();
+            }
+            else
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(createAndShow);
+            }
         }
+
 
         /// <summary>
         /// Displays a warning message when a TGA image is detected.
