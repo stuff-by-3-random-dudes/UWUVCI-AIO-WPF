@@ -1,19 +1,19 @@
 <#
 .SYNOPSIS
-  Obfuscate a GitHub PAT and inject it into GitHubCompatService.cs between marker comments.
+  Obfuscate a GitHub PAT and inject it into GitHubBaseService.cs between marker comments.
 
 .DESCRIPTION
   - Reads token from env var GITHUB_PAT or prompts interactively.
   - Generates a random xorKey (4 bytes by default).
   - Encodes the token as Base64, XORs the bytes, splits them into NUM_PARTS pieces.
-  - Replaces the code in GitHubCompatService.cs between the markers:
+  - Replaces the code in GitHubBaseService.cs between the markers:
       // BEGIN_TOKEN_REGION
       // END_TOKEN_REGION
     with a compiled C# snippet that reconstructs the token at runtime.
-  - Creates a backup file GitHubCompatService.cs.bak by default.
+  - Creates a backup file GitHubBaseService.cs.bak by default.
 
 .PARAMETER ProjectRoot
-  Root path to search for GitHubCompatService.cs. Default: current directory.
+  Root path to search for GitHubBaseService.cs. Default: current directory.
 
 .PARAMETER NumParts
   Number of parts to split the obfuscated bytes into. Default: 4.
@@ -44,9 +44,9 @@ function Write-Err([string]$m) { Write-Host "ERROR: $m" -ForegroundColor Red }
 function Write-Ok([string]$m) { Write-Host "$m" -ForegroundColor Green }
 
 # --- Locate target file ---
-$target = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "GitHubCompatService.cs" -ErrorAction SilentlyContinue | Select-Object -First 1
+$target = Get-ChildItem -Path $ProjectRoot -Recurse -Filter "GitHubBaseService.cs" -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $target) {
-    Write-Err "Could not find GitHubCompatService.cs under '$ProjectRoot'."
+    Write-Err "Could not find GitHubBaseService.cs under '$ProjectRoot'."
     exit 2
 }
 $targetPath = $target.FullName
@@ -130,7 +130,8 @@ if (-not $NoBackup) {
 
 # --- Build C# injection snippet ---
 # produce xorKey literal
-$xorLiteral = "new byte[] { " + ($xorKey | ForEach-Object { "0x{0:X2}" -f $_ } -join ", ") + " }"
+$xorLiteral = "new byte[] { " + (( $xorKey | ForEach-Object { "0x{0:X2}" -f $_ } ) -join ", ") + " }"
+
 
 # produce int[] partN lines
 $partLines = for ($i = 0; $i -lt $parts.Count; $i++) {
@@ -141,7 +142,7 @@ $partLines = for ($i = 0; $i -lt $parts.Count; $i++) {
 
 # produce parts-array initializer for byte[][] (convert int[] to byte[] at runtime)
 $partsArrayInit = "var partsArray = new byte[][] { " + (
-    (1..$parts.Count) | ForEach-Object { "part$($_).Select(v => (byte)v).ToArray()" } -join ", "
+    ((1..$parts.Count) | ForEach-Object { "part$($_).Select(v => (byte)v).ToArray()" }) -join ", "
 ) + " };"
 
 # final decode snippet (keeps markers)
