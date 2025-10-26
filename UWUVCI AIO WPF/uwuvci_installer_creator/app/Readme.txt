@@ -38,9 +38,9 @@ My goal was to fix legacy bugs, modernize the code, and make the program stable,
 These are the major features and improvements I personally implemented:
 
 • Widescreen support for N64
-• DarkFilter (VFilter) removal for N64 and GBA
+• DarkFilte removal for N64 and GBA
 • C2W overclock patching for Wii injects
-• GCT patching and Deflicker options for Wii
+• GCT patching and VFilter (deflicker) options for Wii
 • Full support for Windows 7 and 8
 • Support for Unix (Wine/macOS/Linux)
 • Automatic dependency detection and installation
