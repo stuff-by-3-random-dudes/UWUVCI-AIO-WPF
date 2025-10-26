@@ -1282,7 +1282,7 @@ namespace UWUVCI_AIO_WPF
                             double stuff = 100 / test.Count;
                             foreach (string s in test)
                             {
-                                DownloadBase(s, this);
+                                Task.Run(() => DownloadBase(s, this));
                                 Progress += Convert.ToInt32(stuff);
                             }
                             Progress = 100;
