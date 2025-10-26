@@ -447,7 +447,7 @@ namespace UWUVCI_AIO_WPF
                 else if (e.Message.Contains("pre.iso"))
                 {
                     errorMessage =
-                        "💿 The game image appears trimmed or in an unsupported format (e.g., WBFS or NKIT.ISO).\n" +
+                        "💿 The game image appears too trimmed.\n" +
                         "Use a full, clean ISO dump instead.";
                 }
                 else if (e.Message.Contains("temp\\temp") || e.Message.Contains("temp/temp"))
