@@ -48,14 +48,14 @@ These are the major features and improvements I personally implemented:
 • “First-Run Tutorial” wizard
 • Rewritten ReadMe Viewer
 • Logging system (auto-clears after 7 days)
-• Async refactor — faster inject creation and UI responsiveness
+• Async refactor, faster inject creation and UI responsiveness
 • CNUSPACKER and WiiUDownloader rewritten as DLLs
 • Added tooltips, better error handling, and smoother UI behavior
 * Compat/Images/Feedback updates from the app itself
 * NDS Configuration settings
 • Updated to .NET Framework 4.8 and C# 13
 
-In short — UWUVCI v3 became more self-contained, faster, and significantly more stable.
+In short, UWUVCI v3 became more self-contained, faster, and significantly more stable.
 
 ============================================================
  Support the Developers
@@ -126,7 +126,7 @@ A) Nintendo’s servers can lag. Try again later.
 ============================================================
 
 Q8) Antivirus flagged UWUVCI?  
-A) False positive — whitelist it. Nothing malicious is inside.
+A) False positive, whitelist it. Nothing malicious is inside.
 
 ------------------------------------------------------------
 
@@ -136,7 +136,7 @@ A) Bad game dump, redump.
 ------------------------------------------------------------
 
 Q10) “Path .../temp/temp missing” or “tmd.bin can’t be found”?  
-A) Same issue — invalid dump. Redump properly.
+A) Same issue, invalid dump. Redump properly.
 
 ------------------------------------------------------------
 
@@ -170,7 +170,13 @@ A) Check all of these:
 
 ------------------------------------------------------------
 
-Q15) WUP install fails / Error 199-9999.  
+Q15) My game doesn’t appear when I select “ROM Path.”  
+A) The file is in an unsupported format.
+   When a rom is being selected, the pop-up box will specify what file types are supported for the console.
+
+------------------------------------------------------------
+
+Q16) WUP install fails / Error 199-9999.  
 A) Missing sigpatches.  
    Download:  
    https://github.com/V10lator/SigpatchesModuleWiiU/releases/download/v1.0/01_sigpatches.rpx  
@@ -179,13 +185,13 @@ A) Missing sigpatches.
 
 ------------------------------------------------------------
 
-Q16) GCN/Wii injects not working.  
+Q17) GCN/Wii injects not working.  
 A) Usually SDUSB or ISFShax homebrew issues or plugin issues with WiiVC Launch.  
    Also verify your Nintendont setup (see Q17/18).
 
 ------------------------------------------------------------
 
-Q17) GCN inject boots to the Nintendont menu.  
+Q18) GCN inject boots to the Nintendont menu.  
 A) You used TeconMoon injector before.  
    Fix:  
    • Delete `nincfg.bin` from SD root  
@@ -194,67 +200,67 @@ A) You used TeconMoon injector before.
 
 ------------------------------------------------------------
 
-Q18) “boot.dol not found”.  
+Q19) “boot.dol not found”.  
 A) Nintendont not set up on SD. Run “SD Setup” again.
 
 ------------------------------------------------------------
 
-Q19) SaveMii can’t find my injects.  
+Q20) SaveMii can’t find my injects.  
 A) Use **SaveMii Inject MOD**, not the vanilla version.
 
 ------------------------------------------------------------
 
-Q20) GB/C games don’t save when using the VC reset button.  
-A) Normal behavior — GoombaColor doesn’t handle VC resets.  
+Q21) GB/C games don’t save when using the VC reset button.  
+A) Normal behavior, GoombaColor doesn’t handle VC resets.  
    Use the in-game reset button combo instead.
 
 ------------------------------------------------------------
 
-Q21) “NKit error?”  
+Q22) “NKit error?”  
 A) You used a pirated or modified dump. Use a real ISO.  
    UWUVCI does **not** support illegal or altered files.
 
 ------------------------------------------------------------
 
-Q22) “Stuck on ‘Copying to SD’”.  
+Q23) “Stuck on ‘Copying to SD’”.  
 A) Manually copy it yourself:  
    Go to UWUVCI’s `InjectedGames` folder → move the inject to your SD card.
 
 ------------------------------------------------------------
 
-Q23) Help with ROM hacks or mods?  
+Q24) Help with ROM hacks or mods?  
 A) Mods are unsupported.  
-   If it runs on real hardware, it might work here — but ask the mod’s community.  
+   If it runs on real hardware, it might work here, but ask the mod’s community.  
    UWUVCI can’t guarantee mod compatibility.
 
 ============================================================
  🧰 Advanced Troubleshooting
 ============================================================
 
-Q24) “UWUVCI still won’t open” after installing .NET.  
+Q25) “UWUVCI still won’t open” after installing .NET.  
 A) Check Windows Event Viewer for crash details.  
    If it references missing DLLs, rerun the installer.
 
 ------------------------------------------------------------
 
-Q25) “Could not load CNUSPACKER.dll” or similar.  
-A) Required DLLs are missing — rerun the installer to restore them.
+Q26) “Could not load CNUSPACKER.dll” or similar.  
+A) Required DLLs are missing, rerun the installer to restore them.
 
 ------------------------------------------------------------
 
-Q26) UWUVCI’s progress bar gets stuck.  
+Q27) UWUVCI’s progress bar gets stuck.  
 A) Update Tools: click ⚙️ → “Update Tools”.
 
 ------------------------------------------------------------
 
-Q27) Mac/Linux version?  
+Q28) Mac/Linux version?  
 A) UWUVCI-3 uses WPF, a Windows-only framework.  
-   Use Wine or CrossOver — UWUVCI auto-detects non-Windows systems.  
+   Use Wine or CrossOver, UWUVCI auto-detects non-Windows systems.  
    UWUVCI-Prime (v4) will be natively cross-platform.
 
 ------------------------------------------------------------
 
-Q28) Where are the Log and Settings files?  
+Q29) Where are the Log and Settings files?  
 A) Windows:  
       %localappdata%\UWUVCI-V3  
    Mac/Linux (Wine):  
@@ -262,13 +268,13 @@ A) Windows:
 
 ------------------------------------------------------------
 
-Q29) “An error message popped up.”  
+Q30) “An error message popped up.”  
 A) **Read it.**  
    UWUVCI’s messages are written to tell you exactly what’s wrong.  
    If it mentions a file, check that path.  
    If it says “missing dependency,” rerun the installer.  
    If it says “drive full,” free up space.  
-   It’s not random — it’s there to help you.
+   It’s not random, it’s there to help you.
 
 ============================================================
  📺 Extra Resources
@@ -282,4 +288,4 @@ Discord Support:
 ============================================================
  End of ReadMe
 ============================================================
-Maintained by ZestyTS — UWUVCI v3, the final and most stable version.
+Maintained by ZestyTS, UWUVCI v3
