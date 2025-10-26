@@ -1,4 +1,6 @@
-﻿using GameBaseClassLibrary;
+﻿using CNUSPACKER.Models;
+using GameBaseClassLibrary;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -1709,7 +1711,7 @@ namespace UWUVCI_AIO_WPF
             Clean();
         }
 
-        public static void Packing(string gameName, string gameConsole, MainViewModel mvm)
+        public static async Task PackingAsync(string gameName, string gameConsole, MainViewModel mvm)
         {
             // --- step 0: preflight/tool check ---
             mvm.msg = "Checking tools...";
@@ -1719,7 +1721,7 @@ namespace UWUVCI_AIO_WPF
             // --- step 1: sanitize name + decide output folder ---
             mvm.msg = "Creating output folder...";
 
-            string Sanitize(string s)
+            static string Sanitize(string s)
             {
                 if (string.IsNullOrWhiteSpace(s)) return "NoName";
                 s = s.Replace("|", " ");
@@ -1731,8 +1733,8 @@ namespace UWUVCI_AIO_WPF
             }
 
             var safeGameName = Sanitize(gameName ?? "NoName");
-            var outRoot = JsonSettingsManager.Settings.OutPath;                 // absolute, user-chosen
-            var basePath = baseRomPath;                                         // absolute path to baserom (your global)
+            var outRoot = JsonSettingsManager.Settings.OutPath; // absolute, user-chosen
+            var basePath = baseRomPath;                         // absolute path to baserom (your global)
             var folderBase = $"[WUP][{gameConsole}] {safeGameName}";
             string outputPath = Path.Combine(outRoot, folderBase);
 
@@ -1744,7 +1746,7 @@ namespace UWUVCI_AIO_WPF
                 outputPath = Path.Combine(outRoot, $"{folderBase}_{suffix}");
             }
 
-            mvvm.foldername = Path.GetFileName(outputPath);
+            mvm.foldername = Path.GetFileName(outputPath);
 
             mvm.Progress = 40;
             mvm.msg = "Packing...";
@@ -1760,7 +1762,10 @@ namespace UWUVCI_AIO_WPF
                         Directory.Delete(cache, true);
                 }
             }
-            catch { /* non-fatal */ }
+            catch
+            {
+                // non-fatal
+            }
 
             // --- step 3: ensure dirs + pin CWD to outRoot (avoids stray Downloads/Release) ---
             var oldCwd = Environment.CurrentDirectory;
@@ -1770,76 +1775,54 @@ namespace UWUVCI_AIO_WPF
                 Directory.CreateDirectory(outputPath);
                 Environment.CurrentDirectory = outRoot;
 
-                // Build args exactly how CNUSPACKER expects them
-                var args = new[]
+                // Build options for CNUSPACKER (replaces old CLI args)
+                var options = new CnusPackagerOptions
                 {
-                    "-in", basePath,
-                    "-out", outputPath,
-                    "-encryptKeyWith", JsonSettingsManager.Settings.Ckey
+                    InputPath = basePath,
+                    OutputPath = outputPath,
+                    EncryptKeyWith = JsonSettingsManager.Settings.Ckey,
+                    SkipXmlParsing = false
                 };
-
-                // Capture CNUSPACKER console so we can diagnose path weirdness
-                var oldOut = Console.Out;
-                var oldErr = Console.Error;
-                using var swOut = new StringWriter();
-                using var swErr = new StringWriter();
-                Console.SetOut(swOut);
-                Console.SetError(swErr);
 
                 try
                 {
-                    // Call the DLL entry point directly (synchronous)
-                    CNUSPACKER.Program.Main(args);
+                    Logger.Log($"[CNUSPACKER] Starting packaging process for {basePath}");
+
+                    // Run CNUSPACKER directly via its library entry
+                    var runner = new CNUSPACKER.CnusPackagerRunner(null, null);
+                    await runner.RunAsync(options).ConfigureAwait(false);
+
+                    Logger.Log("[CNUSPACKER] Packaging completed successfully.");
                 }
                 catch (Exception ex)
                 {
-                    try
-                    {
-                        Logger.Log("[CNUSPACKER stdout]\n" + swOut.ToString());
-                        Logger.Log("[CNUSPACKER stderr]\n" + swErr.ToString());
-                    }
-                    catch { /* ignore logging failures */ }
-
-                    // bubble up with context
+                    Logger.Log($"[CNUSPACKER] ERROR: Packaging failed for {basePath}");
+                    Logger.Log($"[CNUSPACKER] Exception: {ex}");
                     throw new Exception("CNUSPACKER failed. See logs for details.", ex);
-                }
-                finally
-                {
-                    // restore console streams
-                    Console.SetOut(oldOut);
-                    Console.SetError(oldErr);
-
-                    // always log what CNUSPACKER wrote
-                    try
-                    {
-                        Logger.Log("[CNUSPACKER stdout]\n" + swOut.ToString());
-                        Logger.Log("[CNUSPACKER stderr]\n" + swErr.ToString());
-                    }
-                    catch { /* ignore logging failures */ }
                 }
             }
             finally
             {
-                // Always restore CWD
                 Environment.CurrentDirectory = oldCwd;
             }
 
             // --- step 4: wrap-up/cleanup ---
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
+
             try
             {
-                Clean(); 
+                Clean();
             }
             catch (Exception ex)
             {
-                // non-fatal: log and continue
                 try { Logger.Log("Clean() failed: " + ex.Message); } catch { }
             }
 
             mvm.Progress = 100;
             mvm.msg = "";
         }
+
 
         public static async Task DownloadAsync(MainViewModel mvm, CancellationToken ct)
         {

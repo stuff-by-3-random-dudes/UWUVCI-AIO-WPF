@@ -1056,9 +1056,9 @@ namespace UWUVCI_AIO_WPF
                 Exception packError = null;
                 var done = new ManualResetEventSlim(false);
 
-                Task.Run(() =>
+                _ = Task.Run(async () =>
                 {
-                    try { Injection.Packing(GameConfiguration.GameName, consoleName, this); }
+                    try { await Injection.PackingAsync(GameConfiguration.GameName, consoleName, this); }
                     catch (Exception ex) { packError = ex; }
                     finally { done.Set(); }
                 });
