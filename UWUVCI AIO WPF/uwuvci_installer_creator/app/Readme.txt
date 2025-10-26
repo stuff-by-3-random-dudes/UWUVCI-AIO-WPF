@@ -26,7 +26,7 @@ If you're curious about the Discord, the latest updates, or video guides, you’
 ============================================================
  Project Overview
 ============================================================
-By the time you're reading this, **active development on UWUVCI-3 has concluded.**
+By the time you're reading this, **active development on UWUVCI-3 has concluded.** As in there are no planned updates remaining. (Although, there have been seven updates since developent ended.)
 Future development continues under UWUVCI-Prime (v4), which adds full Mac and Linux support.
 
 I’m **ZestyTS**, and since late 2020 I’ve been the primary developer maintaining and improving UWUVCI-3.
@@ -42,7 +42,7 @@ These are the major features and improvements I personally implemented:
 • C2W overclock patching for Wii injects
 • GCT patching and Deflicker options for Wii
 • Full support for Windows 7 and 8
-• Helper App for Unix (Wine/macOS/Linux)
+• Support for Unix (Wine/macOS/Linux)
 • Automatic dependency detection and installation
 • Rewritten Installer with guided setup and OneDrive-safe paths
 • “First-Run Tutorial” wizard
@@ -51,7 +51,9 @@ These are the major features and improvements I personally implemented:
 • Async refactor — faster inject creation and UI responsiveness
 • CNUSPACKER and WiiUDownloader rewritten as DLLs
 • Added tooltips, better error handling, and smoother UI behavior
-• Updated to .NET Framework 4.8.1 and C# 8.0
+* Compat/Images/Feedback updates from the app itself
+* NDS Configuration settings
+• Updated to .NET Framework 4.8 and C# 13
 
 In short — UWUVCI v3 became more self-contained, faster, and significantly more stable.
 
@@ -68,7 +70,7 @@ In short — UWUVCI v3 became more self-contained, faster, and significantly mor
  Frequently Asked Questions (FAQ)
 ============================================================
 Maintained by ZestyTS (2020–2025)  
-This FAQ was rewritten during v3.Z-B after major system updates.
+This FAQ was rewritten during v3.200 after major system updates.
 Please read carefully before assuming something is broken.
 
 ============================================================
@@ -129,7 +131,7 @@ A) False positive — whitelist it. Nothing malicious is inside.
 ------------------------------------------------------------
 
 Q9) “Could not find file 'bin\\temp\\pre.iso'”?  
-A) Bad or trimmed game dump. Use a clean ISO, **not** .nkit or .wbfs.
+A) Bad game dump, redump.
 
 ------------------------------------------------------------
 
@@ -139,9 +141,9 @@ A) Same issue — invalid dump. Redump properly.
 ------------------------------------------------------------
 
 Q11) UWUVCI doesn’t open.  
-A) Install .NET Framework 4.8.1:  
-   https://dotnet.microsoft.com/en-us/download/dotnet-framework/net481  
-   Still not opening? See Q30.
+A) Install .NET Framework 4.8:  
+   https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48
+   Still not opening? See Q29.
 
 ------------------------------------------------------------
 
@@ -152,9 +154,9 @@ A) Move UWUVCI to a drive with more free space.
 
 Q13) UWUVCI crashes, UI disappears, or acts strange.  
 A) Check that:  
-   • You didn’t install in OneDrive / cloud folder  
+   • You didn’t install or using a rom in OneDrive / cloud folder  
    • Antivirus isn’t blocking background tools  
-   • You extracted the ZIP before running
+   • Turkish locale has known to cause issues
 
 ============================================================
  💾 Injection & Compatibility
@@ -163,9 +165,8 @@ A) Check that:
 Q14) Inject created but game doesn’t launch properly.  
 A) Check all of these:  
    • Correct base game (region-matched)  
-   • Base ≥ target game size  
+   • Base ≥ target game size (GCN/Wii not applicable)
    • Use unmodified ROMs  
-   • For N64, different bases behave differently — test another one
 
 ------------------------------------------------------------
 
@@ -179,8 +180,8 @@ A) Missing sigpatches.
 ------------------------------------------------------------
 
 Q16) GCN/Wii injects not working.  
-A) Usually SDUSB or ISFShax environment issues.  
-   Also verify your Nintendont setup (see Q19).
+A) Usually SDUSB or ISFShax homebrew issues or plugin issues with WiiVC Launch.  
+   Also verify your Nintendont setup (see Q17/18).
 
 ------------------------------------------------------------
 
