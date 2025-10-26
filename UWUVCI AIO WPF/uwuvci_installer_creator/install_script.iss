@@ -1,11 +1,11 @@
 ﻿; Inno Setup Script for UWUVCI AIO
-; Version 3.Z-B
+; Version 3.200
 ; Supports Windows and Wine
 
 [Setup]
 AppName=UWUVCI AIO
 AppId=UWUVCI AIO
-AppVersion=3.N
+AppVersion=3.200
 DefaultDirName={userdocs}\UWUVCI_AIO
 UninstallDisplayIcon={app}\UWUVCI AIO.exe
 OutputBaseFilename=UWUVCI_INSTALLER
@@ -17,10 +17,10 @@ DefaultGroupName=UWUVCI AIO
 
 [Files]
 Source: "app\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs;
-Source: "dotnetfx481.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall;
+Source: "dotnetfx48.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall;
 
 [Run]
-Filename: "{tmp}\dotnetfx481.exe"; Parameters: "/quiet /norestart"; StatusMsg: "Installing .NET Framework 4.8.1..."; Check: not IsRunningUnderWine and NeedsDotNet481; Flags: runhidden;
+Filename: "{tmp}\dotnetfx48.exe"; Parameters: "/quiet /norestart"; StatusMsg: "Installing .NET Framework 4.8..."; Check: not IsRunningUnderWine and NeedsDotNet48; Flags: runhidden;
 Filename: "{app}\Readme.txt"; Flags: shellexec postinstall nowait;
 Filename: "{app}\UWUVCI AIO.exe"; Description: "Launch UWUVCI AIO"; Flags: postinstall nowait unchecked;
 
@@ -54,12 +54,12 @@ var
   Installed: Cardinal;
 begin
   Success := RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', Installed);
-  Result := Success and (Installed >= 528372); // .NET 4.8.1 release key is 528372
+Result := Success and (Installed >= 528040); // .NET 4.8 release key is 528040
 end;
 
-function NeedsDotNet481: Boolean;
+function NeedsDotNet48: Boolean;
 begin
-  Result := not IsDotNetInstalled('4.8.1');
+  Result := not IsDotNetInstalled('4.8');
 end;
 
 function IsRunningUnderWine: Boolean;
