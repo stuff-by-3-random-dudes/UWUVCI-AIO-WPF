@@ -81,7 +81,7 @@ Q1) I don’t know how to use UWUVCI.
 A) Go here:  
    https://uwuvci-prime.github.io/UWUVCI-Resources/index  
    Select your console and follow the steps exactly.  
-   Don’t skip steps or use random YouTube guides.
+   Don’t skip steps or use random YouTube guides (UWUVCI has it's own video guides).
 
 ------------------------------------------------------------
 
