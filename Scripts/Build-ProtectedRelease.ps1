@@ -148,7 +148,17 @@ Write-Host "📦 Version bumped: $oldVersion → $newVersion"
 # STEP 7: Build
 # ---------------------------------------------------------------------
 Write-Host "🏗️ Building $($solution.Name) ($Configuration)..."
-dotnet build $solution.FullName -c $Configuration /p:Platform="Any CPU"
+
+# Try to locate MSBuild dynamically
+$msbuildPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe 2>$null
+
+if (-not $msbuildPath) {
+    Write-Warning "⚠️ MSBuild not found. Falling back to dotnet build..."
+    dotnet build $solution.FullName -c $Configuration /p:Platform="Any CPU"
+} else {
+    Write-Host "🛠️ Using MSBuild: $msbuildPath"
+    & $msbuildPath $solution.FullName /p:Configuration=$Configuration /p:Platform="Any CPU"
+}
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "❌ Build failed."
