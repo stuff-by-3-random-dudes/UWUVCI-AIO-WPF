@@ -46,7 +46,7 @@ These are the major features and improvements I personally implemented:
 • Automatic dependency detection and installation
 • Rewritten Installer with guided setup and OneDrive-safe paths
 • “First-Run Tutorial” wizard
-• Rewritten ReadMe/Patch Viewer
+• A ReadMe/Patch Notes Viewer
 • Logging system (auto-clears after 7 days)
 • Async refactor, faster inject creation and UI responsiveness
 • CNUSPACKER and WiiUDownloader rewritten as DLLs
