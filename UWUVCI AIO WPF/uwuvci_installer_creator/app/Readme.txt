@@ -2,7 +2,7 @@
                    UWUVCI v3 ReadMe (By ZestyTS)
 ============================================================
 
-Thank you for downloading UWUVCI-3!
+Thank you for downloading UWUVCI-V3!
 If you didn’t download it from the official GitHub source, you might be using a modified version.
 
 Official source:
@@ -20,16 +20,16 @@ If you're curious about the Discord, the latest updates, or video guides, you’
 • Latest changes:
   https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
 
-• Official UWUVCI 3 Video Series:
+• Official UWUVCI V3 Video Series:
   https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
 ============================================================
  Project Overview
 ============================================================
-By the time you're reading this, **active development on UWUVCI-3 has concluded.** As in there are no planned updates remaining. (Although, there have been seven updates since developent ended.)
+By the time you're reading this, **active development on UWUVCI-V3 has concluded.** As in there are no planned updates remaining. (Although, there have been seven updates since developent ended.)
 Future development continues under UWUVCI-Prime (v4), which adds full Mac and Linux support.
 
-I’m **ZestyTS**, and since late 2020 I’ve been the primary developer maintaining and improving UWUVCI-3.
+I’m **ZestyTS**, and since late 2020 I’ve been the primary developer maintaining and improving UWUVCI-V3.
 My goal was to fix legacy bugs, modernize the code, and make the program stable, fast, and cross-platform friendly.
 
 ============================================================
@@ -88,7 +88,7 @@ A) Go here:
 Q2) What games are compatible?  
 A) Visit: https://uwuvci.net → click “Compatibility” (top right).  
    If a game isn’t listed, it’s **untested**, not unsupported.  
-   For GameCube: Rhythm Heaven Fever (US) works for nearly all titles.
+   For GameCube: Rhythm Heaven Fever as a base works for all titles.
 
 ------------------------------------------------------------
 
@@ -249,12 +249,14 @@ A) Required DLLs are missing, rerun the installer to restore them.
 ------------------------------------------------------------
 
 Q27) UWUVCI’s progress bar gets stuck.  
-A) Update Tools: click ⚙️ → “Update Tools”.
+A) Check out the Logs, they write everything out.
+   ⚙️ → “App Settings” -> “Open Log Folder”
+   Click on the most recent file.
 
 ------------------------------------------------------------
 
 Q28) Mac/Linux version?  
-A) UWUVCI-3 uses WPF, a Windows-only framework.  
+A) UWUVCI-V3 uses WPF, a Windows-only framework.  
    Use Wine or CrossOver, UWUVCI auto-detects non-Windows systems.  
    UWUVCI-Prime (v4) will be natively cross-platform.
 
@@ -288,4 +290,4 @@ Discord Support:
 ============================================================
  End of ReadMe
 ============================================================
-Maintained by ZestyTS, UWUVCI v3
+Maintained by ZestyTS, UWUVCI V3
