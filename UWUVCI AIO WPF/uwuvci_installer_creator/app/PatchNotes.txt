@@ -1,4 +1,97 @@
 ====================================
+Version 3.200 - Nov 7, 2025
+====================================
+**New Features**
+- Short Game Name field added to inject creation.
+- Patch Notes Viewer
+  - Patch Notes were previously only on GitHub, now view them directly in-app.
+- In-App Documentation
+  - Read both Patch Notes and the ReadMe without leaving the program.
+- Compatibility List Submission
+  - The Discord bot has been retired (cost reasons), but you can now submit entries directly within the app.
+- Image Uploads for Missing Titles
+  - If a game doesn’t have cover images, you’ll now be prompted to upload them during injection (shown while waiting so it doesn’t interrupt the process).
+- Application Settings Menu
+  - Completely new settings interface, check this out for new configuration options.
+- Feedback & Bug Report Form
+  - Submit feedback, suggestions, or bug reports directly from the app. *(Please don’t use for personal support.)*
+- Official Version Check
+  - The app now detects and warns if you’re using a non-official or modified version.
+- New Nintendont Config Tool
+  - Fully integrated in-app configuration editor.
+  - Supports loading, exporting, and presets.
+- Download Progress Bar (Real this time!)
+  - Now properly tracks progress.
+- Download Cancel Button
+  - Cancel ongoing downloads anytime.
+- Update Checker on Startup
+  - Notifies you when a new version is available.
+- Custom Output & Base Paths
+  - Set and save custom paths for outputs and bases.
+- Log File Access
+  - View logs directly from within the app.
+- Unified Message Box System
+  - New `UWUVCI_MessageBox` system for consistent pop-ups and alerts.
+- Unit Testing Support (Developer Feature)
+  - Added MSTest coverage for major services.
+
+**Improvements**
+- Unified Cross-Platform Build
+  - Removed the separate Helper App; now runs natively on Windows, macOS, and Linux.
+- Updated Toolchain
+  - Added macOS and Linux versions of WIT and WSTRT.
+- Smaller Installer
+  - Package size reduced by ~80%, bundled into a single `.exe` (no more scattered DLLs!).
+- Completely Redesigned Settings Page
+  - Cleaner layout and simplified options.
+- Trim Disable Works Again
+  - And now supports patching (previously incompatible).
+- Tutorial Overhaul
+  - Old tutorial screens replaced with a brand-new design.
+- Landing Page Updates
+  - Cleaner, includes version number and improved layout.
+- Rewritten ReadMe
+  - Updated for clarity and current features.
+- Custom CNUSPacker Implementation
+  - Fixed FSTEntry issues and improved speed.
+- Improved WiiUDownloaderLibrary
+  - Now supports retries, parallel downloads, and live progress updates.
+- Improved Responsiveness
+  - Reduced UI lockups; some processes may appear slower but are actually more stable.
+- Rewritten SD Copy
+  - Now up to 8× faster when transferring WUP installables.
+- Faster Tool/Base Downloads
+  - Parallelized and optimized file fetching (tools improvement may be subtle).
+- Meaningful Error Messages
+  - More descriptive, user-friendly messages throughout.
+- Unix Compatibility
+  - Fixed pop-up rendering on macOS/Linux (no more blacked-out dialogs).
+- Improved Logging
+  - More context added for debugging and tracing issues.
+- Removed Helper App
+  - Eliminated dependency and related potential errors.
+- C# Version Upgrade
+  - Updated from C# 8 to C# 13 (internal dev improvement).
+- Simplified Settings
+  - Removed redundant or confusing options.
+- UI Polish
+  - Minor layout and visual touch-ups throughout.
+
+**Fixes**
+- Removed TXT GCT Patch Support
+  - Formatting too inconsistent; now only supports binary `.gct` files.
+- NDS Render Sizes Fixed
+  - Previously saved incorrect values (0/1 instead of 1/2).
+- N64 DarkFilter and Widescreen
+  - Both now work as intended.
+- Windows Detection Fix
+  - No longer falsely warns Windows users that they aren’t using Windows.
+- Resolution Warning Improvement
+  - Now shows a proper message when display scaling is too high.
+- Windows Security Compatibility
+  - Files within the app no longer get randomly blocked by Windows Defender (only the main EXE could be flagged, which is rare).
+
+====================================
 Version 3.N - May 11, 2025
 ====================================
 **Fixes**
