@@ -209,7 +209,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             {
                 var feedbackWin = new FeedbackWindow
                 {
-                    Owner = Application.Current.MainWindow
+                    Owner = parent
                 };
                 feedbackWin.ShowDialog();
             }
