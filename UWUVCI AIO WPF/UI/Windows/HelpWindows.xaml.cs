@@ -270,19 +270,56 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
 
                 // ==========================================
-                // Bullets (- item)
+                // Bullets (- item and sub-bullets)
                 // ==========================================
-                if (line.StartsWith("- "))
+                if (Regex.IsMatch(line, @"^\s*-\s"))
                 {
-                    var bullet = new Run("• " + line.Substring(2))
+                    int indentLevel = 0;
+                    while (indentLevel < line.Length && line[indentLevel] == ' ')
+                        indentLevel++;
+
+                    string bulletText = line.TrimStart('-', ' ').Trim();
+                    bool isSubBullet = indentLevel >= 2; // detect "  - " pattern
+
+                    Run bulletRun;
+                    Paragraph p;
+
+                    if (!isSubBullet)
                     {
-                        FontSize = 14,
-                        Foreground = Brushes.Black
-                    };
-                    var p = new Paragraph(bullet) { Margin = new Thickness(28, 0, 0, 0) };
+                        // Top-level bullet
+                        bulletRun = new Run("• " + bulletText)
+                        {
+                            FontSize = 15,
+                            Foreground = new SolidColorBrush(Color.FromRgb(20, 20, 20))
+                        };
+                        p = new Paragraph(bulletRun)
+                        {
+                            Margin = new Thickness(20, 4, 0, 2),
+                            TextIndent = -10,
+                            LineHeight = 24
+                        };
+                    }
+                    else
+                    {
+                        // Sub-bullet
+                        bulletRun = new Run("◦ " + bulletText)
+                        {
+                            FontSize = 14,
+                            Foreground = new SolidColorBrush(Color.FromRgb(80, 80, 80))
+                        };
+                        p = new Paragraph(bulletRun)
+                        {
+                            Margin = new Thickness(30, 0, 0, 0),
+                            TextIndent = 30,
+                            LineHeight = 16
+                        };
+                    }
+
                     ReadMeViewer.Document.Blocks.Add(p);
                     continue;
                 }
+
+
 
                 // ==========================================
                 // Keyword Highlights (error/fix/note/warning)
@@ -350,7 +387,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                         inlineP.Inlines.Add(new Run(boldMatch.Groups[1].Value)
                         {
                             FontWeight = FontWeights.Bold,
-                            Foreground = new SolidColorBrush(Color.FromRgb(21, 101, 192))
+                            Foreground = new SolidColorBrush(Color.FromRgb(21, 101, 192)),
+                            FontSize = 20
                         });
                         pos = boldMatch.Index + boldMatch.Length;
                     }
