@@ -60,12 +60,25 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            Process[] pname = Process.GetProcessesByName("INICreator");
-            if (pname.Length == 0)
+            try
             {
-                Process.Start(@"bin\Tools\INICreator.exe");
+                // Prefer integrated WPF editor
+                var win = new N64ConfigWindow
+                {
+                    Owner = Window.GetWindow(this)
+                };
+                win.ShowDialog();
             }
-                
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error Opening N64 Ini Config",
+                    "The N64 Ini Config screen could not be opened.\n\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+            
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)

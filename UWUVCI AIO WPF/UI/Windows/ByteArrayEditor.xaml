@@ -1,0 +1,32 @@
+<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.ByteArrayEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Byte Array Editor"
+        Height="360" Width="560"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Border Margin="10" Padding="10" Background="White" BorderBrush="#2196F3" BorderThickness="1" CornerRadius="6">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Enter hex bytes (e.g., 'DE AD BE EF' or 'DEADBEEF')."/>
+
+            <TextBox x:Name="HexInput" Grid.Row="1" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                     FontFamily="Consolas" FontSize="13"/>
+
+            <DockPanel Grid.Row="2" Margin="0,10,0,0" LastChildFill="False">
+                <TextBlock x:Name="Preview" VerticalAlignment="Center" Foreground="Gray"/>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Content="Paste From aN:" Margin="0,0,8,0" Click="PasteFromAN_Click"/>
+                    <Button Content="OK" Width="90" Margin="0,0,8,0" Click="Ok_Click"/>
+                    <Button Content="Cancel" Width="90" Background="#757575" Click="Cancel_Click"/>
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+    </Border>
+</Window>
+

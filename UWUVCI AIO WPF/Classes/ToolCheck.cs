@@ -20,7 +20,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "RetroInject.exe",
             "tga_verify.exe",
             "wiiurpxtool.exe",
-            "INICreator.exe",
             "blank.ini",
             "FreeImage.dll",
             "BuildPcePkg.exe",
