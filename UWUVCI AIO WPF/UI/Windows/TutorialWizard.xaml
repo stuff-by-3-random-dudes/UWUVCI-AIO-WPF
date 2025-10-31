@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="UWUVCI V3 Tutorial"
         Height="480"
-        Width="900"
+        Width="1024"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="#FFF8FAFC">
@@ -18,9 +18,11 @@
             <Setter Property="BorderThickness" Value="1.2"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="4,2"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="MinWidth" Value="80"/>
+            <!-- Increase padding/height for better readability -->
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Height" Value="32"/>
+            <!-- Provide a sensible minimum without forcing fixed width -->
+            <Setter Property="MinWidth" Value="100"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
@@ -95,14 +97,14 @@
         </Border>
 
         <!-- Main Content -->
-        <Grid Grid.Column="1" Margin="40,25,45,25">
+        <Grid Grid.Column="1" Margin="28,20,32,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                <StackPanel Width="Auto" MaxWidth="600" Margin="0,0,0,10">
+                <StackPanel Width="Auto" MaxWidth="780" Margin="0,0,0,10">
                     <TextBlock x:Name="TitleBlock"
                                Text="Welcome to Ultimate Wii U Virtual Console Injector (UWUVCI) V3!"
                                FontSize="22"
@@ -156,53 +158,21 @@
             </ScrollViewer>
 
             <!-- Footer Buttons -->
-            <DockPanel Grid.Row="1" Margin="0,10,0,0">
-                <!-- Left-side Action Buttons -->
-                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" x:Name="ExtraButtonsPanel" Margin="0,0,10,0">
-                    <Button x:Name="ZestyButton"
-                            Style="{StaticResource UWUVCI_ButtonStyle}"
-                            Content="Zesty's Corner"
-                            Click="ZestyButton_Click"
-                            Visibility="Collapsed"/>
-
-                    <Button x:Name="DiscordButton"
-                            Style="{StaticResource UWUVCI_ButtonStyle}"
-                            Content="Discord"
-                            Click="DiscordButton_Click"
-                            Visibility="Collapsed"/>
-
-                    <Button x:Name="DonateButton"
-                            Style="{StaticResource UWUVCI_ButtonStyle}"
-                            Content="Donate"
-                            Click="DonateButton_Click"
-                            Visibility="Collapsed"/>
-
-                    <Button x:Name="GameButton"
-                            Style="{StaticResource UWUVCI_ButtonStyle}"
-                            Content="Play My Game"
-                            Click="GameButton_Click"
-                            Visibility="Collapsed"/>
-
-                    <Button x:Name="ReadMeButton"
-                            Style="{StaticResource UWUVCI_ButtonStyle}"
-                            Content="ReadMe"
-                            Click="ReadMeButton_Click"
-                            Visibility="Collapsed"/>
-                </StackPanel>
-
-                <!-- Right-side Navigation Buttons -->
+            <DockPanel Grid.Row="1" Margin="0,10,0,0" LastChildFill="False">
+                <!-- Right-side Navigation Buttons (reserve space first) -->
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                     <Button x:Name="PatchNotesButton"
                             Style="{StaticResource UWUVCI_ButtonStyle}"
                             Content="Patch Notes"
                             Click="PatchNotesButton_Click"
-                            Visibility="Collapsed"/>
+                            Visibility="Collapsed"
+                            Margin="0,0,8,0"/>
 
                     <Button x:Name="BackButton"
                             Style="{StaticResource UWUVCI_ButtonStyle}"
                             Content="Back"
                             Click="BackButton_Click"
-                            Margin="10,0,0,0"/>
+                            Margin="0,0,8,0"/>
 
                     <Button x:Name="NextButton"
                             Style="{StaticResource UWUVCI_ButtonStyle}"
@@ -210,8 +180,44 @@
                             Background="#FF0078D7"
                             Foreground="White"
                             BorderBrush="#FF005A9E"
-                            Click="NextButton_Click"
-                            Margin="10,0,0,0"/>
+                            Click="NextButton_Click"/>
+                </StackPanel>
+
+                <!-- Left-side Action Buttons -->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" x:Name="ExtraButtonsPanel" Margin="0,0,10,0">
+                    <Button x:Name="ZestyButton"
+                            Style="{StaticResource UWUVCI_ButtonStyle}"
+                            Content="Zesty's Corner"
+                            Click="ZestyButton_Click"
+                            Visibility="Collapsed"
+                            Margin="0,0,8,0"/>
+
+                    <Button x:Name="DiscordButton"
+                            Style="{StaticResource UWUVCI_ButtonStyle}"
+                            Content="Discord"
+                            Click="DiscordButton_Click"
+                            Visibility="Collapsed"
+                            Margin="0,0,8,0"/>
+
+                    <Button x:Name="DonateButton"
+                            Style="{StaticResource UWUVCI_ButtonStyle}"
+                            Content="Donate"
+                            Click="DonateButton_Click"
+                            Visibility="Collapsed"
+                            Margin="0,0,8,0"/>
+
+                    <Button x:Name="GameButton"
+                            Style="{StaticResource UWUVCI_ButtonStyle}"
+                            Content="Play My Game"
+                            Click="GameButton_Click"
+                            Visibility="Collapsed"
+                            Margin="0,0,8,0"/>
+
+                    <Button x:Name="ReadMeButton"
+                            Style="{StaticResource UWUVCI_ButtonStyle}"
+                            Content="ReadMe"
+                            Click="ReadMeButton_Click"
+                            Visibility="Collapsed"/>
                 </StackPanel>
             </DockPanel>
         </Grid>
