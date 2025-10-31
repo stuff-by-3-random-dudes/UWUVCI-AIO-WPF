@@ -12,6 +12,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 {
     public partial class N64ConfigWindow : Window
     {
+        private static bool _mergeTipShown = false;
         private string _currentPath;
         private IniDocument _doc = new IniDocument();
         private readonly Dictionary<string, Dictionary<string, FrameworkElement>> _controls = new Dictionary<string, Dictionary<string, FrameworkElement>>();
@@ -96,6 +97,25 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             try
             {
                 ApplyFromUi();
+                // Validation: BackupType/BackupSize consistency
+                try
+                {
+                    var rom = _doc.GetSection("RomOption");
+                    var hasType = !string.IsNullOrWhiteSpace(rom?.Get("BackupType"));
+                    var hasSize = !string.IsNullOrWhiteSpace(rom?.Get("BackupSize"));
+                    if (hasType ^ hasSize)
+                    {
+                        UWUVCI_MessageBox.Show(
+                            "Save warning",
+                            "BackupType is set but BackupSize is empty (or vice versa). This may not behave as expected.",
+                            UWUVCI_MessageBoxType.Ok,
+                            UWUVCI_MessageBoxIcon.Warning,
+                            this,
+                            true);
+                        StatusText.Text = "Warning: BackupType/BackupSize mismatch.";
+                    }
+                }
+                catch { /* non-fatal */ }
                 var text = IniSerializer.Serialize(_doc);
                 File.WriteAllText(path, text);
                 StatusText.Text = $"Saved: {Path.GetFileName(path)}";
@@ -663,6 +683,19 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 UWUVCI_MessageBox.Show("Preset error", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
+        }
+
+        private void ChkQuickMerge_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_mergeTipShown) return;
+            _mergeTipShown = true;
+            UWUVCI_MessageBox.Show(
+                "Merge mode",
+                "When Merge is ON, applying a preset only overwrites the preset’s keys and keeps your other values. When OFF, the preset replaces the entire config.",
+                UWUVCI_MessageBoxType.Ok,
+                UWUVCI_MessageBoxIcon.Info,
+                this,
+                true);
         }
 
         

@@ -75,7 +75,7 @@
                     <Button x:Name="BtnSave" Content="Save" Click="BtnSave_Click"/>
                     <Button x:Name="BtnSaveAs" Content="Save As…" Click="BtnSaveAs_Click"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center"><TextBlock Text="Preset:" VerticalAlignment="Center" Margin="8,0,6,0"/><ComboBox x:Name="PresetQuickBox" Width="260" VerticalAlignment="Center" SelectionChanged="PresetQuickBox_SelectionChanged" ToolTip="Choose a preset. Description shows when selected."/><CheckBox x:Name="ChkQuickMerge" Content="Merge" VerticalAlignment="Center" Margin="6,0,0,0" ToolTip="On: overwrite only preset keys; keep other values. Off: replace everything with the preset."/>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center"><TextBlock Text="Preset:" VerticalAlignment="Center" Margin="8,0,6,0"/><ComboBox x:Name="PresetQuickBox" Width="260" VerticalAlignment="Center" SelectionChanged="PresetQuickBox_SelectionChanged" ToolTip="Choose a preset. Description shows when selected."/><TextBlock Text="(hover for details)" Foreground="#666" Margin="6,0,0,0" VerticalAlignment="Center"/><CheckBox x:Name="ChkQuickMerge" Content="Merge" VerticalAlignment="Center" Margin="6,0,0,0" Checked="ChkQuickMerge_Checked" ToolTip="On: overwrite only preset keys; keep other values. Off: replace everything with the preset."/><Button x:Name="BtnClose" Content="Close" Background="#757575" Click="BtnClose_OnClick"/>
                 </StackPanel>
             </DockPanel>
 

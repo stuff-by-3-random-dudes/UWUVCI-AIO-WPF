@@ -99,10 +99,11 @@ namespace UWUVCI_AIO_WPF.Modules.N64Config
         public static string Serialize(IniDocument doc)
         {
             var sb = new StringBuilder();
-            foreach (var sec in doc.Sections)
+            // stable order: sections and keys sorted case-insensitively
+            foreach (var sec in doc.Sections.OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase))
             {
                 sb.Append('[').Append(sec.Name).Append("]\r\n");
-                foreach (var p in sec.Properties)
+                foreach (var p in sec.Properties.OrderBy(pp => pp.Key, StringComparer.OrdinalIgnoreCase))
                 {
                     if (IsByteArrayHeader(p.Value))
                     {
