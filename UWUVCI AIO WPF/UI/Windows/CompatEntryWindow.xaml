@@ -113,7 +113,6 @@
             <ComboBoxItem Content="Other"/>
         </ComboBox>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Base Name:" VerticalAlignment="Center" Margin="0,0,8,8"/>
         <!-- Base Selection -->
         <TextBlock Grid.Row="3" Grid.Column="0" Text="Base:" VerticalAlignment="Center" Margin="0,0,8,8"/>
         <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Vertical">
