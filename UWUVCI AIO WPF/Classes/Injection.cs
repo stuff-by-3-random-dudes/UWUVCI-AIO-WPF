@@ -273,55 +273,9 @@ namespace UWUVCI_AIO_WPF
                         };
 
                         // Normalize each provided path to an existing PNG using the textbox path as the source of truth.
-                        string ResolveExistingPng(string original)
-                        {
-                            try
-                            {
-                                if (string.IsNullOrWhiteSpace(original)) return null;
-                                // If exact path exists and is a PNG, accept it
-                                if (File.Exists(original) && 
-                                    string.Equals(Path.GetExtension(original), ".png", StringComparison.OrdinalIgnoreCase))
-                                    return original;
-                                // Otherwise, try same path but with .png extension
-                                var pngCandidate = Path.ChangeExtension(original, ".png");
-                                if (!string.Equals(pngCandidate, original, StringComparison.OrdinalIgnoreCase) && File.Exists(pngCandidate))
-                                    return pngCandidate;
-                                // No acceptable PNG resolved
-                                return null;
-                            }
-                            catch { return null; }
-                        }
-
-                        var normalizedPaths = new string[]
-                        {
-                            ResolveExistingPng(imagePaths[0]),
-                            ResolveExistingPng(imagePaths[1]),
-                            ResolveExistingPng(imagePaths[2]),
-                            ResolveExistingPng(imagePaths[3])
-                        };
-
-                        // Fallback: if a requested file couldn't be resolved from its own textbox path,
-                        // try to find a canonical-named PNG next to any other provided image's directory.
-                        try
-                        {
-                            string[] canonical = { "iconTex", "bootTvTex", "bootDrcTex", "bootLogoTex" };
-                            for (int i = 0; i < normalizedPaths.Length; i++)
-                            {
-                                if (normalizedPaths[i] != null) continue;
-                                // Walk other resolved images' directories
-                                for (int j = 0; j < normalizedPaths.Length; j++)
-                                {
-                                    if (i == j) continue;
-                                    var peer = normalizedPaths[j];
-                                    if (string.IsNullOrWhiteSpace(peer)) continue;
-                                    var dir = Path.GetDirectoryName(peer);
-                                    if (string.IsNullOrWhiteSpace(dir)) continue;
-                                    var candidate = Path.Combine(dir, canonical[i] + ".png");
-                                    if (File.Exists(candidate)) { normalizedPaths[i] = candidate; break; }
-                                }
-                            }
-                        }
-                        catch { }
+                        // Normalize all paths (exact PNG, then peer directory fallback by canonical keys)
+                        string[] canonical = { "iconTex", "bootTvTex", "bootDrcTex", "bootLogoTex" };
+                        var normalizedPaths = Helpers.ImagePathResolver.NormalizeAll(imagePaths, canonical);
 
                         // If any images are being submitted, require both iconTex and bootTvTex as PNG-resolvable
                         bool anyImagesProvided = normalizedPaths.Any(p => !string.IsNullOrWhiteSpace(p));
@@ -342,6 +296,24 @@ namespace UWUVCI_AIO_WPF
                                     );
                                 });
                                 return true; // end injection without starting submission
+                            }
+                            else
+                            {
+                                // Reflect resolved PNGs back into the UI so users see what will be submitted
+                                if (mvm.Thing is UI.Frames.InjectFrames.Configurations.N64Config n64)
+                                {
+                                    try
+                                    {
+                                        n64.Dispatcher.Invoke(() =>
+                                        {
+                                            if (!string.IsNullOrWhiteSpace(normalizedPaths[0])) n64.ic.Text = normalizedPaths[0];
+                                            if (!string.IsNullOrWhiteSpace(normalizedPaths[1])) n64.tv.Text = normalizedPaths[1];
+                                            if (!string.IsNullOrWhiteSpace(normalizedPaths[2])) n64.drc.Text = normalizedPaths[2];
+                                            if (!string.IsNullOrWhiteSpace(normalizedPaths[3])) n64.log.Text = normalizedPaths[3];
+                                        });
+                                    }
+                                    catch { }
+                                }
                             }
                         }
 

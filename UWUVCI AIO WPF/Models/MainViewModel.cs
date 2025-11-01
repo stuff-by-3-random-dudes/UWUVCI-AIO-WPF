@@ -33,6 +33,17 @@ namespace UWUVCI_AIO_WPF
 {
     public class MainViewModel : BaseModel
     {
+        private static readonly System.Net.Http.HttpClient SharedHttpClient = CreateSharedHttpClient();
+        private static System.Net.Http.HttpClient CreateSharedHttpClient()
+        {
+            var client = new System.Net.Http.HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            try
+            {
+                client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
+            }
+            catch { }
+            return client;
+        }
         public bool saveworkaround = false;
 
         private bool Injected2 = false;
@@ -1839,25 +1850,25 @@ namespace UWUVCI_AIO_WPF
         }
         public static async Task DownloadToolAsync(string name, MainViewModel mvm)
         {
-            string olddir = Directory.GetCurrentDirectory();
+            string baseDir = Directory.GetCurrentDirectory();
             try
             {
-                if (Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
-                    olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
-                else
-                    Directory.SetCurrentDirectory(@"bin\Tools\");
+                // Always compute explicit destination directory to avoid global CWD races
+                string toolsDir = Path.Combine(baseDir, "bin", "Tools");
+                Directory.CreateDirectory(toolsDir);
 
                 do
                 {
-                    if (File.Exists(name))
-                        File.Delete(name);
+                    string destPath = Path.Combine(toolsDir, name);
+                    if (File.Exists(destPath))
+                        File.Delete(destPath);
 
                     using var client = new WebClient();
                     try
                     {
                         await client.DownloadFileTaskAsync(
                             new Uri(getDownloadLink(name, true)),
-                            name
+                            destPath
                         );
                     }
                     catch (WebException webEx)
@@ -1874,7 +1885,7 @@ namespace UWUVCI_AIO_WPF
                         }
                     }
 
-                } while (!ToolCheck.IsToolRight(name));
+                } while (!ToolCheck.IsToolRightAtPath(Path.Combine(baseDir, "bin", "Tools", name)));
             }
             catch (Exception e)
             {
@@ -1892,10 +1903,7 @@ namespace UWUVCI_AIO_WPF
 
                 Environment.Exit(1);
             }
-            finally
-            {
-                Directory.SetCurrentDirectory(olddir);
-            }
+            finally { }
         }
 
 
@@ -1978,25 +1986,38 @@ namespace UWUVCI_AIO_WPF
         }
         private async Task ThreadDownloadAsync(List<MissingTool> missingTools)
         {
-            double l = 100.0 / missingTools.Count;
-            int total = 0;
-
-            foreach (MissingTool m in missingTools)
+            if (missingTools == null || missingTools.Count == 0)
             {
-                if (m.Name == "blank.ini")
-                {
-                    using var sw = new StreamWriter(
-                        Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini")
-                    );
-                }
-                else
-                {
-                    await DownloadToolAsync(m.Name, this);
-                }
-
-                total += (int)l;
-                Progress = total;
+                Progress = 100;
+                return;
             }
+
+            int total = missingTools.Count;
+            int completed = 0;
+
+            await Services.ParallelBatchRunner.RunAsync(
+                missingTools,
+                async (m) =>
+                {
+                    string toolsDir = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+                    if (m.Name == "blank.ini")
+                    {
+                        var path = Path.Combine(toolsDir, "blank.ini");
+                        using var sw = new StreamWriter(path);
+                        await sw.FlushAsync();
+                    }
+                    else
+                    {
+                        await DownloadToolAsync(m.Name, this);
+                    }
+                },
+                onItemCompleted: () =>
+                {
+                    int c = System.Threading.Interlocked.Increment(ref completed);
+                    Progress = (int)Math.Round(100.0 * c / total, MidpointRounding.AwayFromZero);
+                },
+                maxConcurrency: Math.Min(total, 6)
+            );
 
             Progress = 100;
         }
@@ -3183,7 +3204,7 @@ namespace UWUVCI_AIO_WPF
             string bootSoundUrl = "";
             string bootSoundExtension = "btsnd";
 
-            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            var client = SharedHttpClient;
 
             if (console == GameConsoles.N64)
                 iniFound = await TryFindFileInRepoAsync(client, repoids, linkbase, "/game.ini", result => iniUrl = result);
