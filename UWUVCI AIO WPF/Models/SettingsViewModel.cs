@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Forms; // FolderBrowserDialog
 using System.Windows.Input;
 using UWUVCI_AIO_WPF.Helpers;
+using UWUVCI_AIO_WPF.UI.Windows;
 using static UWUVCI_AIO_WPF.MainViewModel;
 
 namespace UWUVCI_AIO_WPF.Models
@@ -52,7 +53,7 @@ namespace UWUVCI_AIO_WPF.Models
             BrowseBasePathCommand = new RelayCommand(_ => PickFolder(p => BasePath = p, initial: BasePath));
             BrowseOutPathCommand = new RelayCommand(_ => PickFolder(p => OutPath = p, initial: OutPath));
             ResetToDefaultsCommand = new RelayCommand(_ => ResetDefaults());
-            OpenSettingsFileCommand = new RelayCommand(_ => OpenPath(JsonSettingsManager.SettingsFile));
+            OpenSettingsFileCommand = new RelayCommand(_ => OpenJsonFileSafely(JsonSettingsManager.SettingsFile));
             OpenBaseFolderCommand = new RelayCommand(_ => OpenPath(BasePath));
             OpenOutFolderCommand = new RelayCommand(_ => OpenPath(OutPath));
             OpenLogFolderCommand = new RelayCommand(_ => OpenPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs")));
@@ -86,6 +87,86 @@ namespace UWUVCI_AIO_WPF.Models
                     Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
             }
             catch { /* ignore */ }
+        }
+
+        private void OpenJsonFileSafely(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+                return;
+
+            try
+            {
+                if (!ToolRunner.UnderWine())
+                {
+                    // 🪟 Windows — just use default app
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = path,
+                        UseShellExecute = true
+                    });
+                    return;
+                }
+
+                // 🍷 Under Wine — attempt open fallbacks
+                bool opened = false;
+
+                // 1️⃣ Try macOS "open" or Linux "xdg-open"
+                bool isMacOS = File.Exists("/usr/bin/open") && Directory.Exists("/Applications");
+                string escaped = path.Replace("'", "'\\''");
+
+                try
+                {
+                    string opener = isMacOS ? "open" : "xdg-open";
+                    Process.Start("bash", $"-c \"{opener} '{escaped}'\"");
+                    opened = true;
+                }
+                catch
+                {
+                    // Continue to next fallback
+                }
+
+                // 2️⃣ Try Notepad++
+                if (!opened)
+                {
+                    try
+                    {
+                        Process.Start("wine", $"notepad++.exe \"{path.Replace("\\", "/")}\"");
+                        opened = true;
+                    }
+                    catch { }
+                }
+
+                // 3️⃣ Try Wine Notepad
+                if (!opened)
+                {
+                    try
+                    {
+                        Process.Start("wine", $"notepad \"{path.Replace("\\", "/")}\"");
+                        opened = true;
+                    }
+                    catch { }
+                }
+
+                // 4️⃣ Final fallback — message to user
+                if (!opened)
+                {
+                    UWUVCI_MessageBox.Show(
+                        "Open Failed",
+                        $"Could not open the settings file automatically.\n\nFile location:\n{path}",
+                        UWUVCI_MessageBoxType.Ok,
+                        UWUVCI_MessageBoxIcon.Warning
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error Opening File",
+                    $"An error occurred while trying to open the settings file:\n\n{ex.Message}\n\nLocation:\n{path}",
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
         }
 
         private void ResetDefaults()

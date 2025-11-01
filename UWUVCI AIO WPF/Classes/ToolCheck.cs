@@ -102,6 +102,38 @@ namespace UWUVCI_AIO_WPF.Classes
             return ret;
         }
 
+        /// <summary>
+        /// Verifies the MD5 of a tool at a specific path (thread-safe; no CWD changes).
+        /// </summary>
+        public static bool IsToolRightAtPath(string fullPath)
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(fullPath);
+                var name = Path.GetFileName(fullPath);
+                if (string.IsNullOrWhiteSpace(dir) || string.IsNullOrWhiteSpace(name)) return false;
+
+                string md5Path = Path.Combine(dir, name + ".md5");
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(backupulr + name + ".md5", md5Path);
+                }
+                string md5;
+                using (StreamReader sr = new StreamReader(md5Path))
+                {
+                    md5 = sr.ReadLine();
+                }
+                bool ok = CalculateMD5(fullPath) == md5;
+                try { File.Delete(md5Path); } catch { }
+                return ok;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying MD5 for {fullPath}: {ex.Message}");
+                return false;
+            }
+        }
+
 
         public static string CalculateMD5(string filename)
         {

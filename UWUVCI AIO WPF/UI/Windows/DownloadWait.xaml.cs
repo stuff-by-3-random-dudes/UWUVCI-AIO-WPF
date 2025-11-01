@@ -156,7 +156,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 pb.Value = mvm.Progress;
             }
 
-            if (mvm.Progress == 100)
+            if (mvm.Progress >= 100)
             {
                 timer.Stop();
                 Close();
