@@ -23,6 +23,9 @@
         <Button Content="Create File" HorizontalAlignment="Left" Margin="506,193,0,0" VerticalAlignment="Top" Width="127" Click="Set_IconTex" IsTabStop="False"/>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,72,0,0" VerticalAlignment="Top" Width="127" Click="Set_Rom_Path" Name="Injection" IsTabStop="False"/>
         <TextBox Name="ini" materialDesign:HintAssist.Hint="INI PATH (LEAVE EMPTY FOR BLANK INI)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" IsTabStop="False" Margin="10,118,157,345" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.N64Stuff.INIPath}"/>
+        <Border x:Name="IniCommunityBadge" Background="#FFC107" CornerRadius="4" Padding="6,2" HorizontalAlignment="Right" Margin="0,118,170,0" VerticalAlignment="Top" Visibility="Hidden">
+            <TextBlock Text="Community" Foreground="Black" FontWeight="Bold"/>
+        </Border>
         <Button Content="Select File" HorizontalAlignment="Left" Margin="506,133,0,0" VerticalAlignment="Top" Width="127" Click="Set_IniPath" IsTabStop="False"/>
         <StackPanel Margin="10,20,222,436" Orientation="Horizontal" >
 

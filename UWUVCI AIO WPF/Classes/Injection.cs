@@ -244,7 +244,7 @@ namespace UWUVCI_AIO_WPF
 
                 mvm.Progress = 100;
 
-                // --- Community Image Contribution Prompt ---
+                // --- Unified Community Contribution Prompt (Images + optional INI for N64) ---
                 try
                 {
                     bool hasCustomImages =
@@ -256,47 +256,129 @@ namespace UWUVCI_AIO_WPF
                             !string.IsNullOrWhiteSpace(mvm.GameConfiguration.TGATv?.ImgPath)
                         );
 
-                    if (hasCustomImages)
+                    bool isN64 = Configuration.Console == GameConsoles.N64;
+                    bool canOfferIni = isN64 && mvm.CanOfferIniContribution;
+                    string iniPath = mvm.GameConfiguration?.N64Stuff?.INIPath;
+                    bool userProvidedIni = !string.IsNullOrWhiteSpace(iniPath) && File.Exists(iniPath);
+
+                    if (hasCustomImages || (canOfferIni && userProvidedIni))
                     {
-                        UWUVCI_MessageBoxResult messageBoxResult = UWUVCI_MessageBoxResult.No;
+                        // Build ordered list (do not filter) to preserve logical key positions
+                        var imagePaths = new[]
+                        {
+                            mvm.GameConfiguration.TGAIco?.ImgPath,
+                            mvm.GameConfiguration.TGATv?.ImgPath,
+                            mvm.GameConfiguration.TGADrc?.ImgPath,
+                            mvm.GameConfiguration.TGALog?.ImgPath
+                        };
+
+                        // Normalize each provided path to an existing PNG using the textbox path as the source of truth.
+                        string ResolveExistingPng(string original)
+                        {
+                            try
+                            {
+                                if (string.IsNullOrWhiteSpace(original)) return null;
+                                // If exact path exists and is a PNG, accept it
+                                if (File.Exists(original) && 
+                                    string.Equals(Path.GetExtension(original), ".png", StringComparison.OrdinalIgnoreCase))
+                                    return original;
+                                // Otherwise, try same path but with .png extension
+                                var pngCandidate = Path.ChangeExtension(original, ".png");
+                                if (!string.Equals(pngCandidate, original, StringComparison.OrdinalIgnoreCase) && File.Exists(pngCandidate))
+                                    return pngCandidate;
+                                // No acceptable PNG resolved
+                                return null;
+                            }
+                            catch { return null; }
+                        }
+
+                        var normalizedPaths = new string[]
+                        {
+                            ResolveExistingPng(imagePaths[0]),
+                            ResolveExistingPng(imagePaths[1]),
+                            ResolveExistingPng(imagePaths[2]),
+                            ResolveExistingPng(imagePaths[3])
+                        };
+
+                        // Fallback: if a requested file couldn't be resolved from its own textbox path,
+                        // try to find a canonical-named PNG next to any other provided image's directory.
+                        try
+                        {
+                            string[] canonical = { "iconTex", "bootTvTex", "bootDrcTex", "bootLogoTex" };
+                            for (int i = 0; i < normalizedPaths.Length; i++)
+                            {
+                                if (normalizedPaths[i] != null) continue;
+                                // Walk other resolved images' directories
+                                for (int j = 0; j < normalizedPaths.Length; j++)
+                                {
+                                    if (i == j) continue;
+                                    var peer = normalizedPaths[j];
+                                    if (string.IsNullOrWhiteSpace(peer)) continue;
+                                    var dir = Path.GetDirectoryName(peer);
+                                    if (string.IsNullOrWhiteSpace(dir)) continue;
+                                    var candidate = Path.Combine(dir, canonical[i] + ".png");
+                                    if (File.Exists(candidate)) { normalizedPaths[i] = candidate; break; }
+                                }
+                            }
+                        }
+                        catch { }
+
+                        // If any images are being submitted, require both iconTex and bootTvTex as PNG-resolvable
+                        bool anyImagesProvided = normalizedPaths.Any(p => !string.IsNullOrWhiteSpace(p));
+                        if (anyImagesProvided)
+                        {
+                            var icoPng = normalizedPaths[0];
+                            var tvPng = normalizedPaths[1];
+                            if (icoPng == null || tvPng == null)
+                            {
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    UWUVCI_MessageBox.Show(
+                                        "Missing Required Images",
+                                        "To submit images, both iconTex and bootTvTex must exist as PNGs.\nWe check the paths you selected; if that file doesn’t exist, we try the same path with .png.",
+                                        UWUVCI_MessageBoxType.Ok,
+                                        UWUVCI_MessageBoxIcon.Warning,
+                                        mvm.mw
+                                    );
+                                });
+                                return true; // end injection without starting submission
+                            }
+                        }
+
+                        string body = hasCustomImages && canOfferIni && userProvidedIni
+                            ? "You’ve provided custom images and a custom INI for this inject.\n\nWould you like to share them with the community?\n\nUWUVCI-ContriBot will automatically create a single pull request containing your files."
+                            : hasCustomImages
+                                ? "You’ve provided custom boot images for this inject.\n\nWould you like to share them with the community?\n\nUWUVCI-ContriBot will automatically create a pull request containing your images."
+                                : "No official INI was found for this title.\n\nIf your INI works well, would you like to submit it to help others?\n\nNote: Community INIs are marked as user-submitted.";
+
+                        UWUVCI_MessageBoxResult res = UWUVCI_MessageBoxResult.No;
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            messageBoxResult = UWUVCI_MessageBox.Show(
-                                "Found Custom Images",
-                                "You’ve provided custom boot images for this inject.\n\n" +
-                                "Would you like to share them with the community?\n\n" +
-                                "UWUVCI-ContriBot will automatically create a pull request containing your images.",
+                            res = UWUVCI_MessageBox.Show(
+                                "Share Your Files?",
+                                body,
                                 UWUVCI_MessageBoxType.YesNo,
                                 UWUVCI_MessageBoxIcon.Info,
                                 mvm.mw
                             );
-
                         });
 
-                        if (messageBoxResult == UWUVCI_MessageBoxResult.Yes)
+                        if (res == UWUVCI_MessageBoxResult.Yes)
                         {
                             string consoleName = Configuration.Console.ToString();
-                            string gameName = Configuration.GameName ?? "Unknown Game";
                             string repoId = mvm.repoId;
-                            string owner = "UWUVCI-Prime";
-                            string repo = "UWUVCI-Images";
+                            string gameName = Configuration.GameName ?? "Unknown Game";
+                            string owner = "UWUVCI-PRIME";
+                            string repo = "UWUVCI-IMAGES";
                             string appVersion = FileVersionInfo
                                 .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location)
                                 .FileVersion ?? "unknown";
-
-                            var imagePaths = new[]
-                            {
-                                mvm.GameConfiguration.TGAIco?.ImgPath,
-                                mvm.GameConfiguration.TGATv?.ImgPath,
-                                mvm.GameConfiguration.TGADrc?.ImgPath,
-                                mvm.GameConfiguration.TGALog?.ImgPath
-                            }.Where(p => !string.IsNullOrWhiteSpace(p)).ToArray();
 
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 UWUVCI_MessageBox.Show(
                                     "Submission Started",
-                                    "Your images are being submitted in the background.\nA pull request will be created if successful.",
+                                    "Your files are being submitted in the background.\nA pull request will be created if successful.",
                                     UWUVCI_MessageBoxType.Ok,
                                     UWUVCI_MessageBoxIcon.Success,
                                     mvm.mw,
@@ -309,14 +391,17 @@ namespace UWUVCI_AIO_WPF
                                 try
                                 {
                                     var service = new Services.GitHubImageService();
-                                    var prUrl = await service.SubmitImagePrAsync(
+                                    var prUrl = await service.SubmitImagesAndIniPrAsync(
                                         owner,
                                         repo,
                                         consoleName,
                                         repoId,
                                         gameName,
                                         appVersion,
-                                        imagePaths
+                                        hasCustomImages ? normalizedPaths : null,
+                                        (canOfferIni && userProvidedIni) ? iniPath : null,
+                                        new [] { "iconTex", "bootTvTex", "bootDrcTex", "bootLogoTex" },
+                                        uploadOnlyIfMissing: true
                                     );
 
                                     await Application.Current.Dispatcher.InvokeAsync(() =>
@@ -325,7 +410,7 @@ namespace UWUVCI_AIO_WPF
                                         {
                                             UWUVCI_MessageBox.Show(
                                                 "Access Restricted",
-                                                "Your device is not allowed to submit images.\n\nIf you believe this is an error, please contact support.",
+                                                "Your device is not allowed to submit files.\n\nIf you believe this is an error, please contact support.",
                                                 UWUVCI_MessageBoxType.Ok,
                                                 UWUVCI_MessageBoxIcon.Error,
                                                 mvm.mw
@@ -334,8 +419,8 @@ namespace UWUVCI_AIO_WPF
                                         else
                                         {
                                             UWUVCI_MessageBox.Show(
-                                                "Images Submitted",
-                                                $"Your images have been submitted successfully!\n\nA Pull Request has been created:\n{prUrl}",
+                                                "Files Submitted",
+                                                $"Your files have been submitted successfully!\n\nA Pull Request has been created:\n{prUrl}",
                                                 UWUVCI_MessageBoxType.Ok,
                                                 UWUVCI_MessageBoxIcon.Success,
                                                 mvm.mw,
@@ -349,13 +434,12 @@ namespace UWUVCI_AIO_WPF
                                     await Application.Current.Dispatcher.InvokeAsync(() =>
                                     {
                                         UWUVCI_MessageBox.Show(
-                                            "Image Submission Failed",
-                                            $"An error occurred while submitting your images.\n\n{ex.Message}",
+                                            "Submission Failed",
+                                            $"An error occurred while submitting your files.\n\n{ex.Message}",
                                             UWUVCI_MessageBoxType.Ok,
                                             UWUVCI_MessageBoxIcon.Error,
                                             mvm.mw
                                         );
-
                                     });
                                 }
                             });
@@ -364,7 +448,7 @@ namespace UWUVCI_AIO_WPF
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log($"Error while offering image contribution: {ex.Message}");
+                    Logger.Log($"Error while offering contribution: {ex.Message}");
                 }
 
                 code = null;

@@ -33,5 +33,7 @@ namespace UWUVCI_AIO_WPF.Models
 
         public byte[] INIBin { get; set; }
 
+        public bool CommunityIni { get; set; }
+
     }
 }

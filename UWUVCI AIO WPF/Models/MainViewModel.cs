@@ -52,6 +52,7 @@ namespace UWUVCI_AIO_WPF
         private GameConfig gameConfiguration = new GameConfig();
 
         public bool addi = false;
+        public bool CanOfferIniContribution { get; set; } = false;
         public GameConfig GameConfiguration
         {
             get { return gameConfiguration; }
@@ -3189,6 +3190,10 @@ namespace UWUVCI_AIO_WPF
 
             bootSoundFound = await TryFindFileInRepoAsync(client, repoids, linkbase, $"/BootSound.{bootSoundExtension}", result => bootSoundUrl = result);
 
+            // expose whether an official/community INI was found so we can offer contributions after inject
+            if (console == GameConsoles.N64)
+                CanOfferIniContribution = !iniFound;
+
             if (iniFound || bootSoundFound)
             {
                 string message = GetAdditionalFilesMessage(iniFound, bootSoundFound);
@@ -3281,10 +3286,12 @@ namespace UWUVCI_AIO_WPF
             Directory.CreateDirectory(repoPath);
 
             var tasks = new List<Task>();
+            string dlIniPath = null;
 
             if (iniFound && !string.IsNullOrEmpty(iniUrl))
             {
                 string iniDest = Path.Combine(repoPath, $"{console}_game.ini");
+                dlIniPath = iniDest;
                 tasks.Add(DownloadFileAsync(client, iniUrl, iniDest));
             }
 
@@ -3295,6 +3302,46 @@ namespace UWUVCI_AIO_WPF
             }
 
             await Task.WhenAll(tasks);
+
+            // If we downloaded an INI for N64, set it as current and warn if community-submitted
+            if (console == GameConsoles.N64 && !string.IsNullOrWhiteSpace(dlIniPath) && File.Exists(dlIniPath))
+            {
+                GameConfiguration.N64Stuff.INIPath = dlIniPath;
+                try
+                {
+                    var head = File.ReadAllText(dlIniPath);
+                    bool isCommunity = head.IndexOf("COMMUNITY_SUBMITTED = 1", StringComparison.OrdinalIgnoreCase) >= 0;
+                    GameConfiguration.N64Stuff.CommunityIni = isCommunity;
+                    if (Thing is UI.Frames.InjectFrames.Configurations.N64Config n64)
+                    {
+                        try
+                        {
+                            n64.Dispatcher.Invoke(() =>
+                            {
+                                // Push the path into the textbox and update the badge
+                                n64.ini.Text = dlIniPath;
+                                n64.UpdateIniBadge();
+                            });
+                        }
+                        catch { }
+                    }
+                    if (isCommunity)
+                    {
+                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            UI.Windows.UWUVCI_MessageBox.Show(
+                                "Community INI Downloaded",
+                                "This INI was submitted by the community, not Nintendo. It may have issues.\nProceed with caution.",
+                                UI.Windows.UWUVCI_MessageBoxType.Ok,
+                                UI.Windows.UWUVCI_MessageBoxIcon.Warning,
+                                mw,
+                                isModal: false
+                            );
+                        });
+                    }
+                }
+                catch { }
+            }
         }
 
         private async Task DownloadFileAsync(HttpClient client, string url, string destinationPath)
