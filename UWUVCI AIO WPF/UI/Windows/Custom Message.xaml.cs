@@ -114,7 +114,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             try
             {
                 if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
-                Process.Start(path);
+                try { UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost(path); } catch { }
                 Close();
             }
             catch (Exception)

@@ -354,7 +354,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                             Foreground = Brushes.DodgerBlue
                         };
                         link.RequestNavigate += (s, e) =>
-                            Process.Start(new ProcessStartInfo(e.Uri.ToString()) { UseShellExecute = true });
+                        {
+                            if (!Helpers.ToolRunner.OpenOnHost(e.Uri.ToString()))
+                            {
+                                try { Clipboard.SetText(e.Uri.ToString()); } catch { }
+                                UWUVCI_MessageBox.Show("Unable to open link", "The link was copied to the clipboard.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Info, this, true);
+                            }
+                        };
 
                         p.Inlines.Add(link);
                         lastIndex = m.Index + m.Length;

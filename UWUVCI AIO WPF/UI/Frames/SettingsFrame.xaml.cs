@@ -172,7 +172,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_13(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/zestyts");
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://ko-fi.com/zestyts");
         }
 
         private void ShowTutorialScreens_Click(object sender, RoutedEventArgs e)

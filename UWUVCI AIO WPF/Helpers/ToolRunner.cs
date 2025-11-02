@@ -326,6 +326,38 @@ namespace UWUVCI_AIO_WPF.Helpers
         }
 
         /// <summary>
+        /// Opens a URL or file on the native host (macOS/Linux) when running under Wine; otherwise uses Windows shell.
+        /// Returns true on best-effort success.
+        /// </summary>
+        public static bool OpenOnHost(string target)
+        {
+            try
+            {
+                bool native = UnderWine() && (HostIsMac() || HostIsLinux());
+                if (!native)
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = target,
+                        UseShellExecute = true
+                    });
+                    return true;
+                }
+
+                // Host side
+                bool isUrl = Uri.TryCreate(target, UriKind.Absolute, out var uri) &&
+                             (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == "mailto");
+
+                string toOpen = isUrl ? target : PosixFromWindows(target);
+                string opener = HostIsMac() ? "open" : "xdg-open";
+                // run detached; ignore stdout/stderr
+                int rc = RunHostSh($"(command -v {opener} >/dev/null 2>&1 && {opener} {Q(toOpen)} >/dev/null 2>&1 & ) || true", out _, out _);
+                return rc == 0;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
         /// Waits until the file is visible to .NET/Wine (File.Exists && size > 0),
         /// polling host and wine views for up to 'timeoutMs'.
         /// </summary>

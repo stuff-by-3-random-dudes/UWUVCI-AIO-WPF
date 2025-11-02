@@ -81,10 +81,7 @@ namespace UWUVCI_AIO_WPF.Models
             if (string.IsNullOrWhiteSpace(path)) return;
             try
             {
-                if (Directory.Exists(path))
-                    Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
-                else if (File.Exists(path))
-                    Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
+                UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost(path);
             }
             catch { /* ignore */ }
         }
@@ -96,67 +93,11 @@ namespace UWUVCI_AIO_WPF.Models
 
             try
             {
-                if (!ToolRunner.UnderWine())
-                {
-                    // 🪟 Windows — just use default app
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = path,
-                        UseShellExecute = true
-                    });
-                    return;
-                }
-
-                // 🍷 Under Wine — attempt open fallbacks
-                bool opened = false;
-
-                // 1️⃣ Try macOS "open" or Linux "xdg-open"
-                bool isMacOS = File.Exists("/usr/bin/open") && Directory.Exists("/Applications");
-                string escaped = path.Replace("'", "'\\''");
-
-                try
-                {
-                    string opener = isMacOS ? "open" : "xdg-open";
-                    Process.Start("bash", $"-c \"{opener} '{escaped}'\"");
-                    opened = true;
-                }
-                catch
-                {
-                    // Continue to next fallback
-                }
-
-                // 2️⃣ Try Notepad++
-                if (!opened)
-                {
-                    try
-                    {
-                        Process.Start("wine", $"notepad++.exe \"{path.Replace("\\", "/")}\"");
-                        opened = true;
-                    }
-                    catch { }
-                }
-
-                // 3️⃣ Try Wine Notepad
-                if (!opened)
-                {
-                    try
-                    {
-                        Process.Start("wine", $"notepad \"{path.Replace("\\", "/")}\"");
-                        opened = true;
-                    }
-                    catch { }
-                }
-
-                // 4️⃣ Final fallback — message to user
-                if (!opened)
-                {
-                    UWUVCI_MessageBox.Show(
-                        "Open Failed",
-                        $"Could not open the settings file automatically.\n\nFile location:\n{path}",
-                        UWUVCI_MessageBoxType.Ok,
-                        UWUVCI_MessageBoxIcon.Warning
-                    );
-                }
+                // Prefer in-app JSON editor (Wine-safe)
+                var win = new UI.Windows.JsonEditorWindow(path);
+                try { win.Owner = System.Windows.Application.Current?.MainWindow; } catch { }
+                win.ShowDialog();
+                return;
             }
             catch (Exception ex)
             {
