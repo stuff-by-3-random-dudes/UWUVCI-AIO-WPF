@@ -1911,49 +1911,10 @@ namespace UWUVCI_AIO_WPF
         {
             try
             {
-                bool ok = false;
-                try
-                {
-                    using (WebClient client = new WebClient())
-                    {
-                        string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
-                    }
-
-                    ok = true;
-                }
-                catch (WebException)
-                {
-                }
-                if (ok)
-                {
-                    WebRequest request;
-                    //get download link from uwuvciapi
-                    request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?" + (tool ? "tool=" : "vcb=") + toolname);
-
-                    var response = request.GetResponse();
-                    using Stream dataStream = response.GetResponseStream();
-                    // Open the stream using a StreamReader for easy access.  
-                    StreamReader reader = new StreamReader(dataStream);
-                    // Read the content.  
-                    string responseFromServer = reader.ReadToEnd();
-                    // Display the content.  
-                    if (responseFromServer == "")
-                        if (tool)
-                            return $"{ToolCheck.backupulr}{toolname}";
-                        else
-                            return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
-
-                    return responseFromServer;
-                }
+                if (tool)
+                    return $"{ToolCheck.backupulr}{toolname}";
                 else
-                {
-                    if (tool)
-                        return $"{ToolCheck.backupulr}{toolname}";
-                    else
-                        return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
-                }
-
-
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
             }
             catch (Exception)
             {
