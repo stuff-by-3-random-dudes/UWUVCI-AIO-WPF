@@ -155,15 +155,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 );
 
                 string localPath = Path.Combine(Directory.GetCurrentDirectory(), "PatchNotes.txt");
-                if (File.Exists(localPath))
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = localPath,
-                        UseShellExecute = true
-                    });
-                }
-                else
+                if (!File.Exists(localPath))
                 {
                     UWUVCI_MessageBox.Show(
                         "Error",
@@ -177,38 +169,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void ZestyButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://www.youtube.com/@ZestysCorner",
-                UseShellExecute = true
-            });
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://www.youtube.com/@ZestysCorner");
         }
 
         private void DiscordButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://discord.gg/mPZpqJJVmZ",
-                UseShellExecute = true
-            });
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://discord.gg/mPZpqJJVmZ");
         }
 
         private void DonateButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://ko-fi.com/zestyts",
-                UseShellExecute = true
-            });
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://ko-fi.com/zestyts");
         }
 
         private void GameButton_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "https://www.youtube.com/watch?v=RcfVhFi3wJc",
-                UseShellExecute = true
-            });
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://www.youtube.com/watch?v=RcfVhFi3wJc");
         }
 
         private void ReadMeButton_Click(object sender, RoutedEventArgs e)
@@ -231,15 +207,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 );
 
                 string localPath = Path.Combine(Directory.GetCurrentDirectory(), "ReadMe.txt");
-                if (File.Exists(localPath))
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = localPath,
-                        UseShellExecute = true
-                    });
-                }
-                else
+                if (!File.Exists(localPath))
                 {
                     UWUVCI_MessageBox.Show(
                         "Error",
