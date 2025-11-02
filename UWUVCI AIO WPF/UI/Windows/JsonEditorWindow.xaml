@@ -1,0 +1,47 @@
+<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.JsonEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="JSON Editor" Height="640" Width="900" WindowStartupLocation="CenterOwner">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8">
+            <TextBlock Text="File:" VerticalAlignment="Center"/>
+            <TextBlock x:Name="PathText" Margin="6,0,0,0" VerticalAlignment="Center" Foreground="#555"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Format" Margin="12,0,0,0" Click="Format_Click"/>
+                <Button Content="Validate" Margin="6,0,0,0" Click="Validate_Click"/>
+                <Button Content="Save" Margin="6,0,0,0" Click="Save_Click"/>
+                <Button Content="Save As…" Margin="6,0,0,0" Click="SaveAs_Click"/>
+                <Button Content="Close" Margin="6,0,0,0" Click="Close_Click"/>
+            </StackPanel>
+        </StackPanel>
+        <TabControl x:Name="Tabs" Margin="8">
+            <TabItem Header="Form">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="8" x:Name="FormGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Raw">
+                <Grid>
+                    <Border x:Name="RawLockPanel" Background="#FFFDF7E3" BorderBrush="#E0B300" BorderThickness="1" CornerRadius="6" Padding="12" Margin="8" Visibility="Visible">
+                        <StackPanel>
+                            <TextBlock Text="Warning" FontWeight="Bold"/>
+                            <TextBlock Text="Messing around with this can have severe issues. Please don't touch anything you don't know." TextWrapping="Wrap" Margin="0,6,0,10"/>
+                            <Button Content="Unlock Raw Editor" Width="180" Click="UnlockRaw_Click"/>
+                        </StackPanel>
+                    </Border>
+                    <TextBox x:Name="Editor" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="14" TextWrapping="NoWrap" Margin="0" VerticalContentAlignment="Top" Visibility="Collapsed"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="Status"/>
+            </StatusBarItem>
+        </StatusBar>
+    </DockPanel>
+</Window>

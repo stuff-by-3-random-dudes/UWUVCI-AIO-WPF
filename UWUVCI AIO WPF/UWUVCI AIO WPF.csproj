@@ -286,6 +286,7 @@
     <Compile Include="Services\GitHubFeedbackService.cs" />
     <Compile Include="Services\GitHubImageService.cs" />
     <Compile Include="Services\ParallelBatchRunner.cs" />
+    <Compile Include="Services\NKitService.cs" />
     <Compile Include="Services\LocalInstallGuard.cs" />
     <Compile Include="Services\NintendontConfigService.cs" />
     <Compile Include="Services\ReadMeManager.cs" />
@@ -315,6 +316,9 @@
     </Compile>
     <Compile Include="UI\Windows\ApplicationSettings.xaml.cs">
       <DependentUpon>ApplicationSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\JsonEditorWindow.xaml.cs">
+      <DependentUpon>JsonEditorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\CompatEntryWindow.xaml.cs">
       <DependentUpon>CompatEntryWindow.xaml</DependentUpon>
@@ -488,6 +492,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\DownloadWait.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\JsonEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
