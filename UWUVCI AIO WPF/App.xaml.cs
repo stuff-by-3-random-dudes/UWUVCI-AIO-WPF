@@ -115,6 +115,11 @@ namespace UWUVCI_AIO_WPF
                 // Manual developer override flag
                 shouldShowTutorial = true;
             }
+            else if (!JsonSettingsManager.Settings.HasAcknowledgedTutorial)
+            {
+                // User has not acknowledged the tutorial yet; show again until acknowledged
+                shouldShowTutorial = true;
+            }
 
             // --- HANDLE TUTORIAL ---
             if (shouldShowTutorial)
