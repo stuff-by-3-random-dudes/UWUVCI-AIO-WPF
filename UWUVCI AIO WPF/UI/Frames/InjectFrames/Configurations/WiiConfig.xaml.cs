@@ -514,7 +514,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.Progress += 10;
 
                         using var proc = new Process();
-                        proc.StartInfo.FileName = Path.Combine(c2wPath, "c2w_patcher.exe");
+                        proc.StartInfo.FileName = System.IO.Path.Combine(c2wPath, "c2w_patcher.exe");
                         proc.StartInfo.Arguments = "-nc";
                         proc.StartInfo.WorkingDirectory = c2wPath;
                         proc.Start();
