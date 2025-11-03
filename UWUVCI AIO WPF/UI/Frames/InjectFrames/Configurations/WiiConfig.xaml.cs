@@ -513,20 +513,12 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
                         mvm.Progress += 10;
 
-                        var prev = Directory.GetCurrentDirectory();
-                        try
-                        {
-                            Directory.SetCurrentDirectory(c2wPath);
-                            using var proc = new Process();
-                            proc.StartInfo.FileName = "c2w_patcher.exe";
-                            proc.StartInfo.Arguments = "-nc";
-                            proc.Start();
-                            proc.WaitForExit();
-                        }
-                        finally
-                        {
-                            Directory.SetCurrentDirectory(prev);
-                        }
+                        using var proc = new Process();
+                        proc.StartInfo.FileName = Path.Combine(c2wPath, "c2w_patcher.exe");
+                        proc.StartInfo.Arguments = "-nc";
+                        proc.StartInfo.WorkingDirectory = c2wPath;
+                        proc.Start();
+                        proc.WaitForExit();
 
                         mvm.Progress = 100;
                     }
