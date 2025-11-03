@@ -54,6 +54,16 @@ namespace UWUVCI_AIO_WPF.Services
                 return BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
             }
         }
+
+        public static bool ClearCache()
+        {
+            try
+            {
+                string cacheRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI_AIO_WPF", "Cache");
+                if (Directory.Exists(cacheRoot)) Directory.Delete(cacheRoot, true);
+                return true;
+            }
+            catch { return false; }
+        }
     }
 }
-
