@@ -20,6 +20,8 @@
         public string LastVersionSeen { get; set; } = "0.0.0";
         public bool ForceTutorialOnNextLaunch { get; set; } = false;
         public bool HasAcknowledgedTutorial { get; set; } = false;
+        // Controls bounded parallelism for large directory copies (higher on fast SSDs)
+        public int FileCopyParallelism { get; set; } = 6;
     }
 
 }

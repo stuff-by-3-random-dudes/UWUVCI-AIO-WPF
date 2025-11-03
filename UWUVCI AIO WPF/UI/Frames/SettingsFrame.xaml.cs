@@ -29,6 +29,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
             // Set the window title dynamically
             lblVersion.Content = $"v{version.Major}.{version.Minor}.{version.Build}  ({buildDate:MMM dd, yyyy})";
+
+            try
+            {
+                // Initialize copy parallelism slider from settings
+                int deg = UWUVCI_AIO_WPF.Helpers.JsonSettingsManager.Settings.FileCopyParallelism;
+                if (deg < 1) deg = 1; if (deg > 32) deg = 32;
+                if (CopyParallelSlider != null) CopyParallelSlider.Value = deg;
+                if (CopyParallelValue != null) CopyParallelValue.Text = deg.ToString();
+            }
+            catch { }
         }
         public void Dispose()
         {
@@ -175,6 +185,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://ko-fi.com/zestyts");
         }
 
+        private void CopyParallelSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            try
+            {
+                int deg = Math.Max(1, Math.Min(32, (int)Math.Round(e.NewValue)));
+                if (CopyParallelValue != null) CopyParallelValue.Text = deg.ToString();
+                UWUVCI_AIO_WPF.Helpers.JsonSettingsManager.Settings.FileCopyParallelism = deg;
+                UWUVCI_AIO_WPF.Helpers.JsonSettingsManager.SaveSettings();
+            }
+            catch { }
+        }
+
         private void ShowTutorialScreens_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -231,6 +253,62 @@ namespace UWUVCI_AIO_WPF.UI.Frames
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Unable to open Feedback window:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
+        private void ResetAllCaches_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var confirm = UWUVCI_MessageBox.Show(
+                    "Reset All Caches",
+                    "This will delete cached BASE extractions and temporary working folders. Continue?",
+                    UWUVCI_MessageBoxType.YesNo,
+                    UWUVCI_MessageBoxIcon.Warning
+                );
+                if (confirm != UWUVCI_MessageBoxResult.Yes) return;
+
+                bool ok = UWUVCI_AIO_WPF.Services.CacheService.ClearAll();
+                string msg = ok ? "All caches cleared." : "Some caches could not be cleared (files may be in use).";
+                UWUVCI_MessageBox.Show(
+                    "Reset All Caches",
+                    msg,
+                    UWUVCI_MessageBoxType.Ok,
+                    ok ? UWUVCI_MessageBoxIcon.Info : UWUVCI_MessageBoxIcon.Error
+                );
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Error resetting caches:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
+        private void ClearBaseCache_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool ok = UWUVCI_AIO_WPF.Services.BaseExtractor.ClearCache();
+                string msg = ok ? "Cleared cached BASE extractions." : "Failed to clear cache. Files might be in use.";
+                UWUVCI_MessageBox.Show(
+                    "BASE Cache",
+                    msg,
+                    UWUVCI_MessageBoxType.Ok,
+                    ok ? UWUVCI_MessageBoxIcon.Info : UWUVCI_MessageBoxIcon.Error
+                );
+            }
+            catch (Exception ex)
+            {
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Error clearing cache:\n" + ex.Message,
                     UWUVCI_MessageBoxType.Ok,
                     UWUVCI_MessageBoxIcon.Error
                 );
