@@ -1,6 +1,5 @@
 using CNUSPACKER.Models;
 using GameBaseClassLibrary;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -21,6 +20,7 @@ using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
+using UWUVCI_AIO_WPF.Services;
 using WiiUDownloaderLibrary;
 using WiiUDownloaderLibrary.Models;
 using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
@@ -275,7 +275,7 @@ namespace UWUVCI_AIO_WPF
                         // Normalize each provided path to an existing PNG using the textbox path as the source of truth.
                         // Normalize all paths (exact PNG, then peer directory fallback by canonical keys)
                         string[] canonical = { "iconTex", "bootTvTex", "bootDrcTex", "bootLogoTex" };
-                        var normalizedPaths = Helpers.ImagePathResolver.NormalizeAll(imagePaths, canonical);
+                        var normalizedPaths = ImagePathResolver.NormalizeAll(imagePaths, canonical);
 
                         // If any images are being submitted, require both iconTex and bootTvTex as PNG-resolvable
                         bool anyImagesProvided = normalizedPaths.Any(p => !string.IsNullOrWhiteSpace(p));
@@ -342,9 +342,6 @@ namespace UWUVCI_AIO_WPF
                             string gameName = Configuration.GameName ?? "Unknown Game";
                             string owner = "UWUVCI-PRIME";
                             string repo = "UWUVCI-IMAGES";
-                            string appVersion = FileVersionInfo
-                                .GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location)
-                                .FileVersion ?? "unknown";
 
                             Application.Current.Dispatcher.Invoke(() =>
                             {
@@ -362,17 +359,14 @@ namespace UWUVCI_AIO_WPF
                             {
                                 try
                                 {
-                                    var service = new Services.GitHubImageService();
-                                    var prUrl = await service.SubmitImagesAndIniPrAsync(
+                                    var prUrl = await Services.ContributionService.SubmitImagesAndIniAsync(
                                         owner,
                                         repo,
                                         consoleName,
                                         repoId,
                                         gameName,
-                                        appVersion,
                                         hasCustomImages ? normalizedPaths : null,
                                         (canOfferIni && userProvidedIni) ? iniPath : null,
-                                        new [] { "iconTex", "bootTvTex", "bootDrcTex", "bootLogoTex" },
                                         uploadOnlyIfMissing: true
                                     );
 
@@ -637,12 +631,7 @@ namespace UWUVCI_AIO_WPF
                     MSX(RomPath);
                     break;
                 case GameConsoles.WII:
-                    if (RomPath.ToLower().EndsWith(".dol"))
-                        WiiHomebrew(RomPath, mvm);
-                    else if (RomPath.ToLower().EndsWith(".wad"))
-                        WiiForwarder(RomPath, mvm);
-                    else
-                        Services.WiiInjectService.InjectStandard(toolsPath, tempPath, baseRomPath, RomPath, mvm);
+                    WII_RunOrchestrated(RomPath, mvm);
                     break;
                 case GameConsoles.GCN:
                     GCN(RomPath, mvm, force);
@@ -656,7 +645,19 @@ namespace UWUVCI_AIO_WPF
         }
         private static void WiiForwarder(string romPath, MainViewModel mvm)
         {
-            Services.WiiInjectService.InjectForwarder(toolsPath, tempPath, baseRomPath, romPath, mvm);
+            var opt = new WiiInjectOptions
+            {
+                Debug = mvm.debug,
+                Index = mvm.Index,
+                LR = mvm.LR,
+                Passthrough = mvm.passtrough,
+                Progress = (p, msg) => { try { mvm.Progress = (short)p; mvm.msg = msg; } catch { } }
+            };
+            var tempBase = WiiInjectService.PrepareTempBase(toolsPath, tempPath);
+            WiiInjectService.SetupForwarderTitle(tempBase, romPath);
+            WiiInjectService.CopyForwarderDol(toolsPath, tempBase);
+            var nfs = new NfsInjectOptions { Debug = opt.Debug, Kind = InjectKind.WiiForwarder, Passthrough = opt.Passthrough, Index = opt.Index, LR = opt.LR, Progress = opt.Progress };
+            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs);
         }
 
         // Removed legacy SharedWitAndNFS2ISO2NFS (replaced by Services.WitNfsService)
@@ -664,7 +665,312 @@ namespace UWUVCI_AIO_WPF
 
         private static void WiiHomebrew(string romPath, MainViewModel mvm)
         {
-            Services.WiiInjectService.InjectHomebrew(toolsPath, tempPath, baseRomPath, romPath, mvm);
+            var opt = new WiiInjectOptions
+            {
+                Debug = mvm.debug,
+                Index = mvm.Index,
+                LR = mvm.LR,
+                Passthrough = mvm.passtrough,
+                Progress = (p, msg) => { try { mvm.Progress = (short)p; mvm.msg = msg; } catch { } }
+            };
+            var tempBase = WiiInjectService.PrepareTempBase(toolsPath, tempPath);
+            WiiInjectService.CopyDolToBase(tempBase, romPath);
+            var nfs = new NfsInjectOptions { Debug = opt.Debug, Kind = InjectKind.WiiHomebrew, Passthrough = opt.Passthrough, Index = opt.Index, LR = opt.LR, Progress = opt.Progress };
+            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs);
+        }
+
+        // New orchestrated Wii entry that composes service options and reports progress
+        // Orchestrator for Wii injects.
+        // Keeps UI/progress here; calls backend-only services with pure options.
+        private static void WII_RunOrchestrated(string romPath, MainViewModel mvm)
+        {
+            void Log(string msg)
+            {
+                var line = $"[WII] {DateTime.Now:HH:mm:ss} {msg}";
+                Console.WriteLine(line);
+                try { Logger.Log(line); } catch { }
+            }
+            Stopwatch StepTimer(string name, int step)
+            {
+                Log($"STEP {step}: {name} — START");
+                return Stopwatch.StartNew();
+            }
+            void EndTimer(Stopwatch sw, int step) => Log($"STEP {step}: done in {sw.Elapsed.TotalSeconds:F2}s");
+
+            romPath = ToolRunner.ToWindowsView(romPath);
+
+            // Patch callback only when GCT paths provided
+            Func<string, bool> patchCb = null;
+            if (!string.IsNullOrWhiteSpace(mvm.gctPath))
+            {
+                var gcts = mvm.gctPath.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
+                patchCb = (dolPath) => { try { GctPatcherService.PatchWiiDolWithGcts(toolsPath, dolPath, gcts, mvm.debug); return true; } catch { return false; } };
+            }
+
+            var opt = new WiiInjectOptions
+            {
+                Debug = mvm.debug,
+                DontTrim = mvm.donttrim,
+                PatchVideo = mvm.Patch,
+                ToPal = mvm.toPal,
+                Index = mvm.Index,
+                LR = mvm.LR,
+                ForceNkitConvert = mvm.NKITFLAG,
+                Passthrough = mvm.passtrough,
+                PatchDolCallback = patchCb,
+                Progress = (p, msg) => { if (mvm != null) { try { mvm.Progress = (short)p; mvm.msg = msg; } catch { } } }
+            };
+
+            if (romPath.ToLower().EndsWith(".dol"))
+            {
+                var t = StepTimer("Homebrew Flow", 1);
+                if (mvm != null) mvm.msg = "Extracting Homebrew Base...";
+                var tempBase = WiiInjectService.PrepareTempBase(toolsPath, tempPath);
+                WiiInjectService.CopyDolToBase(tempBase, romPath);
+                var nfs = new NfsInjectOptions { Debug = opt.Debug, Kind = InjectKind.WiiHomebrew, Passthrough = opt.Passthrough, Index = opt.Index, LR = opt.LR, Progress = opt.Progress };
+                WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs);
+                EndTimer(t, 1);
+                return;
+            }
+            if (romPath.ToLower().EndsWith(".wad"))
+            {
+                var t = StepTimer("Forwarder Flow", 1);
+                if (mvm != null) mvm.msg = "Extracting Forwarder Base...";
+                var tempBase = WiiInjectService.PrepareTempBase(toolsPath, tempPath);
+                WiiInjectService.SetupForwarderTitle(tempBase, romPath);
+                WiiInjectService.CopyForwarderDol(toolsPath, tempBase);
+                var nfs = new NfsInjectOptions { Debug = opt.Debug, Kind = InjectKind.WiiForwarder, Passthrough = opt.Passthrough, Index = opt.Index, LR = opt.LR, Progress = opt.Progress };
+                WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs);
+                EndTimer(t, 1);
+                return;
+            }
+
+            var s = StepTimer("Standard Wii Inject", 1);
+            if (mvm != null) mvm.msg = "Preparing and Injecting...";
+
+            // Paths
+            var preIsoWin = Path.Combine(tempPath, "pre.iso");
+            var tempDirWin = Path.Combine(tempPath, "TEMP");
+            var gameIsoWin = Path.Combine(tempPath, "game.iso");
+            var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
+            Directory.CreateDirectory(tempPath);
+
+            // ---- 1) Ensure pre.iso exists (copy or convert NKIT/WBFS) ----
+            {
+                var step = StepTimer("Prepare pre.iso", 1);
+                var ext = (Path.GetExtension(romPath) ?? "").ToLowerInvariant();
+
+                if (ext.Contains("iso"))
+                {
+                    if (mvm != null) mvm.msg = "Copying ROM...";
+                    Log($"Copy ISO → {preIsoWin}");
+                    File.Copy(romPath, preIsoWin, overwrite: true);
+                    ToolRunner.LogFileVisibility("[after File.Copy] pre.iso", preIsoWin);
+                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
+                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after copy.", preIsoWin);
+                    if (mvm != null) mvm.Progress = 15;
+                }
+                else if (mvm != null && (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0 || ext.Contains("wbfs")))
+                {
+                    if (mvm != null)
+                        mvm.msg = (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0) ? "Converting NKIT to ISO" : "Converting WBFS to ISO...";
+                    var witArgs = $"copy \"{romPath}\" --dest \"{preIsoWin}\" -I";
+                    Log($"Calling wit: {witArgs}");
+                    ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm != null && mvm.debug);
+                    ToolRunner.LogFileVisibility("[after wit copy] pre.iso", preIsoWin);
+                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
+                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after wit copy.", preIsoWin);
+                    if (!ext.Contains("wbfs") && !File.Exists(preIsoWin))
+                        throw new Exception("nkit");
+                    if (mvm != null) mvm.Progress = 15;
+                }
+                else
+                {
+                    Log($"Unsupported input extension '{ext}'. Continuing may fail later.");
+                }
+                EndTimer(step, 1);
+            }
+
+            // ---- 2) Manual XML edits ----
+            {
+                var step = StepTimer("Edit meta.xml reserved_flag2", 2);
+                if (mvm != null) mvm.msg = "Trying to change the Manual...";
+                ToolRunner.LogFileVisibility("[step 2 pre-check] pre.iso", preIsoWin);
+                if (!File.Exists(preIsoWin))
+                    throw new FileNotFoundException("pre.iso missing before meta.xml edit. (Wine/.NET view)", preIsoWin);
+                byte[] chars = new byte[4];
+                using (var fstrm = new FileStream(preIsoWin, FileMode.Open, FileAccess.Read))
+                    fstrm.Read(chars, 0, 4);
+                string procod = ByteArrayToString(chars);
+                string neededformanual = procod.ToHex();
+                string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
+                var doc = new System.Xml.XmlDocument();
+                doc.Load(metaXml);
+                doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
+                doc.Save(metaXml);
+                if (mvm != null) mvm.Progress = 25;
+                EndTimer(step, 2);
+            }
+
+            // ---- 3) Regionfrii ----
+            if (mvm != null && mvm.regionfrii)
+            {
+                var step = StepTimer("Apply RegionFrii", 3);
+                Services.WiiPatchService.ApplyRegionFrii(preIsoWin, mvm.regionfriius, mvm.regionfriijp);
+                EndTimer(step, 3);
+            }
+
+            // ---- 4) Extract via WIT (trim or full copy) ----
+            {
+                var step = StepTimer("Extract pre.iso", 4);
+                string psel = (mvm != null && mvm.donttrim) ? "raw" : "whole";
+                if (mvm != null) mvm.msg = (mvm.donttrim ? "Preparing full disc image..." : "Trimming game partition...");
+                var witArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1";
+                ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm != null && mvm.debug);
+                EndTimer(step, 4);
+                if (mvm != null) mvm.Progress = 30;
+
+                // ---- 5) GCT patch ----
+                var step5 = StepTimer("Apply GCT patch", 5);
+                GctPatch(mvm, "Wii", preIsoWin);
+                EndTimer(step5, 5);
+
+                // ---- 6) main.dol patch (deflicker/dither/VFilter) ----
+                var step6 = StepTimer("Patch main.dol (deflicker/dither/VFilter)", 6);
+                bool dolPatch = mvm != null && (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter);
+                if (dolPatch)
+                {
+                    if (mvm != null) { mvm.msg = "Patching main.dol..."; mvm.Progress = 33; }
+                    var mainDolPath = Directory.GetFiles(tempDirWin, "main.dol", SearchOption.AllDirectories).FirstOrDefault()
+                                        ?? throw new Exception("main.dol not found in extracted tree.");
+                    var patchedDol = Path.Combine(Path.GetDirectoryName(mainDolPath)!, "patched.dol");
+                    DeflickerDitheringRemover.ProcessFile(
+                        mainDolPath,
+                        patchedDol,
+                        mvm?.RemoveDeflicker ?? false,
+                        mvm?.RemoveDithering ?? false,
+                        mvm?.HalfVFilter ?? false
+                    );
+                    File.Delete(mainDolPath);
+                    File.Move(patchedDol, mainDolPath);
+                }
+                EndTimer(step6, 6);
+
+                // ---- 7) Classic Controller patch ----
+                if (mvm != null && mvm.Index == 4)
+                {
+                var step7 = StepTimer("Force CC patch", 7);
+                if (mvm != null) mvm.msg = "Patching ROM (Force Classic Controller)...";
+                var targetDol = Path.Combine(tempDirWin, "DATA", "sys", "main.dol");
+                Services.WiiPatchService.ForceClassicController(toolsPath, targetDol, mvm != null && mvm.debug);
+                if (mvm != null) mvm.Progress = 35;
+                EndTimer(step7, 7);
+                }
+
+                // ---- 8) JPPatch (Japanese language patch) ----
+                if (mvm != null && mvm.jppatch)
+                {
+                    var step8 = StepTimer("Apply JPPatch", 8);
+                    if (mvm != null) mvm.msg = "Applying language patch...";
+                    Services.WiiPatchService.ApplyJpPatch(tempPath);
+                    EndTimer(step8, 8);
+                }
+
+                // ---- 9) Video patch (wii-vmc.exe) ----
+                if (mvm != null && mvm.Patch)
+                {
+                    var step9 = StepTimer("Video patch (wii-vmc)", 9);
+                    if (mvm != null) mvm.msg = "Applying video patch...";
+                    var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
+                    Directory.CreateDirectory(sysDir);
+                    using (var vmc = new System.Diagnostics.Process())
+                    {
+                        string extra = "";
+                        if (mvm.Index == 2) extra = "-horizontal ";
+                        else if (mvm.Index == 3) extra = "-wiimote ";
+                        else if (mvm.Index == 4) extra = "-instantcc ";
+                        else if (mvm.Index == 5) extra = "-nocc ";
+                        if (mvm.LR) extra += "-lrpatch ";
+                        vmc.StartInfo.FileName = Path.Combine(toolsPath, "wii-vmc.exe");
+                        vmc.StartInfo.Arguments = $"-enc {extra}-iso main.dol";
+                        vmc.StartInfo.UseShellExecute = false;
+                        vmc.StartInfo.CreateNoWindow = true;
+                        vmc.StartInfo.RedirectStandardOutput = true;
+                        vmc.StartInfo.RedirectStandardInput = true;
+                        vmc.StartInfo.WorkingDirectory = sysDir;
+                        vmc.Start();
+                        System.Threading.Thread.Sleep(1000);
+                        vmc.StandardInput.WriteLine("a");
+                        System.Threading.Thread.Sleep(2000);
+                        vmc.StandardInput.WriteLine(mvm.toPal ? "1" : "2");
+                        System.Threading.Thread.Sleep(2000);
+                        vmc.StandardInput.WriteLine();
+                        vmc.WaitForExit();
+                    }
+                    if (mvm != null) mvm.Progress = 40;
+                    EndTimer(step9, 9);
+                }
+
+                // ---- 10) Repack via WIT ----
+                {
+                    var step10 = StepTimer("Repack to game.iso", 10);
+                    if (mvm != null)
+                        mvm.msg = (mvm.donttrim ? "Rebuilding full disc image..." : "Rebuilding trimmed game ISO...");
+                    string copyFlags = (mvm != null && mvm.donttrim) ? "--psel raw --iso" : "--psel whole --iso";
+                    var repackArgs = $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}";
+                    ToolRunner.RunTool("wit", toolsPath, repackArgs, showWindow: mvm != null && mvm.debug);
+                    Directory.Delete(tempDirWin, true);
+                    File.Delete(preIsoWin);
+                    EndTimer(step10, 10);
+                }
+            }
+
+            // ---- 11) Extract TIK/TMD via wit ----
+            {
+                var step = StepTimer("Extract TIK/TMD", 11);
+                if (mvm != null) { mvm.Progress = 50; mvm.msg = "Replacing TIK and TMD..."; }
+                if (Directory.Exists(tikTmdWin)) { try { Directory.Delete(tikTmdWin, true); } catch { } }
+                var witArgs = $"extract \"{gameIsoWin}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdWin}\" -vv1 -o";
+                ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm != null && mvm.debug);
+                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*")) File.Delete(sFile);
+                File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), true);
+                File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), true);
+                try { Directory.Delete(tikTmdWin, true); } catch { }
+                EndTimer(step, 11);
+            }
+
+            // ---- 12) Inject into content via nfs2iso2nfs.exe ----
+            {
+                var step = StepTimer("Inject (nfs2iso2nfs)", 12);
+                if (mvm != null) { mvm.Progress = 60; mvm.msg = "Injecting ROM..."; }
+                var contentDir = Path.Combine(baseRomPath, "content");
+                var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
+                System.Threading.Tasks.Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
+                var finalIso = Path.Combine(contentDir, "game.iso");
+                FileHelpers.MoveOverwrite(gameIsoWin, finalIso);
+                using (var iso2nfs = new System.Diagnostics.Process())
+                {
+                    if (mvm != null && !mvm.debug) iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    iso2nfs.StartInfo.FileName = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
+                    string extra = "";
+                    if (mvm != null)
+                    {
+                        if (mvm.Index == 2) { extra = "-horizontal "; }
+                        if (mvm.Index == 3) { extra = "-wiimote "; }
+                        if (mvm.Index == 4) { extra = "-instantcc "; }
+                        if (mvm.Index == 5) { extra = "-nocc "; }
+                        if (mvm.LR) { extra += "-lrpatch "; }
+                    }
+                    iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso game.iso";
+                    iso2nfs.StartInfo.WorkingDirectory = contentDir;
+                    iso2nfs.Start();
+                    iso2nfs.WaitForExit();
+                    try { File.Delete(Path.Combine(contentDir, "game.iso")); } catch { }
+                }
+                if (mvm != null) mvm.Progress = 80;
+                EndTimer(step, 12);
+            }
+            EndTimer(s, 1);
         }
         internal static void PatchDol(string consoleName, string mainDolPath, MainViewModel mvm)
         {
@@ -1133,7 +1439,7 @@ namespace UWUVCI_AIO_WPF
 
                 var contentDir = Path.Combine(baseRomPath, "content");
                 var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
-                System.Threading.Tasks.Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
+                Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
 
                 var finalIso = Path.Combine(baseRomPath, "content", "game.iso");
                 Log($"Move {gameIsoWin} → {finalIso}");
@@ -1170,7 +1476,22 @@ namespace UWUVCI_AIO_WPF
 
         private static void GCN(string romPath, MainViewModel mvm, bool force)
         {
-            Services.GCNInjectService.InjectGCN(toolsPath, tempPath, baseRomPath, romPath, mvm, force);
+            var opt = new GcnInjectOptions
+            {
+                Debug = mvm.debug,
+                DontTrim = mvm.donttrim,
+                Disc2Path = mvm.gc2rom,
+                Force43 = force,
+                Passthrough = true
+            };
+
+            // Explicit orchestration of GCN steps
+            var tmpBase = GCNInjectService.PrepareTempBase(toolsPath, tempPath);
+            GCNInjectService.ApplyNintendontDol(toolsPath, tmpBase, opt.Force43);
+            GCNInjectService.PlacePrimaryGame(toolsPath, tmpBase, romPath, opt.DontTrim, opt.Debug, DefaultToolRunnerFacade.Instance);
+            GCNInjectService.PlaceDisc2IfAny(toolsPath, tmpBase, romPath, opt.Disc2Path, opt.DontTrim, opt.Debug, DefaultToolRunnerFacade.Instance);
+            var nfs = new NfsInjectOptions { Debug = opt.Debug, Kind = InjectKind.GCN, Passthrough = opt.Passthrough, Index = opt.Index, LR = opt.LR };
+            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs, DefaultToolRunnerFacade.Instance);
         }
 
        
@@ -2808,8 +3129,9 @@ namespace UWUVCI_AIO_WPF
 
             // Full recursive copy with bounded parallelism (from settings)
             int deg = 6;
-            try { deg = Math.Max(1, Math.Min(32, Helpers.JsonSettingsManager.Settings.FileCopyParallelism)); } catch { }
-            Helpers.IOHelpers.CopyDirectorySync(sourceDirName, destDirName, maxParallel: deg);
+            try { deg = Math.Max(1, Math.Min(32, JsonSettingsManager.Settings.FileCopyParallelism)); } catch { }
+            IOHelpers.CopyDirectorySync(sourceDirName, destDirName, maxParallel: deg);
         }
     }
 }
+

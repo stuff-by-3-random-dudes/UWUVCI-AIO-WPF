@@ -5,7 +5,6 @@ using System.Text;
 using System.Xml;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF;
-using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Services
 {
@@ -18,18 +17,17 @@ namespace UWUVCI_AIO_WPF.Services
 
         /// <summary>
         /// Builds game.iso from TempBase via wit, extracts TIK/TMD, optionally updates meta flag for GCN,
-        /// and runs nfs2iso2nfs to inject. Updates MainViewModel for progress and messages.
+        /// and runs nfs2iso2nfs to inject. .
         /// </summary>
         public static void BuildIsoExtractTicketsAndInject(
             string toolsPath,
             string tempPath,
             string baseRomPath,
-            string functionName,
-            MainViewModel mvm,
+            NfsInjectOptions options,
             IToolRunnerFacade runner = null)
         {
             runner ??= DefaultToolRunnerFacade.Instance;
-            bool debug = mvm?.debug ?? false;
+            bool debug = options?.Debug ?? false;
 
             var tempBaseWin = Path.Combine(tempPath, "TempBase");
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
@@ -48,7 +46,6 @@ namespace UWUVCI_AIO_WPF.Services
             gameIsoWin = Path.Combine(contentDir, "game.iso");
             if (!File.Exists(gameIsoWin))
                 throw new Exception("Wii: An error occured while Creating the ISO");
-            if (mvm != null) { mvm.Progress = 50; mvm.msg = "Replacing TIK and TMD..."; }
 
             // 2) wit extract (TIK/TMD out of game.iso)
             runner.RunTool(
@@ -59,9 +56,8 @@ namespace UWUVCI_AIO_WPF.Services
             );
 
             // If GCN, save rom code to meta.xml
-            if (string.Equals(functionName, "GCN", StringComparison.OrdinalIgnoreCase))
+            if (options != null && options.Kind == InjectKind.GCN)
             {
-                if (mvm != null) mvm.msg = "Trying to save rom code...";
                 byte[] chars = new byte[4];
                 using (var fstrm = new FileStream(gameIsoWin, FileMode.Open, FileAccess.Read))
                     fstrm.Read(chars, 0, 4);
@@ -72,7 +68,6 @@ namespace UWUVCI_AIO_WPF.Services
                 doc.Load(metaXml);
                 doc.SelectSingleNode("menu/reserved_flag2").InnerText = procod.ToHex();
                 doc.Save(metaXml);
-                if (mvm != null) mvm.Progress = 55;
             }
 
             // Cleanup TempBase
@@ -81,6 +76,7 @@ namespace UWUVCI_AIO_WPF.Services
                 Directory.Delete(tempBaseDir, true);
 
             // Replace rvlt.* and copy TIK/TMD
+            options?.Progress?.Invoke(50, "Replacing TIK and TMD...");
             var codeDir = Path.Combine(baseRomPath, "code");
             var rvltFiles = Directory.GetFiles(codeDir, "rvlt.*");
             System.Threading.Tasks.Parallel.ForEach(rvltFiles, f => { try { File.Delete(f); } catch { } });
@@ -90,24 +86,24 @@ namespace UWUVCI_AIO_WPF.Services
             Directory.Delete(tikTmdWin, true);
 
             // Inject via nfs2iso2nfs.exe (Windows exe; runs fine under Wine)
-            if (mvm != null) { mvm.Progress = 60; mvm.msg = "Injecting ROM..."; }
+            options?.Progress?.Invoke(60, "Injecting ROM...");
+            // Begin nfs conversion
 
             var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
             System.Threading.Tasks.Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
 
 
             // Run nfs2iso2nfs via ToolRunner in the content folder
-            string pass = (!string.Equals(functionName, "GCN", StringComparison.OrdinalIgnoreCase) && (mvm?.passtrough ?? false))
-                ? "-passthrough " : string.Empty;
+            string pass = (options != null && options.Passthrough && options.Kind != InjectKind.GCN) ? "-passthrough " : string.Empty;
             string extra = string.Empty;
-            if (!string.Equals(functionName, "GCN", StringComparison.OrdinalIgnoreCase))
+            if (options == null || options.Kind != InjectKind.GCN)
             {
-                var idx = mvm?.Index ?? 0;
+                var idx = options?.Index ?? 0;
                 if (idx == 2) extra = "-horizontal ";
                 if (idx == 3) extra = "-wiimote ";
                 if (idx == 4) extra = "-instantcc ";
                 if (idx == 5) extra = "-nocc ";
-                if (mvm?.LR == true) extra += "-lrpatch ";
+                if (options?.LR == true) extra += "-lrpatch ";
             }
             else
             {
@@ -123,10 +119,9 @@ namespace UWUVCI_AIO_WPF.Services
                 workDirWin: contentDir
             );
 
-            // Cleanup dropped executable and working ISO
+            // Cleanup working ISO
             File.Delete(Path.Combine(contentDir, "game.iso"));
-
-            if (mvm != null) mvm.Progress = 80;
+            options?.Progress?.Invoke(80, "Injection complete");
         }
     }
 }

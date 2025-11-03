@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using UWUVCI_AIO_WPF.Helpers;
-using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Services
 {
@@ -12,48 +11,47 @@ namespace UWUVCI_AIO_WPF.Services
             string tempPath,
             string baseRomPath,
             string romPath,
-            MainViewModel mvm,
-            bool force,
+            GcnInjectOptions opt,
             IToolRunnerFacade runner = null)
         {
+            if (opt == null) throw new ArgumentNullException(nameof(opt));
             runner ??= DefaultToolRunnerFacade.Instance;
-
             // Normalize potential POSIX input to Windows-view once.
             romPath = ToolRunner.ReplaceArgsWithWindowsFlavor(ToolRunner.Q(romPath)).Trim('"');
-            if (mvm != null) mvm.msg = "Extracting Nintendont Base...";
 
+            var tempBase = PrepareTempBase(toolsPath, tempPath);
+            ApplyNintendontDol(toolsPath, tempBase, opt.Force43);
+            PlacePrimaryGame(toolsPath, tempBase, romPath, opt.DontTrim, opt.Debug, runner);
+            PlaceDisc2IfAny(toolsPath, tempBase, romPath, opt.Disc2Path, opt.DontTrim, opt.Debug, runner);
+            var nfs = new NfsInjectOptions { Debug = opt.Debug, Kind = InjectKind.GCN, Passthrough = opt.Passthrough, Index = opt.Index, LR = opt.LR };
+            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs, runner);
+        }
+
+        // Composable helpers for controller use
+        internal static string PrepareTempBase(string toolsPath, string tempPath)
+        {
             var tempBaseWin = Path.Combine(tempPath, "TempBase");
-            var baseZipWin  = Path.Combine(toolsPath, "BASE.zip");
-            var baseDirWin  = Path.Combine(tempPath, "BASE");
+            if (Directory.Exists(tempBaseWin)) Directory.Delete(tempBaseWin, true);
+            var extracted = BaseExtractor.GetOrExtractBase(toolsPath, "BASE.zip");
+            IOHelpers.MoveOrCopyDirectory(extracted, tempBaseWin);
+            return tempBaseWin;
+        }
 
-            if (Directory.Exists(tempBaseWin))
-                Directory.Delete(tempBaseWin, true);
+        internal static void ApplyNintendontDol(string toolsPath, string tempBase, bool force43)
+        {
+            var mainDol = Path.Combine(tempBase, "sys", "main.dol");
+            File.Copy(Path.Combine(toolsPath, force43 ? "nintendont_force.dol" : "nintendont.dol"), mainDol, true);
+        }
 
-            // Use cached extraction and copy/move into TempBase
-            var extractedBase = BaseExtractor.GetOrExtractBase(toolsPath, "BASE.zip");
-            IOHelpers.MoveOrCopyDirectory(extractedBase, tempBaseWin);
-
-            if (mvm != null)
-            {
-                mvm.Progress = 20;
-                mvm.msg = "Applying Nintendont" + (force ? " force 4:3..." : "...");
-            }
-
-            var mainDol = Path.Combine(tempBaseWin, "sys", "main.dol");
-            File.Copy(Path.Combine(toolsPath, force ? "nintendont_force.dol" : "nintendont.dol"), mainDol, true);
-            if (mvm != null) mvm.Progress = 40;
-
-            // Inject primary game to TempBase/files/game.iso
-            var targetGameInBase = Path.Combine(tempBaseWin, "files", "game.iso");
+        internal static void PlacePrimaryGame(string toolsPath, string tempBase, string romPath, bool dontTrim, bool debug, IToolRunnerFacade runner)
+        {
+            var targetGameInBase = Path.Combine(tempBase, "files", "game.iso");
             Directory.CreateDirectory(Path.GetDirectoryName(targetGameInBase));
-
-            bool dontTrim = mvm?.donttrim ?? false;
             if (dontTrim)
             {
-                // Keep full ISO. If NKIT or GCZ -> convert to ISO first.
                 if (romPath.ToLowerInvariant().Contains("nkit.iso") || romPath.ToLower().Contains("gcz"))
                 {
-                    var outIso = NKitService.ConvertToIso(toolsPath, romPath, "out.iso", mvm?.debug ?? false, runner);
+                    var outIso = NKitService.ConvertToIso(toolsPath, romPath, "out.iso", debug, runner);
                     if (!File.Exists(outIso)) throw new Exception("nkit");
                     FileHelpers.MoveOverwrite(outIso, targetGameInBase);
                 }
@@ -64,10 +62,9 @@ namespace UWUVCI_AIO_WPF.Services
             }
             else
             {
-                // Trim: convert ISO/GCM/GCZ → NKIT (then stored as game.iso in base)
                 if (romPath.ToLowerInvariant().Contains("iso") || romPath.ToLower().Contains("gcm") || romPath.ToLower().Contains("gcz"))
                 {
-                    var outNkit = NKitService.ConvertToNKit(toolsPath, romPath, "out.nkit.iso", mvm?.debug ?? false, runner);
+                    var outNkit = NKitService.ConvertToNKit(toolsPath, romPath, "out.nkit.iso", debug, runner);
                     if (!File.Exists(outNkit)) throw new Exception("nkit");
                     FileHelpers.MoveOverwrite(outNkit, targetGameInBase);
                 }
@@ -76,48 +73,44 @@ namespace UWUVCI_AIO_WPF.Services
                     File.Copy(romPath, targetGameInBase, true);
                 }
             }
+        }
 
-            // Optional Disc 2
-            var disc2 = mvm?.gc2rom;
-            if (!string.IsNullOrEmpty(disc2) && File.Exists(disc2))
+        internal static void PlaceDisc2IfAny(string toolsPath, string tempBase, string primaryRom, string disc2, bool dontTrim, bool debug, IToolRunnerFacade runner)
+        {
+            if (string.IsNullOrEmpty(disc2) || !File.Exists(disc2)) return;
+            var disc2Out = Path.Combine(tempBase, "files", "disc2.iso");
+            if (dontTrim)
             {
-                var disc2Out = Path.Combine(tempBaseWin, "files", "disc2.iso");
-                if (dontTrim)
+                if (disc2.ToLower().Contains("nkit"))
                 {
-                    if (disc2.Contains("nkit"))
-                    {
-                        var outIso1 = NKitService.ConvertToIso(toolsPath, disc2, "out(Disc 1).iso", mvm?.debug ?? false, runner);
-                        if (!File.Exists(outIso1)) throw new Exception("nkit");
-                        FileHelpers.MoveOverwrite(outIso1, disc2Out);
-                    }
-                    else
-                    {
-                        File.Copy(disc2, disc2Out, true);
-                    }
+                    var outIso1 = NKitService.ConvertToIso(toolsPath, disc2, "out(Disc 1).iso", debug, runner);
+                    if (!File.Exists(outIso1)) throw new Exception("nkit");
+                    FileHelpers.MoveOverwrite(outIso1, disc2Out);
                 }
                 else
                 {
-                    if (disc2.ToLower().Contains("iso") || disc2.ToLower().Contains("gcm") || disc2.ToLower().Contains("gcz"))
-                    {
-                        var outNkit1 = NKitService.ConvertToNKit(toolsPath, disc2, "out(Disc 1).nkit.iso", mvm?.debug ?? false, runner);
-                        if (!File.Exists(outNkit1)) throw new Exception("nkit");
-                        FileHelpers.MoveOverwrite(outNkit1, disc2Out);
-                    }
-                    else if (romPath.ToLower().Contains("gcz"))
-                    {
-                        var outNkit1 = NKitService.ConvertToNKit(toolsPath, romPath, "out(Disc 1).nkit.iso", mvm?.debug ?? false, runner);
-                        if (!File.Exists(outNkit1)) throw new Exception("nkit");
-                        FileHelpers.MoveOverwrite(outNkit1, disc2Out);
-                    }
-                    else
-                    {
-                        File.Copy(romPath, disc2Out, true);
-                    }
+                    File.Copy(disc2, disc2Out, true);
                 }
             }
-
-            // Finalize via shared WIT+NFS flow
-            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, "GCN", mvm, runner);
+            else
+            {
+                if (disc2.ToLower().Contains("iso") || disc2.ToLower().Contains("gcm") || disc2.ToLower().Contains("gcz"))
+                {
+                    var outNkit1 = NKitService.ConvertToNKit(toolsPath, disc2, "out(Disc 1).nkit.iso", debug, runner);
+                    if (!File.Exists(outNkit1)) throw new Exception("nkit");
+                    FileHelpers.MoveOverwrite(outNkit1, disc2Out);
+                }
+                else if (primaryRom.ToLower().Contains("gcz"))
+                {
+                    var outNkit1 = NKitService.ConvertToNKit(toolsPath, primaryRom, "out(Disc 1).nkit.iso", debug, runner);
+                    if (!File.Exists(outNkit1)) throw new Exception("nkit");
+                    FileHelpers.MoveOverwrite(outNkit1, disc2Out);
+                }
+                else
+                {
+                    File.Copy(primaryRom, disc2Out, true);
+                }
+            }
         }
     }
 }
