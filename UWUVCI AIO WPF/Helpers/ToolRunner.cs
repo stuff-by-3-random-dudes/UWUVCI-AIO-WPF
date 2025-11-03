@@ -363,6 +363,8 @@ namespace UWUVCI_AIO_WPF.Helpers
         /// </summary>
         public static bool WaitForWineVisibility(string winPath, int timeoutMs = 8000, int pollMs = 200)
         {
+            // If we are not under Wine, the Windows view is authoritative; return immediately.
+            try { if (!UnderWine()) return true; } catch { /* best-effort */ }
             var sw = System.Diagnostics.Stopwatch.StartNew();
             string lastNote = "";
 

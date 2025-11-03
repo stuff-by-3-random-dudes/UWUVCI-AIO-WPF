@@ -274,7 +274,8 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\MacLinuxHelper.cs" />
     <Compile Include="Helpers\ToolRunner.cs" />
-    <Compile Include="Helpers\ImagePathResolver.cs" />
+    <Compile Include="Helpers\ImagePathResolver.cs" />`n    <Compile Include="Helpers\IOHelpers.cs" />
+    <Compile Include="Helpers\IToolRunnerFacade.cs" />
     <Compile Include="Models\CompatModels.cs" />
     <Compile Include="Models\DolSection.cs" />
     <Compile Include="Models\GctCode.cs" />
@@ -285,8 +286,11 @@
     <Compile Include="Classes\ToolCheck.cs" />
     <Compile Include="Services\GitHubFeedbackService.cs" />
     <Compile Include="Services\GitHubImageService.cs" />
-    <Compile Include="Services\ParallelBatchRunner.cs" />
-    <Compile Include="Services\NKitService.cs" />
+      <Compile Include="Services\ParallelBatchRunner.cs" />
+      <Compile Include="Services\NKitService.cs" />
+      <Compile Include="Services\WitNfsService.cs" />
+      <Compile Include="Services\WiiInjectService.cs" />
+      <Compile Include="Services\GCNInjectService.cs" />
     <Compile Include="Services\LocalInstallGuard.cs" />
     <Compile Include="Services\NintendontConfigService.cs" />
     <Compile Include="Services\ReadMeManager.cs" />
@@ -897,6 +901,7 @@
   <Import Project="..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets')" />
   <Import Project="..\packages\Fody.6.9.2\build\Fody.targets" Condition="Exists('..\packages\Fody.6.9.2\build\Fody.targets')" />
 </Project>
+
 
 
 
