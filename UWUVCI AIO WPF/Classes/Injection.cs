@@ -1028,13 +1028,6 @@ namespace UWUVCI_AIO_WPF
 
                     var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
                     Directory.CreateDirectory(sysDir);
-                    var vmcPath = Path.Combine(sysDir, "wii-vmc.exe");
-
-                    File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), vmcPath, true);
-                    Log($"[STEP 9] wii-vmc.exe copied → {vmcPath}");
-
-                    var prevDir = Directory.GetCurrentDirectory();
-                    Directory.SetCurrentDirectory(sysDir);
 
                     using (var vmc = new Process())
                     {
@@ -1045,12 +1038,13 @@ namespace UWUVCI_AIO_WPF
                         else if (mvm.Index == 5) extra = "-nocc ";
                         if (mvm.LR) extra += "-lrpatch ";
 
-                        vmc.StartInfo.FileName = "wii-vmc.exe";
+                        vmc.StartInfo.FileName = Path.Combine(toolsPath, "wii-vmc.exe");
                         vmc.StartInfo.Arguments = $"-enc {extra}-iso main.dol";
                         vmc.StartInfo.UseShellExecute = false;
                         vmc.StartInfo.CreateNoWindow = true;
                         vmc.StartInfo.RedirectStandardOutput = true;
                         vmc.StartInfo.RedirectStandardInput = true;
+                        vmc.StartInfo.WorkingDirectory = sysDir;
 
                         Log($"[STEP 9] Running wii-vmc with args: {vmc.StartInfo.Arguments}");
                         vmc.Start();
@@ -1063,10 +1057,8 @@ namespace UWUVCI_AIO_WPF
                         vmc.WaitForExit();
 
                         Log($"[STEP 9] wii-vmc exit={vmc.ExitCode}");
-                        File.Delete("wii-vmc.exe");
                     }
 
-                    Directory.SetCurrentDirectory(prevDir);
                     mvm.Progress = 40;
                     EndTimer(step, 9);
                 }
@@ -1139,24 +1131,21 @@ namespace UWUVCI_AIO_WPF
                 mvm.Progress = 60;
                 mvm.msg = "Injecting ROM...";
 
-                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
-                    File.Delete(sFile);
+                var contentDir = Path.Combine(baseRomPath, "content");
+                var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
+                System.Threading.Tasks.Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
 
                 var finalIso = Path.Combine(baseRomPath, "content", "game.iso");
                 Log($"Move {gameIsoWin} → {finalIso}");
                 FileHelpers.MoveOverwrite(gameIsoWin, finalIso);
 
-                var tool = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
-                var outTool = Path.Combine(baseRomPath, "content", "nfs2iso2nfs.exe");
-                File.Copy(tool, outTool, true);
-
                 var prev = Directory.GetCurrentDirectory();
-                Directory.SetCurrentDirectory(Path.Combine(baseRomPath, "content"));
+                var contentWorkDir = Path.Combine(baseRomPath, "content");
                 using (Process iso2nfs = new Process())
                 {
                     if (!mvm.debug) iso2nfs.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
-                    iso2nfs.StartInfo.FileName = "nfs2iso2nfs.exe";
+                    iso2nfs.StartInfo.FileName = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
                     string extra = "";
                     if (mvm.Index == 2) { extra = "-horizontal "; }
                     if (mvm.Index == 3) { extra = "-wiimote "; }
@@ -1164,14 +1153,13 @@ namespace UWUVCI_AIO_WPF
                     if (mvm.Index == 5) { extra = "-nocc "; }
                     if (mvm.LR) { extra += "-lrpatch "; }
                     iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso game.iso";
+                    iso2nfs.StartInfo.WorkingDirectory = contentWorkDir;
                     Log($"nfs2iso2nfs args: {iso2nfs.StartInfo.Arguments}");
                     iso2nfs.Start();
                     iso2nfs.WaitForExit();
                     Log($"nfs2iso2nfs exit={iso2nfs.ExitCode}");
-                    File.Delete("nfs2iso2nfs.exe");
-                    File.Delete("game.iso");
+                    try { File.Delete(Path.Combine(contentWorkDir, "game.iso")); } catch { }
                 }
-                Directory.SetCurrentDirectory(prev);
 
                 mvm.Progress = 80;
                 EndTimer(step, 12);
@@ -2801,27 +2789,27 @@ namespace UWUVCI_AIO_WPF
 
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
-            // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-
-            if (!dir.Exists)
+            // Use the optimized parallel copy helper for better throughput.
+            // It preserves directory structure and copies all files recursively when copySubDirs is true.
+            if (!Directory.Exists(sourceDirName))
             {
                 Logger.Log($"Source directory does not exist or could not be found: {sourceDirName}");
-                throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
+                throw new DirectoryNotFoundException($"Source directory not found: {sourceDirName}");
             }
 
-            // If the destination directory doesn't exist, create it.
-            if (!Directory.Exists(destDirName))
+            if (!copySubDirs)
+            {
+                // Only copy top-level files
                 Directory.CreateDirectory(destDirName);
+                foreach (var f in Directory.GetFiles(sourceDirName))
+                    File.Copy(f, Path.Combine(destDirName, Path.GetFileName(f)), true);
+                return;
+            }
 
-            // Get the files in the directory and copy them to the new location.
-            foreach (FileInfo file in dir.EnumerateFiles())
-                file.CopyTo(Path.Combine(destDirName, file.Name), true);
-
-            // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs)
-                foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
-                    DirectoryCopy(subdir.FullName,  Path.Combine(destDirName, subdir.Name), copySubDirs);
+            // Full recursive copy with bounded parallelism (from settings)
+            int deg = 6;
+            try { deg = Math.Max(1, Math.Min(32, Helpers.JsonSettingsManager.Settings.FileCopyParallelism)); } catch { }
+            Helpers.IOHelpers.CopyDirectorySync(sourceDirName, destDirName, maxParallel: deg);
         }
     }
 }

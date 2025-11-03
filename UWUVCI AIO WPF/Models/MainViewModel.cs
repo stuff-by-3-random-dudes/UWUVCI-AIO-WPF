@@ -1820,33 +1820,32 @@ namespace UWUVCI_AIO_WPF
         }
         public static void DownloadBase(string name, MainViewModel mvm)
         {
-            string olddir = Directory.GetCurrentDirectory();
             try
             {
-                string basePath = $@"bin\bases\";
-                Directory.SetCurrentDirectory(basePath);
+                // Build explicit destination to avoid global CWD changes
+                string baseDir = Directory.GetCurrentDirectory();
+                string basesPath = Path.Combine(baseDir, "bin", "bases");
+                Directory.CreateDirectory(basesPath);
+
                 using var client = new WebClient();
                 var fixname = name.Split('\\');
+                string fileName = fixname[fixname.Length - 1];
 
                 var env = EnvDetect.Get();
                 if (env.UnderWineLike)
                     name = "Net6/" + name;
 
-                client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
+                string destPath = Path.Combine(basesPath, fileName);
+                client.DownloadFile(getDownloadLink(name, false), destPath);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Custom_Message cm = new Custom_Message("Error 005: \"Unable to Download VCB Base\"", " There was an Error downloading the VCB Base File. \n The Programm will now terminate.");
-                try
-                {
-                    cm.Owner = mvm.mw;
-                }
-                catch (Exception) { }
+                try { cm.Owner = mvm.mw; } catch (Exception) { }
                 cm.ShowDialog();
                 Environment.Exit(1);
             }
-            Directory.SetCurrentDirectory(olddir);
         }
         public static async Task DownloadToolAsync(string name, MainViewModel mvm)
         {
