@@ -274,7 +274,8 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\MacLinuxHelper.cs" />
     <Compile Include="Helpers\ToolRunner.cs" />
-    <Compile Include="Helpers\ImagePathResolver.cs" />`n    <Compile Include="Helpers\IOHelpers.cs" />
+    <Compile Include="Helpers\ImagePathResolver.cs" />
+    <Compile Include="Helpers\IOHelpers.cs" />
     <Compile Include="Helpers\IToolRunnerFacade.cs" />
     <Compile Include="Models\CompatModels.cs" />
     <Compile Include="Models\DolSection.cs" />
@@ -291,6 +292,7 @@
       <Compile Include="Services\WitNfsService.cs" />
       <Compile Include="Services\WiiInjectService.cs" />
       <Compile Include="Services\GCNInjectService.cs" />
+      <Compile Include="Services\BaseExtractor.cs" />
     <Compile Include="Services\LocalInstallGuard.cs" />
     <Compile Include="Services\NintendontConfigService.cs" />
     <Compile Include="Services\ReadMeManager.cs" />

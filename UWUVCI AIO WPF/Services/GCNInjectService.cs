@@ -29,14 +29,9 @@ namespace UWUVCI_AIO_WPF.Services
             if (Directory.Exists(tempBaseWin))
                 Directory.Delete(tempBaseWin, true);
 
-            // Unpack base and copy into TempBase
-            System.IO.Compression.ZipFile.ExtractToDirectory(baseZipWin, tempPath);
-            var extractedBase = Path.Combine(tempPath, "BASE");
-            var moved = IOHelpers.MoveOrCopyDirectory(extractedBase, tempBaseWin);
-            if (!moved)
-            {
-                try { Directory.Delete(extractedBase, true); } catch { }
-            }
+            // Use cached extraction and copy/move into TempBase
+            var extractedBase = BaseExtractor.GetOrExtractBase(toolsPath, "BASE.zip");
+            IOHelpers.MoveOrCopyDirectory(extractedBase, tempBaseWin);
 
             if (mvm != null)
             {
