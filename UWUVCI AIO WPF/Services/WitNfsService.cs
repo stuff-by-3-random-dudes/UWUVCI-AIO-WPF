@@ -34,15 +34,18 @@ namespace UWUVCI_AIO_WPF.Services
             var tempBaseWin = Path.Combine(tempPath, "TempBase");
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
             var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
+            var contentDir = Path.Combine(baseRomPath, "content");
+            Directory.CreateDirectory(contentDir);
 
-            // 1) wit copy  (TempBase -> game.iso)
+            // 1) wit copy  (TempBase -> content\game.iso) to avoid a large move later
             runner.RunTool(
                 toolBaseName: "wit",
                 toolsPathWin: toolsPath,
-                argsWindowsPaths: $"copy \"{tempBaseWin}\" --DEST \"{gameIsoWin}\" -ovv --links --iso",
+                argsWindowsPaths: $"copy \"{tempBaseWin}\" --DEST \"{Path.Combine(contentDir, "game.iso")}\" -ovv --links --iso",
                 showWindow: debug
             );
 
+            gameIsoWin = Path.Combine(contentDir, "game.iso");
             if (!File.Exists(gameIsoWin))
                 throw new Exception("Wii: An error occured while Creating the ISO");
             if (mvm != null) { mvm.Progress = 50; mvm.msg = "Replacing TIK and TMD..."; }
@@ -78,8 +81,9 @@ namespace UWUVCI_AIO_WPF.Services
                 Directory.Delete(tempBaseDir, true);
 
             // Replace rvlt.* and copy TIK/TMD
-            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*"))
-                File.Delete(sFile);
+            var codeDir = Path.Combine(baseRomPath, "code");
+            var rvltFiles = Directory.GetFiles(codeDir, "rvlt.*");
+            System.Threading.Tasks.Parallel.ForEach(rvltFiles, f => { try { File.Delete(f); } catch { } });
 
             File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), true);
             File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), true);
@@ -88,12 +92,9 @@ namespace UWUVCI_AIO_WPF.Services
             // Inject via nfs2iso2nfs.exe (Windows exe; runs fine under Wine)
             if (mvm != null) { mvm.Progress = 60; mvm.msg = "Injecting ROM..."; }
 
-            foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs"))
-                File.Delete(sFile);
+            var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
+            System.Threading.Tasks.Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
 
-            var contentDir = Path.Combine(baseRomPath, "content");
-            File.Move(gameIsoWin, Path.Combine(contentDir, "game.iso"));
-            File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), Path.Combine(contentDir, "nfs2iso2nfs.exe"), true);
 
             // Run nfs2iso2nfs via ToolRunner in the content folder
             string pass = (!string.Equals(functionName, "GCN", StringComparison.OrdinalIgnoreCase) && (mvm?.passtrough ?? false))
@@ -123,7 +124,6 @@ namespace UWUVCI_AIO_WPF.Services
             );
 
             // Cleanup dropped executable and working ISO
-            File.Delete(Path.Combine(contentDir, "nfs2iso2nfs.exe"));
             File.Delete(Path.Combine(contentDir, "game.iso"));
 
             if (mvm != null) mvm.Progress = 80;

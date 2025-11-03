@@ -14,7 +14,7 @@ namespace UWUVCI_AIO_WPF.Services
         public static void InjectStandard(string toolsPath, string tempPath, string baseRomPath, string romPath, MainViewModel mvm, IToolRunnerFacade runner = null)
         {
             runner ??= DefaultToolRunnerFacade.Instance;
-            void Log(string msg)
+            static void Log(string msg)
             {
                 var line = $"[WII] {DateTime.Now:HH:mm:ss} {msg}";
                 Console.WriteLine(line);
@@ -27,6 +27,7 @@ namespace UWUVCI_AIO_WPF.Services
             Log($"Input ROM: {romPath}");
 
             var preIsoWin = Path.Combine(tempPath, "pre.iso");
+            bool preIsoIsSourceRom = false;
             var tempDirWin = Path.Combine(tempPath, "TEMP");
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
             var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
@@ -37,12 +38,10 @@ namespace UWUVCI_AIO_WPF.Services
                 var ext = (Path.GetExtension(romPath) ?? "").ToLowerInvariant();
                 if (ext.Contains("iso"))
                 {
-                    mvm.msg = "Copying ROM...";
-                    Log($"Copy ISO → {preIsoWin}");
-                    File.Copy(romPath, preIsoWin, overwrite: true);
-                    ToolRunner.LogFileVisibility("[after File.Copy] pre.iso", preIsoWin);
-                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
-                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after copy.", preIsoWin);
+                    // Use the source ISO directly to avoid a large copy.
+                    preIsoWin = romPath;
+                    preIsoIsSourceRom = true;
+                    Log($"Using source ISO directly: {preIsoWin}");
                 }
                 else if (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0 || ext.Contains("wbfs"))
                 {
@@ -87,7 +86,6 @@ namespace UWUVCI_AIO_WPF.Services
             // 3–10) Extract, patch, repack (unchanged from original flow)
             {
                 // 3) Extract to TEMP
-                Directory.CreateDirectory(tempDirWin);
                 var extractArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel data -vv1";
                 Log($"[STEP 3] wit extract: {extractArgs}");
                 runner.RunTool("wit", toolsPath, extractArgs, showWindow: mvm.debug);
@@ -106,8 +104,7 @@ namespace UWUVCI_AIO_WPF.Services
                     mvm.msg = "Applying video patch...";
                     var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
                     Directory.CreateDirectory(sysDir);
-                    var vmcPath = Path.Combine(sysDir, "wii-vmc.exe");
-                    File.Copy(Path.Combine(toolsPath, "wii-vmc.exe"), vmcPath, true);
+                    var vmcExe = Path.Combine(toolsPath, "wii-vmc.exe");
                     using (var vmc = new System.Diagnostics.Process())
                     {
                         string extra = "";
@@ -116,7 +113,7 @@ namespace UWUVCI_AIO_WPF.Services
                         else if (mvm.Index == 4) extra = "-instantcc ";
                         else if (mvm.Index == 5) extra = "-nocc ";
                         if (mvm.LR) extra += "-lrpatch ";
-                        vmc.StartInfo.FileName = "wii-vmc.exe";
+                        vmc.StartInfo.FileName = vmcExe;
                         vmc.StartInfo.Arguments = $"-enc {extra}-iso main.dol";
                         vmc.StartInfo.UseShellExecute = false;
                         vmc.StartInfo.CreateNoWindow = true;
@@ -131,17 +128,26 @@ namespace UWUVCI_AIO_WPF.Services
                         System.Threading.Thread.Sleep(2000);
                         vmc.StandardInput.WriteLine();
                         vmc.WaitForExit();
-                        try { File.Delete(Path.Combine(sysDir, "wii-vmc.exe")); } catch { }
+                        // nothing to delete; executed from tools path
                     }
                 }
 
                 // 10) Repack via WIT
                 string copyFlags = mvm.donttrim ? "--psel raw --iso" : "--psel whole --iso";
-                var repackArgs = $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}";
+                // Repack directly into content\\game.iso to avoid a large file move
+                var contentDirForRepack = Path.Combine(baseRomPath, "content");
+                Directory.CreateDirectory(contentDirForRepack);
+                var finalIsoForRepack = Path.Combine(contentDirForRepack, "game.iso");
+                var repackArgs = $"copy \"{tempDirWin}\" --DEST \"{finalIsoForRepack}\" -ovv --links {copyFlags}";
                 Log($"[STEP 10] wit repack: {repackArgs}");
                 runner.RunTool("wit", toolsPath, repackArgs, showWindow: mvm.debug);
                 Directory.Delete(tempDirWin, true);
-                File.Delete(preIsoWin);
+                // Update gameIsoWin to point to final destination
+                gameIsoWin = finalIsoForRepack;
+                if (!preIsoIsSourceRom)
+                {
+                    try { File.Delete(preIsoWin); } catch { }
+                }
             }
 
             // 11–12) TIK/TMD and nfs2iso2nfs (ToolRunner fallback)
@@ -151,20 +157,19 @@ namespace UWUVCI_AIO_WPF.Services
                 if (Directory.Exists(tikTmdWin)) { try { Directory.Delete(tikTmdWin, true); } catch { } }
                 var witArgs = $"extract \"{gameIsoWin}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdWin}\" -vv1 -o";
                 runner.RunTool("wit", toolsPath, witArgs, showWindow: mvm.debug);
-                foreach (var s in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*")) File.Delete(s);
+                var toDelete = Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*");
+                System.Threading.Tasks.Parallel.ForEach(toDelete, s => { try { File.Delete(s); } catch { } });
                 File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), true);
                 File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), true);
                 try { Directory.Delete(tikTmdWin, true); } catch { }
 
                 mvm.Progress = 60;
                 mvm.msg = "Injecting ROM...";
-                foreach (var s in Directory.GetFiles(Path.Combine(baseRomPath, "content"), "*.nfs")) File.Delete(s);
-                var finalIso = Path.Combine(baseRomPath, "content", "game.iso");
-                FileHelpers.MoveOverwrite(gameIsoWin, finalIso);
-
                 var contentDir = Path.Combine(baseRomPath, "content");
-                var nfsTool = Path.Combine(contentDir, "nfs2iso2nfs.exe");
-                File.Copy(Path.Combine(toolsPath, "nfs2iso2nfs.exe"), nfsTool, true);
+                // Remove old NFS files in parallel to reduce I/O wall time.
+                var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
+                System.Threading.Tasks.Parallel.ForEach(oldNfs, s => { try { File.Delete(s); } catch { } });
+
                 string extra = "";
                 if (mvm.Index == 2) extra = "-horizontal ";
                 if (mvm.Index == 3) extra = "-wiimote ";
@@ -173,7 +178,6 @@ namespace UWUVCI_AIO_WPF.Services
                 if (mvm.LR) extra += "-lrpatch ";
                 var args = $"-enc {extra}-iso game.iso";
                 runner.RunToolWithFallback("nfs2iso2nfs", contentDir, args, showWindow: mvm.debug, workDirWin: contentDir);
-                File.Delete(nfsTool);
                 File.Delete(Path.Combine(contentDir, "game.iso"));
                 mvm.Progress = 80;
             }
@@ -195,14 +199,9 @@ namespace UWUVCI_AIO_WPF.Services
             if (Directory.Exists(tempBase)) Directory.Delete(tempBase, true);
             Directory.CreateDirectory(tempBase);
 
-            // Extract BASE.zip to a throwaway folder, then move/copy to TempBase (faster on same volume)
-            var baseZip = System.IO.Path.Combine(toolsPath, "BASE.zip");
-            var extractRoot = System.IO.Path.Combine(tempPath, "BASE_EXTRACT_" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(extractRoot);
-            ZipFile.ExtractToDirectory(baseZip, extractRoot);
-            var extractedBase = System.IO.Path.Combine(extractRoot, "BASE");
+            // Use cached extraction of BASE.zip
+            var extractedBase = BaseExtractor.GetOrExtractBase(toolsPath, "BASE.zip");
             UWUVCI_AIO_WPF.Helpers.IOHelpers.MoveOrCopyDirectory(extractedBase, tempBase);
-            try { Directory.Delete(extractRoot, true); } catch { }
 
             mvm.Progress = 20;
             mvm.msg = "Injecting DOL...";
@@ -229,14 +228,9 @@ namespace UWUVCI_AIO_WPF.Services
             if (Directory.Exists(tempBase)) Directory.Delete(tempBase, true);
             Directory.CreateDirectory(tempBase);
 
-            // Extract BASE.zip to a throwaway folder, then move/copy to TempBase
-            var baseZip = System.IO.Path.Combine(toolsPath, "BASE.zip");
-            var extractRoot = System.IO.Path.Combine(tempPath, "BASE_EXTRACT_" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(extractRoot);
-            ZipFile.ExtractToDirectory(baseZip, extractRoot);
-            var extractedBase = System.IO.Path.Combine(extractRoot, "BASE");
+            // Use cached extraction of BASE.zip
+            var extractedBase = BaseExtractor.GetOrExtractBase(toolsPath, "BASE.zip");
             UWUVCI_AIO_WPF.Helpers.IOHelpers.MoveOrCopyDirectory(extractedBase, tempBase);
-            try { Directory.Delete(extractRoot, true); } catch { }
 
             mvm.Progress = 20;
             mvm.msg = "Setting up Forwarder...";
