@@ -1,5 +1,7 @@
-﻿using System.Windows;
+using System.Windows;
 using UWUVCI_AIO_WPF.Models;
+using UWUVCI_AIO_WPF.Helpers;
+using UWUVCI_AIO_WPF.Services;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -18,6 +20,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             CkeyPlain.Text = _vm.Ckey ?? "";
             AncastBox.Password = _vm.Ancast ?? "";
             AncastPlain.Text = _vm.Ancast ?? "";
+
+            // initialize performance slider
+            try
+            {
+                int deg = JsonSettingsManager.Settings.FileCopyParallelism;
+                if (deg < 1) deg = 1; if (deg > 32) deg = 32;
+                if (CopyParallelSlider != null) CopyParallelSlider.Value = deg;
+                if (CopyParallelValue != null) CopyParallelValue.Text = deg.ToString();
+            }
+            catch { }
         }
 
         // keep VM in sync (hidden mode)
@@ -117,5 +129,43 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             patchNotes.ShowDialog();
         }
 
+        private void CopyParallelSlider_OnValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e)
+        {
+            try
+            {
+                int deg = (int)CopyParallelSlider.Value;
+                if (deg < 1) deg = 1; if (deg > 32) deg = 32;
+                if (CopyParallelValue != null) CopyParallelValue.Text = deg.ToString();
+                JsonSettingsManager.Settings.FileCopyParallelism = deg;
+                JsonSettingsManager.SaveSettings();
+            }
+            catch { }
+        }
+
+        private void ClearBaseCache_Click(object sender, RoutedEventArgs e)
+        {
+            bool ok = false;
+            try { ok = BaseExtractor.ClearCache(); } catch { ok = false; }
+            UWUVCI_MessageBox.Show(
+                ok ? "Cache Cleared" : "Error",
+                ok ? "BASE cache cleared successfully." : "Failed to clear BASE cache.",
+                UWUVCI_MessageBoxType.Ok,
+                ok ? UWUVCI_MessageBoxIcon.Info : UWUVCI_MessageBoxIcon.Error
+            );
+        }
+
+        private void ResetAllCaches_Click(object sender, RoutedEventArgs e)
+        {
+            bool ok = false;
+            try { ok = CacheService.ClearAll(); } catch { ok = false; }
+            UWUVCI_MessageBox.Show(
+                ok ? "Caches Reset" : "Error",
+                ok ? "All caches reset successfully." : "Failed to reset all caches.",
+                UWUVCI_MessageBoxType.Ok,
+                ok ? UWUVCI_MessageBoxIcon.Info : UWUVCI_MessageBoxIcon.Error
+            );
+        }
+
     }
 }
+

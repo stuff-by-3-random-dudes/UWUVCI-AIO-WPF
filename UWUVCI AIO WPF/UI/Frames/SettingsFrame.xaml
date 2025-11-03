@@ -89,31 +89,14 @@
                     <Button Content="Open App Settings"
                             Width="460" Margin="0,0,0,8"
                             Click="OpenAppSettings_Click"/>
-                    <!-- File copy parallelism control -->
-                    <StackPanel Orientation="Vertical" Margin="0,0,0,8" Width="460">
-                        <TextBlock Text="File Copy Parallelism (1–32)"
-                                   Margin="0,0,0,4"
-                                   Foreground="Black"/>
-                        <StackPanel Orientation="Horizontal">
-                            <Slider x:Name="CopyParallelSlider"
-                                    Minimum="1" Maximum="32" Value="6"
-                                    IsSnapToTickEnabled="True" TickFrequency="1"
-                                    Width="380"
-                                    ValueChanged="CopyParallelSlider_ValueChanged"/>
-                            <TextBlock x:Name="CopyParallelValue"
-                                       Width="60" TextAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Text="6"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <Button Content="Clear BASE Cache"
+                    <Button Content="Open ReadMe"
                             Width="460" Margin="0,0,0,8"
-                            ToolTip="Deletes cached BASE.zip extractions to reclaim disk space or force a cold run."
-                            Click="ClearBaseCache_Click"/>
-                    <Button Content="Reset All Caches"
+                            Click="HelpButton_Click"
+                            ToolTip="View UWUVCI documentation and FAQs"/>
+                    <Button Content="Open Patch Notes"
                             Width="460" Margin="0,0,0,8"
-                            ToolTip="Clears BASE cache and temporary working folders."
-                            Click="ResetAllCaches_Click"/>
+                            Click="OpenPatchNotes_Click"
+                            ToolTip="View UWUVCI's Patch Notes"/>
                     <Button Content="Submit Compatibility Entry"
                             Width="460"
                             Click="OpenCompatSubmit_Click"/>
