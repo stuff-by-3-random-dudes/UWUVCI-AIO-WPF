@@ -53,19 +53,28 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            // Cast sender to a CheckBox
-            var checkBox = sender as CheckBox;
+            // Dithering is independent; no-op here now.
+        }
 
-            // Uncheck other checkboxes if this one is checked
-            if (checkBox.IsChecked == true)
-            {
-                if (checkBox != deflickerCheckBox)
-                    deflickerCheckBox.IsChecked = false;
-                if (checkBox != ditheringCheckBox)
-                    ditheringCheckBox.IsChecked = false;
-                if (checkBox != vFilterCheckBox)
-                    vFilterCheckBox.IsChecked = false;
-            }
+        private void VFilterNone_Checked(object sender, RoutedEventArgs e)
+        {
+            if (mvm == null) return;
+            mvm.RemoveDeflicker = false;
+            mvm.HalfVFilter = false;
+        }
+
+        private void VFilterRemove_Checked(object sender, RoutedEventArgs e)
+        {
+            if (mvm == null) return;
+            mvm.RemoveDeflicker = true;
+            mvm.HalfVFilter = false;
+        }
+
+        private void VFilterHalf_Checked(object sender, RoutedEventArgs e)
+        {
+            if (mvm == null) return;
+            mvm.RemoveDeflicker = false;
+            mvm.HalfVFilter = true;
         }
 
         public void imgpath(string icon, string tv)
@@ -95,6 +104,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             selection.Add("Extras");
             selectionDB.ItemsSource = selection;
             selectionDB.SelectedIndex = 0;
+
+            // Initialize VFilter radios from current model state
+            InitializeVFilterRadios();
         }
         public WiiConfig(GameConfig c)
         {
@@ -120,10 +132,32 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             selection.Add("Extras");
             selectionDB.ItemsSource = selection;
             selectionDB.SelectedIndex = 0;
+
+            InitializeVFilterRadios();
         }
         public void Dispose()
         {
 
+        }
+
+        private void InitializeVFilterRadios()
+        {
+            try
+            {
+                if (mvm.RemoveDeflicker)
+                {
+                    rbVFilterRemove.IsChecked = true;
+                }
+                else if (mvm.HalfVFilter)
+                {
+                    rbVFilterHalf.IsChecked = true;
+                }
+                else
+                {
+                    rbVFilterNone.IsChecked = true;
+                }
+            }
+            catch { }
         }
 
         private void WiiConfig_PreviewDragOver(object sender, DragEventArgs e)

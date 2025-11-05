@@ -20,7 +20,7 @@
         <TextBox materialDesign:HintAssist.Hint="TV IMAGE" Name="tv" ToolTip="Also known as bootTvTex" Style="{StaticResource MaterialDesignFloatingHintTextBox}"   Margin="10,215,157,252" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="16" IsReadOnly="True"  Focusable="False" Text="{Binding GameConfiguration.TGATv.ImgPath}" Cursor="Help" IsTabStop="False"/>
         <TextBox materialDesign:HintAssist.Hint="LOGO IMAGE (OPTIONAL)" ToolTip="Also known as bootLogoTex" Name="log"  Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,294,157,174" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="16" IsReadOnly="True"  Focusable="False" Cursor="Help" Text="{Binding GameConfiguration.TGALog.ImgPath}" IsTabStop="False" TextChanged="log_TextChanged_1" PreviewDragOver="WiiConfig_PreviewDragOver" PreviewDrop="WiiConfig_PreviewDrop"/>
 
-        <TextBox materialDesign:HintAssist.Hint="GAME NAME"
+        <TextBox materialDesign:HintAssist.Hint="GAME NAME" ToolTip="The full display name shown on the Wii U menu."
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="10,378,157,89"
                  Background="{x:Null}"
@@ -71,30 +71,26 @@
 
         <Label Content="Use GamePad as:" HorizontalAlignment="Left" Margin="6,103,0,0" VerticalAlignment="Top" FontSize="14"/>
         <CheckBox Content="Swap L/R and ZL/ZR" HorizontalAlignment="Left" Margin="129,108,0,0" VerticalAlignment="Top" Width="137" x:Name="LR" IsEnabled="False" IsChecked="False" IsTabStop="False"/>
+        <!-- Video Filters: group VFilter as mutually exclusive radios; Dithering stays independent -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,39,0,0">
-            <!-- Deflicker Checkbox -->
-            <CheckBox Content="Remove VFilter" 
-              Name="deflickerCheckBox" 
-              IsChecked="{Binding RemoveDeflicker}" 
-              Checked="CheckBox_Checked" 
-              ToolTip="Removes vertical filter for sharper images." 
-              Margin="0,0,20,0"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="VFilter:" VerticalAlignment="Center" Margin="0,0,8,0"
+                           ToolTip="Vertical filter strength control.\nNone = default strength\nRemove = set strength to 0 (sharpest)\nHalf = reduce strength\n\nDithering is independent and can be toggled with any VFilter option."/>
+                <RadioButton x:Name="rbVFilterNone" Content="None" GroupName="VFilterGroup" Margin="0,0,12,0"
+                             ToolTip="Use the default vertical filter strength."
+                             Checked="VFilterNone_Checked"/>
+                <RadioButton x:Name="rbVFilterRemove" Content="Remove" GroupName="VFilterGroup" Margin="0,0,12,0"
+                             ToolTip="Set VFilter strength to 0 (sharpest image)."
+                             Checked="VFilterRemove_Checked"/>
+                <RadioButton x:Name="rbVFilterHalf" Content="Half" GroupName="VFilterGroup" Margin="0,0,12,0"
+                             ToolTip="Reduce VFilter strength (sharper than default, softer than Remove)."
+                             Checked="VFilterHalf_Checked"/>
+            </StackPanel>
 
-            <!-- Dithering Checkbox -->
-            <CheckBox Content="Remove Dithering" 
-              Name="ditheringCheckBox" 
-              IsChecked="{Binding RemoveDithering}" 
-              Checked="CheckBox_Checked" 
-              ToolTip="Removes dithering for better color accuracy." 
-              Margin="0,0,20,0"/>
-
-            <!-- VFilter Checkbox -->
-            <CheckBox Content="Half VFilter" 
-              Name="vFilterCheckBox" 
-              IsChecked="{Binding HalfVFilter}" 
-              Checked="CheckBox_Checked" 
-              ToolTip="Reduces vertical filter strength for sharper images." 
-              Margin="0,0,10,0"/>
+            <CheckBox Content="Remove Dithering"
+                      Name="ditheringCheckBox"
+                      IsChecked="{Binding RemoveDithering}"
+                      ToolTip="Removes dithering for better color accuracy.\nIndependent of VFilter (can be used with any option)."/>
         </StackPanel>
 
 
@@ -133,7 +129,7 @@
             <CheckBox Content="JP Patch" x:Name="jppatch" ToolTip="Allows playing JP Wii Games on non JP Consoles" Click="jppatch_Click" RenderTransformOrigin="-1.389,-3.87" Margin="0,6,16,6" Height="18" Width="72" IsTabStop="False"/>
             <CheckBox Content="Disable WiiMote Passthrough" Margin="0,7,0,5" x:Name="motepass" IsEnabled="False" Width="182"  Checked="motepass_Checked" Unchecked="motepass_Unchecked" IsTabStop="False"/>
         </StackPanel>
-        <CheckBox Content="Disable Trim" Margin="483,11,53,472" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="107" IsTabStop="False"/>
+        <CheckBox Content="Disable Trim" Margin="483,11,53,472" x:Name="trimn" Click="trimn_Click" IsEnabled="False" Width="107" IsTabStop="False" ToolTip="Keep full disc data when rebuilding (larger size, safer for some titles)."/>
         <StackPanel Height="30" Margin="140,6,223,471" Orientation="Horizontal" Name="VideoMode" >
             <RadioButton x:Name="vmcsmoll" Content="None" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" IsChecked="True" Click="RadioButton_Click_2" Width="77" Margin="0,6,0,0" IsTabStop="False"/>
             <RadioButton x:Name="ntsc" Content="NTSC To PAL" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="VMC" Click="RadioButton_Click" Width="111" ToolTip="May not work with every Game" Margin="0,6,0,0" IsTabStop="False"/>
@@ -146,7 +142,7 @@
             <RadioButton x:Name="RF_tj" Content="To JPN" Click="RF_tp_Click" HorizontalAlignment="Left" VerticalAlignment="Top" GroupName="RF" Width="82" ToolTip="Change Game Region to JPN" Margin="0,6,0,0"/>
         </StackPanel>
 
-        <TextBox materialDesign:HintAssist.Hint="SHORT GAME NAME (OPTIONAL)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,420,157,47" Background="{x:Null}" TextChanged="sgn_TextChanged" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="16" Text="{Binding GameConfiguration.GameShortName}" x:Name="sgn" MaxLength="250" IsTabStop="False"/>
+        <TextBox materialDesign:HintAssist.Hint="SHORT GAME NAME (OPTIONAL)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,420,157,47" Background="{x:Null}" TextChanged="sgn_TextChanged" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="16" Text="{Binding GameConfiguration.GameShortName}" x:Name="sgn" MaxLength="250" IsTabStop="False" ToolTip="Shorter name shown in certain UI places. Leave blank to use full name."/>
         <TextBox materialDesign:HintAssist.Hint="WIIU ANCAST KEY" 
             Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
             Margin="10,460,395,7" 
