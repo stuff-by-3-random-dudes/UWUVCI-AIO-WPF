@@ -45,6 +45,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -261,6 +262,7 @@
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
+    <Compile Include="Helpers\VCBTool.cs" />
     <Compile Include="Models\NintendontConfig.cs" />
     <Compile Include="Models\NintendontPresets.cs" />
     <Compile Include="Services\DeviceFingerprint.cs" />
@@ -268,6 +270,7 @@
     <Compile Include="Services\GitHubBaseService.cs" />
     <Compile Include="Services\GitHubCompatService.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
+    <Compile Include="Helpers\HashCompat.cs" />
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
     <Compile Include="Classes\MenuIconImage.cs" />
@@ -285,19 +288,19 @@
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
-      <Compile Include="Services\GitHubFeedbackService.cs" />
-      <Compile Include="Services\GitHubImageService.cs" />
-      <Compile Include="Services\ParallelBatchRunner.cs" />
-      <Compile Include="Services\NKitService.cs" />
-      <Compile Include="Services\WitNfsService.cs" />
-      <Compile Include="Services\WiiInjectService.cs" />
-      <Compile Include="Services\GCNInjectService.cs" />
-      <Compile Include="Services\BaseExtractor.cs" />
-      <Compile Include="Services\CacheService.cs" />
-      <Compile Include="Services\InjectOptions.cs" />
-      <Compile Include="Services\GctPatcherService.cs" />
-      <Compile Include="Services\ContributionService.cs" />
-      <Compile Include="Services\WiiPatchService.cs" />
+    <Compile Include="Services\GitHubFeedbackService.cs" />
+    <Compile Include="Services\GitHubImageService.cs" />
+    <Compile Include="Services\ParallelBatchRunner.cs" />
+    <Compile Include="Services\NKitService.cs" />
+    <Compile Include="Services\WitNfsService.cs" />
+    <Compile Include="Services\WiiInjectService.cs" />
+    <Compile Include="Services\GCNInjectService.cs" />
+    <Compile Include="Services\BaseExtractor.cs" />
+    <Compile Include="Services\CacheService.cs" />
+    <Compile Include="Services\InjectOptions.cs" />
+    <Compile Include="Services\GctPatcherService.cs" />
+    <Compile Include="Services\ContributionService.cs" />
+    <Compile Include="Services\WiiPatchService.cs" />
     <Compile Include="Services\LocalInstallGuard.cs" />
     <Compile Include="Services\NintendontConfigService.cs" />
     <Compile Include="Services\ReadMeManager.cs" />
@@ -908,9 +911,3 @@
   <Import Project="..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets" Condition="Exists('..\packages\Costura.Fody.6.0.0\build\Costura.Fody.targets')" />
   <Import Project="..\packages\Fody.6.9.2\build\Fody.targets" Condition="Exists('..\packages\Fody.6.9.2\build\Fody.targets')" />
 </Project>
-
-
-
-
-
-
