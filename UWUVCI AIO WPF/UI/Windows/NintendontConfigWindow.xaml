@@ -1,4 +1,4 @@
-﻿<Window x:Class="UWUVCI_AIO_WPF.Modules.Nintendont.NintendontConfigWindow"
+<Window x:Class="UWUVCI_AIO_WPF.Modules.Nintendont.NintendontConfigWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Nintendont Configurator"
@@ -187,12 +187,12 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Memcard Emulation:"/>
-                            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ChkMemcardEmu" Content="Enable"/>
+                            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ChkMemcardEmu" Content="Enable" ToolTip="Store saves on SD/USB as a virtual memory card."/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Blocks:"/>
                             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                                <ComboBox x:Name="MemcardBlocksBox" Width="120" Height="28" Margin="0,0,10,0"/>
-                                <CheckBox x:Name="ChkMemcardMulti" Content="Memcard Multi"/>
+                                <ComboBox x:Name="MemcardBlocksBox" Width="120" Height="28" ToolTip="Virtual memory card size (blocks)." Margin="0,0,10,0"/>
+                                <CheckBox x:Name="ChkMemcardMulti" Content="Memcard Multi" ToolTip="Use separate memory card files per game."/>
                             </StackPanel>
                         </Grid>
 
@@ -208,9 +208,9 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="CC Rumble:"/>
-                            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ChkCcRumble" Content="Enable"/>
+                            <CheckBox Grid.Row="0" Grid.Column="1" x:Name="ChkCcRumble" Content="Enable" ToolTip="Enable rumble on Classic Controller."/>
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Native Control:"/>
-                            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="ChkNativeSi" Content="Enable"/>
+                            <CheckBox Grid.Row="1" Grid.Column="1" x:Name="ChkNativeSi" Content="Enable" ToolTip="Use native controller ports when available."/>
                         </Grid>
 
                         <!-- Video -->
@@ -228,25 +228,25 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Force Mode:"/>
-                            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="VideoForceBox" Height="32"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" x:Name="VideoForceBox" Height="32" ToolTip="Force a specific video mode when needed."/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="Type:"/>
-                            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="VideoTypeBox" Height="32"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" x:Name="VideoTypeBox" Height="32" ToolTip="Select video signal type (e.g. PAL/NTSC)."/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Width:"/>
                             <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-                                <Slider x:Name="VideoWidthSlider" Minimum="640" Maximum="720" Width="160"/>
+                                <Slider x:Name="VideoWidthSlider" Minimum="640" Maximum="720" Width="160" ToolTip="Set framebuffer width; Auto is recommended for most games."/>
                                 <TextBlock x:Name="VideoWidthLabel" Text="Auto" Margin="8,0,0,0"/>
-                                <CheckBox x:Name="ChkAutoWidth" Content="Auto" Margin="16,0,0,0"/>
+                                <CheckBox x:Name="ChkAutoWidth" Content="Auto" ToolTip="Let Nintendont choose width automatically." Margin="16,0,0,0"/>
                             </StackPanel>
 
                             <TextBlock Grid.Row="3" Grid.Column="0" Text="Widescreen:"/>
-                            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="ChkForceWide" Content="Force 16:9 (Wii U Wide)"/>
+                            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="ChkForceWide" Content="Force 16:9 (Wii U Wide)" ToolTip="Force widescreen output (may crop or stretch on some titles)."/>
 
                             <TextBlock Grid.Row="4" Grid.Column="0" Text="Progressive / PAL:"/>
                             <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
-                                <CheckBox x:Name="ChkForceProg" Content="Force Progressive (480p)" Margin="0,0,16,0"/>
-                                <CheckBox x:Name="ChkPatchPal50" Content="Patch PAL50"/>
+                                <CheckBox x:Name="ChkForceProg" Content="Force Progressive (480p)" ToolTip="Force 480p output; may not work on all titles." Margin="0,0,16,0"/>
+                                <CheckBox x:Name="ChkPatchPal50" Content="Patch PAL50" ToolTip="Patch 50Hz PAL mode for better compatibility."/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

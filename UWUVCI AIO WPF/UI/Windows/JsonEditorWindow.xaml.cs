@@ -66,6 +66,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Grid.SetRow(tbLabel, row); Grid.SetColumn(tbLabel, 0); FormGrid.Children.Add(tbLabel);
             var tb = new TextBox { Margin = new Thickness(0, 4, 0, 4) };
             tb.Text = value ?? string.Empty;
+            tb.ToolTip = GetTooltip(label);
             Grid.SetRow(tb, row); Grid.SetColumn(tb, 1); FormGrid.Children.Add(tb);
             // Map CKey to property Ckey; others are identical
             string key = label == "CKey" ? "Ckey" : label;
@@ -80,8 +81,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Grid.SetRow(tbLabel, row); Grid.SetColumn(tbLabel, 0); FormGrid.Children.Add(tbLabel);
             var cb = new CheckBox { Margin = new Thickness(0, 4, 0, 4), VerticalAlignment = VerticalAlignment.Center };
             cb.IsChecked = value;
+            cb.ToolTip = GetTooltip(label);
             Grid.SetRow(cb, row); Grid.SetColumn(cb, 1); FormGrid.Children.Add(cb);
             _inputs[label] = cb;
+        }
+
+        private string GetTooltip(string key)
+        {
+            switch (key)
+            {
+                case "BasePath": return "Folder containing the Wii U base files used for injections.";
+                case "OutPath": return "Where finished injects are written.";
+                case "CKey": return "Wii U Common Key (ckey). Required to build some content. Keep this private.";
+                case "Ancast": return "Ancast key for vWii OC features (advanced). Optional; leave blank if unsure.";
+                case "UpgradeRequired": return "Internal flag for first-run migrations. Normally false.";
+                case "ForceTutorialOnNextLaunch": return "Show the tutorial wizard the next time the app launches.";
+                default: return null;
+            }
         }
 
         private void ApplyFormToModel()

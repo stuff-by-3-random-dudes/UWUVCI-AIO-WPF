@@ -16,7 +16,8 @@
             <TextBlock Text="Enter hex bytes (e.g., 'DE AD BE EF' or 'DEADBEEF')."/>
 
             <TextBox x:Name="HexInput" Grid.Row="1" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
-                     FontFamily="Consolas" FontSize="13"/>
+                     FontFamily="Consolas" FontSize="13"
+                     ToolTip="Enter bytes as hexadecimal (spaces optional), e.g. 'DE AD BE EF'."/>
 
             <DockPanel Grid.Row="2" Margin="0,10,0,0" LastChildFill="False">
                 <TextBlock x:Name="Preview" VerticalAlignment="Center" Foreground="Gray"/>
@@ -29,4 +30,3 @@
         </Grid>
     </Border>
 </Window>
-

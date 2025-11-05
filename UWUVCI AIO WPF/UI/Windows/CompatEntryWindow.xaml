@@ -88,6 +88,7 @@
         <!-- Console -->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Console:" VerticalAlignment="Center" Margin="0,0,8,8"/>
         <ComboBox x:Name="ConsoleBox" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
+                  ToolTip="Select the target console for this compatibility entry."
                   SelectionChanged="ConsoleBox_SelectionChanged">
             <ComboBoxItem Content="NES"/>
             <ComboBoxItem Content="SNES"/>
@@ -101,10 +102,12 @@
 
         <!-- Game Fields -->
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Game Name:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <TextBox x:Name="GameNameBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"/>
+        <TextBox x:Name="GameNameBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8"
+                 ToolTip="Enter the game’s full display name."/>
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Game Region:" VerticalAlignment="Center" Margin="0,0,8,8"/>
-        <ComboBox x:Name="GameRegionBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8">
+        <ComboBox x:Name="GameRegionBox" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8"
+                  ToolTip="Select the game’s region.">
             <ComboBoxItem Content="USA"/>
             <ComboBoxItem Content="EUR"/>
             <ComboBoxItem Content="JPN"/>
@@ -134,7 +137,7 @@
         <StackPanel Grid.Row="5" Grid.ColumnSpan="2" Orientation="Vertical">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                 <TextBlock Text="Status:" Width="160" VerticalAlignment="Center"/>
-                <ComboBox x:Name="StatusBox" Width="200">
+                <ComboBox x:Name="StatusBox" Width="200" ToolTip="Choose how well the game works.">
                     <ComboBoxItem Content="0 - Doesn't Work"/>
                     <ComboBoxItem Content="1 - Issues"/>
                     <ComboBoxItem Content="2 - Works"/>
@@ -144,7 +147,7 @@
             <!-- Wii-only -->
             <StackPanel x:Name="WiiPanel" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,0,8">
                 <TextBlock Text="GamePad:" Width="160" VerticalAlignment="Center"/>
-                <ComboBox x:Name="GamePadBox" Width="200">
+                <ComboBox x:Name="GamePadBox" Width="200" ToolTip="Select the level of Wii U GamePad support.">
                     <ComboBoxItem Content="0 - No Support"/>
                     <ComboBoxItem Content="1 - Partial"/>
                     <ComboBoxItem Content="2 - Full"/>

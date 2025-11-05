@@ -23,7 +23,7 @@
         </Grid>
         <Button Content="Button" HorizontalAlignment="Left" Margin="311,6,0,0" VerticalAlignment="Top" Width="18" Background="{x:Null}" BorderBrush="{x:Null}" Height="25" Click="Window_Close" Name="close" MouseEnter="close_MouseEnter" MouseLeave="close_MouseLeave"/>
         <TextBlock HorizontalAlignment="Left" Margin="315,7,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Foreground="White" FontSize="16" IsHitTestVisible="False"/>
-        <ComboBox HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Width="313" Name="sd" Foreground="Black" SelectionChanged="sd_SelectionChanged"/>
+        <ComboBox HorizontalAlignment="Left" Margin="10,85,0,0" VerticalAlignment="Top" Width="313" Name="sd" Foreground="Black" SelectionChanged="sd_SelectionChanged" ToolTip="Select your SD card drive from the list."/>
         <TextBlock HorizontalAlignment="Left" Margin="10,61,0,0" TextWrapping="Wrap" Text="Choose your SD Card:" VerticalAlignment="Top" Foreground="Black" />
         <!-- Progress Bar -->
         <ProgressBar x:Name="CopyProgress"
