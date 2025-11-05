@@ -83,12 +83,9 @@ namespace UWUVCI_MSTest
             var rom = Path.Combine(tmp, "in.iso");
             File.WriteAllBytes(rom, new byte[] { 0x47, 0x43, 0x49, 0x44, 0x00, 0x00 });
 
-            var mvm = new MainViewModel();
-            mvm.debug = false;
-            mvm.Patch = false;
-
             var runner = new FakeRunner();
-            WiiInjectService.InjectStandard(tools, tempPath, basePath, rom, mvm, runner);
+            var opt = new WiiInjectOptions { Debug = false, PatchVideo = false, DontTrim = false, Index = 0, LR = false };
+            WiiInjectService.InjectStandard(tools, tempPath, basePath, rom, opt, runner);
 
             Assert.IsTrue(runner.Calls.Any(c => c.tool == "wit" && c.args.Contains(" copy ")), "wit copy not invoked");
             Assert.IsTrue(runner.Calls.Any(c => c.tool == "wit" && c.args.Contains(" extract ")), "wit extract not invoked");

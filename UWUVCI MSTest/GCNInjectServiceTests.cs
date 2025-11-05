@@ -95,8 +95,8 @@ namespace UWUVCI_MSTest
             File.WriteAllBytes(rom, new byte[] { 0x00 });
 
             var runner = new FakeRunner();
-            // Pass null for mvm; service now tolerates null context
-            GCNInjectService.InjectGCN(tools, tempPath, basePath, rom, null, force: false, runner: runner);
+            var opt = new GcnInjectOptions { Debug = false, DontTrim = false, Disc2Path = null, Force43 = false };
+            GCNInjectService.InjectGCN(tools, tempPath, basePath, rom, opt, runner: runner);
 
             Assert.IsTrue(runner.Calls.Any(c => c.tool == "wit" && c.args.Contains(" copy ")), "wit copy not invoked");
             Assert.IsTrue(runner.Calls.Any(c => c.tool == "wit" && c.args.Contains(" extract ")), "wit extract not invoked");

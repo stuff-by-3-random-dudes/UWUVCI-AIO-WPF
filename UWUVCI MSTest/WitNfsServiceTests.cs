@@ -76,13 +76,9 @@ namespace UWUVCI_MSTest
             // placeholder nfs2iso2nfs.exe
             File.WriteAllBytes(Path.Combine(tools, "nfs2iso2nfs.exe"), new byte[] { 0 });
 
-            var mvm = new MainViewModel();
-            mvm.debug = false;
-            mvm.Index = 0;
-
             var runner = new FakeRunner();
-
-            WitNfsService.BuildIsoExtractTicketsAndInject(tools, tempPath, basePath, "GCN", mvm, runner);
+            var opts = new NfsInjectOptions { Debug = false, Kind = InjectKind.GCN, Passthrough = true, Index = 0, LR = false };
+            WitNfsService.BuildIsoExtractTicketsAndInject(tools, tempPath, basePath, opts, runner);
 
             // Verify wit copy and extract were called and nfs2iso2nfs was invoked
             Assert.IsTrue(runner.Calls.Any(c => c.tool == "wit" && c.args.Contains(" copy ")), "wit copy not invoked");
