@@ -477,7 +477,7 @@ namespace UWUVCI_AIO_WPF
                         $"💽 {e.Message.Replace("Wii", "")}\n\n" +
                         "Ensure your ROM isn’t corrupted and that you have at least 12 GB of free disk space available.";
                 }
-                else if (e.Message.Contains("Insufficient Storage"))
+                else if (e.Message?.IndexOf("Insufficient Storage", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     errorMessage =
                         $"💾 Not enough storage space available.\n" +
@@ -522,13 +522,34 @@ namespace UWUVCI_AIO_WPF
                 errorMessage +=
                     "\n\n💡 For more help, open the Settings (⚙️) at the top right and check the FAQ section in the ReadMe.";
 
-                // --- Display to user ---
-                UWUVCI_MessageBox.Show(
-                    "❌ Injection Failed",
-                    errorMessage,
-                    UWUVCI_MessageBoxType.Ok,
-                    UWUVCI_MessageBoxIcon.Error
-                );
+                // --- Display to user on UI thread ---
+                try
+                {
+                    System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                    {
+                        UWUVCI_MessageBox.Show(
+                            "❌ Injection Failed",
+                            errorMessage,
+                            UWUVCI_MessageBoxType.Ok,
+                            UWUVCI_MessageBoxIcon.Error,
+                            mvm?.mw
+                        );
+                    });
+                }
+                catch
+                {
+                    // Fallback if dispatcher is unavailable
+                    try
+                    {
+                        UWUVCI_MessageBox.Show(
+                            "❌ Injection Failed",
+                            errorMessage,
+                            UWUVCI_MessageBoxType.Ok,
+                            UWUVCI_MessageBoxIcon.Error
+                        );
+                    }
+                    catch { }
+                }
 
                 Logger.Log($"Injection error: {e.Message}");
                 Clean();
@@ -747,6 +768,11 @@ namespace UWUVCI_AIO_WPF
 
             var s = StepTimer("Standard Wii Inject", 1);
             if (mvm != null) mvm.msg = "Preparing and Injecting...";
+
+            // Delegate standard ISO flow to backend service (controller-only orchestration)
+            WiiInjectService.InjectStandard(toolsPath, tempPath, baseRomPath, romPath, opt);
+            EndTimer(s, 1);
+            return;
 
             // Paths
             var preIsoWin = Path.Combine(tempPath, "pre.iso");
