@@ -1233,6 +1233,30 @@ namespace UWUVCI_AIO_WPF
         public void Inject(bool force)
         {
             ValidatePathsStillExist();
+            // Pre-check disk space for Wii/GCN to surface errors early
+            try
+            {
+                if (!saveworkaround && (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN))
+                {
+                    string tempPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "bin", "temp");
+                    var drive = new System.IO.DriveInfo(tempPath);
+                    long free = drive.AvailableFreeSpace;
+                    long needed = (GameConfiguration.Console == GameConsoles.GCN) ? 10_000_000_000L : 15_000_000_000L;
+                    if (free < needed)
+                    {
+                        UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBox.Show(
+                            "Insufficient Storage",
+                            "Not enough free disk space available for this inject.\n\n" +
+                            (GameConfiguration.Console == GameConsoles.GCN ? "At least 10 GB" : "At least 15 GB") + " of free space is recommended.",
+                            UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBoxType.Ok,
+                            UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBoxIcon.Warning,
+                            mw
+                        );
+                        return;
+                    }
+                }
+            }
+            catch { /* best-effort precheck */ }
             /* var task = new Task(() => runInjectThread(true));
               task.Start();*/
             Task.Run(() =>
@@ -1554,6 +1578,23 @@ namespace UWUVCI_AIO_WPF
 
                 return hash1 + (hash2 * 1566083941);
             }
+        }
+
+        private static bool HashMatchesEither(string value, int legacyHash32, int deterministicHash)
+        {
+            // Accept either the runtime (architecture-dependent) hash or our deterministic fallback
+            // 'value' should already be normalized (e.g., ToLowerInvariant()) when appropriate
+            try
+            {
+                if (value.GetHashCode() == legacyHash32) return true;
+            }
+            catch { }
+            try
+            {
+                if (GetDeterministicHashCode(value) == deterministicHash) return true;
+            }
+            catch { }
+            return false;
         }
         public bool checkSysKey(string key)
         {
@@ -2279,9 +2320,8 @@ namespace UWUVCI_AIO_WPF
         public bool checkcKey(string key)
         {
             string lowerKey = key.ToLowerInvariant();
-            int keyHash = lowerKey.GetHashCode();
-
-            if (keyHash == 1274359530 || GetDeterministicHashCode(lowerKey) == -485504051)
+            // 32-bit legacy = 1274359530, deterministic = -485504051
+            if (HashMatchesEither(lowerKey, 1274359530, -485504051))
             {
                 JsonSettingsManager.Settings.Ckey = lowerKey;
                 ckeys = true;
@@ -2295,14 +2335,30 @@ namespace UWUVCI_AIO_WPF
         public bool isCkeySet()
         {
             string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLowerInvariant();
-            ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
+            ckeys = HashMatchesEither(lowerCKey, 1274359530, -485504051);
             return ckeys;
         }
 
         public bool checkKey(string key)
         {
-            string lowerKey = key.ToLowerInvariant();
-            if (GbTemp.KeyHash == lowerKey.GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(lowerKey))
+            if (GbTemp == null || string.IsNullOrWhiteSpace(key))
+                return false;
+
+            string asIs = key.Trim();
+            string lowerKey = asIs.ToLowerInvariant();
+            string upperKey = asIs.ToUpperInvariant();
+            // Match against the base's stored 32-bit hash using deterministic and legacy variants
+            bool matchesDeterministic =
+                GetDeterministicHashCode(asIs)     == GbTemp.KeyHash ||
+                GetDeterministicHashCode(lowerKey) == GbTemp.KeyHash ||
+                GetDeterministicHashCode(upperKey) == GbTemp.KeyHash;
+
+            bool matchesLegacy =
+                UWUVCI_AIO_WPF.Helpers.HashCompat.MatchesAnyLegacyHash(asIs,     GbTemp.KeyHash) ||
+                UWUVCI_AIO_WPF.Helpers.HashCompat.MatchesAnyLegacyHash(lowerKey, GbTemp.KeyHash) ||
+                UWUVCI_AIO_WPF.Helpers.HashCompat.MatchesAnyLegacyHash(upperKey, GbTemp.KeyHash);
+
+            if (matchesDeterministic || matchesLegacy)
             {
                 string consoleName = GetConsoleOfBase(gbTemp).ToString().ToLowerInvariant();
                 string keyFilePath = $@"bin\keys\{consoleName}.vck";
