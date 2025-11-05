@@ -17,7 +17,8 @@ namespace UWUVCI_AIO_WPF.Modules.N64Config
             {
                 var raw = lines[i];
                 var trimmed = raw.Trim();
-                if (string.IsNullOrWhiteSpace(trimmed) || trimmed.StartsWith(";")) continue;
+                // skip empty and full-line comments (';' or '#', or '//')
+                if (string.IsNullOrWhiteSpace(trimmed) || trimmed.StartsWith(";") || trimmed.StartsWith("#") || trimmed.StartsWith("//")) continue;
                 if (trimmed.StartsWith("[") && trimmed.EndsWith("]"))
                 {
                     var name = trimmed.Substring(1, trimmed.Length - 2);
@@ -39,18 +40,18 @@ namespace UWUVCI_AIO_WPF.Modules.N64Config
                     {
                         var t = lines[j].Trim();
                         if (string.IsNullOrWhiteSpace(t)) { break; }
-                        if (t.StartsWith(";")) continue; // allow comments within blocks
+                        if (t.StartsWith(";") || t.StartsWith("#") || t.StartsWith("//")) continue; // allow comments within blocks
                         // allow trailing inline comments on continuation
                         var withoutComment = StripInlineComment(t);
                         if (IsContinuationHexLine(withoutComment)) sb.Append("\n").Append(withoutComment);
                         else break;
                     }
-                    current.Properties.Add(new IniProperty(key, sb.ToString()));
+                    current.Set(key, sb.ToString());
                     i = j - 1; // continue parsing from the first non-hex line
                 }
                 else
                 {
-                    current.Properties.Add(new IniProperty(key, value));
+                    current.Set(key, value);
                 }
             }
             return doc;
@@ -58,13 +59,13 @@ namespace UWUVCI_AIO_WPF.Modules.N64Config
 
         private static string StripInlineComment(string value)
         {
-            // remove trailing ;comment that is not inside quotes
+            // remove trailing ; or # comment that is not inside quotes
             bool inQuotes = false;
             for (int k = 0; k < value.Length; k++)
             {
                 var c = value[k];
                 if (c == '"') inQuotes = !inQuotes;
-                else if (c == ';' && !inQuotes)
+                else if ((c == ';' || c == '#') && !inQuotes)
                 {
                     return value.Substring(0, k).TrimEnd();
                 }
@@ -84,11 +85,21 @@ namespace UWUVCI_AIO_WPF.Modules.N64Config
 
         private static bool IsContinuationHexLine(string line)
         {
-            // one or more hex pairs separated by spaces
-            foreach (var token in line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
+            // one or more hex pairs separated by spaces (allow commas and optional 0x prefix)
+            foreach (var tokenRaw in line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (token.Length != 2) return false;
-                if (!IsHex(token[0]) || !IsHex(token[1])) return false;
+                var token = tokenRaw.TrimEnd(',');
+                if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                {
+                    var hex = token.Substring(2);
+                    if (hex.Length != 2) return false;
+                    if (!IsHex(hex[0]) || !IsHex(hex[1])) return false;
+                }
+                else
+                {
+                    if (token.Length != 2) return false;
+                    if (!IsHex(token[0]) || !IsHex(token[1])) return false;
+                }
             }
             return line.Trim().Length > 0;
         }
