@@ -113,10 +113,10 @@ namespace UWUVCI_AIO_WPF.Services
 
             runner.RunToolWithFallback(
                 toolBaseName: "nfs2iso2nfs",
-                toolsPathWin: contentDir,
+                toolsPathWin: toolsPath,      // exe lives in Tools
                 argsWindowsPaths: $"-enc -homebrew {extra}{pass}-iso game.iso",
                 showWindow: debug,
-                workDirWin: contentDir
+                workDirWin: contentDir        // run in content dir so relative game.iso resolves
             );
 
             // Cleanup working ISO

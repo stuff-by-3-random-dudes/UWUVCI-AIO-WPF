@@ -522,10 +522,28 @@ namespace UWUVCI_AIO_WPF
                 errorMessage +=
                     "\n\n💡 For more help, open the Settings (⚙️) at the top right and check the FAQ section in the ReadMe.";
 
+                // --- Include underlying error details and log location to aid debugging ---
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(e?.Message))
+                    {
+                        // Keep details concise but useful
+                        string details = e.Message;
+                        if (details.Length > 900) details = details.Substring(0, 900) + "…";
+                        errorMessage += "\n\nDetails:\n" + details;
+                    }
+
+                    string logsDir = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs");
+                    errorMessage += "\n\nLogs:\n" + logsDir;
+                }
+                catch { /* best-effort */ }
+
+                Logger.Log($"Injection error: {e.Message}");
+
                 // --- Display to user on UI thread ---
                 try
                 {
-                    System.Windows.Application.Current?.Dispatcher?.Invoke(() =>
+                    Application.Current?.Dispatcher?.Invoke(() =>
                     {
                         UWUVCI_MessageBox.Show(
                             "❌ Injection Failed",
@@ -551,7 +569,6 @@ namespace UWUVCI_AIO_WPF
                     catch { }
                 }
 
-                Logger.Log($"Injection error: {e.Message}");
                 Clean();
                 return false;
             }
@@ -766,237 +783,64 @@ namespace UWUVCI_AIO_WPF
                 return;
             }
 
-            var s = StepTimer("Standard Wii Inject", 1);
-            if (mvm != null) mvm.msg = "Preparing and Injecting...";
+            var runner = DefaultToolRunnerFacade.Instance;
 
-            // Delegate standard ISO flow to backend service (controller-only orchestration)
-            WiiInjectService.InjectStandard(toolsPath, tempPath, baseRomPath, romPath, opt);
-            EndTimer(s, 1);
+            // STEP 1: Prepare pre.iso (or reuse source if already ISO)
+            var st1 = StepTimer("Prepare pre.iso", 1);
+            var pre = WiiInjectService.PreparePreIso(toolsPath, tempPath, romPath, opt, runner);
+            EndTimer(st1, 1);
+            if (mvm != null) { mvm.Progress = 20; mvm.msg = "Prepared pre.iso"; }
+
+            // STEP 2: Update meta flag from ISO header
+            var st2 = StepTimer("Update meta.xml reserved flag", 2);
+            WiiInjectService.UpdateMetaReservedFlag(baseRomPath, pre.preIso);
+            EndTimer(st2, 2);
+            if (mvm != null) { mvm.Progress = 25; mvm.msg = "Updated meta.xml"; }
+
+            // STEP 3: Extract pre.iso to TEMP directory
+            var st3 = StepTimer("Extract pre.iso", 3);
+            var tempDir = System.IO.Path.Combine(tempPath, "TEMP");
+            WiiInjectService.WitExtractToTemp(toolsPath, pre.preIso, tempDir, opt, runner);
+            EndTimer(st3, 3);
+            if (mvm != null) { mvm.Progress = 30; mvm.msg = "Extracted pre.iso"; }
+
+            // STEP 4: Apply GCT patch if provided
+            var st4 = StepTimer("Apply GCT patch", 4);
+            WiiInjectService.ApplyOptionalDolPatch(tempDir, opt);
+            EndTimer(st4, 4);
+            if (mvm != null) { mvm.Progress = 35; mvm.msg = "Patched DOL (if any)"; }
+
+            // STEP 5: Optional video patch
+            if (opt.PatchVideo)
+            {
+                var st5 = StepTimer("Apply video patch", 5);
+                WiiInjectService.ApplyVideoPatch(toolsPath, tempDir, opt);
+                EndTimer(st5, 5);
+                if (mvm != null) { mvm.Progress = 40; mvm.msg = "Applied video patch"; }
+            }
+
+            // STEP 6: Repack to content/game.iso
+            var st6 = StepTimer("Repack content ISO", 6);
+            var gameIso = WiiInjectService.RepackToContentIso(toolsPath, tempDir, baseRomPath, opt, runner);
+            if (!pre.usedSource) WiiInjectService.TryDelete(pre.preIso);
+            EndTimer(st6, 6);
+            if (mvm != null) { mvm.Progress = 45; mvm.msg = "Repacked ISO"; }
+
+            // STEP 7: Extract TIK/TMD and replace
+            var st7 = StepTimer("Extract tickets and replace", 7);
+            WiiInjectService.ExtractTicketsAndReplace(toolsPath, tempPath, baseRomPath, gameIso, opt, runner);
+            EndTimer(st7, 7);
+            if (mvm != null) { mvm.Progress = 55; mvm.msg = "Replaced TIK/TMD"; }
+
+            // STEP 8: Clean old NFS and run conversion
+            var st8 = StepTimer("NFS conversion", 8);
+            var contentDir = System.IO.Path.Combine(baseRomPath, "content");
+            WiiInjectService.CleanContentNfs(contentDir);
+            WiiInjectService.RunNfsConversion(toolsPath, contentDir, opt, runner);
+            WiiInjectService.TryDelete(System.IO.Path.Combine(contentDir, "game.iso"));
+            EndTimer(st8, 8);
+            if (mvm != null) { mvm.Progress = 80; mvm.msg = "Injection complete"; }
             return;
-
-            // Paths
-            var preIsoWin = Path.Combine(tempPath, "pre.iso");
-            var tempDirWin = Path.Combine(tempPath, "TEMP");
-            var gameIsoWin = Path.Combine(tempPath, "game.iso");
-            var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
-            Directory.CreateDirectory(tempPath);
-
-            // ---- 1) Ensure pre.iso exists (copy or convert NKIT/WBFS) ----
-            {
-                var step = StepTimer("Prepare pre.iso", 1);
-                var ext = (Path.GetExtension(romPath) ?? "").ToLowerInvariant();
-
-                if (ext.Contains("iso"))
-                {
-                    if (mvm != null) mvm.msg = "Copying ROM...";
-                    Log($"Copy ISO → {preIsoWin}");
-                    File.Copy(romPath, preIsoWin, overwrite: true);
-                    ToolRunner.LogFileVisibility("[after File.Copy] pre.iso", preIsoWin);
-                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
-                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after copy.", preIsoWin);
-                    if (mvm != null) mvm.Progress = 15;
-                }
-                else if (mvm != null && (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0 || ext.Contains("wbfs")))
-                {
-                    if (mvm != null)
-                        mvm.msg = (mvm.NKITFLAG || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0) ? "Converting NKIT to ISO" : "Converting WBFS to ISO...";
-                    var witArgs = $"copy \"{romPath}\" --dest \"{preIsoWin}\" -I";
-                    Log($"Calling wit: {witArgs}");
-                    ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm != null && mvm.debug);
-                    ToolRunner.LogFileVisibility("[after wit copy] pre.iso", preIsoWin);
-                    if (!ToolRunner.WaitForWineVisibility(preIsoWin))
-                        throw new FileNotFoundException("pre.iso not visible to Wine/.NET after wit copy.", preIsoWin);
-                    if (!ext.Contains("wbfs") && !File.Exists(preIsoWin))
-                        throw new Exception("nkit");
-                    if (mvm != null) mvm.Progress = 15;
-                }
-                else
-                {
-                    Log($"Unsupported input extension '{ext}'. Continuing may fail later.");
-                }
-                EndTimer(step, 1);
-            }
-
-            // ---- 2) Manual XML edits ----
-            {
-                var step = StepTimer("Edit meta.xml reserved_flag2", 2);
-                if (mvm != null) mvm.msg = "Trying to change the Manual...";
-                ToolRunner.LogFileVisibility("[step 2 pre-check] pre.iso", preIsoWin);
-                if (!File.Exists(preIsoWin))
-                    throw new FileNotFoundException("pre.iso missing before meta.xml edit. (Wine/.NET view)", preIsoWin);
-                byte[] chars = new byte[4];
-                using (var fstrm = new FileStream(preIsoWin, FileMode.Open, FileAccess.Read))
-                    fstrm.Read(chars, 0, 4);
-                string procod = ByteArrayToString(chars);
-                string neededformanual = procod.ToHex();
-                string metaXml = Path.Combine(baseRomPath, "meta", "meta.xml");
-                var doc = new System.Xml.XmlDocument();
-                doc.Load(metaXml);
-                doc.SelectSingleNode("menu/reserved_flag2").InnerText = neededformanual;
-                doc.Save(metaXml);
-                if (mvm != null) mvm.Progress = 25;
-                EndTimer(step, 2);
-            }
-
-            // ---- 3) Regionfrii ----
-            if (mvm != null && mvm.regionfrii)
-            {
-                var step = StepTimer("Apply RegionFrii", 3);
-                Services.WiiPatchService.ApplyRegionFrii(preIsoWin, mvm.regionfriius, mvm.regionfriijp);
-                EndTimer(step, 3);
-            }
-
-            // ---- 4) Extract via WIT (trim or full copy) ----
-            {
-                var step = StepTimer("Extract pre.iso", 4);
-                string psel = (mvm != null && mvm.donttrim) ? "raw" : "whole";
-                if (mvm != null) mvm.msg = (mvm.donttrim ? "Preparing full disc image..." : "Trimming game partition...");
-                var witArgs = $"extract \"{preIsoWin}\" --DEST \"{tempDirWin}\" --psel {psel} -vv1";
-                ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm != null && mvm.debug);
-                EndTimer(step, 4);
-                if (mvm != null) mvm.Progress = 30;
-
-                // ---- 5) GCT patch ----
-                var step5 = StepTimer("Apply GCT patch", 5);
-                GctPatch(mvm, "Wii", preIsoWin);
-                EndTimer(step5, 5);
-
-                // ---- 6) main.dol patch (deflicker/dither/VFilter) ----
-                var step6 = StepTimer("Patch main.dol (deflicker/dither/VFilter)", 6);
-                bool dolPatch = mvm != null && (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter);
-                if (dolPatch)
-                {
-                    if (mvm != null) { mvm.msg = "Patching main.dol..."; mvm.Progress = 33; }
-                    var mainDolPath = Directory.GetFiles(tempDirWin, "main.dol", SearchOption.AllDirectories).FirstOrDefault()
-                                        ?? throw new Exception("main.dol not found in extracted tree.");
-                    var patchedDol = Path.Combine(Path.GetDirectoryName(mainDolPath)!, "patched.dol");
-                    DeflickerDitheringRemover.ProcessFile(
-                        mainDolPath,
-                        patchedDol,
-                        mvm?.RemoveDeflicker ?? false,
-                        mvm?.RemoveDithering ?? false,
-                        mvm?.HalfVFilter ?? false
-                    );
-                    File.Delete(mainDolPath);
-                    File.Move(patchedDol, mainDolPath);
-                }
-                EndTimer(step6, 6);
-
-                // ---- 7) Classic Controller patch ----
-                if (mvm != null && mvm.Index == 4)
-                {
-                var step7 = StepTimer("Force CC patch", 7);
-                if (mvm != null) mvm.msg = "Patching ROM (Force Classic Controller)...";
-                var targetDol = Path.Combine(tempDirWin, "DATA", "sys", "main.dol");
-                Services.WiiPatchService.ForceClassicController(toolsPath, targetDol, mvm != null && mvm.debug);
-                if (mvm != null) mvm.Progress = 35;
-                EndTimer(step7, 7);
-                }
-
-                // ---- 8) JPPatch (Japanese language patch) ----
-                if (mvm != null && mvm.jppatch)
-                {
-                    var step8 = StepTimer("Apply JPPatch", 8);
-                    if (mvm != null) mvm.msg = "Applying language patch...";
-                    Services.WiiPatchService.ApplyJpPatch(tempPath);
-                    EndTimer(step8, 8);
-                }
-
-                // ---- 9) Video patch (wii-vmc.exe) ----
-                if (mvm != null && mvm.Patch)
-                {
-                    var step9 = StepTimer("Video patch (wii-vmc)", 9);
-                    if (mvm != null) mvm.msg = "Applying video patch...";
-                    var sysDir = Path.Combine(tempDirWin, "DATA", "sys");
-                    Directory.CreateDirectory(sysDir);
-                    using (var vmc = new System.Diagnostics.Process())
-                    {
-                        string extra = "";
-                        if (mvm.Index == 2) extra = "-horizontal ";
-                        else if (mvm.Index == 3) extra = "-wiimote ";
-                        else if (mvm.Index == 4) extra = "-instantcc ";
-                        else if (mvm.Index == 5) extra = "-nocc ";
-                        if (mvm.LR) extra += "-lrpatch ";
-                        vmc.StartInfo.FileName = Path.Combine(toolsPath, "wii-vmc.exe");
-                        vmc.StartInfo.Arguments = $"-enc {extra}-iso main.dol";
-                        vmc.StartInfo.UseShellExecute = false;
-                        vmc.StartInfo.CreateNoWindow = true;
-                        vmc.StartInfo.RedirectStandardOutput = true;
-                        vmc.StartInfo.RedirectStandardInput = true;
-                        vmc.StartInfo.WorkingDirectory = sysDir;
-                        vmc.Start();
-                        System.Threading.Thread.Sleep(1000);
-                        vmc.StandardInput.WriteLine("a");
-                        System.Threading.Thread.Sleep(2000);
-                        vmc.StandardInput.WriteLine(mvm.toPal ? "1" : "2");
-                        System.Threading.Thread.Sleep(2000);
-                        vmc.StandardInput.WriteLine();
-                        vmc.WaitForExit();
-                    }
-                    if (mvm != null) mvm.Progress = 40;
-                    EndTimer(step9, 9);
-                }
-
-                // ---- 10) Repack via WIT ----
-                {
-                    var step10 = StepTimer("Repack to game.iso", 10);
-                    if (mvm != null)
-                        mvm.msg = (mvm.donttrim ? "Rebuilding full disc image..." : "Rebuilding trimmed game ISO...");
-                    string copyFlags = (mvm != null && mvm.donttrim) ? "--psel raw --iso" : "--psel whole --iso";
-                    var repackArgs = $"copy \"{tempDirWin}\" --DEST \"{gameIsoWin}\" -ovv {copyFlags}";
-                    ToolRunner.RunTool("wit", toolsPath, repackArgs, showWindow: mvm != null && mvm.debug);
-                    Directory.Delete(tempDirWin, true);
-                    File.Delete(preIsoWin);
-                    EndTimer(step10, 10);
-                }
-            }
-
-            // ---- 11) Extract TIK/TMD via wit ----
-            {
-                var step = StepTimer("Extract TIK/TMD", 11);
-                if (mvm != null) { mvm.Progress = 50; mvm.msg = "Replacing TIK and TMD..."; }
-                if (Directory.Exists(tikTmdWin)) { try { Directory.Delete(tikTmdWin, true); } catch { } }
-                var witArgs = $"extract \"{gameIsoWin}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdWin}\" -vv1 -o";
-                ToolRunner.RunTool("wit", toolsPath, witArgs, showWindow: mvm != null && mvm.debug);
-                foreach (string sFile in Directory.GetFiles(Path.Combine(baseRomPath, "code"), "rvlt.*")) File.Delete(sFile);
-                File.Copy(Path.Combine(tikTmdWin, "tmd.bin"), Path.Combine(baseRomPath, "code", "rvlt.tmd"), true);
-                File.Copy(Path.Combine(tikTmdWin, "ticket.bin"), Path.Combine(baseRomPath, "code", "rvlt.tik"), true);
-                try { Directory.Delete(tikTmdWin, true); } catch { }
-                EndTimer(step, 11);
-            }
-
-            // ---- 12) Inject into content via nfs2iso2nfs.exe ----
-            {
-                var step = StepTimer("Inject (nfs2iso2nfs)", 12);
-                if (mvm != null) { mvm.Progress = 60; mvm.msg = "Injecting ROM..."; }
-                var contentDir = Path.Combine(baseRomPath, "content");
-                var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
-                System.Threading.Tasks.Parallel.ForEach(oldNfs, f => { try { File.Delete(f); } catch { } });
-                var finalIso = Path.Combine(contentDir, "game.iso");
-                FileHelpers.MoveOverwrite(gameIsoWin, finalIso);
-                using (var iso2nfs = new System.Diagnostics.Process())
-                {
-                    if (mvm != null && !mvm.debug) iso2nfs.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    iso2nfs.StartInfo.FileName = Path.Combine(toolsPath, "nfs2iso2nfs.exe");
-                    string extra = "";
-                    if (mvm != null)
-                    {
-                        if (mvm.Index == 2) { extra = "-horizontal "; }
-                        if (mvm.Index == 3) { extra = "-wiimote "; }
-                        if (mvm.Index == 4) { extra = "-instantcc "; }
-                        if (mvm.Index == 5) { extra = "-nocc "; }
-                        if (mvm.LR) { extra += "-lrpatch "; }
-                    }
-                    iso2nfs.StartInfo.Arguments = $"-enc {extra}-iso game.iso";
-                    iso2nfs.StartInfo.WorkingDirectory = contentDir;
-                    iso2nfs.Start();
-                    iso2nfs.WaitForExit();
-                    try { File.Delete(Path.Combine(contentDir, "game.iso")); } catch { }
-                }
-                if (mvm != null) mvm.Progress = 80;
-                EndTimer(step, 12);
-            }
-            EndTimer(s, 1);
         }
         internal static void PatchDol(string consoleName, string mainDolPath, MainViewModel mvm)
         {

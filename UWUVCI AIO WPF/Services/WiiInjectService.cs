@@ -51,7 +51,7 @@ namespace UWUVCI_AIO_WPF.Services
             ExtractTicketsAndReplace(toolsPath, tempPath, baseRomPath, gameIso, opt, runner);
             var contentDir = Path.Combine(baseRomPath, "content");
             CleanContentNfs(contentDir);
-            RunNfsConversion(contentDir, opt, runner);
+            RunNfsConversion(toolsPath, contentDir, opt, runner);
             TryDelete(Path.Combine(contentDir, "game.iso"));
             opt.Progress?.Invoke(80, "Injection complete");
         }
@@ -169,7 +169,7 @@ namespace UWUVCI_AIO_WPF.Services
             System.Threading.Tasks.Parallel.ForEach(oldNfs, s => { try { File.Delete(s); } catch { } });
         }
 
-        internal static void RunNfsConversion(string contentDir, WiiInjectOptions opt, IToolRunnerFacade runner)
+        internal static void RunNfsConversion(string toolsPath, string contentDir, WiiInjectOptions opt, IToolRunnerFacade runner)
         {
             string extra = string.Empty;
             if (opt.Index == 2) extra = "-horizontal ";
@@ -179,7 +179,8 @@ namespace UWUVCI_AIO_WPF.Services
             if (opt.LR) extra += "-lrpatch ";
             var pass = opt.Passthrough ? "-passthrough " : string.Empty;
             var args = $"-enc {pass}{extra}-iso game.iso";
-            runner.RunToolWithFallback("nfs2iso2nfs", contentDir, args, showWindow: opt.Debug, workDirWin: contentDir);
+            // Run the exe from the tools directory but with working directory set to content
+            runner.RunToolWithFallback("nfs2iso2nfs", toolsPath, args, showWindow: opt.Debug, workDirWin: contentDir);
             opt.Progress?.Invoke(60, "Injecting ROM...");
         }
 

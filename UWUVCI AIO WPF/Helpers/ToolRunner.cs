@@ -154,7 +154,7 @@ namespace UWUVCI_AIO_WPF.Helpers
             string toolsPathWin,
             string argsWindowsPaths,
             bool showWindow,
-            string workDirWin = @"C:\uwu")
+            string workDirWin = null)
         {
             bool underWine = UnderWine();
             bool mac = underWine && HostIsMac();
@@ -180,6 +180,9 @@ namespace UWUVCI_AIO_WPF.Helpers
                 }
             }
 
+            // Use toolsPath as default working directory when not specified
+            if (string.IsNullOrWhiteSpace(workDirWin)) workDirWin = toolsPathWin;
+
             // Windows native OR Wine fallback to .exe
             string exeWin = Path.Combine(toolsPathWin, toolBaseName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
                 ? toolBaseName
@@ -204,6 +207,7 @@ namespace UWUVCI_AIO_WPF.Helpers
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
+                // Show console only when requested
                 CreateNoWindow = !show,
                 WindowStyle = show ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden
             };
@@ -211,8 +215,77 @@ namespace UWUVCI_AIO_WPF.Helpers
             so = p.StandardOutput.ReadToEnd();
             se = p.StandardError.ReadToEnd();
             p.WaitForExit();
+            // Enrich stderr with helpful hints for common Windows NTSTATUS codes
+            try
+            {
+                if (p.ExitCode != 0)
+                {
+                    string hint = ComposeWinErrorHint(p.ExitCode, exeWin);
+                    if (!string.IsNullOrEmpty(hint))
+                    {
+                        se = (se ?? string.Empty) + (string.IsNullOrEmpty(se) ? string.Empty : "\n") + hint;
+                    }
+                }
+            }
+            catch { /* best-effort */ }
+
             Log($"RunWinExe exit={p.ExitCode}\nSTDOUT:\n{so}\nSTDERR:\n{se}");
+            
+            // Also drop a dedicated tool log to help user debugging
+            try
+            {
+                string logsDir = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs");
+                if (!System.IO.Directory.Exists(logsDir)) System.IO.Directory.CreateDirectory(logsDir);
+                string stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string baseName = System.IO.Path.GetFileName(exeWin);
+                string toolLog = System.IO.Path.Combine(logsDir, $"tool-{stamp}-{baseName}.txt");
+                var text = new StringBuilder()
+                    .AppendLine($"exe={exeWin}")
+                    .AppendLine($"args={args}")
+                    .AppendLine($"workdir={workWin}")
+                    .AppendLine($"exit={p.ExitCode}")
+                    .AppendLine()
+                    .AppendLine("STDOUT:")
+                    .AppendLine(so ?? string.Empty)
+                    .AppendLine()
+                    .AppendLine("STDERR:")
+                    .AppendLine(se ?? string.Empty)
+                    .ToString();
+                System.IO.File.WriteAllText(toolLog, text, Encoding.UTF8);
+                Log($"Tool log written: {toolLog}");
+            }
+            catch { /* best-effort */ }
+
             return p.ExitCode;
+        }
+
+        private static string ComposeWinErrorHint(int exitCode, string exe)
+        {
+            try
+            {
+                // Map common negative NTSTATUS to friendly hints
+                // -1073741502 == 0xC0000142: DLL initialization failed (often missing VC++ runtime)
+                // -1073741515 == 0xC0000135: DLL not found
+                // -1073741701 == 0xC000007B: Bad image format (32/64-bit mismatch)
+                if (exitCode == -1073741502)
+                {
+                    return $"Hint: {System.IO.Path.GetFileName(exe)} failed to initialize (0xC0000142). " +
+                           "This usually indicates missing Visual C++ dependencies. Ensure vcruntime140.dll and msvcp140.dll are available next to the tool, " +
+                           "or install 'Microsoft Visual C++ 2015–2019 Redistributable (x86)'.";
+                }
+                if (exitCode == -1073741515)
+                {
+                    return $"Hint: {System.IO.Path.GetFileName(exe)} could not find a required DLL (0xC0000135). " +
+                           "Verify all tool DLLs are present in the Tools folder (e.g., cygwin1.dll, cygz.dll, cyggcc_s-1.dll, and VC++ runtime DLLs).";
+                }
+                if (exitCode == -1073741701)
+                {
+                    return $"Hint: {System.IO.Path.GetFileName(exe)} failed to start due to a 32/64-bit mismatch (0xC000007B). " +
+                           "Use the 32-bit tool build with 32-bit DLLs, or align the dependencies to the tool's bitness.";
+                }
+            }
+            catch { }
+            return string.Empty;
         }
 
 
@@ -233,11 +306,14 @@ namespace UWUVCI_AIO_WPF.Helpers
         }
 
         // Runs arbitrary wit/wstrt subcommands with Windows-view args (we convert if native)
-        public static void RunTool(string toolBaseName, string toolsPathWin, string argsWindowsPaths, bool showWindow, string workDirWin = @"C:\uwu")
+        public static void RunTool(string toolBaseName, string toolsPathWin, string argsWindowsPaths, bool showWindow, string workDirWin = null)
         {
             bool underWine = UnderWine();
             bool mac = underWine && HostIsMac();
             bool lin = underWine && !mac && HostIsLinux();
+
+            // Use toolsPath as default working directory when not specified
+            if (string.IsNullOrWhiteSpace(workDirWin)) workDirWin = toolsPathWin;
 
             if (!underWine && IsNativeWindows)
             {
