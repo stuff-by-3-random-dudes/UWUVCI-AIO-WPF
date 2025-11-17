@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.Services
@@ -16,25 +17,6 @@ namespace UWUVCI_AIO_WPF.Services
             romPath = ToolRunner.ToWindowsView(romPath);
             Directory.CreateDirectory(tempPath);
             RunStandardPipeline(toolsPath, tempPath, baseRomPath, romPath, opt, runner);
-        }
-
-        public static void InjectHomebrew(string toolsPath, string tempPath, string baseRomPath, string romPath, WiiInjectOptions opt, IToolRunnerFacade runner = null)
-        {
-            runner ??= DefaultToolRunnerFacade.Instance;
-            var tempBase = PrepareTempBase(toolsPath, tempPath);
-            CopyDolToBase(tempBase, romPath);
-            var nfs = new NfsInjectOptions { Debug = opt?.Debug ?? false, Kind = InjectKind.WiiHomebrew, Passthrough = opt?.Passthrough ?? false, Index = opt?.Index ?? 0, LR = opt?.LR ?? false, Progress = opt?.Progress };
-            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs, runner);
-        }
-
-        public static void InjectForwarder(string toolsPath, string tempPath, string baseRomPath, string wadPath, WiiInjectOptions opt, IToolRunnerFacade runner = null)
-        {
-            runner ??= DefaultToolRunnerFacade.Instance;
-            var tempBase = PrepareTempBase(toolsPath, tempPath);
-            SetupForwarderTitle(tempBase, wadPath);
-            CopyForwarderDol(toolsPath, tempBase);
-            var nfs = new NfsInjectOptions { Debug = opt?.Debug ?? false, Kind = InjectKind.WiiForwarder, Passthrough = opt?.Passthrough ?? false, Index = opt?.Index ?? 0, LR = opt?.LR ?? false, Progress = opt?.Progress };
-            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfs, runner);
         }
 
         // Orchestrated standard flow composed of small steps
@@ -89,7 +71,8 @@ namespace UWUVCI_AIO_WPF.Services
 
         internal static void WitExtractToTemp(string toolsPath, string preIso, string tempDir, WiiInjectOptions opt, IToolRunnerFacade runner)
         {
-            var extractArgs = $"extract \"{preIso}\" --DEST \"{tempDir}\" --psel data -vv1";
+            var pselParam = opt.DontTrim ? "raw" : "whole";
+            var extractArgs = $"extract \"{preIso}\" --DEST \"{tempDir}\" --psel {pselParam} -vv1";
             runner.RunTool("wit", toolsPath, extractArgs, showWindow: opt.Debug);
         }
 
@@ -143,6 +126,10 @@ namespace UWUVCI_AIO_WPF.Services
             var finalIso = Path.Combine(contentDir, "game.iso");
             var repackArgs = $"copy \"{tempDir}\" --DEST \"{finalIso}\" -ovv --links {copyFlags}";
             runner.RunTool("wit", toolsPath, repackArgs, showWindow: opt.Debug);
+            if (!ToolRunner.WaitForWineVisibility(finalIso, timeoutMs: 20000, pollMs: 250))
+            {
+                throw new Exception($"WIT repack completed but content/game.iso not visible: {finalIso}");
+            }
             try { Directory.Delete(tempDir, true); } catch { }
             opt.Progress?.Invoke(45, "Repacked ISO to content");
             return finalIso;
@@ -150,16 +137,29 @@ namespace UWUVCI_AIO_WPF.Services
 
         internal static void ExtractTicketsAndReplace(string toolsPath, string tempPath, string baseRomPath, string gameIso, WiiInjectOptions opt, IToolRunnerFacade runner)
         {
+            if (opt == null) throw new ArgumentNullException(nameof(opt));
+            runner ??= DefaultToolRunnerFacade.Instance;
+
             var tikTmd = Path.Combine(tempPath, "TIKTMD");
-            if (Directory.Exists(tikTmd)) { try { Directory.Delete(tikTmd, true); } catch { } }
-            var witArgs = $"extract \"{gameIso}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmd}\" -vv1 -o";
-            runner.RunTool("wit", toolsPath, witArgs, showWindow: opt.Debug);
+            WitTicketExtractionService.ExtractTickets(
+                toolsPath,
+                gameIso,
+                tikTmd,
+                opt.Debug,
+                runner: runner,
+                waitTimeoutMs: 10000);
             var codeDir = Path.Combine(baseRomPath, "code");
             var toDelete = Directory.GetFiles(codeDir, "rvlt.*");
-            System.Threading.Tasks.Parallel.ForEach(toDelete, s => { try { File.Delete(s); } catch { } });
+
+            Parallel.ForEach(toDelete, s => 
+                { try { File.Delete(s); } catch { } 
+            });
+
             File.Copy(Path.Combine(tikTmd, "tmd.bin"), Path.Combine(codeDir, "rvlt.tmd"), true);
             File.Copy(Path.Combine(tikTmd, "ticket.bin"), Path.Combine(codeDir, "rvlt.tik"), true);
+
             try { Directory.Delete(tikTmd, true); } catch { }
+
             opt.Progress?.Invoke(50, "Replacing TIK and TMD...");
         }
 

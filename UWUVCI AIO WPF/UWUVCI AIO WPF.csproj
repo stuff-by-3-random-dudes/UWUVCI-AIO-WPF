@@ -263,6 +263,7 @@
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
+    <Compile Include="Helpers\PathResolver.cs" />
     <Compile Include="Helpers\VCBTool.cs" />
     <Compile Include="Models\NintendontConfig.cs" />
     <Compile Include="Models\NintendontPresets.cs" />
@@ -296,8 +297,8 @@
     <Compile Include="Services\WitNfsService.cs" />
     <Compile Include="Services\WiiInjectService.cs" />
     <Compile Include="Services\GCNInjectService.cs" />
+    <Compile Include="Services\WitTicketExtractionService.cs" />
     <Compile Include="Services\BaseExtractor.cs" />
-    <Compile Include="Services\CacheService.cs" />
     <Compile Include="Services\InjectOptions.cs" />
     <Compile Include="Services\GctPatcherService.cs" />
     <Compile Include="Services\ContributionService.cs" />
