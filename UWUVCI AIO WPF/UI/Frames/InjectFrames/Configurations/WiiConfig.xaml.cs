@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -487,8 +488,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 ancastKey.Text = ancastKey.Text.ToUpper().Trim();
 
-                var toolsPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
-                var tempPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
+                var toolsPath = PathResolver.GetToolsPath();
+                var tempPath = PathResolver.GetTempPath();
                 var downloadPath = System.IO.Path.Combine(tempPath, "download");
                 var c2wPath = System.IO.Path.Combine(tempPath, "C2W");
                 var imgFileCode = System.IO.Path.Combine(c2wPath, "code", "c2w.img");
@@ -1007,9 +1008,9 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             // --- Tooltip flip ---
             if (mvm.donttrim)
-                trimn.ToolTip = "Trim is disabled — ISO will be preserved as whole/raw.";
+                trimn.ToolTip = "Trim is disabled file will be preserved as WIT RAW.";
             else
-                trimn.ToolTip = "Enable this if you don’t want to trim the ISO.";
+                trimn.ToolTip = "Enable this if you don’t want to trim the file.";
 
             // --- Shared gamepad list logic ---
             int last = gamepad.SelectedIndex;

@@ -295,9 +295,9 @@
     <Compile Include="Services\ParallelBatchRunner.cs" />
     <Compile Include="Services\NKitService.cs" />
     <Compile Include="Services\WitNfsService.cs" />
+    <Compile Include="Services\WitTicketExtractionService.cs" />
     <Compile Include="Services\WiiInjectService.cs" />
     <Compile Include="Services\GCNInjectService.cs" />
-    <Compile Include="Services\WitTicketExtractionService.cs" />
     <Compile Include="Services\BaseExtractor.cs" />
     <Compile Include="Services\InjectOptions.cs" />
     <Compile Include="Services\GctPatcherService.cs" />

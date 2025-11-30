@@ -157,7 +157,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void ResetAllCaches_Click(object sender, RoutedEventArgs e)
         {
             bool ok = false;
-            try { ok = CacheService.ClearAll(); } catch { ok = false; }
+            try { ok = BaseExtractor.ClearCache(); } catch { ok = false; }
             UWUVCI_MessageBox.Show(
                 ok ? "Caches Reset" : "Error",
                 ok ? "All caches reset successfully." : "Failed to reset all caches.",

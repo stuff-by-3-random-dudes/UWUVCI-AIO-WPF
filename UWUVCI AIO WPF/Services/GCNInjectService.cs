@@ -31,7 +31,9 @@ namespace UWUVCI_AIO_WPF.Services
         internal static string PrepareTempBase(string toolsPath, string tempPath)
         {
             var tempBaseWin = Path.Combine(tempPath, "TempBase");
-            if (Directory.Exists(tempBaseWin)) Directory.Delete(tempBaseWin, true);
+            if (Directory.Exists(tempBaseWin)) 
+                Directory.Delete(tempBaseWin, true);
+
             var extracted = BaseExtractor.GetOrExtractBase(toolsPath, "BASE.zip");
             IOHelpers.MoveOrCopyDirectory(extracted, tempBaseWin);
             return tempBaseWin;

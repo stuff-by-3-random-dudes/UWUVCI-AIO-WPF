@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.Services
@@ -28,14 +27,18 @@ namespace UWUVCI_AIO_WPF.Services
             WitExtractToTemp(toolsPath, preIso, tempDir, opt, runner);
             ApplyOptionalDolPatch(tempDir, opt);
             if (opt.PatchVideo) ApplyVideoPatch(toolsPath, tempDir, opt);
-            var gameIso = RepackToContentIso(toolsPath, tempDir, baseRomPath, opt, runner);
+            PromoteTempDirToTempBase(tempDir, tempPath);
             if (!usedSource) TryDelete(preIso);
-            ExtractTicketsAndReplace(toolsPath, tempPath, baseRomPath, gameIso, opt, runner);
-            var contentDir = Path.Combine(baseRomPath, "content");
-            CleanContentNfs(contentDir);
-            RunNfsConversion(toolsPath, contentDir, opt, runner);
-            TryDelete(Path.Combine(contentDir, "game.iso"));
-            opt.Progress?.Invoke(80, "Injection complete");
+            var nfsOptions = new NfsInjectOptions
+            {
+                Debug = opt.Debug,
+                Kind = InjectKind.WiiStandard,
+                Passthrough = opt.Passthrough,
+                Index = opt.Index,
+                LR = opt.LR,
+                Progress = opt.Progress
+            };
+            WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfsOptions, runner);
         }
 
         internal static (string preIso, bool usedSource) PreparePreIso(string toolsPath, string tempPath, string romPath, WiiInjectOptions opt, IToolRunnerFacade runner)
@@ -118,70 +121,16 @@ namespace UWUVCI_AIO_WPF.Services
             vmc.WaitForExit();
         }
 
-        internal static string RepackToContentIso(string toolsPath, string tempDir, string baseRomPath, WiiInjectOptions opt, IToolRunnerFacade runner)
+        private static void PromoteTempDirToTempBase(string tempDir, string tempPath)
         {
-            string copyFlags = opt.DontTrim ? "--psel raw --iso" : "--psel whole --iso";
-            var contentDir = Path.Combine(baseRomPath, "content");
-            Directory.CreateDirectory(contentDir);
-            var finalIso = Path.Combine(contentDir, "game.iso");
-            var repackArgs = $"copy \"{tempDir}\" --DEST \"{finalIso}\" -ovv --links {copyFlags}";
-            runner.RunTool("wit", toolsPath, repackArgs, showWindow: opt.Debug);
-            if (!ToolRunner.WaitForWineVisibility(finalIso, timeoutMs: 20000, pollMs: 250))
-            {
-                throw new Exception($"WIT repack completed but content/game.iso not visible: {finalIso}");
-            }
-            try { Directory.Delete(tempDir, true); } catch { }
-            opt.Progress?.Invoke(45, "Repacked ISO to content");
-            return finalIso;
-        }
-
-        internal static void ExtractTicketsAndReplace(string toolsPath, string tempPath, string baseRomPath, string gameIso, WiiInjectOptions opt, IToolRunnerFacade runner)
-        {
-            if (opt == null) throw new ArgumentNullException(nameof(opt));
-            runner ??= DefaultToolRunnerFacade.Instance;
-
-            var tikTmd = Path.Combine(tempPath, "TIKTMD");
-            WitTicketExtractionService.ExtractTickets(
-                toolsPath,
-                gameIso,
-                tikTmd,
-                opt.Debug,
-                runner: runner,
-                waitTimeoutMs: 10000);
-            var codeDir = Path.Combine(baseRomPath, "code");
-            var toDelete = Directory.GetFiles(codeDir, "rvlt.*");
-
-            Parallel.ForEach(toDelete, s => 
-                { try { File.Delete(s); } catch { } 
-            });
-
-            File.Copy(Path.Combine(tikTmd, "tmd.bin"), Path.Combine(codeDir, "rvlt.tmd"), true);
-            File.Copy(Path.Combine(tikTmd, "ticket.bin"), Path.Combine(codeDir, "rvlt.tik"), true);
-
-            try { Directory.Delete(tikTmd, true); } catch { }
-
-            opt.Progress?.Invoke(50, "Replacing TIK and TMD...");
-        }
-
-        internal static void CleanContentNfs(string contentDir)
-        {
-            var oldNfs = Directory.GetFiles(contentDir, "*.nfs");
-            System.Threading.Tasks.Parallel.ForEach(oldNfs, s => { try { File.Delete(s); } catch { } });
-        }
-
-        internal static void RunNfsConversion(string toolsPath, string contentDir, WiiInjectOptions opt, IToolRunnerFacade runner)
-        {
-            string extra = string.Empty;
-            if (opt.Index == 2) extra = "-horizontal ";
-            if (opt.Index == 3) extra = "-wiimote ";
-            if (opt.Index == 4) extra = "-instantcc ";
-            if (opt.Index == 5) extra = "-nocc ";
-            if (opt.LR) extra += "-lrpatch ";
-            var pass = opt.Passthrough ? "-passthrough " : string.Empty;
-            var args = $"-enc {pass}{extra}-iso game.iso";
-            // Run the exe from the tools directory but with working directory set to content
-            runner.RunToolWithFallback("nfs2iso2nfs", toolsPath, args, showWindow: opt.Debug, workDirWin: contentDir);
-            opt.Progress?.Invoke(60, "Injecting ROM...");
+            if (!Directory.Exists(tempDir))
+                return;
+            var tempBase = Path.Combine(tempPath, "TempBase");
+            if (Directory.Exists(tempBase))
+                Directory.Delete(tempBase, true);
+            var moved = IOHelpers.MoveOrCopyDirectory(tempDir, tempBase);
+            if (!moved && Directory.Exists(tempDir))
+                Directory.Delete(tempDir, true);
         }
 
         internal static void TryDelete(string path)

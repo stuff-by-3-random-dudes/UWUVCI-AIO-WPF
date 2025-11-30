@@ -41,8 +41,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
 
             dont.Visibility = Visibility.Hidden;
-            Title.Text = title;
-            Message.Content = message;
+            Title.Text = SanitizeForWine(title);
+            Message.Content = SanitizeForWine(message);
             Folder.Visibility = Visibility.Hidden;
            
             if (title.Contains("Resetting") || message.Contains("NUS format") || message.Contains("Folder contains Files or Subfolders, do you really want to use this") || message.Contains("If using Custom Bases") || title.Contains("Found additional Files"))
@@ -97,11 +97,38 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 nc.Visibility = Visibility.Visible;
             }
             dont.Visibility = Visibility.Hidden;
-            Title.Text = title;
-            Message.Content = message;
+            Title.Text = SanitizeForWine(title);
+            Message.Content = SanitizeForWine(message);
             path = Path;
             Folder.Visibility = Visibility.Visible;
             
+        }
+        private static string SanitizeForWine(string input)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(input)) return input ?? string.Empty;
+                var env = MacLinuxHelper.EnvDetect.Get();
+                bool underWine = env != null && env.UnderWineLike;
+                if (!underWine) return input;
+                string s = input;
+                s = s.Replace("❌", "[Error]")
+                     .Replace("⚠️", "[Warning]")
+                     .Replace("⚠", "[Warning]")
+                     .Replace("✅", "[OK]")
+                     .Replace("💡", "Hint:")
+                     .Replace("💿", "Disc")
+                     .Replace("🖼️", "Image")
+                     .Replace("🖼", "Image")
+                     .Replace("📘", "ReadMe")
+                     .Replace("📝", "Patch Notes")
+                     .Replace("✕", "X")
+                     .Replace("—", "-");
+                var sb = new System.Text.StringBuilder(s.Length);
+                foreach (var ch in s) { if (char.IsSurrogate(ch)) continue; sb.Append(ch); }
+                return sb.ToString();
+            }
+            catch { return input ?? string.Empty; }
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {

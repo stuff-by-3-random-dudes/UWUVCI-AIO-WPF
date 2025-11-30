@@ -14,8 +14,7 @@
             Padding="16"
             BorderBrush="#FF2196F3"
             BorderThickness="1"
-            SnapsToDevicePixels="True"
-            Effect="{DynamicResource ShadowEffect}">
+            SnapsToDevicePixels="True">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -27,12 +26,12 @@
             <!-- Header -->
             <DockPanel Grid.Row="0" Margin="0,0,0,12">
                 <TextBlock x:Name="WindowTitleText"
-               Text="📘 UWUVCI ReadMe Viewer"
+               Text="UWUVCI ReadMe Viewer"
                FontSize="22"
                FontWeight="Bold"
                Foreground="#1A1A1A"
                DockPanel.Dock="Left"/>
-                <Button Content="✕"
+                <Button Content="X"
                     Width="32"
                     Height="32"
                     Background="Transparent"
@@ -77,22 +76,42 @@
                         Padding="4"/>
             </StackPanel>
 
-            <!-- Rich viewer -->
-            <ScrollViewer Grid.Row="2"
-                          x:Name="ScrollViewer"
-                          VerticalScrollBarVisibility="Auto"
-                          Focusable="False"
-                          Background="#FAFAFA">
-                <RichTextBox x:Name="ReadMeViewer"
+            <!-- Viewers: we keep both and toggle at runtime -->
+            <Grid Grid.Row="2" Background="#FAFAFA">
+                <!-- FlowDocument-based viewer (Windows) -->
+                <ScrollViewer x:Name="DocScroll"
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="False"
+                              Visibility="Collapsed">
+                    <RichTextBox x:Name="ReadMeViewer"
+                                 FontFamily="Consolas"
+                                 FontSize="14"
+                                 Foreground="#222"
+                                 IsReadOnly="True"
+                                 Background="White"
+                                 Padding="16"
+                                 BorderThickness="0"
+                                 VerticalScrollBarVisibility="Hidden"/>
+                </ScrollViewer>
+
+                <!-- Plain text viewer (Wine/macOS safe) -->
+                <ScrollViewer x:Name="PlainScroll"
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="False"
+                              Visibility="Collapsed">
+                    <TextBox x:Name="PlainViewer"
                              FontFamily="Consolas"
                              FontSize="14"
                              Foreground="#222"
-                             IsReadOnly="True"
                              Background="White"
                              Padding="16"
                              BorderThickness="0"
+                             IsReadOnly="True"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
                              VerticalScrollBarVisibility="Hidden"/>
-            </ScrollViewer>
+                </ScrollViewer>
+            </Grid>
 
             <!-- Footer -->
             <StackPanel Grid.Row="3"

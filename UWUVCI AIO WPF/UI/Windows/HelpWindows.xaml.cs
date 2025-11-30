@@ -10,22 +10,41 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
     public partial class HelpWindow : Window
     {
+        private readonly bool _plainMode;
         private static readonly string RemoteReadMeUrl =
             "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/refs/heads/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/Readme.txt";
 
         private static readonly string RemotePatchNotesUrl =
             "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/refs/heads/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/PatchNotes.txt";
 
-        private static readonly string LocalReadMePath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ReadMe.txt");
+        private static readonly string CacheDir;
+        private static readonly string LocalReadMePath;
+        private static readonly string LocalPatchNotesPath;
 
-        private static readonly string LocalPatchNotesPath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PatchNotes.txt");
+        static HelpWindow()
+        {
+            try
+            {
+                // Use a writable cache folder instead of the app directory (safer on macOS)
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                CacheDir = Path.Combine(appData, "UWUVCI-V3", "Cache");
+                Directory.CreateDirectory(CacheDir);
+            }
+            catch
+            {
+                // Fallback: use current directory if anything goes wrong
+                CacheDir = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
+            LocalReadMePath = Path.Combine(CacheDir, "ReadMe.txt");
+            LocalPatchNotesPath = Path.Combine(CacheDir, "PatchNotes.txt");
+        }
 
         private DispatcherTimer _searchTimer;
         private readonly string _mode; // "readme" or "patchnotes"
@@ -34,20 +53,25 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
 
+            try { _plainMode = UWUVCI_AIO_WPF.Helpers.MacLinuxHelper.EnvDetect.Get()?.UnderWineLike == true; } catch { _plainMode = false; }
+
             _mode = mode.ToLowerInvariant();
             WindowTitleText.Text = _mode == "patchnotes"
-                ? "📝 UWUVCI Patch Notes Viewer"
-                : "📘 UWUVCI ReadMe Viewer";
+                ? "UWUVCI Patch Notes Viewer"
+                : "UWUVCI ReadMe Viewer";
 
             Loaded += HelpWindow_Loaded;
             PreviewKeyDown += HelpWindow_PreviewKeyDown;
 
             // dynamic wrap adjustment
-            SizeChanged += (s, e) =>
+            if (!_plainMode)
             {
-                var scrollBarWidth = SystemParameters.VerticalScrollBarWidth;
-                ReadMeViewer.Document.PageWidth = e.NewSize.Width - scrollBarWidth - 140;
-            };
+                SizeChanged += (s, e) =>
+                {
+                    var scrollBarWidth = SystemParameters.VerticalScrollBarWidth;
+                    ReadMeViewer.Document.PageWidth = e.NewSize.Width - scrollBarWidth - 140;
+                };
+            }
 
             _searchTimer = new DispatcherTimer
             {
@@ -62,6 +86,22 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private async void HelpWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                // Toggle viewers based on platform
+                if (_plainMode)
+                {
+                    if (DocScroll != null) DocScroll.Visibility = Visibility.Collapsed;
+                    if (PlainScroll != null) PlainScroll.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    if (DocScroll != null) DocScroll.Visibility = Visibility.Visible;
+                    if (PlainScroll != null) PlainScroll.Visibility = Visibility.Collapsed;
+                }
+            }
+            catch { }
+
             if (_mode == "patchnotes")
             {
                 Title = "UWUVCI Patch Notes Viewer";
@@ -120,6 +160,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("HelpWindow.LoadTextFileAsync error: " + ex.ToString()); } catch { }
                 DisplayText($"Error loading file:\n{ex.Message}");
             }
         }
@@ -134,6 +175,17 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         // -------- Display Logic --------
         private void DisplayText(string text, bool parseLinks = false)
         {
+            if (_plainMode)
+            {
+                if (PlainViewer != null)
+                {
+                    PlainViewer.Text = text ?? string.Empty;
+                }
+                // In plain mode we skip rich parsing/highlighting for stability under Wine.
+                ResultCountText.Text = "";
+                return;
+            }
+
             ReadMeViewer.Document.Blocks.Clear();
             ReadMeViewer.Document.LineHeight = 22;
 
@@ -357,6 +409,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                         {
                             if (!Helpers.ToolRunner.OpenOnHost(e.Uri.ToString()))
                             {
+                                try { Logger.Log("HelpWindow link open failed: " + e.Uri.ToString()); } catch { }
                                 try { Clipboard.SetText(e.Uri.ToString()); } catch { }
                                 UWUVCI_MessageBox.Show("Unable to open link", "The link was copied to the clipboard.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Info, this, true);
                             }
@@ -431,6 +484,26 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void HighlightSearch(string query)
         {
+            if (_plainMode)
+            {
+                // Count occurrences only
+                if (string.IsNullOrWhiteSpace(query) || PlainViewer == null)
+                {
+                    ResultCountText.Text = "";
+                    return;
+                }
+                try
+                {
+                    var text = PlainViewer.Text ?? string.Empty;
+                    int count = 0, idx = 0;
+                    var comp = CaseSensitiveBox.IsChecked == true ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+                    while ((idx = text.IndexOf(query, idx, comp)) >= 0) { count++; idx += query.Length; }
+                    ResultCountText.Text = $"{count} match{(count == 1 ? "" : "es")} found";
+                }
+                catch { ResultCountText.Text = ""; }
+                return;
+            }
+
             var doc = ReadMeViewer.Document;
             TextRange full = new TextRange(doc.ContentStart, doc.ContentEnd);
             full.ApplyPropertyValue(TextElement.BackgroundProperty, Brushes.Transparent);
@@ -475,8 +548,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         private void Copy_Click(object sender, RoutedEventArgs e)
         {
-            string allText = new TextRange(ReadMeViewer.Document.ContentStart, ReadMeViewer.Document.ContentEnd).Text;
-            Clipboard.SetText(allText);
+            try
+            {
+                if (_plainMode && PlainViewer != null)
+                {
+                    Clipboard.SetText(PlainViewer.Text ?? string.Empty);
+                }
+                else
+                {
+                    string allText = new TextRange(ReadMeViewer.Document.ContentStart, ReadMeViewer.Document.ContentEnd).Text;
+                    Clipboard.SetText(allText);
+                }
+            }
+            catch (Exception ex)
+            {
+                try { Logger.Log("HelpWindow.Copy_Click error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show("Copy Failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
+            }
         }
 
         private void Close_Click(object sender, RoutedEventArgs e) => Close();

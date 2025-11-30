@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -40,6 +41,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             catch (Exception ex)
             {
                 Status.Text = "Load failed";
+                try { Logger.Log("JsonEditor LoadFile error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Load failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
@@ -132,6 +134,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("JsonEditor Save_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Save failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
@@ -159,6 +162,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 catch (Exception ex)
                 {
+                    try { Logger.Log("JsonEditor SaveAs_Click error: " + ex.ToString()); } catch { }
                     UWUVCI_MessageBox.Show("Save failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
                 }
             }
@@ -174,6 +178,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("JsonEditor Validate_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Invalid JSON", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Warning, this, true);
             }
         }
@@ -189,6 +194,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("JsonEditor Format_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Format failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Warning, this, true);
             }
         }

@@ -5,12 +5,13 @@ using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
     class ToolCheck
     {
-        static string FolderName = "bin\\Tools";
+        static string FolderName = PathResolver.GetToolsPath();
         public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
         public static string[] ToolNames =
         {

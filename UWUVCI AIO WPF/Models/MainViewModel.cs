@@ -33,10 +33,10 @@ namespace UWUVCI_AIO_WPF
 {
     public class MainViewModel : BaseModel
     {
-        private static readonly System.Net.Http.HttpClient SharedHttpClient = CreateSharedHttpClient();
-        private static System.Net.Http.HttpClient CreateSharedHttpClient()
+        private static readonly HttpClient SharedHttpClient = CreateSharedHttpClient();
+        private static HttpClient CreateSharedHttpClient()
         {
-            var client = new System.Net.Http.HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
             try
             {
                 client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
@@ -247,7 +247,7 @@ namespace UWUVCI_AIO_WPF
         public string ReadCkeyFromOtp()
         {
             string ret = "";
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            using (var dialog = new OpenFileDialog())
             {
                 dialog.Filter = "OTP.bin | otp.bin";
                 DialogResult res = dialog.ShowDialog();
@@ -528,6 +528,7 @@ namespace UWUVCI_AIO_WPF
         private CustomBaseFrame cb = null;
         DispatcherTimer timer = new DispatcherTimer();
         public bool PokePatch = false;
+        private static readonly string toolsPath = PathResolver.GetToolsPath();
         public void Update(bool userRequested)
         {
             if (!CheckForInternetConnection())
@@ -547,6 +548,12 @@ namespace UWUVCI_AIO_WPF
                 var releases = client.Repository.Release
                     .GetAll("ZestyTS", "UWUVCI-AIO-WPF")
                     .GetAwaiter().GetResult();
+
+                if (releases == null || releases.Count == 0)
+                {
+                    // No releases available (rate limit or empty repo); skip quietly
+                    return;
+                }
 
                 // Clean tag like "v1.2.3" -> "1.2.3"
                 var latestString = new string(releases[0].TagName.Where(c => char.IsDigit(c) || c == '.').ToArray());
@@ -656,7 +663,7 @@ namespace UWUVCI_AIO_WPF
         private void CleanUpFolders()
         {
             if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
-            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+            if (Directory.Exists(PathResolver.GetTempPath())) Directory.Delete(PathResolver.GetTempPath(), true);
 
             if (Directory.Exists(@"keys"))
             {
@@ -1238,18 +1245,18 @@ namespace UWUVCI_AIO_WPF
             {
                 if (!saveworkaround && (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN))
                 {
-                    string tempPath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "bin", "temp");
-                    var drive = new System.IO.DriveInfo(tempPath);
+                    string tempPath = PathResolver.GetTempPath();
+                    var drive = new DriveInfo(tempPath);
                     long free = drive.AvailableFreeSpace;
                     long needed = (GameConfiguration.Console == GameConsoles.GCN) ? 10_000_000_000L : 15_000_000_000L;
                     if (free < needed)
                     {
-                        UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBox.Show(
+                        UWUVCI_MessageBox.Show(
                             "Insufficient Storage",
                             "Not enough free disk space available for this inject.\n\n" +
                             (GameConfiguration.Console == GameConsoles.GCN ? "At least 10 GB" : "At least 15 GB") + " of free space is recommended.",
-                            UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBoxType.Ok,
-                            UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBoxIcon.Warning,
+                            UWUVCI_MessageBoxType.Ok,
+                            UWUVCI_MessageBoxIcon.Warning,
                             mw
                         );
                         return;
@@ -1293,7 +1300,6 @@ namespace UWUVCI_AIO_WPF
             {
                 if (failed)
                 {
-                    MessageBox.Show("In here");
                     mw.allowBypass();
                     if (debug)
                     {
@@ -1894,12 +1900,11 @@ namespace UWUVCI_AIO_WPF
             try
             {
                 // Always compute explicit destination directory to avoid global CWD races
-                string toolsDir = Path.Combine(baseDir, "bin", "Tools");
-                Directory.CreateDirectory(toolsDir);
+                Directory.CreateDirectory(toolsPath);
 
                 do
                 {
-                    string destPath = Path.Combine(toolsDir, name);
+                    string destPath = Path.Combine(toolsPath, name);
                     if (File.Exists(destPath))
                         File.Delete(destPath);
 
@@ -1925,7 +1930,7 @@ namespace UWUVCI_AIO_WPF
                         }
                     }
 
-                } while (!ToolCheck.IsToolRightAtPath(Path.Combine(baseDir, "bin", "Tools", name)));
+                } while (!ToolCheck.IsToolRightAtPath(Path.Combine(toolsPath, name)));
             }
             catch (Exception e)
             {
@@ -1981,7 +1986,7 @@ namespace UWUVCI_AIO_WPF
             }
             else
             {
-                Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
+                Directory.CreateDirectory(toolsPath);
                 InjcttoolCheck();
             }
         }
@@ -2000,10 +2005,9 @@ namespace UWUVCI_AIO_WPF
                 missingTools,
                 async (m) =>
                 {
-                    string toolsDir = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
                     if (m.Name == "blank.ini")
                     {
-                        var path = Path.Combine(toolsDir, "blank.ini");
+                        var path = Path.Combine(toolsPath, "blank.ini");
                         using var sw = new StreamWriter(path);
                         await sw.FlushAsync();
                     }
@@ -2014,7 +2018,7 @@ namespace UWUVCI_AIO_WPF
                 },
                 onItemCompleted: () =>
                 {
-                    int c = System.Threading.Interlocked.Increment(ref completed);
+                    int c = Interlocked.Increment(ref completed);
                     Progress = (int)Math.Round(100.0 * c / total, MidpointRounding.AwayFromZero);
                 },
                 maxConcurrency: Math.Min(total, 6)
@@ -2067,7 +2071,7 @@ namespace UWUVCI_AIO_WPF
             {
                 try
                 {
-                    Directory.CreateDirectory("bin/Tools");
+                    Directory.CreateDirectory(toolsPath);
                     Logger.Log("Created Tools folder.");
                     toolCheck();  // Retry once after creating the directory
                 }
@@ -2354,9 +2358,9 @@ namespace UWUVCI_AIO_WPF
                 GetDeterministicHashCode(upperKey) == GbTemp.KeyHash;
 
             bool matchesLegacy =
-                UWUVCI_AIO_WPF.Helpers.HashCompat.MatchesAnyLegacyHash(asIs,     GbTemp.KeyHash) ||
-                UWUVCI_AIO_WPF.Helpers.HashCompat.MatchesAnyLegacyHash(lowerKey, GbTemp.KeyHash) ||
-                UWUVCI_AIO_WPF.Helpers.HashCompat.MatchesAnyLegacyHash(upperKey, GbTemp.KeyHash);
+                HashCompat.MatchesAnyLegacyHash(asIs,     GbTemp.KeyHash) ||
+                HashCompat.MatchesAnyLegacyHash(lowerKey, GbTemp.KeyHash) ||
+                HashCompat.MatchesAnyLegacyHash(upperKey, GbTemp.KeyHash);
 
             if (matchesDeterministic || matchesLegacy)
             {
@@ -3349,7 +3353,7 @@ namespace UWUVCI_AIO_WPF
                     var head = File.ReadAllText(dlIniPath);
                     bool isCommunity = head.IndexOf("COMMUNITY_SUBMITTED = 1", StringComparison.OrdinalIgnoreCase) >= 0;
                     GameConfiguration.N64Stuff.CommunityIni = isCommunity;
-                    if (Thing is UI.Frames.InjectFrames.Configurations.N64Config n64)
+                    if (Thing is N64Config n64)
                     {
                         try
                         {
@@ -3366,11 +3370,11 @@ namespace UWUVCI_AIO_WPF
                     {
                         await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
                         {
-                            UI.Windows.UWUVCI_MessageBox.Show(
+                            UWUVCI_MessageBox.Show(
                                 "Community INI Downloaded",
                                 "This INI was submitted by the community, not Nintendo. It may have issues.\nProceed with caution.",
-                                UI.Windows.UWUVCI_MessageBoxType.Ok,
-                                UI.Windows.UWUVCI_MessageBoxIcon.Warning,
+                                UWUVCI_MessageBoxType.Ok,
+                                UWUVCI_MessageBoxIcon.Warning,
                                 mw,
                                 isModal: false
                             );

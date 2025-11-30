@@ -56,7 +56,7 @@ namespace UWUVCI_AIO_WPF.Models
             OpenSettingsFileCommand = new RelayCommand(_ => OpenJsonFileSafely(JsonSettingsManager.SettingsFile));
             OpenBaseFolderCommand = new RelayCommand(_ => OpenPath(BasePath));
             OpenOutFolderCommand = new RelayCommand(_ => OpenPath(OutPath));
-            OpenLogFolderCommand = new RelayCommand(_ => OpenPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs")));
+            OpenLogFolderCommand = new RelayCommand(_ => OpenLogFolder());
             SaveCommand = new RelayCommand(_ => Save());
         }
 
@@ -73,7 +73,10 @@ namespace UWUVCI_AIO_WPF.Models
                 if (dlg.ShowDialog() == DialogResult.OK)
                     set(dlg.SelectedPath);
             }
-            catch { /* ignore for Wine edge cases */ }
+            catch (Exception ex)
+            {
+                try { Helpers.Logger.Log("PickFolder error: " + ex.ToString()); } catch { }
+            }
         }
 
         private void OpenPath(string path)
@@ -81,9 +84,26 @@ namespace UWUVCI_AIO_WPF.Models
             if (string.IsNullOrWhiteSpace(path)) return;
             try
             {
-                UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost(path);
+                bool ok = UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost(path);
+                if (!ok)
+                {
+                    try { Helpers.Logger.Log("OpenPath host open failed: " + path); } catch { }
+                    // Fallback: try default Windows shell (works under Wine too)
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = path,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception ex2) { try { Helpers.Logger.Log("OpenPath fallback error: " + ex2.ToString()); } catch { } }
+                }
             }
-            catch { /* ignore */ }
+            catch (Exception ex)
+            {
+                try { Helpers.Logger.Log("OpenPath error: " + ex.ToString()); } catch { }
+            }
         }
 
         private void OpenJsonFileSafely(string path)
@@ -101,12 +121,27 @@ namespace UWUVCI_AIO_WPF.Models
             }
             catch (Exception ex)
             {
+                try { Helpers.Logger.Log("OpenJsonFileSafely error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error Opening File",
                     $"An error occurred while trying to open the settings file:\n\n{ex.Message}\n\nLocation:\n{path}",
                     UWUVCI_MessageBoxType.Ok,
                     UWUVCI_MessageBoxIcon.Error
                 );
+            }
+        }
+
+        private void OpenLogFolder()
+        {
+            try
+            {
+                string logsDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs");
+                Directory.CreateDirectory(logsDir);
+                OpenPath(logsDir);
+            }
+            catch (Exception ex)
+            {
+                try { Helpers.Logger.Log("OpenLogFolder error: " + ex.ToString()); } catch { }
             }
         }
 

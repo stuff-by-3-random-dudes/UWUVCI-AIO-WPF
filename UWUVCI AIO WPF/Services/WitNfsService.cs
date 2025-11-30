@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Xml;
 using UWUVCI_AIO_WPF.Helpers;
 
@@ -32,10 +34,6 @@ namespace UWUVCI_AIO_WPF.Services
             toolsPath = !string.IsNullOrWhiteSpace(PathResolver.GetToolsPath()) ? PathResolver.GetToolsPath() : toolsPath;
             tempPath = !string.IsNullOrWhiteSpace(PathResolver.GetTempPath()) ? PathResolver.GetTempPath() : tempPath;
 
-            // Ensure absolute/folder existence
-            Directory.CreateDirectory(tempPath);
-            Directory.CreateDirectory(baseRomPath);
-
             var tempBaseWin = Path.Combine(tempPath, "TempBase");
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
             var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
@@ -53,6 +51,7 @@ namespace UWUVCI_AIO_WPF.Services
                 contentDir = Path.Combine(ToolRunner.GetUserUWUVCIDir(), "baserom", "content");
                 Directory.CreateDirectory(contentDir);
                 ToolRunner.LogFileVisibility("[KegWorks] Redirected contentDir", contentDir);
+                ToolRunner.Log("[KegWorks] contentDir -> host view: " + ToolRunner.WindowsToHostPosix(contentDir));
             }
 
             // 1) wit copy (TempBase -> content\game.iso)
@@ -79,6 +78,8 @@ namespace UWUVCI_AIO_WPF.Services
                 }
 
                 ToolRunner.LogFileVisibility("[post wit copy] content/game.iso", gameIsoWin);
+                LogIsoSize("[WitNfs] content/game.iso", gameIsoWin);
+                LogWitSize("[WitNfs] wit size", toolsPath, gameIsoWin);
 
                 if (!File.Exists(gameIsoWin))
                     throw new Exception("WIT: An error occurred while creating the ISO (game.iso missing).");
@@ -91,20 +92,13 @@ namespace UWUVCI_AIO_WPF.Services
             // 2) extract TIK/TMD
             try
             {
-                runner.RunTool(
-                    toolBaseName: "wit",
-                    toolsPathWin: toolsPath,
-                    argsWindowsPaths: $"extract \"{gameIsoWin}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdWin}\" -vv1",
-                    showWindow: debug
+                WitTicketExtractionService.ExtractTickets(
+                    toolsPath: toolsPath,
+                    gameIso: gameIsoWin,
+                    tikTmdDir: tikTmdWin,
+                    debug: debug,
+                    runner: runner
                 );
-                // small fence: wait for extracted files to appear
-                var tmdPath = Path.Combine(tikTmdWin, "tmd.bin");
-                var tikPath = Path.Combine(tikTmdWin, "ticket.bin");
-                if (!ToolRunner.WaitForWineVisibility(tmdPath, timeoutMs: 8000) ||
-                    !ToolRunner.WaitForWineVisibility(tikPath, timeoutMs: 8000))
-                {
-                    throw new Exception($"WIT extract completed but extracted tmd/ticket not visible: {tmdPath}, {tikPath}");
-                }
             }
             catch (Exception ex)
             {
@@ -194,16 +188,20 @@ namespace UWUVCI_AIO_WPF.Services
                     pass = "-passthrough ";
                     extra = string.Empty;
                 }
-
+                MessageBox.Show("nfs2iso2nfs");
                 // Important: pass a Windows-view working directory so RunToolWithFallback uses the correct work dir.
                 var contentWinView = ToolRunner.ToWindowsView(contentDir);
                 runner.RunToolWithFallback(
                     toolBaseName: "nfs2iso2nfs",
                     toolsPathWin: toolsPath,
                     argsWindowsPaths: $"-enc -homebrew {extra}{pass}-iso game.iso",
-                    showWindow: debug,
+                    showWindow: true,
                     workDirWin: contentWinView
                 );
+
+                LogNfsOutput(contentDir);
+                LogIsoSize("[WitNfs] content/game.iso before injection", Path.Combine(contentDir, "game.iso"));
+                LogWitSize("[WitNfs] wit size before inject", Path.Combine(contentDir, "game.iso"));
 
                 // remove working iso, ensure to use Path.Combine
                 var isoToDelete = Path.Combine(contentDir, "game.iso");
@@ -221,6 +219,64 @@ namespace UWUVCI_AIO_WPF.Services
         private static void RunnerLog(string msg)
         {
             try { Logger.Log("[WitNfs] " + msg); } catch { Console.WriteLine("[WitNfs] " + msg); }
+        }
+
+        private static void LogNfsOutput(string contentDir)
+        {
+            try
+            {
+                var files = Directory.GetFiles(contentDir, "*.nfs");
+                if (files.Length == 0)
+                {
+                    RunnerLog("No .nfs files produced.");
+                    return;
+                }
+
+                foreach (var file in files.OrderBy(f => f))
+                {
+                    var fi = new FileInfo(file);
+                    var wineView = ToolRunner.ToWindowsView(file);
+                    var hostView = ToolRunner.WindowsToHostPosix(wineView);
+                    RunnerLog($"NFS output: {Path.GetFileName(file)} ({fi.Length:N0} bytes) | wine={wineView} | host={hostView}");
+                }
+            }
+            catch (Exception ex)
+            {
+                RunnerLog("Unable to log NFS files: " + ex.Message);
+            }
+        }
+
+        private static void LogIsoSize(string label, string path)
+        {
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    RunnerLog($"{label}: missing {path}");
+                    return;
+                }
+
+                var fi = new FileInfo(path);
+                var hostView = ToolRunner.WindowsToHostPosix(path);
+                RunnerLog($"{label}: {Path.GetFileName(path)} {fi.Length:N0} bytes | wine={path} | host={hostView}");
+            }
+            catch (Exception ex)
+            {
+                RunnerLog($"{label}: size log failed ({ex.Message})");
+            }
+        }
+
+        private static void LogWitSize(string label, string toolsPathWin, string isoWinPath)
+        {
+            if (!(ToolRunner.HostIsMac() || ToolRunner.HostIsLinux()))
+                return;
+
+            var isoHost = ToolRunner.WindowsToHostPosix(isoWinPath);
+            var toolName = ToolRunner.HostIsMac() ? "wit-mac" : "wit-linux";
+            var toolHost = ToolRunner.WindowsToHostPosix(Path.Combine(toolsPathWin, toolName));
+            var cmd = $"[ -f {ToolRunner.Q(isoHost)} ] && {ToolRunner.Q(toolHost)} size {ToolRunner.Q(isoHost)}";
+            var rc = ToolRunner.RunHostSh(cmd, out var so, out var se);
+            RunnerLog($"{label}: exit={rc}{(string.IsNullOrEmpty(so) ? string.Empty : $" stdout={so.Trim()}")}{(string.IsNullOrEmpty(se) ? string.Empty : $" stderr={se.Trim()}")}");
         }
 
     }

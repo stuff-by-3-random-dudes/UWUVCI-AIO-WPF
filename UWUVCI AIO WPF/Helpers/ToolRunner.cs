@@ -1,45 +1,115 @@
-﻿using System.Linq;
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace UWUVCI_AIO_WPF.Helpers
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Text;
-
     public static class ToolRunner
     {
-        // -------- environment + path helpers --------
+        // -------------------
+        // Basic helpers
+        // -------------------
+
         public static string Q(string s) => "\"" + (s ?? "").Replace("\"", "\\\"") + "\"";
 
         public static bool IsNativeWindows =>
             Environment.OSVersion.Platform == PlatformID.Win32NT ||
             Environment.OSVersion.Platform == PlatformID.Win32Windows;
 
+        public static bool UnderWine() => File.Exists(@"C:\windows\command\start.exe");
+
+        // Host OS detection – via Z: mapping inside Wine
         public static bool HostIsMac() => File.Exists(@"Z:\System\Library\CoreServices\SystemVersion.plist");
         public static bool HostIsLinux() => !HostIsMac() && File.Exists(@"Z:\etc\os-release");
-        public static bool UnderWine() => File.Exists(@"C:\windows\command\start.exe");
+
+        // -------------------
+        // Internal state
+        // -------------------
+
+        private static string _wineToolsPath;
+        private static string _wineTempPath;
+
+        [ThreadStatic] private static bool _inWinePathConv;
+        [ThreadStatic] private static bool _inHostShell;
+
+        private static readonly ConcurrentDictionary<string, bool> _execFixed =
+            new ConcurrentDictionary<string, bool>(StringComparer.Ordinal);
+
+        public static void Log(string s)
+        {
+            var line = $"[ToolRunner] {DateTime.Now:HH:mm:ss} {s}";
+            Console.WriteLine(line);
+            try { Logger.Log(line); } catch { /* ignore */ }
+        }
+
+        // -------------------
+        // Public path access
+        // -------------------
+
+        /// <summary>Windows/Wine tools path (e.g., C:\users\..., Z:\..., etc).</summary>
+        public static string WineToolsPath => _wineToolsPath;
+
+        /// <summary>Windows/Wine temp path.</summary>
+        public static string WineTempPath => _wineTempPath;
+
+        /// <summary>Host-native tools path, derived from WineToolsPath when under Wine.</summary>
+        public static string HostNativeToolsPath => WindowsToHostPosix(_wineToolsPath ?? string.Empty);
+
+        /// <summary>Host-native temp path, derived from WineTempPath when under Wine.</summary>
+        public static string HostNativeTempPath => WindowsToHostPosix(_wineTempPath ?? string.Empty);
+
+        /// <summary>
+        /// Simple central initializer for Tools/Temp paths.  
+        /// Stores them in Windows form and ensures directories exist.
+        /// Called from JsonSettingsManager.LoadSettings.
+        /// </summary>
+        public static void InitializePaths(string toolsPath, string tempPath)
+        {
+            if (string.IsNullOrWhiteSpace(toolsPath) || string.IsNullOrWhiteSpace(tempPath))
+                return;
+
+            // Normalize and store as Windows-style (for exe tools)
+            toolsPath = Path.GetFullPath(toolsPath);
+            tempPath = Path.GetFullPath(tempPath);
+
+            Directory.CreateDirectory(toolsPath);
+            Directory.CreateDirectory(tempPath);
+
+            _wineToolsPath = toolsPath;
+            _wineTempPath = tempPath;
+
+            Log($"Init: Tools={_wineToolsPath}, Temp={_wineTempPath}");
+        }
+
+        /// <summary>
+        /// For KegWorks we just use the temp path from settings as the base user dir.
+        /// </summary>
+        public static string GetUserUWUVCIDir() => JsonSettingsManager.Settings.TempPath;
+
+        // -------------------
+        // Path conversion
+        // -------------------
 
         public static string PosixFromWindows(string p)
         {
-            if (string.IsNullOrEmpty(p)) return "";
+            if (string.IsNullOrEmpty(p)) return string.Empty;
 
-            // If it’s already a Z:\ path, we can safely map to root (/)
+            // Z:\ → /
             if (p.StartsWith(@"Z:\", StringComparison.OrdinalIgnoreCase))
                 return p.Replace(@"Z:\", "/").Replace('\\', '/');
 
-            // Handle C:\users\<name>\... specially:
-            // - macOS: /Users/<name>/...
-            // - Linux: /home/<name>/...
+            // C:\users\<name>\... → /Users/<name>/... (mac) or /home/<name>/... (linux)
             if (p.Length > 9 &&
                 char.ToUpperInvariant(p[0]) == 'C' &&
                 p[1] == ':' &&
                 (p[2] == '\\' || p[2] == '/') &&
                 p.Substring(3).StartsWith("users", StringComparison.OrdinalIgnoreCase))
             {
-                var rest = p.Substring(3).TrimStart('\\', '/');   
-                var parts = rest.Split('\\', '/');                
+                var rest = p.Substring(3).TrimStart('\\', '/');
+                var parts = rest.Split('\\', '/');
                 if (parts.Length >= 2)
                 {
                     var user = parts[1];
@@ -51,29 +121,261 @@ namespace UWUVCI_AIO_WPF.Helpers
                 }
             }
 
-            // Fallback: /c/Users/... style—rarely right for native tools, but keep as last resort
+            // Fallback: /c/Users/... style
             if (p.Length > 2 && char.IsLetter(p[0]) && p[1] == ':' && (p[2] == '\\' || p[2] == '/'))
                 return "/" + p.Substring(2).TrimStart('\\', '/').Replace('\\', '/');
 
             return p.Replace('\\', '/');
         }
 
+        /// <summary>
+        /// Convert a Windows path in the Wine prefix to host POSIX, using winepath when possible.
+        /// </summary>
+        public static string WindowsToHostPosix(string winPath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(winPath))
+                    return string.Empty;
+
+                if (_inWinePathConv)
+                    return PosixFromWindows(winPath);
+
+                _inWinePathConv = true;
+
+                // Z:\ is usually a direct host mapping
+                if (winPath.StartsWith(@"Z:\", StringComparison.OrdinalIgnoreCase))
+                    return winPath.Replace(@"Z:\", "/").Replace('\\', '/');
+
+                if (UnderWine())
+                {
+                    int rc = RunWinExe("winepath.exe", "-u " + Q(winPath),
+                                       Environment.CurrentDirectory, false, out var so, out _);
+                    if (rc == 0 && !string.IsNullOrWhiteSpace(so))
+                        return so.Trim();
+                }
+            }
+            catch
+            {
+                // ignore, fall back
+            }
+            finally
+            {
+                _inWinePathConv = false;
+            }
+
+            return PosixFromWindows(winPath);
+        }
+
+        private static string NormalizeDosDevicesPosix(string path)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(path)) return path ?? string.Empty;
+                int i = path.IndexOf("/dosdevices/", StringComparison.OrdinalIgnoreCase);
+                if (i >= 0)
+                {
+                    var rest = path.Substring(i + "/dosdevices/".Length);
+                    if (rest.Length >= 2 && char.IsLetter(rest[0]) && rest[1] == ':')
+                    {
+                        char drive = char.ToLowerInvariant(rest[0]);
+                        string tail = rest.Substring(2);
+                        if (drive == 'z')
+                            return path.Substring(0, i) + "/" + tail.TrimStart('/');
+                        return path.Substring(0, i) + "/drive_" + drive + tail;
+                    }
+                }
+            }
+            catch { }
+            return path;
+        }
+
+        /// <summary>
+        /// Ensure a Windows-view path: C:\..., Z:\... etc.  
+        /// POSIX paths are mapped to Z:\.
+        /// </summary>
+        public static string ToWindowsView(string p)
+        {
+            if (string.IsNullOrEmpty(p)) return p ?? string.Empty;
+
+            // Already drive-based
+            if (p.Length > 2 && char.IsLetter(p[0]) && p[1] == ':' && (p[2] == '\\' || p[2] == '/'))
+                return p.Replace('/', '\\');
+
+            // POSIX → Z:\...
+            if (p[0] == '/')
+                return @"Z:\" + p.TrimStart('/').Replace('/', '\\');
+
+            return p.Replace('/', '\\');
+        }
+
+        public static string JoinWin(string a, string b) => ToWindowsView(Path.Combine(a, b));
+
+        // -------------------
+        // Wine / host shell
+        // -------------------
 
         private static string StartExe()
         {
             var sys = Environment.GetEnvironmentVariable("SystemRoot");
             if (string.IsNullOrEmpty(sys)) sys = @"C:\windows";
-            return Path.Combine(sys, "command", "start.exe"); // within current Wine prefix
+            return Path.Combine(sys, "command", "start.exe");
         }
 
-        // -------- permissions (only once per native tool) --------
-        public static readonly ConcurrentDictionary<string, bool> _execFixed = new ConcurrentDictionary<string, bool>(StringComparer.Ordinal);
-
-        private static void Log(string s)
+        public static int RunHostSh(string shCommand, out string so, out string se)
         {
-            var line = $"[ToolRunner] {DateTime.Now:HH:mm:ss} {s}";
-            Console.WriteLine(line);
-            try { Logger.Log(line); } catch { /* ignore */ }
+            if (_inHostShell)
+            {
+                so = se = "";
+                return 1;
+            }
+
+            _inHostShell = true;
+            try
+            {
+                // Simple temp under current prefix
+                string winTempDir = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"bin\temp"));
+                Directory.CreateDirectory(winTempDir);
+
+                string baseDir = NormalizeDosDevicesPosix(WindowsToHostPosix(winTempDir));
+                if (string.IsNullOrWhiteSpace(baseDir))
+                    baseDir = PosixFromWindows(winTempDir);
+
+                string guid = Guid.NewGuid().ToString("N");
+                string outF = $"{baseDir}/tr_{guid}.out";
+                string errF = $"{baseDir}/tr_{guid}.err";
+                string rcF = $"{baseDir}/tr_{guid}.rc";
+
+                string wrapped =
+                    "set -e; " +
+                    $"( {shCommand} ) >{Q(outF)} 2>{Q(errF)}; " +
+                    "rc=$?; echo $rc > " + Q(rcF) + "; true";
+
+                Log($"RunHostSh: /bin/sh -lc {Q(wrapped)}");
+
+                so = se = "";
+                var psi = new ProcessStartInfo
+                {
+                    FileName = StartExe(),
+                    Arguments = "/unix /bin/sh -lc " + Q(wrapped),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+                using var p = Process.Start(psi);
+                p.WaitForExit();
+
+                // Read back outputs from host
+                int rc = 0;
+                RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"[ -f {Q(outF)} ] && cat {Q(outF)}")}", "/", false, out so, out _);
+                RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"[ -f {Q(errF)} ] && cat {Q(errF)}")}", "/", false, out se, out _);
+                string rcStr;
+                RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"[ -f {Q(rcF)} ] && cat {Q(rcF)} || echo 127")}", "/", false, out rcStr, out _);
+                int.TryParse(rcStr?.Trim(), out rc);
+
+                Log($"RunHostSh rc={rc}");
+                // Best-effort cleanup
+                RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"rm -f {Q(outF)} {Q(errF)} {Q(rcF)}")}", "/", false, out _, out _);
+
+                return rc;
+            }
+            finally
+            {
+                _inHostShell = false;
+            }
+        }
+
+        private static bool IsHostMacUnderWine()
+        {
+            if (HostIsMac()) return true;
+            if (!UnderWine()) return false;
+            try
+            {
+                int rc = RunHostSh("uname -s", out var so, out _);
+                return rc == 0 && !string.IsNullOrWhiteSpace(so) &&
+                       so.Trim().StartsWith("Darwin", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool IsHostLinuxUnderWine()
+        {
+            if (HostIsLinux()) return true;
+            if (!UnderWine()) return false;
+            try
+            {
+                int rc = RunHostSh("uname -s", out var so, out _);
+                return rc == 0 && !string.IsNullOrWhiteSpace(so) &&
+                       so.Trim().StartsWith("Linux", StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // -------------------
+        // Process runners
+        // -------------------
+
+        public static int RunWinExe(string exeWin, string args, string workWin, bool show, out string so, out string se)
+        {
+            exeWin = ToWindowsView(exeWin);
+            workWin = ToWindowsView(workWin);
+
+            so = se = "";
+            var psi = new ProcessStartInfo
+            {
+                FileName = exeWin,
+                Arguments = args ?? string.Empty,
+                WorkingDirectory = workWin,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = !show,
+                WindowStyle = show ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden
+            };
+
+            using var p = Process.Start(psi);
+            so = p.StandardOutput.ReadToEnd();
+            se = p.StandardError.ReadToEnd();
+            p.WaitForExit();
+
+            if (p.ExitCode != 0)
+            {
+                string hint = ComposeWinErrorHint(p.ExitCode, exeWin);
+                if (!string.IsNullOrEmpty(hint))
+                    se = (se ?? string.Empty) + (string.IsNullOrEmpty(se) ? "" : "\n") + hint;
+            }
+
+            Log($"RunWinExe exit={p.ExitCode} exe={exeWin}");
+            return p.ExitCode;
+        }
+
+        private static string ComposeWinErrorHint(int exitCode, string exe)
+        {
+            try
+            {
+                if (exitCode == -1073741502)
+                {
+                    return $"Hint: {Path.GetFileName(exe)} failed to initialize (0xC0000142). " +
+                           "This usually indicates missing Visual C++ dependencies.";
+                }
+                if (exitCode == -1073741515)
+                {
+                    return $"Hint: {Path.GetFileName(exe)} could not find a required DLL (0xC0000135).";
+                }
+                if (exitCode == -1073741701)
+                {
+                    return $"Hint: {Path.GetFileName(exe)} failed to start due to a 32/64-bit mismatch (0xC000007B).";
+                }
+            }
+            catch { }
+            return string.Empty;
         }
 
         private static void EnsureExecBitOnce(string toolPosix, bool isMac)
@@ -85,7 +387,6 @@ namespace UWUVCI_AIO_WPF.Helpers
 
             if (isMac)
             {
-                // Clear quarantine on the .app containing the tool (idempotent)
                 cmd.Append("B=").Append(Q(toolPosix)).Append("; ")
                    .Append("while [ \"$B\" != / -a \"${B##*/}\" != \"Contents\" ]; do B=\"${B%/*}\"; done; ")
                    .Append("if [ \"${B##*/}\" = Contents ]; then APP=\"${B%/*}\"; else APP=$(dirname ").Append(Q(toolPosix)).Append("); fi; ")
@@ -98,58 +399,45 @@ namespace UWUVCI_AIO_WPF.Helpers
             _execFixed[toolPosix] = true;
         }
 
-        // -------- process launchers --------
-        public static int RunHostSh(string shCommand, out string so, out string se)
+        private static int RunNative(string exePosix, string args, bool mac, out string so, out string se)
         {
-            // Use unique temp files under the same prefix so permissions match the bundle/prefix.
-            string baseDir = PosixFromWindows(Path.Combine(Environment.CurrentDirectory, "bin", "temp"));
-            Directory.CreateDirectory(Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, @"bin\temp")));
-            string guid = Guid.NewGuid().ToString("N");
-            string outF = $"{baseDir}/tr_{guid}.out";
-            string errF = $"{baseDir}/tr_{guid}.err";
-            string rcF = $"{baseDir}/tr_{guid}.rc";
-
-            // We run the user's command in a subshell and capture stdout/stderr + rc to files.
-            // Then we 'cat' them back on the Wine side (since start.exe doesn't pipe through well).
-            string wrapped =
-                "set -e; " +
-                $"( {shCommand} ) >{Q(outF)} 2>{Q(errF)}; " +
-                "rc=$?; echo $rc > " + Q(rcF) + "; true";
-
-            Log($"RunHostSh: /bin/sh -lc {Q(wrapped)}");
-
-            so = se = "";
-            var psi = new ProcessStartInfo
-            {
-                FileName = StartExe(),
-                Arguments = "/unix /bin/sh -lc " + Q(wrapped),
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true
-            };
-            using var p = Process.Start(psi);
-            // Output from start.exe is usually empty; just wait for completion.
-            p.WaitForExit();
-
-            // Now read back what the *native* process wrote
-            int rc = 0;
-            RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"[ -f {Q(outF)} ] && cat {Q(outF)}")}", "/", false, out so, out _);
-            RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"[ -f {Q(errF)} ] && cat {Q(errF)}")}", "/", false, out se, out _);
-            string rcStr;
-            RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"[ -f {Q(rcF)} ] && cat {Q(rcF)} || echo 127")}", "/", false, out rcStr, out _);
-            int.TryParse(rcStr?.Trim(), out rc);
-
-            Log($"RunHostSh rc={rc}\nSTDOUT:\n{so}\nSTDERR:\n{se}");
-
-            // Best-effort cleanup (ignore failures)
-            RunWinExe(StartExe(), $"/unix /bin/sh -lc {Q($"rm -f {Q(outF)} {Q(errF)} {Q(rcF)}")}", "/", false, out _, out _);
-
-            return rc;
+            EnsureExecBitOnce(exePosix, mac);
+            return RunHostSh(Q(exePosix) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args), out so, out se);
         }
 
-        // Try native tool if present; otherwise run the Windows .exe (works on Windows and under Wine).
-        public static void RunToolWithFallback(
+        // -------------------
+        // Native tool decision
+        // -------------------
+
+        /// <summary>
+        /// Only these are host-native tools on mac/Linux; everything else uses Windows exe.
+        /// </summary>
+        public static bool IsHostNativeTool(string toolBaseName)
+        {
+            if (string.IsNullOrEmpty(toolBaseName)) return false;
+            toolBaseName = toolBaseName.ToLowerInvariant();
+            return toolBaseName is "wit" or "wstrt";
+        }
+
+        // -------------------
+        // Main public APIs
+        // -------------------
+
+        /// <summary>
+        /// Runs "wstrt patch &lt;mainDol&gt; --add-sec &lt;gct&gt; ..." using the correct mode.
+        /// </summary>
+        public static void RunWstrtPatch(string toolsPathWin, string mainDolPathWin, string[] gctFilesWin, bool showWindow, string workDirWin = null)
+        {
+            var args = "patch " + Q(SelectPath(mainDolPathWin)) + ConcatSections(gctFilesWin);
+            RunTool("wstrt", toolsPathWin, args, showWindow, workDirWin);
+        }
+
+        /// <summary>
+        /// Core tool runner.  
+        /// Windows: always exe.  
+        /// mac/Linux under Wine: wit/wstrt use native binaries if present; everything else uses exe with Windows paths.
+        /// </summary>
+        public static void RunTool(
             string toolBaseName,
             string toolsPathWin,
             string argsWindowsPaths,
@@ -157,242 +445,174 @@ namespace UWUVCI_AIO_WPF.Helpers
             string workDirWin = null)
         {
             bool underWine = UnderWine();
-            bool mac = underWine && HostIsMac();
-            bool lin = underWine && !mac && HostIsLinux();
+            bool hostMac = IsHostMacUnderWine();
+            bool hostLinux = IsHostLinuxUnderWine();
+            bool nativeWindows = IsNativeWindows && !underWine;
 
-            // If native is possible, only use it if the native binary actually exists.
-            if (mac || lin)
-            {
-                string toolsPosix = PosixFromWindows(toolsPathWin).TrimEnd('/');
-                string exePosix = toolsPosix + "/" + toolBaseName + (mac ? "-mac" : "-linux");
-                string argsPosix = ConvertArgsToPosix(argsWindowsPaths);
-                if (File.Exists(exePosix))
-                {
-                    Log($"Mode={(mac ? "mac" : "linux")} native (fallback-capable)\nexe={exePosix}\nargs={argsPosix}");
-                    int rc = RunNative(exePosix, argsPosix, mac, out var so, out var se);
-                    Log($"{toolBaseName} exit={rc}\nSTDOUT:\n{so}\nSTDERR:\n{se}");
-                    if (rc != 0) throw new Exception($"{toolBaseName} (native) failed (exit {rc}).\n{se}");
-                    return;
-                }
-                else
-                {
-                    Log($"Native binary not found: {exePosix} — falling back to Windows .exe");
-                }
-            }
+            // Choose base tools path
+            if (string.IsNullOrWhiteSpace(toolsPathWin))
+                toolsPathWin = _wineToolsPath ?? Directory.GetCurrentDirectory();
 
-            // Use toolsPath as default working directory when not specified
-            if (string.IsNullOrWhiteSpace(workDirWin)) workDirWin = toolsPathWin;
+            // Choose working dir
+            if (string.IsNullOrWhiteSpace(workDirWin))
+                workDirWin = toolsPathWin;
 
-            // Windows native OR Wine fallback to .exe
-            string exeWin = Path.Combine(toolsPathWin, toolBaseName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
-                ? toolBaseName
-                : toolBaseName + ".exe");
+            Log($"RunTool: tool={toolBaseName}, toolsPath={toolsPathWin}, workDir={workDirWin}");
 
-            Directory.CreateDirectory(workDirWin);
-            var finalArgs = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
-            Log($"Mode={(IsNativeWindows ? "Windows" : "Wine")}.exe\nexe={exeWin}\nargs={finalArgs}");
-            int rc2 = RunWinExe(exeWin, finalArgs, workDirWin, showWindow, out var so2, out var se2);
-            if (rc2 != 0) throw new Exception($"{Path.GetFileName(exeWin)} failed (exit {rc2}).\n{se2}");
-        }
-
-        public static int RunWinExe(string exeWin, string args, string workWin, bool show, out string so, out string se)
-        {
-            Log($"RunWinExe: exe={exeWin}\nargs={args}\nworkdir={workWin}");
-            so = se = "";
-            var psi = new ProcessStartInfo
-            {
-                FileName = exeWin,
-                Arguments = args,
-                WorkingDirectory = workWin,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                // Show console only when requested
-                CreateNoWindow = !show,
-                WindowStyle = show ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden
-            };
-            using var p = Process.Start(psi);
-            so = p.StandardOutput.ReadToEnd();
-            se = p.StandardError.ReadToEnd();
-            p.WaitForExit();
-            // Enrich stderr with helpful hints for common Windows NTSTATUS codes
-            try
-            {
-                if (p.ExitCode != 0)
-                {
-                    string hint = ComposeWinErrorHint(p.ExitCode, exeWin);
-                    if (!string.IsNullOrEmpty(hint))
-                    {
-                        se = (se ?? string.Empty) + (string.IsNullOrEmpty(se) ? string.Empty : "\n") + hint;
-                    }
-                }
-            }
-            catch { /* best-effort */ }
-
-            Log($"RunWinExe exit={p.ExitCode}\nSTDOUT:\n{so}\nSTDERR:\n{se}");
-            
-            // Also drop a dedicated tool log to help user debugging
-            try
-            {
-                string logsDir = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "UWUVCI-V3", "Logs");
-                if (!System.IO.Directory.Exists(logsDir)) System.IO.Directory.CreateDirectory(logsDir);
-                string stamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string baseName = System.IO.Path.GetFileName(exeWin);
-                string toolLog = System.IO.Path.Combine(logsDir, $"tool-{stamp}-{baseName}.txt");
-                var text = new StringBuilder()
-                    .AppendLine($"exe={exeWin}")
-                    .AppendLine($"args={args}")
-                    .AppendLine($"workdir={workWin}")
-                    .AppendLine($"exit={p.ExitCode}")
-                    .AppendLine()
-                    .AppendLine("STDOUT:")
-                    .AppendLine(so ?? string.Empty)
-                    .AppendLine()
-                    .AppendLine("STDERR:")
-                    .AppendLine(se ?? string.Empty)
-                    .ToString();
-                System.IO.File.WriteAllText(toolLog, text, Encoding.UTF8);
-                Log($"Tool log written: {toolLog}");
-            }
-            catch { /* best-effort */ }
-
-            return p.ExitCode;
-        }
-
-        private static string ComposeWinErrorHint(int exitCode, string exe)
-        {
-            try
-            {
-                // Map common negative NTSTATUS to friendly hints
-                // -1073741502 == 0xC0000142: DLL initialization failed (often missing VC++ runtime)
-                // -1073741515 == 0xC0000135: DLL not found
-                // -1073741701 == 0xC000007B: Bad image format (32/64-bit mismatch)
-                if (exitCode == -1073741502)
-                {
-                    return $"Hint: {System.IO.Path.GetFileName(exe)} failed to initialize (0xC0000142). " +
-                           "This usually indicates missing Visual C++ dependencies. Ensure vcruntime140.dll and msvcp140.dll are available next to the tool, " +
-                           "or install 'Microsoft Visual C++ 2015–2019 Redistributable (x86)'.";
-                }
-                if (exitCode == -1073741515)
-                {
-                    return $"Hint: {System.IO.Path.GetFileName(exe)} could not find a required DLL (0xC0000135). " +
-                           "Verify all tool DLLs are present in the Tools folder (e.g., cygwin1.dll, cygz.dll, cyggcc_s-1.dll, and VC++ runtime DLLs).";
-                }
-                if (exitCode == -1073741701)
-                {
-                    return $"Hint: {System.IO.Path.GetFileName(exe)} failed to start due to a 32/64-bit mismatch (0xC000007B). " +
-                           "Use the 32-bit tool build with 32-bit DLLs, or align the dependencies to the tool's bitness.";
-                }
-            }
-            catch { }
-            return string.Empty;
-        }
-
-
-        private static int RunNative(string exePosix, string args, bool mac, out string so, out string se)
-        {
-            EnsureExecBitOnce(exePosix, mac);
-            return RunHostSh(Q(exePosix) + (string.IsNullOrWhiteSpace(args) ? "" : " " + args), out so, out se);
-        }
-
-        // -------- public API --------
-
-        // Runs "wstrt patch <mainDol> --add-sec <gct> ..."
-        public static void RunWstrtPatch(string toolsPathWin, string mainDolPathWin, string[] gctFilesWin, bool showWindow, string workDirWin = @"C:\temp")
-        {
-            var args = "patch " + Q(SelectPath(mainDolPathWin)) + ConcatSections(gctFilesWin);
-
-            RunTool("wstrt", toolsPathWin, args, showWindow, workDirWin);
-        }
-
-        // Runs arbitrary wit/wstrt subcommands with Windows-view args (we convert if native)
-        public static void RunTool(string toolBaseName, string toolsPathWin, string argsWindowsPaths, bool showWindow, string workDirWin = null)
-        {
-            bool underWine = UnderWine();
-            bool mac = underWine && HostIsMac();
-            bool lin = underWine && !mac && HostIsLinux();
-
-            // Use toolsPath as default working directory when not specified
-            if (string.IsNullOrWhiteSpace(workDirWin)) workDirWin = toolsPathWin;
-
-            if (!underWine && IsNativeWindows)
+            // Case 1: Pure Windows → always exe
+            if (nativeWindows)
             {
                 string exeWin = Path.Combine(toolsPathWin, toolBaseName + ".exe");
                 Directory.CreateDirectory(workDirWin);
-                var finalArgs = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
-                Log($"Mode=Windows .exe\nexe={exeWin}\nargs={finalArgs}");
+                string finalArgs = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
                 int rc = RunWinExe(exeWin, finalArgs, workDirWin, showWindow, out _, out var se);
-                if (rc != 0) throw new Exception($"{toolBaseName}.exe failed (exit {rc}).\n{se}");
+                if (rc != 0)
+                    throw new Exception($"{toolBaseName}.exe failed (exit {rc}).\n{se}");
                 return;
             }
 
-            if (mac || lin)
+            // Case 2: mac/Linux under Wine → native wit/wstrt, else exe
+            if (underWine && (hostMac || hostLinux) && IsHostNativeTool(toolBaseName))
             {
-                string toolsPosix = PosixFromWindows(toolsPathWin).TrimEnd('/');
-                string exePosix = toolsPosix + "/" + toolBaseName + (mac ? "-mac" : "-linux");
+                string toolsPosix = WindowsToHostPosix(toolsPathWin).TrimEnd('/');
+                string exePosix = toolsPosix + "/" + toolBaseName + (hostMac ? "-mac" : "-linux");
                 string argsPosix = ConvertArgsToPosix(argsWindowsPaths);
-                Log($"Mode={(mac ? "mac" : "linux")} native\nexe={exePosix}\nargs={argsPosix}");
-                int rc = RunNative(exePosix, argsPosix, mac, out var so, out var se);
-                Log($"{toolBaseName} exit={rc}\nSTDOUT:\n{so}\nSTDERR:\n{se}");
-                if (rc != 0) throw new Exception($"{toolBaseName} (native) failed (exit {rc}).\n{se}");
+
+                exePosix = NormalizeDosDevicesPosix(exePosix);
+
+                if (!HostFileExistsPosix(exePosix))
+                    throw new Exception($"Native {toolBaseName} not found at: {exePosix}");
+
+                int rc = RunNative(exePosix, argsPosix, hostMac, out var so, out var se);
+                Log($"{toolBaseName} (native) exit={rc}");
+                if (rc != 0)
+                    throw new Exception($"{toolBaseName} (native) failed (exit {rc}).\n{se}");
                 return;
             }
 
-            throw new Exception("Unsupported environment for tool execution.");
+            // Case 3: Everything else → Windows exe
+            {
+                string exeWinPath = Path.Combine(toolsPathWin, toolBaseName + ".exe");
+                Directory.CreateDirectory(workDirWin);
+                string finalArgs2 = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
+                int rc2 = RunWinExe(exeWinPath, finalArgs2, workDirWin, showWindow, out var so2, out var se2);
+                Log($"{toolBaseName} exit={rc2}");
+                if (rc2 != 0)
+                    throw new Exception($"{toolBaseName}.exe failed (exit {rc2}).\n{se2}");
+            }
         }
 
+        /// <summary>
+        /// Fallback variant – currently just forwards to RunTool.  
+        /// (Kept for API compatibility; if you ever want native→exe fallback you can extend here.)
+        /// </summary>
+        public static void RunToolWithFallback(
+            string toolBaseName,
+            string toolsPathWin,
+            string argsWindowsPaths,
+            bool showWindow,
+            string workDirWin = null)
+        {
+            RunTool(toolBaseName, toolsPathWin, argsWindowsPaths, showWindow, workDirWin);
+        }
 
-        // ----- arg shaping helpers (convert all quoted paths safely) -----
+        // -------------------
+        // Arg helpers
+        // -------------------
+
         public static string ConcatSections(string[] gctFilesWin)
         {
             if (gctFilesWin == null || gctFilesWin.Length == 0) return "";
             var sb = new StringBuilder();
-            foreach (var g in gctFilesWin) sb.Append(" --add-sect ").Append(Q(SelectPath(g)));
+            foreach (var g in gctFilesWin)
+                sb.Append(" --add-sect ").Append(Q(SelectPath(g)));
             return sb.ToString();
         }
 
+        /// <summary>
+        /// For your call sites, you normally pass Windows-view paths; this keeps them canonical.
+        /// </summary>
         public static string SelectPath(string pWinOrPosix)
         {
-            // At the call sites you pass Windows-view paths; this keeps quoting consistent.
-            bool native = UnderWine() && (HostIsMac() || HostIsLinux());
-            return native ? PosixFromWindows(pWinOrPosix) : pWinOrPosix.Replace('/', '\\');
+            if (string.IsNullOrWhiteSpace(pWinOrPosix))
+                return "";
+
+            bool nativeHost = (HostIsMac() || HostIsLinux()) && !UnderWine();
+            if (nativeHost)
+                return WindowsToHostPosix(pWinOrPosix);
+
+            return ToWindowsView(pWinOrPosix);
         }
 
+        /// <summary>
+        /// Convert quoted POSIX paths to Windows Z:\ form, keeping existing Windows paths intact.
+        /// </summary>
         public static string ReplaceArgsWithWindowsFlavor(string args)
         {
-            // Just normalize slashes—call sites already built Windows paths
-            return args?.Replace('/', '\\') ?? "";
-        }
+            if (string.IsNullOrEmpty(args)) return string.Empty;
 
-        public static string ConvertArgsToPosix(string args)
-        {
-            if (string.IsNullOrEmpty(args)) return "";
-            // Convert any "C:\..." or "Z:\..." inside quoted segments to POSIX.
-            // Cheap heuristic: split on quotes and convert odd segments (inside quotes).
             var parts = args.Split('"');
-            for (int i = 1; i < parts.Length; i += 2) parts[i] = PosixFromWindows(parts[i]);
+            for (int i = 1; i < parts.Length; i += 2)
+            {
+                var seg = parts[i];
+                if (string.IsNullOrWhiteSpace(seg)) continue;
+
+                // Already Windows path?
+                if (seg.Length > 2 && char.IsLetter(seg[0]) && seg[1] == ':' && (seg[2] == '/' || seg[2] == '\\'))
+                {
+                    parts[i] = seg.Replace('/', '\\');
+                    continue;
+                }
+
+                if (seg.StartsWith("/"))
+                    parts[i] = @"Z:\" + seg.TrimStart('/').Replace('/', '\\');
+                else
+                    parts[i] = seg.Replace('/', '\\');
+            }
             return string.Join("\"", parts);
         }
 
-        // Ensure a Windows-view path (so Windows runs are correct; Wine runs will be converted by ToolRunner)
-        public static string ToWindowsView(string p)
+        /// <summary>
+        /// Turns quoted C:\ or Z:\ segments into host POSIX for native tools (wit/wstrt).
+        /// </summary>
+        public static string ConvertArgsToPosix(string args)
         {
-            if (string.IsNullOrEmpty(p)) return p ?? "";
-            // Already C:\... ?
-            if (p.Length > 2 && char.IsLetter(p[0]) && p[1] == ':' && (p[2] == '\\' || p[2] == '/'))
-                return p.Replace('/', '\\');
-            // POSIX → Z:\...
-            if (p[0] == '/')
-                return @"Z:\" + p.TrimStart('/').Replace('/', '\\');
-            return p.Replace('/', '\\');
+            if (string.IsNullOrEmpty(args)) return "";
+
+            var parts = args.Split('"');
+            for (int i = 1; i < parts.Length; i += 2)
+            {
+                var seg = parts[i];
+                if (string.IsNullOrWhiteSpace(seg)) continue;
+
+                string p = WindowsToHostPosix(seg);
+                p = NormalizeDosDevicesPosix(p);
+                parts[i] = p;
+            }
+            return string.Join("\"", parts);
         }
 
-        public static string JoinWin(string a, string b) => ToWindowsView(Path.Combine(a, b));
+        private static bool HostFileExistsPosix(string posixPath)
+        {
+            if (string.IsNullOrWhiteSpace(posixPath)) return false;
+            try
+            {
+                int rc = RunHostSh($"[ -e {Q(posixPath)} ]", out _, out _);
+                return rc == 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
-        // ---------- visibility + stat helpers ----------
+        // -------------------
+        // Visibility / probing
+        // -------------------
+
         public static void LogFileVisibility(string label, string winPath)
         {
-            var (wineOk, wineBytes, hostOk, hostBytes, posix) = ProbeFile(winPath);
+            var (wineOk, wineBytes, hostOk, hostBytes, posix) = ProbeFile(winPath, true);
             var sb = new StringBuilder();
             sb.Append(label).Append(" vis: ");
             sb.Append("wine=").Append(wineOk ? $"exists,{wineBytes}B" : "missing");
@@ -401,87 +621,12 @@ namespace UWUVCI_AIO_WPF.Helpers
             Log(sb.ToString());
         }
 
-        /// <summary>
-        /// Opens a URL or file on the native host (macOS/Linux) when running under Wine; otherwise uses Windows shell.
-        /// Returns true on best-effort success.
-        /// </summary>
-        public static bool OpenOnHost(string target)
+        public static (bool wineOk, long wineBytes, bool hostOk, long hostBytes, string posixPath)
+            ProbeFile(string winPath, bool typeFile)
         {
-            try
-            {
-                bool native = UnderWine() && (HostIsMac() || HostIsLinux());
-                if (!native)
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = target,
-                        UseShellExecute = true
-                    });
-                    return true;
-                }
-
-                // Host side
-                bool isUrl = Uri.TryCreate(target, UriKind.Absolute, out var uri) &&
-                             (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == "mailto");
-
-                string toOpen = isUrl ? target : PosixFromWindows(target);
-                string opener = HostIsMac() ? "open" : "xdg-open";
-                // run detached; ignore stdout/stderr
-                int rc = RunHostSh($"(command -v {opener} >/dev/null 2>&1 && {opener} {Q(toOpen)} >/dev/null 2>&1 & ) || true", out _, out _);
-                return rc == 0;
-            }
-            catch { return false; }
-        }
-
-        /// <summary>
-        /// Waits until the file is visible to .NET/Wine (File.Exists && size > 0),
-        /// polling host and wine views for up to 'timeoutMs'.
-        /// </summary>
-        public static bool WaitForWineVisibility(string winPath, int timeoutMs = 8000, int pollMs = 200)
-        {
-            // If we are not under Wine, the Windows view is authoritative; return immediately.
-            try { if (!UnderWine()) return true; } catch { /* best-effort */ }
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            string lastNote = "";
-
-            while (sw.ElapsedMilliseconds < timeoutMs)
-            {
-                try
-                {
-                    if (File.Exists(winPath))
-                    {
-                        long size = new FileInfo(winPath).Length;
-                        if (size > 0)
-                        {
-                            Log($"I/O fence: visible to Wine/.NET: {winPath} ({size} bytes)");
-                            return true;
-                        }
-                    }
-                }
-                catch { /* transient */ }
-
-                var (wineOk, wineBytes, hostOk, hostBytes, _) = ProbeFile(winPath);
-                var note = $"wine:{(wineOk ? wineBytes.ToString() : "-")} host:{(hostOk ? hostBytes.ToString() : "-")}";
-                if (note != lastNote)
-                {
-                    Log($"I/O fence probe -> {note}");
-                    lastNote = note;
-                }
-
-                System.Threading.Thread.Sleep(pollMs);
-            }
-
-            Log($"I/O fence TIMEOUT: Wine can't see {winPath}");
-            return false;
-        }
-
-
-        public static (bool wineOk, long wineBytes, bool hostOk, long hostBytes, string posixPath) ProbeFile(string winPath)
-        {
-            bool mac = HostIsMac();
-            bool lin = HostIsLinux();
             long wineBytes = 0;
             bool wineOk = false;
+            string flag = typeFile ? " -f " : " -d ";
 
             try
             {
@@ -492,15 +637,16 @@ namespace UWUVCI_AIO_WPF.Helpers
                     wineOk = true;
                 }
             }
-            catch { /* ignore */ }
+            catch { }
 
-            var posix = PosixFromWindows(winPath);
+            string posix = NormalizeDosDevicesPosix(WindowsToHostPosix(winPath));
             long hostBytes = 0;
             bool hostOk = false;
 
-            // stat command differs mac vs linux
-            var statCmd = mac ? $"[ -f {Q(posix)} ] && stat -f%z {Q(posix)} || echo MISS"
-                              : $"[ -f {Q(posix)} ] && stat -c%s {Q(posix)} || echo MISS";
+            bool hostMac = IsHostMacUnderWine();
+            var statCmd = hostMac
+                ? $"[ {flag} {Q(posix)} ] && stat -f%z {Q(posix)} || echo MISS"
+                : $"[ {flag} {Q(posix)} ] && stat -c%s {Q(posix)} || echo MISS";
 
             try
             {
@@ -511,10 +657,124 @@ namespace UWUVCI_AIO_WPF.Helpers
                     hostBytes = b;
                 }
             }
-            catch { /* ignore */ }
+            catch { }
 
             return (wineOk, wineBytes, hostOk, hostBytes, posix);
         }
 
+        /// <summary>
+        /// Wait until a file or directory is visible (non-zero size for files) under Wine/host.
+        /// </summary>
+        public static bool WaitForWineVisibility(string winPath, bool file = true, int timeoutMs = 8000, int pollMs = 200)
+        {
+            try { if (!UnderWine()) return true; } catch { }
+
+            var sw = Stopwatch.StartNew();
+            string lastNote = "";
+
+            while (sw.ElapsedMilliseconds < timeoutMs)
+            {
+                try
+                {
+                    if (file && File.Exists(winPath))
+                    {
+                        long size = new FileInfo(winPath).Length;
+                        if (size > 0)
+                        {
+                            Log($"I/O fence: visible to Wine/.NET: {winPath} ({size} bytes)");
+                            return true;
+                        }
+                    }
+                    else if (!file && Directory.Exists(winPath))
+                    {
+                        Log($"I/O fence: directory visible to Wine/.NET: {winPath}");
+                        return true;
+                    }
+                }
+                catch { }
+
+                var (wineOk, wineBytes, hostOk, hostBytes, _) = ProbeFile(winPath, file);
+                var note = $"wine:{(wineOk ? wineBytes.ToString() : "-")} host:{(hostOk ? hostBytes.ToString() : "-")}";
+                if (note != lastNote)
+                {
+                    Log($"I/O fence probe -> {note}");
+                    lastNote = note;
+                }
+
+                if (hostOk && (!file || hostBytes > 0))
+                {
+                    Log($"I/O fence: visible on host, bytes={hostBytes}");
+                    return true;
+                }
+
+                System.Threading.Thread.Sleep(pollMs);
+            }
+
+            Log($"I/O fence TIMEOUT: Wine can't see {winPath}");
+            return false;
+        }
+
+        // -------------------
+        // OpenOnHost
+        // -------------------
+
+        public static bool OpenOnHost(string target)
+        {
+            try
+            {
+                bool native = UnderWine() && (IsHostMacUnderWine() || IsHostLinuxUnderWine());
+                if (!native)
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = target,
+                        UseShellExecute = true
+                    });
+                    return true;
+                }
+
+                bool isUrl = Uri.TryCreate(target, UriKind.Absolute, out var uri) &&
+                             (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == "mailto");
+
+                string toOpen = target;
+                if (!isUrl)
+                {
+                    string converted = WindowsToHostPosix(target);
+                    if (string.IsNullOrWhiteSpace(converted))
+                        converted = PosixFromWindows(target);
+                    toOpen = NormalizeDosDevicesPosix(converted);
+                }
+
+                bool hostMac = IsHostMacUnderWine();
+                string opener = hostMac ? "open" : "xdg-open";
+
+                int rc = RunHostSh($"command -v {opener} >/dev/null 2>&1 && {opener} {Q(toOpen)} >/dev/null 2>&1", out _, out _);
+                return rc == 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // -------------------
+        // KegWorks detection (lightweight)
+        // -------------------
+
+        public static bool RunningInsideKegworksApp()
+        {
+            try
+            {
+                if (!UnderWine()) return false;
+
+                var hostCwd = WindowsToHostPosix(Environment.CurrentDirectory);
+                if (!string.IsNullOrEmpty(hostCwd) &&
+                    hostCwd.IndexOf("/Contents/SharedSupport/prefix/", StringComparison.OrdinalIgnoreCase) >= 0)
+                    return true;
+            }
+            catch { }
+
+            return false;
+        }
     }
 }

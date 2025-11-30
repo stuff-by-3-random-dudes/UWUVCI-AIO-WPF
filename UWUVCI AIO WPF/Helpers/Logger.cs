@@ -16,7 +16,7 @@ namespace UWUVCI_AIO_WPF.Helpers
                 if (!Directory.Exists(logDirectory))
                     Directory.CreateDirectory(logDirectory);
 
-                // Create a new log file with timestamp
+                // Create a timestamped log file per app launch (single file per run)
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 logFilePath = Path.Combine(logDirectory, $"log_{timestamp}.txt");
 
@@ -46,14 +46,14 @@ namespace UWUVCI_AIO_WPF.Helpers
         {
             try
             {
-                var logFiles = Directory.GetFiles(logDirectory, "log_*.txt");
-                foreach (var file in logFiles)
+                // Clean up legacy per-tool logs and old legacy session logs
+                foreach (var file in Directory.GetFiles(logDirectory, "tool-*.txt"))
                 {
-                    FileInfo fi = new FileInfo(file);
-                    if (fi.CreationTime < DateTime.Now.AddDays(-daysToKeep))
-                    {
-                        fi.Delete();
-                    }
+                    try { var fi = new FileInfo(file); if (fi.CreationTime < DateTime.Now.AddDays(-daysToKeep)) fi.Delete(); } catch { }
+                }
+                foreach (var file in Directory.GetFiles(logDirectory, "log_*.txt"))
+                {
+                    try { var fi = new FileInfo(file); if (fi.CreationTime < DateTime.Now.AddDays(-daysToKeep)) fi.Delete(); } catch { }
                 }
             }
             catch (Exception ex)

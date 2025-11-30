@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using UWUVCI_AIO_WPF.Modules.N64Config;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -122,6 +123,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("N64Config SaveTo error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Save failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
@@ -681,6 +683,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("N64Config preset apply error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Preset error", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }

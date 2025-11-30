@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using UWUVCI_AIO_WPF.Helpers;
@@ -145,49 +146,43 @@ namespace UWUVCI_AIO_WPF.Services
             Directory.CreateDirectory(toolsPath);
             try { Logger.Log($"NKitService.ConvertToNKit: src={sourcePath} out={outputFileName} tools={toolsPath}"); } catch { }
 
-            // Build args: tool expects only the source path quoted
-            string args = ToolRunner.Q(ToolRunner.SelectPath(sourcePath));
-
-            // Ensure we don't get suffixed outputs by cleaning previous leftovers only in expected dirs
+            // Clean old outputs
             var outBase2 = Path.GetFileName(outputFileName);
             CleanOldOutputs(toolsPath, outBase2);
             CleanOldOutputs(Directory.GetCurrentDirectory(), outBase2);
 
-            // Execute tool via ToolRunner (cross-platform under Wine)
-            // Use toolsPath as working directory so bundled INI/data files resolve correctly
-            Exception  firstError = null;
-            try { runner.RunToolWithFallback("ConvertToNKit", toolsPath, args, showWindow, toolsPath); }
-            catch (Exception ex) { firstError = ex; /* proceed to validate outputs */ }
-
-            // If ToolRunner failed, try legacy shell-execute style but don't fail solely on exit code
-            if (firstError != null)
+            try
             {
-                try
+                var exe = Path.Combine(toolsPath, "ConvertToNKit.exe");
+                var psi = new ProcessStartInfo
                 {
-                    var exe = Path.Combine(toolsPath, "ConvertToNKit.exe");
-                    var psi = new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = exe,
-                        Arguments = "\"" + sourcePath + "\"",
-                        WindowStyle = showWindow ? System.Diagnostics.ProcessWindowStyle.Normal : System.Diagnostics.ProcessWindowStyle.Hidden,
-                        UseShellExecute = true
-                    };
-                    using var p = System.Diagnostics.Process.Start(psi);
-                    p.WaitForExit();
-                }
-                catch (Exception) { /* ignore; we will validate outputs next */ }
+                    FileName = exe,
+                    Arguments = "\"" + sourcePath + "\"",
+                    WorkingDirectory = toolsPath,            // ✅ force correct working dir
+                    WindowStyle = showWindow ? ProcessWindowStyle.Normal : ProcessWindowStyle.Hidden,
+                    UseShellExecute = false,                 // ✅ must be false for WorkingDirectory to take effect
+                    CreateNoWindow = !showWindow
+                };
+
+                using var p = Process.Start(psi);
+                p.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"[ConvertToNKit] Exception: {ex.Message}");
+                // ignore, we’ll check output next
             }
 
-            // Produced file appears next to the tool (historical behavior of these helpers)
+            // Produced file appears next to the tool (now guaranteed)
             string outPath = Path.Combine(toolsPath, outputFileName);
             if (!File.Exists(outPath))
             {
-                // Fallback checks for legacy/default work dirs used previously, including NKit's suffix renames
                 try
                 {
+                    // Fallback: look anywhere this tool might have written to
                     var baseName = Path.GetFileName(outputFileName);
-                    var candidates = Directory.GetFiles(toolsPath, baseName + "*", SearchOption.TopDirectoryOnly);
-                    var picked = PickNewest(candidates);
+                    string[] candidates = Directory.GetFiles(toolsPath, baseName + "*", SearchOption.TopDirectoryOnly);
+                    string picked = PickNewest(candidates);
                     if (!string.IsNullOrEmpty(picked))
                     {
                         TryMove(picked, outPath);
@@ -203,13 +198,13 @@ namespace UWUVCI_AIO_WPF.Services
                         if (File.Exists(outPath)) return outPath;
                     }
                 }
-                catch { /* best-effort */ }
+                catch { }
 
-                if (firstError != null) throw new Exception("NKit conversion failed: output file not found: " + outPath + "\n" + firstError.Message);
                 throw new Exception("NKit conversion failed: output file not found: " + outPath);
             }
 
             return outPath;
         }
+
     }
 }

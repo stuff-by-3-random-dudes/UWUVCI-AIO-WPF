@@ -24,7 +24,6 @@ namespace UWUVCI_AIO_WPF.Services
             {
                 try { Directory.Delete(tikTmdDir, true); } catch { }
             }
-            Directory.CreateDirectory(tikTmdDir);
 
             var witArgs = $"extract \"{gameIso}\" --psel data --files +tmd.bin --files +ticket.bin --DEST \"{tikTmdDir}\" -vv1";
             runner.RunTool("wit", toolsPath, witArgs, showWindow: debug);
@@ -36,6 +35,9 @@ namespace UWUVCI_AIO_WPF.Services
             {
                 throw new Exception($"WIT extract completed but extracted files not visible: {tmdPath}, {tikPath}");
             }
+
+            ToolRunner.LogFileVisibility("[WitTicketExtraction] tmd.bin", tmdPath);
+            ToolRunner.LogFileVisibility("[WitTicketExtraction] ticket.bin", tikPath);
         }
     }
 }
