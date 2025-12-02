@@ -1433,6 +1433,13 @@ namespace UWUVCI_AIO_WPF
 
             }
             mvvm.msg = "Compressing RPX...";
+
+            if (mvvm.GameConfiguration.Console == GameConsoles.NES)
+            {
+                var defaultPalette = mvvm.NesPaletteOptions?.FirstOrDefault()?.Name ?? "Default (Base RPX)";
+                NesPalettePatcher.Apply(rpxFile, mvvm.SelectedNesPaletteName, defaultPalette);
+            }
+
             RPXCompOrDecomp(rpxFile, true); //Compresses the RPX
             mvvm.Progress = 80;
         }

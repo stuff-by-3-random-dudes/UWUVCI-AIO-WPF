@@ -260,6 +260,7 @@
     <Compile Include="Classes\DeflickerDitheringRemover.cs" />
     <Compile Include="Classes\Dol.cs" />
     <Compile Include="Classes\GameCubeISO.cs" />
+    <Compile Include="Classes\NesPalettePatcher.cs" />
     <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />

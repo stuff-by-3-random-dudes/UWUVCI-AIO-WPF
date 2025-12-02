@@ -350,6 +350,54 @@ namespace UWUVCI_AIO_WPF
         private bool dsLayout = false;
         private bool stLayout = false;
         public bool CanOfferImageContribution { get; set; } = false;
+
+        public class PaletteOption
+        {
+            public PaletteOption(string name, string description)
+            {
+                Name = name;
+                Description = description;
+            }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public override string ToString() => Name;
+        }
+
+        private string selectedNesPaletteName = "Default (Base RPX)";
+        public List<PaletteOption> NesPaletteOptions { get; } = new List<PaletteOption>
+        {
+            new("Default (Base RPX)", "Do not modify the RPX palette; keep the base game's default colors."),
+            new("2C03 Palette", "Replicates the Nintendo Vs. System PPU 2C03 palette."),
+            new("Fx3 NES Palette", "Fx3's take on balanced colors for NES."),
+            new("RGBSource NESCAP", "Palette created by RGBSource (NESCAP)."),
+            new("NES Palette", "Generic community NES palette."),
+            new("PAL NES Palette", "Palette tailored for PAL NES color timings."),
+            new("Wavebeam (Alt)", "Alternate Wavebeam palette from FireBrandX."),
+            new("Nestopia YUV", "Nestopia emulator YUV palette (softer tones)."),
+            new("Nestopia RGB", "Nestopia emulator RGB palette (brighter tones)."),
+            new("Original Wii VC", "Original dark Wii VC NES palette (SuperrSonic dump)."),
+            new("Restored Wii VC (SuperrSonic)", "Restored Wii VC palette without the dark filter (SuperrSonic)."),
+            new("FBX Composite Direct", "FireBrandX composite direct palette (authentic composite look)."),
+            new("FBX NES Classic Mini", "FireBrandX palette matching the NES Classic Mini."),
+            new("Wavebeam", "FireBrandX Wavebeam palette (bright, vivid)."),
+            new("3DS VC (No Dark Filter)", "3DS VC palette with dark filter removed."),
+            new("Animal Crossing Emulator", "Palette used by the Animal Crossing NES emulator."),
+            new("FCEUX Colorful", "FCEUX emulator colorful NES palette."),
+            new("NES Remix U", "NES Remix U (Wii U) palette by N-Mario."),
+            new("Original Mega Man", "Original Mega Man NES palette (N-Mario)."),
+            new("Rockman 9 Modern", "Rockman 9 Modern-inspired palette (N-Mario)."),
+            new("MM Legacy 3DS Modern", "Mega Man Legacy Collection (3DS) modern palette (N-Mario).")
+        };
+
+        public string SelectedNesPaletteName
+        {
+            get => selectedNesPaletteName;
+            set
+            {
+                selectedNesPaletteName = value;
+                OnPropertyChanged();
+            }
+        }
         public bool RendererScale
         {
             get { return rendererScale; }
@@ -798,6 +846,7 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.TGAIco.ImgPath != null || GameConfiguration.TGAIco.ImgPath == "") iccp = string.Copy(GameConfiguration.TGAIco.ImgPath);
             if (GameConfiguration.TGALog.ImgPath != null || GameConfiguration.TGALog.ImgPath == "") lgcp = string.Copy(GameConfiguration.TGALog.ImgPath);
             GameConfiguration.pixelperfect = pixelperfect;
+            GameConfiguration.NesPalette = SelectedNesPaletteName;
             GameConfiguration.lr = LR;
             GameConfiguration.pokepatch = PokePatch;
             GameConfiguration.tgcd = cd;
@@ -926,6 +975,9 @@ namespace UWUVCI_AIO_WPF
                 regionfrii = GameConfiguration.rf;
                 regionfriijp = GameConfiguration.rfjp;
                 regionfriius = GameConfiguration.rfus;
+                if (string.IsNullOrWhiteSpace(GameConfiguration.NesPalette))
+                    GameConfiguration.NesPalette = NesPaletteOptions.FirstOrDefault()?.Name ?? "Default (Base RPX)";
+                SelectedNesPaletteName = GameConfiguration.NesPalette;
             }
             if (GameConfiguration.Console == GameConsoles.N64)
             {
