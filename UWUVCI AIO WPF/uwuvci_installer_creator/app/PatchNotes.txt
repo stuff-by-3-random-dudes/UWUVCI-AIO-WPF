@@ -1,5 +1,5 @@
 ====================================
-Version 3.200 - Nov 7, 2025
+Version 3.200 - Dec 7, 2025
 ====================================
 **New Features**
 - Short Game Name field added to inject creation.
@@ -34,6 +34,12 @@ Version 3.200 - Nov 7, 2025
   - New `UWUVCI_MessageBox` system for consistent pop-ups and alerts.
 - Unit Testing Support (Developer Feature)
   - Added MSTest coverage for major services.
+- Settings File Editor
+  - Added functionality to edit the settings file directly in the app, and even have a section for more advanced users.
+- macOS DMG build
+  - A psuedo native build for macOS using Kegworks as a wrapper.
+- NES Palette swap
+  - Ability to change the palettes on NES via a dropdown.
 
 **Improvements**
 - Unified Cross-Platform Build
