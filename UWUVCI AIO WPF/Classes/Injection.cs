@@ -695,10 +695,59 @@ namespace UWUVCI_AIO_WPF
 
             // Patch callback only when GCT paths provided
             Func<string, bool> patchCb = null;
-            if (!string.IsNullOrWhiteSpace(mvm.gctPath))
+            if (!string.IsNullOrWhiteSpace(mvm.gctPath) || mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter || mvm.Index == 4)
             {
-                var gcts = mvm.gctPath.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
-                patchCb = (dolPath) => { try { GctPatcherService.PatchWiiDolWithGcts(toolsPath, dolPath, gcts, mvm.debug); return true; } catch { return false; } };
+                var gcts = string.IsNullOrWhiteSpace(mvm.gctPath)
+                    ? Array.Empty<string>()
+                    : mvm.gctPath.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
+
+                patchCb = (dolPath) =>
+                {
+                    try
+                    {
+                        // Apply GCT patches first (if any)
+                        if (gcts.Length > 0)
+                        {
+                            GctPatcherService.PatchWiiDolWithGcts(toolsPath, dolPath, gcts, mvm.debug);
+                            ToolRunner.WaitForWineVisibility(dolPath);
+                            ToolRunner.WaitForStableFileSize(dolPath, delayMs: JsonSettingsManager.Settings.UnixWaitDelayMs);
+                        }
+
+                        // Deflicker / dithering / half v-filter
+                        if (mvm.RemoveDeflicker || mvm.RemoveDithering || mvm.HalfVFilter)
+                        {
+                            var output = Path.Combine(Path.GetDirectoryName(dolPath) ?? string.Empty, "patched.dol");
+                            DeflickerDitheringRemover.ProcessFile(dolPath, output, mvm.RemoveDeflicker, mvm.RemoveDithering, mvm.HalfVFilter);
+                            File.Delete(dolPath);
+                            File.Move(output, dolPath);
+                            ToolRunner.WaitForWineVisibility(dolPath);
+                            ToolRunner.WaitForStableFileSize(dolPath, delayMs: JsonSettingsManager.Settings.UnixWaitDelayMs);
+                        }
+
+                        // Force Classic Controller when index == 4
+                        if (mvm.Index == 4)
+                        {
+                            using var tik = new Process();
+                            tik.StartInfo.FileName = Path.Combine(toolsPath, "GetExtTypePatcher.exe");
+                            tik.StartInfo.Arguments = $"\"{dolPath}\" -nc";
+                            tik.StartInfo.UseShellExecute = false;
+                            tik.StartInfo.CreateNoWindow = true;
+                            tik.StartInfo.RedirectStandardInput = true;
+                            tik.Start();
+                            Thread.Sleep(2000);
+                            tik.StandardInput.WriteLine();
+                            tik.WaitForExit();
+                            ToolRunner.WaitForWineVisibility(dolPath);
+                            ToolRunner.WaitForStableFileSize(dolPath, delayMs: JsonSettingsManager.Settings.UnixWaitDelayMs);
+                        }
+
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                };
             }
 
             var opt = new WiiInjectOptions
@@ -745,6 +794,11 @@ namespace UWUVCI_AIO_WPF
             var st1 = StepTimer("Prepare pre.iso", 1);
             var pre = WiiInjectService.PreparePreIso(toolsPath, tempPath, romPath, opt, runner);
             EndTimer(st1, 1);
+
+            if (mvm.regionfrii)
+            {
+                ApplyRegionFriiPatch(pre.preIso, mvm);
+            }
 
             if (mvm != null) 
             { 
@@ -798,6 +852,39 @@ namespace UWUVCI_AIO_WPF
 
             if (mvm != null) { mvm.Progress = 80; mvm.msg = "Injection complete"; }
             return;
+        }
+
+        private static void ApplyRegionFriiPatch(string isoPath, MainViewModel mvm)
+        {
+            if (string.IsNullOrWhiteSpace(isoPath) || !File.Exists(isoPath)) return;
+
+            try
+            {
+                using var fs = new FileStream(isoPath, FileMode.Open, FileAccess.ReadWrite);
+                fs.Seek(0x4E003, SeekOrigin.Begin);
+                if (mvm.regionfriius)
+                {
+                    fs.WriteByte(0x01);
+                    fs.Seek(0x4E010, SeekOrigin.Begin);
+                    fs.Write(new byte[] { 0x80, 0x06, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                }
+                else if (mvm.regionfriijp)
+                {
+                    fs.WriteByte(0x00);
+                    fs.Seek(0x4E010, SeekOrigin.Begin);
+                    fs.Write(new byte[] { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                }
+                else
+                {
+                    fs.WriteByte(0x02);
+                    fs.Seek(0x4E010, SeekOrigin.Begin);
+                    fs.Write(new byte[] { 0x80, 0x80, 0x80, 0x00, 0x03, 0x03, 0x04, 0x03, 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80 }, 0, 16);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"RegionFrii patch failed: {ex.Message}");
+            }
         }
         internal static void PatchDol(string consoleName, string mainDolPath, MainViewModel mvm)
         {
