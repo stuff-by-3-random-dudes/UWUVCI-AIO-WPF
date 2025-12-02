@@ -23,23 +23,10 @@ namespace UWUVCI_AIO_WPF.Services
             string envToken = "";
             return envToken;
 #endif
-                    // BEGIN_TOKEN_REGION
-    // This region is replaced by Inject-ObfuscatedToken.ps1 for protected builds.
-    byte[] xorKey = new byte[] { 0x13, 0xCF, 0x6F, 0x8A };
-int[] part1 = new int[] { 73, 253, 7, 253, 75, 255, 41, 240, 118, 136, 94, 221, 112, 163 };
-    int[] part2 = new int[] { 3, 185, 65, 153, 11, 243, 65, 154, 33, 199, 94, 162, 31, 206 };
-    int[] part3 = new int[] { 71, 138, 37, 249, 112, 255, 90, 191, 73, 181, 33, 255, 113, 136 };
-    int[] part4 = new int[] { 87, 185, 68, 155, 41, 194, 114, 163, 41, 224, 66, 184, 82, 183 };
-
-    var partsArray = new byte[][] { part1.Select(v => (byte)v).ToArray(), part2.Select(v => (byte)v).ToArray(), part3.Select(v => (byte)v).ToArray(), part4.Select(v => (byte)v).ToArray() };
-
-    var all = partsArray.SelectMany(p => p)
-                        .Select((b, idx) => (byte)(b ^ xorKey[idx % xorKey.Length]))
-                        .ToArray();
-    var base64Str = System.Text.Encoding.UTF8.GetString(all);
-    var token = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64Str));
-    return token;
-    // END_TOKEN_REGION
+        // BEGIN_TOKEN_REGION
+            // This region is replaced by Inject-ObfuscatedToken.ps1 for protected builds.
+            return "";
+        // END_TOKEN_REGION
         }
         public GitHubClient CreateClient()
         {
