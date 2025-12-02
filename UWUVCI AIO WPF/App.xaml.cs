@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Services;
 using UWUVCI_AIO_WPF.UI.Windows;
@@ -221,11 +222,12 @@ namespace UWUVCI_AIO_WPF
         {
             if (Directory.Exists(@"custom") && File.Exists(@"custom\main.dol"))
             {
-                if (!Directory.Exists(@"bin\Tools"))
-                    Directory.CreateDirectory(@"bin\Tools");
+                string toolsDir = PathResolver.GetToolsPath();
+                if (!Directory.Exists(toolsDir))
+                    Directory.CreateDirectory(toolsDir);
 
-                File.Copy(@"custom\main.dol", @"bin\Tools\nintendont.dol", true);
-                File.Copy(@"custom\main.dol", @"bin\Tools\nintendont_force.dol", true);
+                File.Copy(@"custom\main.dol", toolsDir + @"\nintendont.dol", true);
+                File.Copy(@"custom\main.dol", toolsDir + @"\nintendont_force.dol", true);
             }
 
             bool check = true;

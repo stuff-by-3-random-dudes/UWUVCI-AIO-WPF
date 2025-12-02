@@ -17,6 +17,22 @@
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" Name="snesnes" Visibility="Hidden">
             <CheckBox Content="Enable Pixel Perfect Mode" ToolTip="May not work with every Base" Margin="0,0,0,26"  IsTabStop="False" Click="CheckBox_Click" Name="pixp"/>
         </StackPanel>
+        <StackPanel Margin="10,5,300,406" Orientation="Horizontal" Name="nesPalettePanel" Visibility="Collapsed">
+            <TextBlock Text="NES Palette:" VerticalAlignment="Center" Margin="0,0,10,0" />
+            <ComboBox Width="260"
+                      ItemsSource="{Binding NesPaletteOptions}"
+                      SelectedValuePath="Name"
+                      DisplayMemberPath="Name"
+                      SelectedValue="{Binding SelectedNesPaletteName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      ToolTip="Choose a color palette for NES VC RPX. Default leaves the base palette untouched."
+                      IsTabStop="False">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="ToolTip" Value="{Binding Description}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
+        </StackPanel>
         <StackPanel Margin="10,20,81,444" Orientation="Horizontal" Name="nds" Visibility="Hidden">
             <!-- RenderingScale -->
             <StackPanel Orientation="Horizontal">

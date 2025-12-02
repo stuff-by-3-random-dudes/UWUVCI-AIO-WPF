@@ -22,6 +22,9 @@
         public bool HasAcknowledgedTutorial { get; set; } = false;
         // Controls bounded parallelism for large directory copies (higher on fast SSDs)
         public int FileCopyParallelism { get; set; } = 6;
+        public string ToolsPath { get; set; } = string.Empty;
+        public string TempPath { get; set; } = string.Empty;
+        public int UnixWaitDelayMs { get; set; } = 2000;
     }
 
 }

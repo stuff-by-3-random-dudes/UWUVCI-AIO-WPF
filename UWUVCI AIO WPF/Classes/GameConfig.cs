@@ -62,5 +62,7 @@ namespace UWUVCI_AIO_WPF
         public N64Conf N64Stuff { get; set; } = new N64Conf();
         public N64Conf GBAStuff { get; set; } = new N64Conf();
 
+        public string NesPalette { get; set; } = "Default (Base RPX)";
+
     }
 }

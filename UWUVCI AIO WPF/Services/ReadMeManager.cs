@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.Services
 {
@@ -16,13 +17,27 @@ namespace UWUVCI_AIO_WPF.Services
         private static readonly string ReadMeUrl =
             "https://raw.githubusercontent.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/Readme.txt";
 
-        // Local cached file path (in same directory as executable)
-        private static readonly string LocalReadMePath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ReadMe.txt");
+        // Local cached file path (use writable AppData instead of app directory)
+        private static readonly string CacheDir;
+        private static readonly string LocalReadMePath;
+        private static readonly string HashFilePath;
 
-        // Where to store the previous hash for update detection
-        private static readonly string HashFilePath =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ReadMe.hash");
+        static ReadMeManager()
+        {
+            try
+            {
+                var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                CacheDir = Path.Combine(appData, "UWUVCI-V3", "Cache");
+                Directory.CreateDirectory(CacheDir);
+            }
+            catch
+            {
+                CacheDir = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
+            LocalReadMePath = Path.Combine(CacheDir, "ReadMe.txt");
+            HashFilePath = Path.Combine(CacheDir, "ReadMe.hash");
+        }
 
         /// <summary>
         /// Checks for an updated ReadMe online and replaces the local version if changed.
@@ -48,8 +63,9 @@ namespace UWUVCI_AIO_WPF.Services
 
                 return remoteContent;
             }
-            catch
+            catch (Exception ex)
             {
+                try { Logger.Log("ReadMeManager.GetLatestReadMeAsync error: " + ex.ToString()); } catch { }
                 // Fallback to local cached version if offline or failed
                 if (File.Exists(LocalReadMePath))
                     return File.ReadAllText(LocalReadMePath, Encoding.UTF8);

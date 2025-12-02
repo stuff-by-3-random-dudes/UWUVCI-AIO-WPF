@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using UWUVCI_AIO_WPF.Services;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -100,6 +101,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Feedback submission error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Failed to submit feedback:\n" + ex.Message,

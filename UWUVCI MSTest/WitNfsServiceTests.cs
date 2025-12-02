@@ -1,10 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
-using UWUVCI_AIO_WPF; // MainViewModel lives in this namespace
 using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Services;
 

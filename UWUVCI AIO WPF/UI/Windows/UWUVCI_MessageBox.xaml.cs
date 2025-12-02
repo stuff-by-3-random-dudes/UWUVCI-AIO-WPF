@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using UWUVCI_AIO_WPF.Helpers;
+using System.Text;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -20,8 +22,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
 
-            TitleBlock.Text = title;
-            MessageBlock.Text = message;
+            TitleBlock.Text = SanitizeForWine(title);
+            MessageBlock.Text = SanitizeForWine(message);
 
             ApplyTheme(iconType);
             ShowButtons(type);
@@ -29,6 +31,47 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             // Fade-in
             DoubleAnimation fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
             BeginAnimation(OpacityProperty, fadeIn);
+        }
+
+        private static string SanitizeForWine(string input)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(input)) return input ?? string.Empty;
+                var env = MacLinuxHelper.EnvDetect.Get();
+                bool underWine = env != null && env.UnderWineLike;
+                if (!underWine) return input;
+
+                // Replace common emoji/symbols with ASCII hints
+                string s = input;
+                s = s.Replace("❌", "[Error]")
+                     .Replace("⚠️", "[Warning]")
+                     .Replace("⚠", "[Warning]")
+                     .Replace("✅", "[OK]")
+                     .Replace("💡", "Hint:")
+                     .Replace("💿", "Disc")
+                     .Replace("🖼️", "Image")
+                     .Replace("🖼", "Image")
+                     .Replace("📦", "Package")
+                     .Replace("🔁", "Repeat")
+                     .Replace("🔐", "Secure")
+                     .Replace("🛠️", "Tools")
+                     .Replace("🛠", "Tools")
+                     .Replace("📘", "ReadMe")
+                     .Replace("📝", "Patch Notes")
+                     .Replace("✕", "X")
+                     .Replace("—", "-");
+
+                // Drop surrogate pairs and other non-BMP chars that Wine fonts often lack
+                var sb = new StringBuilder(s.Length);
+                foreach (var ch in s)
+                {
+                    if (char.IsSurrogate(ch)) continue;
+                    sb.Append(ch);
+                }
+                return sb.ToString();
+            }
+            catch { return input ?? string.Empty; }
         }
 
         private void ApplyTheme(UWUVCI_MessageBoxIcon icon)
@@ -131,6 +174,18 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             Window owner = null,
             bool isModal = true)
         {
+            try
+            {
+                // Log all non-info messages to help diagnosis (especially errors)
+                if (icon != UWUVCI_MessageBoxIcon.Info)
+                {
+                    string msg = message ?? string.Empty;
+                    if (msg.Length > 1000) msg = msg.Substring(0, 1000) + "…";
+                    Logger.Log($"MessageBox [{icon}] {title}: {msg}");
+                }
+            }
+            catch { }
+
             UWUVCI_MessageBox box = new UWUVCI_MessageBox(title, message, type, icon);
             if (owner != null)
                 box.Owner = owner;

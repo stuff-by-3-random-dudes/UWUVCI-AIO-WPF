@@ -25,6 +25,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
                 snesnes.Visibility = Visibility.Visible;
+            if (mvm.GameConfiguration.Console == GameConsoles.NES)
+                nesPalettePanel.Visibility = Visibility.Visible;
             else if (mvm.GameConfiguration.Console == GameConsoles.NDS)
             {
                 nds.Visibility = Visibility.Visible;
@@ -70,6 +72,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
                 snesnes.Visibility = Visibility.Visible;
+            if (mvm.GameConfiguration.Console == GameConsoles.NES)
+                nesPalettePanel.Visibility = Visibility.Visible;
             else if (mvm.GameConfiguration.Console == GameConsoles.NDS)
                 nds.Visibility = Visibility.Visible;
         }

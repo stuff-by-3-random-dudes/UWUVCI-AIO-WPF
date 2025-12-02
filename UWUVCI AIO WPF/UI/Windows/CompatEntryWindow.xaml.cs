@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using UWUVCI_AIO_WPF;
 using UWUVCI_AIO_WPF.Models;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Services;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -132,6 +133,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("CompatEntryWindow Submit_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Failed to create PR:\n" + ex.Message,
@@ -184,6 +186,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("GetBasesForConsole error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Error", $"Failed to load bases:\n{ex.Message}",
                     UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error);
                 return new List<string> { "Custom" };
@@ -210,6 +213,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("LoadBasesForConsole error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Error", $"Failed to load base list:\n{ex.Message}",
                     UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error);
             }

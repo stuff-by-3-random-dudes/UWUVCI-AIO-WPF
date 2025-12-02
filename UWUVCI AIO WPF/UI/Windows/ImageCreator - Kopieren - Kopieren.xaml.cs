@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Helpers;
 using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -18,8 +19,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
     public partial class LogoCreator : Window, IDisposable
     {
-        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = PathResolver.GetTempPath();
+        private static readonly string toolsPath = PathResolver.GetToolsPath();
         BootLogoImage bi = new BootLogoImage();
         Bitmap b;
         string console = "other";

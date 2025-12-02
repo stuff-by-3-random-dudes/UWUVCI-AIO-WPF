@@ -1,71 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
-using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Helpers
 {
     public class MacLinuxHelper
     {
-        private static readonly string[] UWUVCIHelperMessage = {
-            "Don't panic! I see you're trying to run UWUCVI V3 on something that isn't Windows. Sadly, some external tool seems to not be compatible, but that's where I, ZestyTS, comes in!" +
-                    "\n\nGo to the folder where UWUVCI is, you should see a folder called 'macOS' or 'linux' please go into the one meant for your system. In either folder you'll see a file called 'UWUVCI-V3-Helper' run that file." +
-                    "\nDon't use Wine or any form of virtualization, that is a console app that you can run natively. Since it's a console app, make sure to run it via the terminal!" +
-                    "\n\nOnce that program finishes running, it'll tell you, to click the 'OK' button on this MessageBox. The console app has it's own ReadMe, so make sure to check it out!" +
-                    "\nIf it's not clear, clicking 'OK' will continue with the Inject and clicking 'Cancel' will cancel out of the inject.",
-            "UWUVCI V3 Helper Program Required To Continue!" };
-        public static void WriteFailedStepToJson(string functionName, string toolName, string arguments, string currentDirectory)
-        {
-            // Get the base directory where the application is running
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string toolsJsonPath = Path.Combine(basePath, "tools.json");
-
-            var step = new ToolStep
-            {
-                ToolName = toolName,
-                Arguments = arguments,
-                CurrentDirectory = currentDirectory,
-                Function = functionName
-            };
-
-            List<ToolStep> steps;
-
-            if (File.Exists(toolsJsonPath))
-                steps = JsonConvert.DeserializeObject<List<ToolStep>>(File.ReadAllText(toolsJsonPath)) ?? new List<ToolStep>();
-            else
-                steps = new List<ToolStep>();
-
-            steps.Add(step);
-            File.WriteAllText(toolsJsonPath, JsonConvert.SerializeObject(steps));
-        }
-
-        public static void DisplayMessageBoxAboutTheHelper()
-        {
-            var result = MessageBox.Show(UWUVCIHelperMessage[0], UWUVCIHelperMessage[1], MessageBoxButton.OKCancel, MessageBoxImage.Exclamation);
-
-            if (result != MessageBoxResult.OK)
-            {
-                string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                string toolsJsonPath = Path.Combine(basePath, "tools.json");
-
-                if (File.Exists(toolsJsonPath))
-                    File.Delete(toolsJsonPath);
-
-                MessageBox.Show("You have requested to cancel out of the inject.", "Cancel");
-                Logger.Log("User canceled Injection early");
-                throw new Exception("User canceled Injection early");
-            }
-        }
-
-        public static void PrepareAndInformUserOnUWUVCIHelper(string functionName, string toolName, string arguments, string realPath = "")
-        {
-            WriteFailedStepToJson(functionName, toolName, arguments, realPath);
-            DisplayMessageBoxAboutTheHelper();
-        }
-
         public sealed class RuntimeEnv
         {
             public bool UnderWineLike { get; set; }  // Wine / CrossOver / Proton / Lutris

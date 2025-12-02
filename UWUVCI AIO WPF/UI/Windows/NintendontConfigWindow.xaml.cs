@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 using UWUVCI_AIO_WPF.UI.Windows;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.Modules.Nintendont
 {
@@ -298,6 +299,7 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
                 }
                 catch (Exception ex)
                 {
+                    try { Logger.Log("Nintendont OpenExistingAsync error: " + ex.ToString()); } catch { }
                     UWUVCI_MessageBox.Show("Load Failed", "Could not read nincfg.bin:\n" + ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
                 }
             }
@@ -330,6 +332,7 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Nintendont DetectExistingAsync error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Load Failed", "Could not read nincfg.bin:\n" + ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
@@ -352,6 +355,7 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Nintendont SaveToSdAsync error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Save Failed", "Could not write nincfg.bin:\n" + ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
@@ -376,6 +380,7 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
                 }
                 catch (Exception ex)
                 {
+                    try { Logger.Log("Nintendont SaveAsAsync error: " + ex.ToString()); } catch { }
                     UWUVCI_MessageBox.Show("Save Failed", "Could not write nincfg.bin:\n" + ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
                 }
             }
@@ -397,6 +402,7 @@ namespace UWUVCI_AIO_WPF.Modules.Nintendont
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Nintendont DownloadNintendontAsync error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Download Failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }

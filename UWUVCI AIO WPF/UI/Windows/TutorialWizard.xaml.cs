@@ -147,6 +147,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Tutorial PatchNotes open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Failed to load the Patch Notes. Attempting to open the local copy.\n\n" + ex.Message,
@@ -199,6 +200,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Tutorial ReadMe open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Failed to load the online ReadMe. Attempting to open the local copy.\n\n" + ex.Message,

@@ -73,6 +73,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
             catch (Exception ex)
             {
+                try { Logger.Log("N64 Config window open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error Opening N64 Ini Config",
                     "The N64 Ini Config screen could not be opened.\n\n" + ex.Message,
@@ -190,6 +191,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Tutorial wizard open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error Opening Tutorial",
                     "The Tutorial Wizard could not be opened.\n\n" + ex.Message,
@@ -209,6 +211,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Application Settings open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Unable to open Application Settings:\n" + ex.Message,
@@ -230,6 +233,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Feedback window open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Unable to open Feedback window:\n" + ex.Message,
@@ -251,6 +255,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
             catch (Exception ex)
             {
+                try { Logger.Log("ReadMe viewer open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Unable to open ReadMe:\n" + ex.Message,
@@ -272,6 +277,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames
             }
             catch (Exception ex)
             {
+                try { Logger.Log("Patch Notes viewer open error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show(
                     "Error",
                     "Unable to open Patch Notes:\n" + ex.Message,

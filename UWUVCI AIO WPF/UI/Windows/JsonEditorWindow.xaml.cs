@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
 {
@@ -31,7 +32,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 Editor.Text = text.TrimStart();
                 try
                 {
-                    _model = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.JsonAppSettings>(text) ?? new Models.JsonAppSettings();
+                    _model = JsonConvert.DeserializeObject<Models.JsonAppSettings>(text) ?? new Models.JsonAppSettings();
                 }
                 catch { _model = new Models.JsonAppSettings(); }
                 BuildFormFromModel();
@@ -40,6 +41,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             catch (Exception ex)
             {
                 Status.Text = "Load failed";
+                try { Logger.Log("JsonEditor LoadFile error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Load failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
@@ -56,6 +58,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             AddRow("Ancast", _model.Ancast ?? "");
             AddRowBool("UpgradeRequired", _model.UpgradeRequired);
             AddRowBool("ForceTutorialOnNextLaunch", _model.ForceTutorialOnNextLaunch);
+            AddRow("UnixWaitDelayMs", _model.UnixWaitDelayMs.ToString() ?? "");
         }
 
         private void AddRow(string label, string value)
@@ -110,6 +113,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             if (_inputs.TryGetValue("Ancast", out var an)) _model.Ancast = (an as TextBox)?.Text ?? "";
             if (_inputs.TryGetValue("UpgradeRequired", out var ur)) _model.UpgradeRequired = (ur as CheckBox)?.IsChecked == true;
             if (_inputs.TryGetValue("ForceTutorialOnNextLaunch", out var ft)) _model.ForceTutorialOnNextLaunch = (ft as CheckBox)?.IsChecked == true;
+            if (_inputs.TryGetValue("UnixWaitDelayMs", out var uw)) 
+            {
+                if (int.TryParse((uw as TextBox)?.Text, out int delay))
+                {
+                    _model.UnixWaitDelayMs = delay;
+                }
+            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
@@ -120,7 +130,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 if (Tabs.SelectedIndex == 0)
                 {
                     ApplyFormToModel();
-                    toWrite = Newtonsoft.Json.JsonConvert.SerializeObject(_model, Formatting.Indented);
+                    toWrite = JsonConvert.SerializeObject(_model, Formatting.Indented);
                     Editor.Text = toWrite;
                 }
                 else
@@ -129,16 +139,23 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
                 File.WriteAllText(_path, toWrite, Encoding.UTF8);
                 Status.Text = "Saved";
+
+                // Keep the in-memory settings in sync so later saves don't overwrite edits
+                if (string.Equals(_path, JsonSettingsManager.SettingsFile, StringComparison.OrdinalIgnoreCase))
+                {
+                    JsonSettingsManager.LoadSettings();
+                }
             }
             catch (Exception ex)
             {
+                try { Logger.Log("JsonEditor Save_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Save failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
             }
         }
 
         private void SaveAs_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new SaveFileDialog { Filter = "JSON|*.json|All files|*.*", FileName = System.IO.Path.GetFileName(_path) };
+            var dlg = new SaveFileDialog { Filter = "JSON|*.json|All files|*.*", FileName = Path.GetFileName(_path) };
             if (dlg.ShowDialog(this) == true)
             {
                 try
@@ -147,7 +164,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     if (Tabs.SelectedIndex == 0)
                     {
                         ApplyFormToModel();
-                        toWrite = Newtonsoft.Json.JsonConvert.SerializeObject(_model, Formatting.Indented);
+                        toWrite = JsonConvert.SerializeObject(_model, Formatting.Indented);
                         Editor.Text = toWrite;
                     }
                     else toWrite = Editor.Text;
@@ -156,9 +173,16 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     _path = dlg.FileName;
                     PathText.Text = _path;
                     Status.Text = "Saved";
+
+                    // If the user saved over the live settings file, refresh the manager instance
+                    if (string.Equals(_path, JsonSettingsManager.SettingsFile, StringComparison.OrdinalIgnoreCase))
+                    {
+                        JsonSettingsManager.LoadSettings();
+                    }
                 }
                 catch (Exception ex)
                 {
+                    try { Logger.Log("JsonEditor SaveAs_Click error: " + ex.ToString()); } catch { }
                     UWUVCI_MessageBox.Show("Save failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Error, this, true);
                 }
             }
@@ -168,12 +192,13 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                string text = Tabs.SelectedIndex == 0 ? Newtonsoft.Json.JsonConvert.SerializeObject(GetModelFromForm(), Formatting.None) : Editor.Text;
+                string text = Tabs.SelectedIndex == 0 ? JsonConvert.SerializeObject(GetModelFromForm(), Formatting.None) : Editor.Text;
                 JsonConvert.DeserializeObject(text);
                 UWUVCI_MessageBox.Show("Valid JSON", "The JSON is valid.", UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Success, this, true);
             }
             catch (Exception ex)
             {
+                try { Logger.Log("JsonEditor Validate_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Invalid JSON", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Warning, this, true);
             }
         }
@@ -182,13 +207,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
-                string text = Tabs.SelectedIndex == 0 ? Newtonsoft.Json.JsonConvert.SerializeObject(GetModelFromForm(), Formatting.Indented) : Editor.Text;
+                string text = Tabs.SelectedIndex == 0 ? JsonConvert.SerializeObject(GetModelFromForm(), Formatting.Indented) : Editor.Text;
                 var obj = JsonConvert.DeserializeObject(text);
                 Editor.Text = JsonConvert.SerializeObject(obj, Formatting.Indented);
                 Status.Text = "Formatted";
             }
             catch (Exception ex)
             {
+                try { Logger.Log("JsonEditor Format_Click error: " + ex.ToString()); } catch { }
                 UWUVCI_MessageBox.Show("Format failed", ex.Message, UWUVCI_MessageBoxType.Ok, UWUVCI_MessageBoxIcon.Warning, this, true);
             }
         }
