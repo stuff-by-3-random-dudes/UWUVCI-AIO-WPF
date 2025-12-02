@@ -74,6 +74,16 @@ namespace UWUVCI_AIO_WPF.Helpers
         // Save settings with retry mechanism in case of temporary file access issues
         public static void SaveSettings()
         {
+            string caller = null;
+#if DEBUG
+            try
+            {
+                var st = new System.Diagnostics.StackTrace();
+                caller = st.GetFrame(1)?.GetMethod()?.DeclaringType?.FullName + "." + st.GetFrame(1)?.GetMethod()?.Name;
+            }
+            catch { }
+#endif
+
             // Check if the settings file is writable
             if (!IsFileWritable(SettingsFile))
             {
@@ -93,8 +103,27 @@ namespace UWUVCI_AIO_WPF.Helpers
                         Directory.CreateDirectory(AppDataPath);
 
                     var json = JsonConvert.SerializeObject(Settings, Formatting.Indented);
+
+                    // Skip writing if nothing changed to avoid churn
+                    if (File.Exists(SettingsFile))
+                    {
+                        var existing = File.ReadAllText(SettingsFile);
+                        if (string.Equals(existing, json, StringComparison.Ordinal))
+                        {
+#if DEBUG
+                            if (!string.IsNullOrWhiteSpace(caller))
+                                Console.WriteLine($"Settings unchanged; skip save (caller {caller}).");
+#endif
+                            break;
+                        }
+                    }
+
                     File.WriteAllText(SettingsFile, json);
                     Console.WriteLine("Settings saved successfully.");
+#if DEBUG
+                    if (!string.IsNullOrWhiteSpace(caller))
+                        Console.WriteLine($"Settings saved by {caller}.");
+#endif
                     break; // Success, exit loop
                 }
                 catch (IOException ex)
