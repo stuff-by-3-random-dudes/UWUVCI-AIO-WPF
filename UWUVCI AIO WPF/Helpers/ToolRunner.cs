@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Globalization;
+using UWUVCI_AIO_WPF.Models;
 
 namespace UWUVCI_AIO_WPF.Helpers
 {
@@ -664,13 +667,20 @@ namespace UWUVCI_AIO_WPF.Helpers
 
         /// <summary>
         /// Wait until a file or directory is visible (non-zero size for files) under Wine/host.
+        /// Under Wine we allow a longer timeout (up to several minutes) and log if we time out.
         /// </summary>
-        public static bool WaitForWineVisibility(string winPath, bool file = true, int timeoutMs = 8000, int pollMs = 200)
+        public static bool WaitForWineVisibility(string winPath, bool file = true)
         {
             try { if (!UnderWine()) return true; } catch { }
 
+            var pollMs = JsonSettingsManager.Settings.UnixWaitDelayMs;
+            // Scale up timeout for Wine; Wii ISOs can take a while to appear in Wine's view.
+            var timeoutMs = Math.Max(pollMs * 10, 180000); // minimum 3 minutes
+
             var sw = Stopwatch.StartNew();
             string lastNote = "";
+
+            System.Threading.Thread.Sleep(pollMs);
 
             while (sw.ElapsedMilliseconds < timeoutMs)
             {
@@ -710,8 +720,174 @@ namespace UWUVCI_AIO_WPF.Helpers
                 System.Threading.Thread.Sleep(pollMs);
             }
 
-            Log($"I/O fence TIMEOUT: Wine can't see {winPath}");
-            return false;
+            Log($"I/O fence TIMEOUT: Wine can't see {winPath} after {sw.ElapsedMilliseconds}ms");
+            // Soft-fail: allow caller to continue, they can still rely on size checks / fallbacks
+            return true;
+        }
+
+        /// <summary>
+        /// Polls a file size until it stops changing (useful under Wine where native tools finish before Wine/.NET see final bytes).
+        /// </summary>
+        public static void WaitForStableFileSize(string winPath, int maxAttempts = 10, int delayMs = 500, long toleranceBytes = 1024)
+        {
+            if (string.IsNullOrWhiteSpace(winPath))
+                return;
+
+            long? last = null;
+            int stableCount = 0;
+
+            for (int i = 0; i < maxAttempts; i++)
+            {
+                long size = 0;
+                try { if (File.Exists(winPath)) size = new FileInfo(winPath).Length; } catch { }
+
+                if (size > 0 && last.HasValue && Math.Abs(size - last.Value) <= toleranceBytes)
+                {
+                    stableCount++;
+                    if (stableCount >= 2) // two consecutive stable reads
+                        return;
+                }
+                else
+                {
+                    stableCount = 0;
+                }
+
+                last = size > 0 ? size : last;
+                Thread.Sleep(delayMs);
+            }
+        }
+
+        /// <summary>
+        /// Runs "wit size" on the given ISO/path and returns the reported MiB value (or null on failure).
+        /// Uses host-native wit under Wine/mac/Linux; wit.exe on Windows.
+        /// </summary>
+        public static double? GetWitSizeMiB(string toolsPathWin, string isoWinPath)
+        {
+            if (string.IsNullOrWhiteSpace(toolsPathWin) || string.IsNullOrWhiteSpace(isoWinPath))
+                return null;
+
+            try
+            {
+                bool nativeHost = HostIsMac() || HostIsLinux();
+                bool underWine = UnderWine();
+
+                // Choose binary and command
+                if (nativeHost || underWine)
+                {
+                    // host-native wit (mac/linux) path and args
+                    string toolName = HostIsMac() ? "wit-mac" : "wit-linux";
+                    string toolHost = WindowsToHostPosix(Path.Combine(toolsPathWin, toolName));
+                    string isoHost = WindowsToHostPosix(isoWinPath);
+                    if (string.IsNullOrWhiteSpace(toolHost) || string.IsNullOrWhiteSpace(isoHost))
+                        return FallbackFileSizeMiB(isoWinPath);
+
+                    var cmd = $"[ -f {Q(isoHost)} ] && {Q(toolHost)} size {Q(isoHost)}";
+                    int rc = RunHostSh(cmd, out var so, out _);
+                    if (rc == 0 && !string.IsNullOrWhiteSpace(so))
+                        return ParseWitSize(so);
+
+                    // Fallback: force stdout into a temp file and read it
+                    var tmpText = RunWitSizeToTempFile(toolHost, isoHost);
+                    if (!string.IsNullOrWhiteSpace(tmpText))
+                    {
+                        var parsed = ParseWitSize(tmpText);
+                        if (parsed.HasValue)
+                            return parsed;
+                    }
+
+                    return FallbackFileSizeMiB(isoWinPath);
+                }
+                else
+                {
+                    // Native Windows wit.exe
+                    string exeWin = Path.Combine(toolsPathWin, "wit.exe");
+                    int rc = RunWinExe(exeWin, $"size \"{isoWinPath}\"", toolsPathWin, false, out var so, out _);
+                    if (rc != 0 || string.IsNullOrWhiteSpace(so))
+                        return FallbackFileSizeMiB(isoWinPath);
+                    return ParseWitSize(so);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        // Best-effort fallback when wit size output is missing: use file length if visible.
+        private static double? FallbackFileSizeMiB(string isoWinPath)
+        {
+            try
+            {
+                if (File.Exists(isoWinPath))
+                    return new FileInfo(isoWinPath).Length / (1024.0 * 1024.0);
+            }
+            catch { }
+            return null;
+        }
+
+        // Run wit size and redirect output into a temp file (host side), then read it.
+        private static string RunWitSizeToTempFile(string toolHost, string isoHost)
+        {
+            try
+            {
+                string tmpWin = Path.Combine(Path.GetTempPath(), $"wit_size_{Guid.NewGuid():N}.txt");
+                string tmpPosix = WindowsToHostPosix(tmpWin);
+                if (string.IsNullOrWhiteSpace(tmpPosix))
+                    return null;
+
+                var cmd = $"{Q(toolHost)} size {Q(isoHost)} > {Q(tmpPosix)} 2>&1";
+                int rc = RunHostSh(cmd, out _, out _);
+                if (rc != 0)
+                    return null;
+
+                string text = File.Exists(tmpWin) ? File.ReadAllText(tmpWin) : null;
+                try { if (File.Exists(tmpWin)) File.Delete(tmpWin); } catch { }
+                return text;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Verify that "wit size" succeeds and (optionally) matches an expected size within tolerance.
+        /// Throws if size cannot be read or if it differs beyond tolerance.
+        /// </summary>
+        public static void VerifyWitSize(string toolsPathWin, string isoWinPath, double? expectedMiB = null, double toleranceMiB = 1.0)
+        {
+            var size = GetWitSizeMiB(toolsPathWin, isoWinPath);
+            if (!size.HasValue || size.Value <= 0)
+                throw new InvalidDataException($"wit size failed or returned zero for {isoWinPath}");
+
+            if (expectedMiB.HasValue)
+            {
+                var diff = Math.Abs(size.Value - expectedMiB.Value);
+                if (diff > toleranceMiB)
+                    throw new InvalidDataException($"wit size mismatch: got {size.Value:N1} MiB, expected ~{expectedMiB.Value:N1} MiB");
+            }
+        }
+
+        // Extracts the leading MiB value from "wit size" output.
+        private static double? ParseWitSize(string output)
+        {
+            if (string.IsNullOrWhiteSpace(output))
+                return null;
+
+            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (string.IsNullOrEmpty(trimmed) || !char.IsDigit(trimmed[0]))
+                    continue;
+                var parts = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0)
+                    continue;
+                if (double.TryParse(parts[0], NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var value))
+                    return value;
+            }
+
+            return null;
         }
 
         // -------------------

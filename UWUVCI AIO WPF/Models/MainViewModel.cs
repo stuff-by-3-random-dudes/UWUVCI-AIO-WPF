@@ -27,7 +27,6 @@ using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
-using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -1878,7 +1877,7 @@ namespace UWUVCI_AIO_WPF
                 var fixname = name.Split('\\');
                 string fileName = fixname[fixname.Length - 1];
 
-                var env = EnvDetect.Get();
+                var env = MacLinuxHelper.EnvDetect.Get();
                 if (env.UnderWineLike)
                     name = "Net6/" + name;
 

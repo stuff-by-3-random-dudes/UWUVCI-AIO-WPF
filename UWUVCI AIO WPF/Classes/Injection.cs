@@ -23,7 +23,6 @@ using UWUVCI_AIO_WPF.UI.Windows;
 using UWUVCI_AIO_WPF.Services;
 using WiiUDownloaderLibrary;
 using WiiUDownloaderLibrary.Models;
-using static UWUVCI_AIO_WPF.Helpers.MacLinuxHelper;
 
 namespace UWUVCI_AIO_WPF
 {
@@ -59,7 +58,7 @@ namespace UWUVCI_AIO_WPF
         private static readonly string toolsPath = PathResolver.GetToolsPath();
         static string code = null;
         static MainViewModel mvvm;
-        private static bool IsNativeWindows = !EnvDetect.Get().UnderWineLike;
+        private static bool IsNativeWindows = !MacLinuxHelper.EnvDetect.Get().UnderWineLike;
 
         /*
          * GameConsole: Can either be NDS, N64, GBA, NES, SNES or TG16
@@ -704,7 +703,7 @@ namespace UWUVCI_AIO_WPF
 
             var opt = new WiiInjectOptions
             {
-                Debug = mvm.debug,
+                Debug = true,
                 DontTrim = mvm.donttrim,
                 PatchVideo = mvm.Patch,
                 ToPal = mvm.toPal,
@@ -746,7 +745,12 @@ namespace UWUVCI_AIO_WPF
             var st1 = StepTimer("Prepare pre.iso", 1);
             var pre = WiiInjectService.PreparePreIso(toolsPath, tempPath, romPath, opt, runner);
             EndTimer(st1, 1);
-            if (mvm != null) { mvm.Progress = 20; mvm.msg = "Prepared pre.iso"; }
+
+            if (mvm != null) 
+            { 
+                mvm.Progress = 20; 
+                mvm.msg = "Prepared pre.iso"; 
+            }
 
             // STEP 2: Update meta flag from ISO header
             var st2 = StepTimer("Update meta.xml reserved flag", 2);

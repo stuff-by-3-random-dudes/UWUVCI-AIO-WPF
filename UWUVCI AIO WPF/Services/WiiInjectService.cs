@@ -21,7 +21,7 @@ namespace UWUVCI_AIO_WPF.Services
         // Orchestrated standard flow composed of small steps
         internal static void RunStandardPipeline(string toolsPath, string tempPath, string baseRomPath, string romPath, WiiInjectOptions opt, IToolRunnerFacade runner)
         {
-            var (preIso, usedSource) = PreparePreIso(toolsPath, tempPath, romPath, opt, runner);
+            var (preIso, usedSource, sourceMiB) = PreparePreIso(toolsPath, tempPath, romPath, opt, runner);
             UpdateMetaReservedFlag(baseRomPath, preIso);
             var tempDir = Path.Combine(tempPath, "TEMP");
             WitExtractToTemp(toolsPath, preIso, tempDir, opt, runner);
@@ -36,26 +36,43 @@ namespace UWUVCI_AIO_WPF.Services
                 Passthrough = opt.Passthrough,
                 Index = opt.Index,
                 LR = opt.LR,
+                SourceMiB = sourceMiB,
                 Progress = opt.Progress
             };
             WitNfsService.BuildIsoExtractTicketsAndInject(toolsPath, tempPath, baseRomPath, nfsOptions, runner);
         }
 
-        internal static (string preIso, bool usedSource) PreparePreIso(string toolsPath, string tempPath, string romPath, WiiInjectOptions opt, IToolRunnerFacade runner)
+        internal static (string preIso, bool usedSource, double? sourceMiB) PreparePreIso(string toolsPath, string tempPath, string romPath, WiiInjectOptions opt, IToolRunnerFacade runner)
         {
             string preIso = Path.Combine(tempPath, "pre.iso");
             var ext = (Path.GetExtension(romPath) ?? string.Empty).ToLowerInvariant();
-            if (ext.Contains("iso")) return (romPath, true);
+            // Capture source size (wit view) upfront when possible
+            double? srcSize = null;
+            try { srcSize = ToolRunner.GetWitSizeMiB(toolsPath, romPath); } catch { srcSize = null; }
+            if (ext.Contains("iso")) 
+                return (romPath, true, srcSize);
+
             if (opt.ForceNkitConvert || romPath.IndexOf("nkit", StringComparison.OrdinalIgnoreCase) >= 0 || ext.Contains("wbfs"))
             {
                 var witArgs = $"copy --source \"{romPath}\" --dest \"{preIso}\" -I";
                 runner.RunTool("wit", toolsPath, witArgs, showWindow: opt.Debug);
                 ToolRunner.LogFileVisibility("[after wit copy] pre.iso", preIso);
-                if (!ToolRunner.WaitForWineVisibility(preIso)) throw new FileNotFoundException("pre.iso not visible after conversion.", preIso);
-                if (!ext.Contains("wbfs") && !File.Exists(preIso)) throw new Exception("nkit");
-                return (preIso, false);
+                if (!ToolRunner.WaitForWineVisibility(preIso)) 
+                    throw new FileNotFoundException("pre.iso not visible after conversion.", preIso);
+                ToolRunner.WaitForStableFileSize(preIso);
+
+                // Verify the converted ISO matches source size per wit
+                if (srcSize.HasValue)
+                    ToolRunner.VerifyWitSize(toolsPath, preIso, expectedMiB: srcSize, toleranceMiB: 1.0);
+                else
+                    ToolRunner.VerifyWitSize(toolsPath, preIso); // at least ensure wit can read it
+
+                if (!ext.Contains("wbfs") && !File.Exists(preIso)) 
+                    throw new Exception("nkit");
+
+                return (preIso, false, srcSize);
             }
-            return (preIso, false);
+            return (preIso, false, srcSize);
         }
 
         internal static void UpdateMetaReservedFlag(string baseRomPath, string isoPath)
@@ -77,6 +94,11 @@ namespace UWUVCI_AIO_WPF.Services
             var pselParam = opt.DontTrim ? "raw" : "whole";
             var extractArgs = $"extract \"{preIso}\" --DEST \"{tempDir}\" --psel {pselParam} -vv1";
             runner.RunTool("wit", toolsPath, extractArgs, showWindow: opt.Debug);
+
+            // Under Wine the native wit binary can finish before Wine/.NET sees the extracted files.
+            // Fence on directory visibility so later steps don't run against an empty TEMP folder.
+            if (!ToolRunner.WaitForWineVisibility(tempDir, file: false))
+                throw new IOException($"wit extract completed but TEMP directory not visible: {tempDir}");
         }
 
         internal static void ApplyOptionalDolPatch(string tempDir, WiiInjectOptions opt)

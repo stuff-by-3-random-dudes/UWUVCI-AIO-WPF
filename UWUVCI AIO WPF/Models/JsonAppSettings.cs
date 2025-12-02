@@ -24,6 +24,7 @@
         public int FileCopyParallelism { get; set; } = 6;
         public string ToolsPath { get; set; } = string.Empty;
         public string TempPath { get; set; } = string.Empty;
+        public int UnixWaitDelayMs { get; set; } = 2000;
     }
 
 }

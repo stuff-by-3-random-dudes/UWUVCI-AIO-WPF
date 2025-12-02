@@ -11,8 +11,7 @@ namespace UWUVCI_AIO_WPF.Services
             string gameIso,
             string tikTmdDir,
             bool debug,
-            IToolRunnerFacade runner = null,
-            int waitTimeoutMs = 8000)
+            IToolRunnerFacade runner = null)
         {
             if (string.IsNullOrWhiteSpace(toolsPath)) throw new ArgumentException("Tools path required", nameof(toolsPath));
             if (string.IsNullOrWhiteSpace(gameIso)) throw new ArgumentException("Game ISO path required", nameof(gameIso));
@@ -30,11 +29,14 @@ namespace UWUVCI_AIO_WPF.Services
 
             var tmdPath = Path.Combine(tikTmdDir, "tmd.bin");
             var tikPath = Path.Combine(tikTmdDir, "ticket.bin");
-            if (!ToolRunner.WaitForWineVisibility(tmdPath, timeoutMs: waitTimeoutMs) ||
-                !ToolRunner.WaitForWineVisibility(tikPath, timeoutMs: waitTimeoutMs))
+            if (!ToolRunner.WaitForWineVisibility(tmdPath) ||
+                !ToolRunner.WaitForWineVisibility(tikPath))
             {
                 throw new Exception($"WIT extract completed but extracted files not visible: {tmdPath}, {tikPath}");
             }
+
+            if (new FileInfo(tmdPath).Length == 0 || new FileInfo(tikPath).Length == 0)
+                throw new Exception("WIT extract produced empty ticket or TMD file.");
 
             ToolRunner.LogFileVisibility("[WitTicketExtraction] tmd.bin", tmdPath);
             ToolRunner.LogFileVisibility("[WitTicketExtraction] ticket.bin", tikPath);

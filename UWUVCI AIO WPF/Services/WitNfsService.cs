@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Xml;
 using UWUVCI_AIO_WPF.Helpers;
@@ -38,6 +40,7 @@ namespace UWUVCI_AIO_WPF.Services
             var gameIsoWin = Path.Combine(tempPath, "game.iso");
             var tikTmdWin = Path.Combine(tempPath, "TIKTMD");
             var contentDir = Path.Combine(baseRomPath, "content");
+            var alignArg = BuildWitAlignArg(baseRomPath, tempPath);
 
             Directory.CreateDirectory(contentDir);
             Directory.CreateDirectory(Path.Combine(baseRomPath, "code"));
@@ -62,24 +65,29 @@ namespace UWUVCI_AIO_WPF.Services
                 runner.RunTool(
                     toolBaseName: "wit",
                     toolsPathWin: toolsPath,
-                    argsWindowsPaths: $"copy \"{tempBaseWin}\" --DEST \"{destIso}\" -ovv --links --iso",
+                    argsWindowsPaths: $"copy \"{tempBaseWin}\" --DEST \"{destIso}\" -ovv --links --iso{(string.IsNullOrWhiteSpace(alignArg) ? string.Empty : " " + alignArg)}",
                     showWindow: debug
                 );
 
                 gameIsoWin = Path.Combine(contentDir, "game.iso");
 
                 // Fence: wait for native tool -> wine/.NET visibility
-                if (!ToolRunner.WaitForWineVisibility(gameIsoWin, timeoutMs: 20000, pollMs: 250))
+                if (!ToolRunner.WaitForWineVisibility(gameIsoWin))
                 {
                     var posix = ToolRunner.WindowsToHostPosix(gameIsoWin);
                     var rc = ToolRunner.RunHostSh($"[ -s {ToolRunner.Q(posix)} ]", out _, out _);
                     if (rc != 0)
                         throw new Exception($"WIT reported success but game.iso is not visible to Wine/host. posix={posix}");
                 }
-
                 ToolRunner.LogFileVisibility("[post wit copy] content/game.iso", gameIsoWin);
-                LogIsoSize("[WitNfs] content/game.iso", gameIsoWin);
-                LogWitSize("[WitNfs] wit size", toolsPath, gameIsoWin);
+                LogIsoSize("[WitNfs] content/game.iso after copy", gameIsoWin);
+                LogWitSize("[WitNfs] wit size after copy", toolsPath, gameIsoWin);
+                WaitForWitSizeStability("[WitNfs] wit size stable after copy", toolsPath, gameIsoWin);
+                // Compare against original source size if known; otherwise ensure wit can read non-zero ISO.
+                if (options?.SourceMiB.HasValue == true)
+                    ToolRunner.VerifyWitSize(toolsPath, gameIsoWin, expectedMiB: options.SourceMiB, toleranceMiB: 5.0);
+                else
+                    ToolRunner.VerifyWitSize(toolsPath, gameIsoWin); // ensure wit can read non-zero ISO
 
                 if (!File.Exists(gameIsoWin))
                     throw new Exception("WIT: An error occurred while creating the ISO (game.iso missing).");
@@ -99,6 +107,9 @@ namespace UWUVCI_AIO_WPF.Services
                     debug: debug,
                     runner: runner
                 );
+                LogIsoSize("[WitNfs] content/game.iso after ticket extraction", gameIsoWin);
+                LogWitSize("[WitNfs] wit size after ticket extraction", toolsPath, gameIsoWin);
+                WaitForWitSizeStability("[WitNfs] wit size stable after ticket extraction", toolsPath, gameIsoWin);
             }
             catch (Exception ex)
             {
@@ -188,9 +199,17 @@ namespace UWUVCI_AIO_WPF.Services
                     pass = "-passthrough ";
                     extra = string.Empty;
                 }
-                MessageBox.Show("nfs2iso2nfs");
+
                 // Important: pass a Windows-view working directory so RunToolWithFallback uses the correct work dir.
                 var contentWinView = ToolRunner.ToWindowsView(contentDir);
+                LogIsoSize("[WitNfs] content/game.iso before injection", Path.Combine(contentDir, "game.iso"));
+                LogWitSize("[WitNfs] wit size before injection", toolsPath, Path.Combine(contentDir, "game.iso"));
+                WaitForWitSizeStability("[WitNfs] wit size stable before injection", toolsPath, Path.Combine(contentDir, "game.iso"));
+                if (options?.SourceMiB.HasValue == true)
+                    ToolRunner.VerifyWitSize(toolsPath, Path.Combine(contentDir, "game.iso"), expectedMiB: options.SourceMiB, toleranceMiB: 5.0);
+                else
+                    ToolRunner.VerifyWitSize(toolsPath, Path.Combine(contentDir, "game.iso"));
+
                 runner.RunToolWithFallback(
                     toolBaseName: "nfs2iso2nfs",
                     toolsPathWin: toolsPath,
@@ -200,8 +219,9 @@ namespace UWUVCI_AIO_WPF.Services
                 );
 
                 LogNfsOutput(contentDir);
-                LogIsoSize("[WitNfs] content/game.iso before injection", Path.Combine(contentDir, "game.iso"));
-                LogWitSize("[WitNfs] wit size before inject", Path.Combine(contentDir, "game.iso"));
+                LogIsoSize("[WitNfs] content/game.iso after injection", Path.Combine(contentDir, "game.iso"));
+                LogWitSize("[WitNfs] wit size after injection", toolsPath, Path.Combine(contentDir, "game.iso"));
+                WaitForWitSizeStability("[WitNfs] wit size stable after injection", toolsPath, Path.Combine(contentDir, "game.iso"));
 
                 // remove working iso, ensure to use Path.Combine
                 var isoToDelete = Path.Combine(contentDir, "game.iso");
@@ -266,17 +286,103 @@ namespace UWUVCI_AIO_WPF.Services
             }
         }
 
-        private static void LogWitSize(string label, string toolsPathWin, string isoWinPath)
+        private static double? LogWitSize(string label, string toolsPathWin, string isoWinPath)
         {
             if (!(ToolRunner.HostIsMac() || ToolRunner.HostIsLinux()))
-                return;
+                return null;
 
+            var (rc, so, se) = RunWitSizeCommand(toolsPathWin, isoWinPath);
+            var stdoutText = string.IsNullOrWhiteSpace(so) ? "(none)" : so.Trim();
+            var stderrText = string.IsNullOrWhiteSpace(se) ? "(none)" : se.Trim();
+            RunnerLog($"{label}: exit={rc} stdout={stdoutText} stderr={stderrText}");
+            return ParseWitSize(stdoutText);
+        }
+
+        private static (int rc, string stdout, string stderr) RunWitSizeCommand(string toolsPathWin, string isoWinPath)
+        {
             var isoHost = ToolRunner.WindowsToHostPosix(isoWinPath);
             var toolName = ToolRunner.HostIsMac() ? "wit-mac" : "wit-linux";
             var toolHost = ToolRunner.WindowsToHostPosix(Path.Combine(toolsPathWin, toolName));
             var cmd = $"[ -f {ToolRunner.Q(isoHost)} ] && {ToolRunner.Q(toolHost)} size {ToolRunner.Q(isoHost)}";
             var rc = ToolRunner.RunHostSh(cmd, out var so, out var se);
-            RunnerLog($"{label}: exit={rc}{(string.IsNullOrEmpty(so) ? string.Empty : $" stdout={so.Trim()}")}{(string.IsNullOrEmpty(se) ? string.Empty : $" stderr={se.Trim()}")}");
+            return (rc, so, se);
+        }
+
+        private static double? ParseWitSize(string output)
+        {
+            if (string.IsNullOrWhiteSpace(output))
+                return null;
+
+            var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var trimmed = line.Trim();
+                if (string.IsNullOrEmpty(trimmed) || !char.IsDigit(trimmed[0]))
+                    continue;
+                var parts = trimmed.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0)
+                    continue;
+                if (double.TryParse(parts[0], NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var value))
+                    return value;
+            }
+
+            return null;
+        }
+
+        private static void WaitForWitSizeStability(string label, string toolsPathWin, string isoWinPath, int maxAttempts = 6, double tolerance = 0.01)
+        {
+            if (!(ToolRunner.HostIsMac() || ToolRunner.HostIsLinux()))
+                return;
+
+            double? prevSize = null;
+            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+            {
+                var size = LogWitSize($"{label} (attempt {attempt})", toolsPathWin, isoWinPath);
+                if (!size.HasValue && !prevSize.HasValue)
+                {
+                    RunnerLog($"{label}: wit size missing output; skipping stability wait.");
+                    return;
+                }
+
+                if (size.HasValue && prevSize.HasValue)
+                {
+                    var diff = Math.Abs(size.Value - prevSize.Value);
+                    if (diff <= Math.Max(prevSize.Value * tolerance, 0.01))
+                    {
+                        RunnerLog($"{label}: stable at {size.Value:N3} MiB");
+                        return;
+                    }
+                }
+
+                prevSize = size;
+                if (attempt < maxAttempts)
+                    Thread.Sleep(250);
+            }
+
+            RunnerLog($"{label}: stability check ended (last={prevSize?.ToString("N3") ?? "n/a"} MiB)");
+        }
+
+        private static string BuildWitAlignArg(string baseRomPath, string tempPath)
+        {
+            if (string.IsNullOrWhiteSpace(baseRomPath) && string.IsNullOrWhiteSpace(tempPath))
+                return string.Empty;
+
+            var candidates = new[]
+            {
+                Path.Combine(baseRomPath ?? string.Empty, "align-files.txt"),
+                Path.Combine(tempPath ?? string.Empty, "align-files.txt")
+            };
+
+            foreach (var candidate in candidates.Where(c => !string.IsNullOrWhiteSpace(c)))
+            {
+                if (File.Exists(candidate))
+                {
+                    RunnerLog($"Using wit align file: {candidate}");
+                    return $"--align-files \"{candidate}\"";
+                }
+            }
+
+            return string.Empty;
         }
 
     }

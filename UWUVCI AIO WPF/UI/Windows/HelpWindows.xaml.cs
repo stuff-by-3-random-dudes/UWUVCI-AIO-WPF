@@ -53,7 +53,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             InitializeComponent();
 
-            try { _plainMode = UWUVCI_AIO_WPF.Helpers.MacLinuxHelper.EnvDetect.Get()?.UnderWineLike == true; } catch { _plainMode = false; }
+            try { _plainMode = MacLinuxHelper.EnvDetect.Get()?.UnderWineLike == true; } catch { _plainMode = false; }
 
             _mode = mode.ToLowerInvariant();
             WindowTitleText.Text = _mode == "patchnotes"
@@ -407,7 +407,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                         };
                         link.RequestNavigate += (s, e) =>
                         {
-                            if (!Helpers.ToolRunner.OpenOnHost(e.Uri.ToString()))
+                            if (!ToolRunner.OpenOnHost(e.Uri.ToString()))
                             {
                                 try { Logger.Log("HelpWindow link open failed: " + e.Uri.ToString()); } catch { }
                                 try { Clipboard.SetText(e.Uri.ToString()); } catch { }

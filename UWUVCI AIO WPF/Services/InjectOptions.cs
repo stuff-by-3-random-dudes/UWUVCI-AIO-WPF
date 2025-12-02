@@ -19,6 +19,7 @@ namespace UWUVCI_AIO_WPF.Services
         public bool Passthrough { get; set; }
         public int Index { get; set; }
         public bool LR { get; set; }
+        public double? SourceMiB { get; set; } // optional reference size from original ISO/NKit/WBFS
         // Optional progress reporter: (percent [0-100], message)
         public Action<int, string> Progress { get; set; }
     }
