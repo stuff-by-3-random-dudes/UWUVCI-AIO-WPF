@@ -725,6 +725,28 @@ namespace UWUVCI_AIO_WPF.Helpers
             return true;
         }
 
+        public static void DeleteDirectorySafe(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                    Directory.Delete(path, true);
+                return;
+            }
+            catch { }
+
+            // Fallback with \\?\ prefix to handle trailing dots or other oddities
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    var prefixPath = path.StartsWith(@"\\?\") ? path : @"\\?\" + path.TrimStart('\\');
+                    Directory.Delete(prefixPath, true);
+                }
+            }
+            catch { }
+        }
+
         /// <summary>
         /// Polls a file size until it stops changing (useful under Wine where native tools finish before Wine/.NET see final bytes).
         /// </summary>
@@ -768,11 +790,15 @@ namespace UWUVCI_AIO_WPF.Helpers
 
             try
             {
+                // Always prefer the native Windows path when we are actually running on Windows.
+                // Some Wine detection heuristics (e.g., presence of start.exe) can be true on real Windows,
+                // which would wrongly send us down the host (posix) code path and make verification fail.
+                bool isNativeWindows = IsNativeWindows && !HostIsMac() && !HostIsLinux();
                 bool nativeHost = HostIsMac() || HostIsLinux();
                 bool underWine = UnderWine();
 
                 // Choose binary and command
-                if (nativeHost || underWine)
+                if (!isNativeWindows && (nativeHost || underWine))
                 {
                     // host-native wit (mac/linux) path and args
                     string toolName = HostIsMac() ? "wit-mac" : "wit-linux";

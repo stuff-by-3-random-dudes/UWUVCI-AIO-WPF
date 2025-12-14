@@ -99,6 +99,10 @@ namespace UWUVCI_AIO_WPF.Services
             // Fence on directory visibility so later steps don't run against an empty TEMP folder.
             if (!ToolRunner.WaitForWineVisibility(tempDir, file: false))
                 throw new IOException($"wit extract completed but TEMP directory not visible: {tempDir}");
+
+            // Drop UPDATE partition contents; occasionally wit leaves behind odd filenames Windows dislikes.
+            var updateDir = Path.Combine(tempDir, "UPDATE");
+            ToolRunner.DeleteDirectorySafe(updateDir);
         }
 
         internal static void ApplyOptionalDolPatch(string tempDir, WiiInjectOptions opt)
