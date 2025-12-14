@@ -270,7 +270,16 @@ A) Windows:
 
 ------------------------------------------------------------
 
-Q30) “An error message popped up.”  
+Q30) Image/Feedback/Compatibility Submission Failed  
+A) If the error is stating something about a **Token**
+      That means the credentials have expired.
+      Credentials will only be expired when a new version of UWUVCI V3 is released.
+   If the error is stating **Access Restricted*
+      You've been flagged as a bad actor from your submissions. 
+
+------------------------------------------------------------
+
+Q31) “An error message popped up.”  
 A) **Read it.**  
    UWUVCI’s messages are written to tell you exactly what’s wrong.  
    If it mentions a file, check that path.  
