@@ -84,6 +84,18 @@ namespace UWUVCI_AIO_WPF.Helpers
             catch { }
 #endif
 
+            // Ensure settings directory exists before any file checks
+            try
+            {
+                if (!Directory.Exists(AppDataPath))
+                    Directory.CreateDirectory(AppDataPath);
+            }
+            catch
+            {
+                Console.WriteLine("Settings directory could not be created. Unable to save settings.");
+                return;
+            }
+
             // Check if the settings file is writable
             if (!IsFileWritable(SettingsFile))
             {
@@ -99,9 +111,6 @@ namespace UWUVCI_AIO_WPF.Helpers
             {
                 try
                 {
-                    if (!Directory.Exists(AppDataPath))
-                        Directory.CreateDirectory(AppDataPath);
-
                     var json = JsonConvert.SerializeObject(Settings, Formatting.Indented);
 
                     // Skip writing if nothing changed to avoid churn
