@@ -1,5 +1,5 @@
 ====================================
-Version 3.200 - Dec 7, 2025
+Version 3.200 - Dec 14, 2025
 ====================================
 **New Features**
 - Short Game Name field added to inject creation.
@@ -58,8 +58,6 @@ Version 3.200 - Dec 7, 2025
   - Cleaner, includes version number and improved layout.
 - Rewritten ReadMe
   - Updated for clarity and current features.
-- Custom CNUSPacker Implementation
-  - Fixed FSTEntry issues and improved speed.
 - Improved WiiUDownloaderLibrary
   - Now supports retries, parallel downloads, and live progress updates.
 - Improved Responsiveness
@@ -96,6 +94,7 @@ Version 3.200 - Dec 7, 2025
   - Now shows a proper message when display scaling is too high.
 - Windows Security Compatibility
   - Files within the app no longer get randomly blocked by Windows Defender (only the main EXE could be flagged, which is rare).
+- Files not being able to be deleted when Disabling Trim
 
 ====================================
 Version 3.N - May 11, 2025
