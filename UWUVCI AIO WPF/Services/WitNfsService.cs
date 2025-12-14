@@ -84,10 +84,45 @@ namespace UWUVCI_AIO_WPF.Services
                 LogWitSize("[WitNfs] wit size after copy", toolsPath, gameIsoWin);
                 WaitForWitSizeStability("[WitNfs] wit size stable after copy", toolsPath, gameIsoWin);
                 // Compare against original source size if known; otherwise ensure wit can read non-zero ISO.
+                bool VerifyWithRetry(double? expectedMiB = null)
+                {
+                    try
+                    {
+                        if (expectedMiB.HasValue)
+                            ToolRunner.VerifyWitSize(toolsPath, gameIsoWin, expectedMiB: expectedMiB, toleranceMiB: 5.0);
+                        else
+                            ToolRunner.VerifyWitSize(toolsPath, gameIsoWin); // ensure wit can read non-zero ISO
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        RunnerLog($"[WitNfs] VerifyWitSize first attempt failed: {ex.Message}. Retrying after short delay...");
+                        Thread.Sleep(JsonSettingsManager.Settings.UnixWaitDelayMs);
+                        try
+                        {
+                            if (expectedMiB.HasValue)
+                                ToolRunner.VerifyWitSize(toolsPath, gameIsoWin, expectedMiB: expectedMiB, toleranceMiB: 5.0);
+                            else
+                                ToolRunner.VerifyWitSize(toolsPath, gameIsoWin);
+                            return true;
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+                    }
+                }
+
                 if (options?.SourceMiB.HasValue == true)
-                    ToolRunner.VerifyWitSize(toolsPath, gameIsoWin, expectedMiB: options.SourceMiB, toleranceMiB: 5.0);
+                {
+                    if (!VerifyWithRetry(options.SourceMiB))
+                        throw new Exception("wit size failed or returned zero for " + gameIsoWin);
+                }
                 else
-                    ToolRunner.VerifyWitSize(toolsPath, gameIsoWin); // ensure wit can read non-zero ISO
+                {
+                    if (!VerifyWithRetry(null) && options?.Kind == InjectKind.WiiStandard)
+                        throw new Exception("wit size failed or returned zero for " + gameIsoWin);
+                }
 
                 if (!File.Exists(gameIsoWin))
                     throw new Exception("WIT: An error occurred while creating the ISO (game.iso missing).");
@@ -205,10 +240,14 @@ namespace UWUVCI_AIO_WPF.Services
                 LogIsoSize("[WitNfs] content/game.iso before injection", Path.Combine(contentDir, "game.iso"));
                 LogWitSize("[WitNfs] wit size before injection", toolsPath, Path.Combine(contentDir, "game.iso"));
                 WaitForWitSizeStability("[WitNfs] wit size stable before injection", toolsPath, Path.Combine(contentDir, "game.iso"));
-                if (options?.SourceMiB.HasValue == true)
-                    ToolRunner.VerifyWitSize(toolsPath, Path.Combine(contentDir, "game.iso"), expectedMiB: options.SourceMiB, toleranceMiB: 5.0);
-                else
-                    ToolRunner.VerifyWitSize(toolsPath, Path.Combine(contentDir, "game.iso"));
+                if (options?.Kind == InjectKind.WiiStandard)
+                {
+                    // Verify against original source size if known
+                    if (options?.SourceMiB.HasValue == true)
+                        ToolRunner.VerifyWitSize(toolsPath, Path.Combine(contentDir, "game.iso"), expectedMiB: options.SourceMiB, toleranceMiB: 5.0);
+                    else
+                        ToolRunner.VerifyWitSize(toolsPath, Path.Combine(contentDir, "game.iso"));
+                }
 
                 runner.RunToolWithFallback(
                     toolBaseName: "nfs2iso2nfs",
