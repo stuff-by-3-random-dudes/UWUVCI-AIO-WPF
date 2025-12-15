@@ -10,8 +10,8 @@
       Title="Paths" materialDesign:ShadowAssist.CacheMode="{x:Null}">
 
     <Grid DataContext="{StaticResource mvm}">
-        <TextBox materialDesign:HintAssist.Hint="PATH TO STORE DOWNLOADED BASES" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="234,215,420,340" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding BaseStore}"/>
-        <TextBox materialDesign:HintAssist.Hint="PATH TO STORE INJECTS" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="234,288,420,266" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding InjectStore}"/>
+        <TextBox materialDesign:HintAssist.Hint="PATH TO STORE DOWNLOADED BASES" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="234,215,420,340" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding BaseStore}" ToolTip="Folder where downloaded base archives are stored."/>
+        <TextBox materialDesign:HintAssist.Hint="PATH TO STORE INJECTS" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="234,288,420,266" Background="{x:Null}" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" IsReadOnly="True"  Focusable="False" Text="{Binding InjectStore}" ToolTip="Folder where finished injects will be saved."/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="754,228,0,0" VerticalAlignment="Top" Width="126" Click="Button_Click"/>
         <Button Content="Set Path" HorizontalAlignment="Left" Margin="754,302,0,0" VerticalAlignment="Top" Width="127" Click="Button_Click_1"/>
         <Button Content="Back" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="82" Click="Button_Click_2"/>

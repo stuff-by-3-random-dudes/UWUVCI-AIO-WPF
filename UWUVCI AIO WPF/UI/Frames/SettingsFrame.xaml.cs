@@ -1,8 +1,11 @@
-﻿using System;
+using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using UWUVCI_AIO_WPF.Helpers;
+using UWUVCI_AIO_WPF.Modules.Nintendont;
 using UWUVCI_AIO_WPF.UI.Windows;
 
 
@@ -18,7 +21,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         {
             InitializeComponent();
             parent = mw;
-           // spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
+            // spm.Content += "\nThis will most likely fix the Injection Process, if it's stuck before it shows Copy Base";
+
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
+
+            // Set the window title dynamically
+            lblVersion.Content = $"v{version.Major}.{version.Minor}.{version.Build}  ({buildDate:MMM dd, yyyy})";
+
+            // Settings UI now handled in Application Settings window
         }
         public void Dispose()
         {
@@ -50,17 +62,31 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            Process[] pname = Process.GetProcessesByName("INICreator");
-            if (pname.Length == 0)
+            try
             {
-                Process.Start(@"bin\Tools\INICreator.exe");
+                // Prefer integrated WPF editor
+                var win = new N64ConfigWindow
+                {
+                    Owner = Window.GetWindow(this)
+                };
+                win.ShowDialog();
             }
-                
+            catch (Exception ex)
+            {
+                try { Logger.Log("N64 Config window open error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show(
+                    "Error Opening N64 Ini Config",
+                    "The N64 Ini Config screen could not be opened.\n\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+            
         }
 
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
-            Custom_Message cm = new Custom_Message("Credits", "UWUVCI AIO - NicoAICP, Morilli, ZestyTS\nBeta Testers/Contributors - wowjinxy, Danis, Adolfobenjaminv\n\nBuildPcePkg & BuildTurboCDPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli\nINICreator - NicoAICP\nN64Converter - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli\nwiiurpxtool - 0CHB0\nGoomba - FluBBa\nDarkFilter Removal N64 - MelonSpeedruns, ZestyTS\nNintendont SD Card Menu - TeconMoon\nwit - Wiimm\nGetExtTypePatcher - Fix94\nnfs2iso2nfs - sabykos, piratesephiroth, Fix94 and many more\nWii-VMC - wanikoko\nIcon/TV Bootimages - Flump, ZestyTS\nNKit - Nanook\nImage Creation Base - Phacox\nWiiGameLanguage Patcher - ReturnerS\nChangeAspectRatio - andot\nvWii Title Forwarder - Fix94");
+            Custom_Message cm = new Custom_Message("Credits", "UWUVCI AIO - NicoAICP, Morilli, ZestyTS\nBeta Testers/Contributors - wowjinxy, Danis, Adolfobenjaminv\n\nBuildPcePkg & BuildTurboCDPcePkg - JohnnyGo\nCdecrypt -  crediar\nCNUSPACKER - NicoAICP, Morilli, ZestyTS\nINICreator - NicoAICP\nN64Converter - Morilli\npng2tga - Easy2Convert\ninject_gba_c (psb) - Morilli\nRetroInject_C - Morilli\ntga_verify - Morilli\nWiiUDownloader - Morilli, ZestyTS\nwiiurpxtool - 0CHB0\nGoomba - FluBBa\nDarkFilter Removal N64 - MelonSpeedruns, ZestyTS\nNintendont SD Card Menu - TeconMoon\nwit - Wiimm\nGetExtTypePatcher - Fix94\nnfs2iso2nfs - sabykos, piratesephiroth, Fix94 and many more\nWii-VMC - wanikoko\nIcon/TV Bootimages - Flump, ZestyTS\nNKit - Nanook\nImage Creation Base - Phacox\nWiiGameLanguage Patcher - ReturnerS\nChangeAspectRatio - andot\nvWii Title Forwarder - Fix94");
             try
             {
                 cm.Owner = (FindResource("mvm") as MainViewModel).mw;
@@ -92,12 +118,31 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
-            Process[] pname = Process.GetProcessesByName("NintendontConfig");
-            if (pname.Length == 0)
+         
+            // Ensure only one instance of the config window at a time
+            foreach (Window win in Application.Current.Windows)
             {
-                Process.Start(@"bin\Tools\NintendontConfig.exe");
+                if (win is NintendontConfigWindow)
+                {
+                    win.Activate();
+                    return;
+                }
             }
-                
+
+            // Open the new integrated WPF Nintendont Configurator
+            var window = new NintendontConfigWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+            window.ShowDialog();
+        }
+
+
+        private void OpenCompatSubmit_Click(object sender, RoutedEventArgs e)
+        {
+            var win = new CompatEntryWindow();
+            win.Owner = Window.GetWindow(this);
+            win.ShowDialog();
         }
 
         private void Button_Click_10(object sender, RoutedEventArgs e)
@@ -111,18 +156,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_11(object sender, RoutedEventArgs e)
         {
-            using (LogoCreator ic = new LogoCreator())
+            using LogoCreator ic = new LogoCreator();
+            try
             {
-                try
-                {
-                    ic.Owner = (FindResource("mvm") as MainViewModel).mw;
-                }
-                catch (Exception)
-                {
-
-                }
-                ic.ShowDialog();
+                ic.Owner = (FindResource("mvm") as MainViewModel).mw;
             }
+            catch (Exception)
+            {
+
+            }
+            ic.ShowDialog();
         }
 
         private void Button_Click_12(object sender, RoutedEventArgs e)
@@ -132,12 +175,117 @@ namespace UWUVCI_AIO_WPF.UI.Frames
 
         private void Button_Click_13(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/zestyts");
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://ko-fi.com/zestyts");
         }
 
         private void ShowTutorialScreens_Click(object sender, RoutedEventArgs e)
         {
-            new IntroductionWindow().ShowDialog();
+            try
+            {
+                var tutorial = new TutorialWizard
+                {
+                    Owner = Window.GetWindow(this),
+                    Tag = "manual"
+                };
+                tutorial.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                try { Logger.Log("Tutorial wizard open error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show(
+                    "Error Opening Tutorial",
+                    "The Tutorial Wizard could not be opened.\n\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
         }
+
+        private void OpenAppSettings_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ApplicationSettings appSettings = new ApplicationSettings();
+                appSettings.Owner = parent;
+                appSettings.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                try { Logger.Log("Application Settings open error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Unable to open Application Settings:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
+        private void OpenFeedbackWindow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var feedbackWin = new FeedbackWindow
+                {
+                    Owner = parent
+                };
+                feedbackWin.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                try { Logger.Log("Feedback window open error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Unable to open Feedback window:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
+        private void HelpButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var helpWindow = new HelpWindow
+                {
+                    Owner = Window.GetWindow(this)
+                };
+                helpWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                try { Logger.Log("ReadMe viewer open error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Unable to open ReadMe:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
+        private void OpenPatchNotes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var patchNotes = new HelpWindow("patchnotes")
+                {
+                    Owner = Window.GetWindow(this)
+                };
+                patchNotes.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                try { Logger.Log("Patch Notes viewer open error: " + ex.ToString()); } catch { }
+                UWUVCI_MessageBox.Show(
+                    "Error",
+                    "Unable to open Patch Notes:\n" + ex.Message,
+                    UWUVCI_MessageBoxType.Ok,
+                    UWUVCI_MessageBoxIcon.Error
+                );
+            }
+        }
+
     }
 }

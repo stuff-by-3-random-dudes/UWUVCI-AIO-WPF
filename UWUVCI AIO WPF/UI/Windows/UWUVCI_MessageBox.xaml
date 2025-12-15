@@ -1,0 +1,242 @@
+﻿<Window x:Class="UWUVCI_AIO_WPF.UI.Windows.UWUVCI_MessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="UWUVCI Message"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        SizeToContent="WidthAndHeight"
+        ShowInTaskbar="False"
+        AllowsTransparency="True"
+        Opacity="0"
+        SnapsToDevicePixels="True">
+
+    <!-- Local resources so there are no missing-style errors -->
+    <Window.Resources>
+
+        <!-- Soft card shadow -->
+        <DropShadowEffect x:Key="CardShadow"
+                          Color="#000000"
+                          Opacity="0.25"
+                          BlurRadius="16"
+                          ShadowDepth="2"/>
+
+        <!-- Primary (accent) button style -->
+        <Style x:Key="AccentButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="BorderBrush" Value="#2196F3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="MinWidth" Value="84"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <!-- Rounded corners are applied INSIDE the template.
+                             No CornerRadius on Button itself (avoids the error). -->
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#1976D2"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#0D47A1"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#0D47A1"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary (outline) button style -->
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D0D7DE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="MinWidth" Value="84"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#9AA7B2"/>
+                                <Setter TargetName="Root" Property="Background" Value="#F6F8FA"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#EDEFF2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.55"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Compact horizontal stack helper -->
+        <Style x:Key="HStack" TargetType="StackPanel">
+            <Setter Property="Orientation" Value="Horizontal"/>
+        </Style>
+
+        <!-- Title text style -->
+        <Style x:Key="TitleTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#222"/>
+        </Style>
+
+        <!-- Body text style -->
+        <Style x:Key="BodyTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- ICON GEOMETRIES -->
+        <Geometry x:Key="IconInfoGeometry">
+            M12,2A10,10 0 1,0 22,12A10,10 0 1,0 12,2ZM12,7A1.5,1.5 0 1,1 10.5,8.5A1.5,1.5 0 0,1 12,7ZM13,18H11V10H13Z
+        </Geometry>
+
+        <Geometry x:Key="IconSuccessGeometry">
+            M12 2A10 10 0 1 0 22 12A10 10 0 1 0 12 2ZM10 15.17L6.83 12L8.24 10.59L10 12.34L15.76 6.58L17.17 8L10 15.17Z
+        </Geometry>
+
+        <Geometry x:Key="IconWarningGeometry">
+            M1,21H23L12,2ZM13,16H11V10H13ZM13,20H11V18H13Z
+        </Geometry>
+
+        <Geometry x:Key="IconErrorGeometry">
+            M12,2A10,10 0 1,0 22,12A10,10 0 1,0 12,2ZM14.12,8.47L12,10.59L9.88,8.47L8.47,9.88L10.59,12L8.47,14.12L9.88,15.53L12,13.41L14.12,15.53L15.53,14.12L13.41,12L15.53,9.88Z
+        </Geometry>
+
+    </Window.Resources>
+
+    <Border x:Name="BorderRoot"
+        CornerRadius="8"
+        Padding="16"
+        BorderThickness="2"
+        BorderBrush="#2196F3"
+        Background="White"
+        SnapsToDevicePixels="True"
+        Effect="{StaticResource CardShadow}">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ICON SECTION -->
+            <Grid Grid.Column="0" VerticalAlignment="Top">
+                <Ellipse x:Name="IconBack"
+                     Width="46"
+                     Height="46"
+                     StrokeThickness="0"
+                     Fill="#EEF4FF"/>
+                <Viewbox Width="28" Height="28"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <Canvas Width="24" Height="24">
+                        <Path x:Name="IconPath"
+                            Stretch="Uniform"
+                            Fill="#2196F3"
+                            Data="M12,2A10,10 0 1,0 22,12A10,10 0 1,0 12,2ZM12,7A1.5,1.5 0 1,1 10.5,8.5A1.5,1.5 0 0,1 12,7ZM13,18H11V10H13Z"/>
+                    </Canvas>
+                </Viewbox>
+            </Grid>
+
+
+            <!-- CONTENT SECTION -->
+            <StackPanel Grid.Column="2" VerticalAlignment="Top">
+                <TextBlock x:Name="TitleBlock"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Foreground="#222"
+                       Margin="0,0,0,6"/>
+
+                <TextBlock x:Name="MessageBlock"
+                       TextWrapping="Wrap"
+                       FontSize="13"
+                       Foreground="#333"
+                       Margin="0,0,0,16"/>
+
+                <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                    <Button x:Name="BtnYes"
+                        Content="Yes"
+                        Width="84"
+                        Height="30"
+                        Margin="0,0,8,0"
+                        Click="BtnYes_Click"
+                        Visibility="Collapsed"
+                        Background="#2196F3"
+                        Foreground="White"
+                        BorderBrush="#2196F3"
+                        FontWeight="SemiBold"
+                        BorderThickness="1"
+                        Cursor="Hand"/>
+
+                    <Button x:Name="BtnNo"
+                        Content="No"
+                        Width="84"
+                        Height="30"
+                        Margin="0,0,8,0"
+                        Click="BtnNo_Click"
+                        Visibility="Collapsed"/>
+
+                    <Button x:Name="BtnOk"
+                        Content="OK"
+                        Width="84"
+                        Height="30"
+                        Margin="0,0,8,0"
+                        Click="BtnOk_Click"
+                        Visibility="Collapsed"
+                        Background="#2196F3"
+                        Foreground="White"
+                        BorderBrush="#2196F3"
+                        FontWeight="SemiBold"
+                        BorderThickness="1"
+                        Cursor="Hand"/>
+
+                    <Button x:Name="BtnCancel"
+                        Content="Cancel"
+                        Width="84"
+                        Height="30"
+                        Click="BtnCancel_Click"
+                        Visibility="Collapsed"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+
+
+</Window>

@@ -1,0 +1,112 @@
+using Octokit;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace UWUVCI_AIO_WPF.Services
+{
+    /// <summary>
+    /// Shared base class for all UWUVCI GitHub services.
+    /// Provides token decoding, GitHubClient creation, retry logic, and helper methods.
+    /// </summary>
+    public abstract class GitHubBaseService
+    {
+        public const string BotName = "UWUVCI-ContriBot";
+        public const string BlackListURL = "https://raw.githubusercontent.com/ZestyTS/UWUVCI-AIO-WPF/refs/heads/master/UWUVCI%20AIO%20WPF/uwuvci_installer_creator/app/blacklist.json";
+        // ===============================
+        // TOKEN + CLIENT CREATION
+        // ===============================
+        private string GetToken()
+        {
+#if DEBUG
+            string envToken = "";
+            return envToken;
+#endif
+                // BEGIN_TOKEN_REGION
+    // This region is replaced by Inject-ObfuscatedToken.ps1 for protected builds.
+    byte[] xorKey = new byte[] { 0x81, 0x3D, 0xE3, 0x89 };
+int[] part1 = new int[] { 219, 15, 139, 254, 217, 13, 165, 243, 228, 122, 210, 222, 226, 81 };
+    int[] part2 = new int[] { 143, 186, 211, 107, 135, 240, 211, 104, 173, 196, 204, 80, 147, 205 };
+    int[] part3 = new int[] { 213, 120, 169, 250, 226, 13, 214, 188, 219, 71, 173, 252, 227, 122 };
+    int[] part4 = new int[] { 219, 186, 214, 105, 165, 193, 224, 81, 165, 227, 208, 74, 222, 180 };
+
+    var partsArray = new byte[][] { part1.Select(v => (byte)v).ToArray(), part2.Select(v => (byte)v).ToArray(), part3.Select(v => (byte)v).ToArray(), part4.Select(v => (byte)v).ToArray() };
+
+    var all = partsArray.SelectMany(p => p)
+                        .Select((b, idx) => (byte)(b ^ xorKey[idx % xorKey.Length]))
+                        .ToArray();
+    var base64Str = System.Text.Encoding.UTF8.GetString(all);
+    var token = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(base64Str));
+    return token;
+    // END_TOKEN_REGION
+        }
+        public GitHubClient CreateClient()
+        {
+            var token = GetToken();
+            return new GitHubClient(new ProductHeaderValue("UWUVCI-ContriBot"))
+            {
+                Credentials = new Credentials(token)
+            };
+        }
+
+        // ===============================
+        // COMMON UTILITIES
+        // ===============================
+        public async Task<T> RetryAsync<T>(Func<Task<T>> operation, int maxRetries = 3)
+        {
+            int delay = 1000; // start 1s
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    return await operation();
+                }
+                catch (RateLimitExceededException ex)
+                {
+                    TimeSpan ra = ex.GetRetryAfterTimeSpan();
+                    int waitFor = ra == TimeSpan.Zero
+                        ? delay * 5
+                        : (int)ra.TotalMilliseconds;
+
+                    await Task.Delay(waitFor);
+                }
+                catch (HttpRequestException ex) when (attempt < maxRetries)
+                {
+                    if (ex.Message.Contains("502") || ex.Message.Contains("503") || ex.Message.Contains("504"))
+                        await Task.Delay(delay);
+                    else
+                        throw;
+                }
+                catch (ApiException ex) when (attempt < maxRetries)
+                {
+                    if (ex.HttpResponse?.StatusCode == System.Net.HttpStatusCode.BadGateway ||
+                        ex.HttpResponse?.StatusCode == System.Net.HttpStatusCode.ServiceUnavailable ||
+                        ex.HttpResponse?.StatusCode == System.Net.HttpStatusCode.GatewayTimeout)
+                        await Task.Delay(delay);
+                    else
+                        throw;
+                }
+
+                delay *= 2; // exponential backoff
+            }
+
+            throw new Exception("GitHub API operation failed after multiple retries.");
+        }
+
+        public async Task RetryAsync(Func<Task> operation, int maxRetries = 3)
+            => await RetryAsync(async () => { await operation(); return true; }, maxRetries);
+
+        public async Task<string> CreateBranchAsync(GitHubClient client, string owner, string repo, string baseBranch, string prefix)
+        {
+            var baseRef = await RetryAsync(() => client.Git.Reference.Get(owner, repo, $"heads/{baseBranch}"));
+            string branchName = $"{prefix}-{Guid.NewGuid():N}";
+            await RetryAsync(() => client.Git.Reference.Create(owner, repo, new NewReference($"refs/heads/{branchName}", baseRef.Object.Sha)));
+            return branchName;
+        }
+
+        public string GetTimestampUtc()
+            => DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm 'UTC'");
+    }
+}
+

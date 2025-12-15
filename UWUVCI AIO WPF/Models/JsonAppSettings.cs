@@ -17,6 +17,14 @@
         public bool gczw { get; set; } = false;
         public string Ancast { get; set; } = "";
         public bool IsFirstLaunch { get; set; } = true;
+        public string LastVersionSeen { get; set; } = "0.0.0";
+        public bool ForceTutorialOnNextLaunch { get; set; } = false;
+        public bool HasAcknowledgedTutorial { get; set; } = false;
+        // Controls bounded parallelism for large directory copies (higher on fast SSDs)
+        public int FileCopyParallelism { get; set; } = 6;
+        public string ToolsPath { get; set; } = string.Empty;
+        public string TempPath { get; set; } = string.Empty;
+        public int UnixWaitDelayMs { get; set; } = 2000;
     }
 
 }

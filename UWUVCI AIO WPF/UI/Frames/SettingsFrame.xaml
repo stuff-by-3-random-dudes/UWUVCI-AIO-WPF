@@ -1,57 +1,147 @@
 ﻿<Page x:Class="UWUVCI_AIO_WPF.UI.Frames.SettingsFrame"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:UWUVCI_AIO_WPF.UI.Frames"
-      mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1135"
-      Title="SettingsFrame" >
+      Title="SettingsFrame"
+      Background="Transparent">
 
-    <Grid Margin="0,2,0,-2">
-        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="558" Margin="12,34,0,0" VerticalAlignment="Top" Width="1108" CornerRadius="5" RenderTransformOrigin="0.5,0.5">
-            <Border.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform AngleY="0.145"/>
-                    <RotateTransform/>
-                    <TranslateTransform Y="0.998"/>
-                </TransformGroup>
-            </Border.RenderTransform>
+    <Grid Margin="12,6,12,6">
+        <!-- Outer border -->
+        <Border BorderBrush="#FF2196F3"
+                BorderThickness="1"
+                CornerRadius="6"
+                Background="#BEBEBE"
+                SnapsToDevicePixels="True">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Header -->
+                    <RowDefinition Height="*"/>
+                    <!-- Buttons -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Footer -->
+                </Grid.RowDefinitions>
+
+                <!-- HEADER BAR -->
+                <Border Background="#2196F3"
+                        CornerRadius="5,5,0,0"
+                        Height="36"
+                        VerticalAlignment="Top">
+                    <Grid>
+                        <TextBlock Text="UWUVCI AIO - Settings"
+                                   VerticalAlignment="Center"
+                                   Margin="12,0,0,0"
+                                   Foreground="White"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"/>
+                        <Label x:Name="lblVersion"
+                               Content="Loading..."
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"
+                               Margin="0,0,12,0"
+                               Foreground="#DDFFFFFF"
+                               FontSize="13"
+                               FontWeight="Medium"/>
+                    </Grid>
+                </Border>
+
+                <!-- BUTTONS -->
+                <StackPanel Grid.Row="1"
+                            Orientation="Vertical"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="0,30,0,30"
+                            Width="460">
+
+                    <!-- Row 1 -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Check For Updates"
+                                Width="145" Margin="0,0,8,8"
+                                Click="Button_Click_6"/>
+                        <Button Content="Update Tools"
+                                Width="145" Margin="0,0,8,8"
+                                Click="Button_Click_7"/>
+                        <Button Content="Update Base Files"
+                                Width="145" Margin="0,0,0,8"
+                                Click="Button_Click_3"/>
+                    </StackPanel>
+
+                    <!-- Row 2 -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Content="Reset Don't show this again Option"
+                                Width="297" Margin="0,0,8,8"
+                                Click="Button_Click_10"/>
+                        <Button Content="Reset TitleKeys"
+                                Width="145" Margin="0,0,0,8"
+                                Click="Button_Click_8"/>
+                    </StackPanel>
+
+                    <!-- Individual buttons -->
+                    <Button Content="Start Nintendont Config Tool"
+                            Width="460" Margin="0,0,0,8"
+                            Click="Button_Click_9"/>
+                    <Button Content="Start N64 Virtual Console INI Creator"
+                            Width="460" Margin="0,0,0,8"
+                            Click="Button_Click_4"/>
+                    <Button Content="Show Tutorial Screens"
+                            Width="460" Margin="0,0,0,8"
+                            Click="ShowTutorialScreens_Click"/>
+                    <Button Content="Open App Settings"
+                            Width="460" Margin="0,0,0,8"
+                            Click="OpenAppSettings_Click"/>
+                    <Button Content="Open ReadMe"
+                            Width="460" Margin="0,0,0,8"
+                            Click="HelpButton_Click"
+                            ToolTip="View UWUVCI documentation and FAQs"/>
+                    <Button Content="Open Patch Notes"
+                            Width="460" Margin="0,0,0,8"
+                            Click="OpenPatchNotes_Click"
+                            ToolTip="View UWUVCI's Patch Notes"/>
+                    <Button Content="Submit Compatibility Entry"
+                            Width="460"
+                            Click="OpenCompatSubmit_Click"/>
+                    <Button Content="Submit Feedback or Bug Report"
+                            Width="460" Margin="0,8,0,0"
+                            Click="OpenFeedbackWindow_Click"
+                            ToolTip="Report bugs, suggest features, or give feedback anonymously."/>
+                </StackPanel>
+
+                <!-- FOOTER -->
+                <Grid Grid.Row="2" Margin="12,0,12,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Ko-Fi Button -->
+                    <Button Grid.Column="0"
+                            Width="60" Height="50"
+                            ToolTip="Support UWUVCI V3 on Ko-Fi"
+                            Click="Button_Click_13"
+                            Background="#2196F3"
+                            BorderThickness="0"
+                            Cursor="Hand">
+                        <Image Source="/UI/Images/61e111774d3a2f67c827cd25_Frame 5.png"
+                               Width="36" Height="36"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Button>
+
+                    <!-- Credits Button -->
+                    <Button Grid.Column="2"
+                            Content="Credits"
+                            Width="80" Height="32"
+                            Click="Button_Click_5"
+                            Background="#2196F3"
+                            Foreground="White"
+                            BorderThickness="0"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"/>
+                </Grid>
+
+            </Grid>
         </Border>
-        <TextBlock HorizontalAlignment="Left" Margin="337,188,0,0" TextWrapping="Wrap" Text="Set Injector Paths:" VerticalAlignment="Top" FontSize="20" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,482,0,0" TextWrapping="Wrap" Text="Enter CommonKey:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,541,0,0" TextWrapping="Wrap" Text="Enter TitleKeys:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
-        <TextBlock HorizontalAlignment="Left" Margin="325,67,0,0" TextWrapping="Wrap" Text="Injector Theme:" VerticalAlignment="Top" FontSize="20" Visibility="Hidden" />
-        <RadioButton Content="Light Theme" HorizontalAlignment="Left" Margin="494,74,0,0" VerticalAlignment="Top" GroupName="theme" x:Name="rblight" IsChecked="True" Visibility="Hidden" IsTabStop="False"/>
-        <Button Content="Change Theme" HorizontalAlignment="Left" Margin="605,67,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Visibility="Hidden" IsTabStop="False"/>
-        <Button Content="Open CK Menu" HorizontalAlignment="Left" Margin="605,478,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_1" Visibility="Hidden" IsTabStop="False"/>
-        <Button Content="Open Path Menu" HorizontalAlignment="Left" Margin="617,182,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_2" IsTabStop="False"/>
-        <Button Content="Open TK Menu" HorizontalAlignment="Left" Margin="605,537,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click" Visibility="Hidden" IsTabStop="False"/>
-        <Button Content="Update Base Files" HorizontalAlignment="Left" Margin="617,226,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_3" IsTabStop="False"/>
-        <Button Content="Start N64 Virtual Console INI Creator" HorizontalAlignment="Left" Margin="337,357,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_4" IsTabStop="False"/>
-        <Button Content="Show Tutorial Screens" HorizontalAlignment="Left" Margin="337,402,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" IsTabStop="False" Click="ShowTutorialScreens_Click" x:Name="ShowTutorialScreens"/>
-        <Button Content="Credits" HorizontalAlignment="Left" Margin="1022,548,0,0" VerticalAlignment="Top" Width="80" Click="Button_Click_5" IsTabStop="False"/>
-        <Button Content="Update Tools" HorizontalAlignment="Left" Margin="495,226,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_7" IsTabStop="False"/>
-        <Button Content="Check For Updates" HorizontalAlignment="Left" Margin="337,226,0,0" VerticalAlignment="Top" Width="153" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_6" IsTabStop="False"/>
-        <TextBlock HorizontalAlignment="Left" Margin="1022,10,0,0" TextWrapping="Wrap" Text="v2.1 BETA" VerticalAlignment="Top" FontSize="20" Width="98" Visibility="Hidden"/>
-        <Button Content="Reset TitleKeys" HorizontalAlignment="Left" Margin="617,270,0,0" VerticalAlignment="Top" Width="145" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_8" IsTabStop="False"/>
-        <Button Content="Start Nintendont Config Tool" HorizontalAlignment="Left" Margin="337,314,0,0" VerticalAlignment="Top" Width="425" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_9" IsTabStop="False"/>
-        <Button Content="Reset Don't show this again Option" HorizontalAlignment="Left" Margin="337,270,0,0" VerticalAlignment="Top" Width="275" RenderTransformOrigin="-0.099,0.116" Click="Button_Click_10" IsTabStop="False"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="337,422,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_11"  IsTabStop="False" Visibility="Hidden"/>
-        <Grid Margin="0,0,5,10"/>
-        <Rectangle Fill="LightGray" HorizontalAlignment="Left" Height="32" Margin="12,7,0,0" VerticalAlignment="Top" Width="1108"/>
-        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="1103,6,0,0" VerticalAlignment="Top" Width="17"/>
-        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="12,17,0,0" VerticalAlignment="Top" Width="1108"/>
-        <Rectangle Fill="#FF2196F3" HorizontalAlignment="Left" Height="22" Margin="21,7,0,0" VerticalAlignment="Top" Width="1082"/>
-        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,7,0,0" VerticalAlignment="Top" Width="17"/>
-        <Ellipse Fill="#FF2196F3" HorizontalAlignment="Left" Height="21" Margin="12,7,0,0" VerticalAlignment="Top" Width="17"/>
-        <Border BorderBrush="#FF2196F3" BorderThickness="1" HorizontalAlignment="Left" Height="33" Margin="12,6,0,0" VerticalAlignment="Top" Width="1108" CornerRadius="5" Background="#FF2196F3"/>
-        <Label Content="v3.N" HorizontalAlignment="Left" Margin="1075,10,0,0" VerticalAlignment="Top" Foreground="#DDFFFFFF" Width="81" Height="24"/>
-        <Button HorizontalAlignment="Left" Margin="32,522,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_13" IsTabStop="False" Height="58" ToolTip="Support UWUVCI on Ko-Fi">
-            <Image HorizontalAlignment="Left" Height="46" VerticalAlignment="Top" Width="46" Source="/UI/Images/61e111774d3a2f67c827cd25_Frame 5.png" />
-        </Button>
-
-
     </Grid>
 </Page>

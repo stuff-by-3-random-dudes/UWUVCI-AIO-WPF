@@ -1,16 +1,16 @@
-﻿using System;
+﻿using GameBaseClassLibrary;
+using NAudio.Wave;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Diagnostics;
-using NAudio.Wave;
-using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Frames;
-using GameBaseClassLibrary;
 using UWUVCI_AIO_WPF.UI.Frames.Path;
 
 namespace UWUVCI_AIO_WPF
@@ -68,6 +68,13 @@ namespace UWUVCI_AIO_WPF
             InitializeComponent();
             load_frame.Content = new StartFrame();
             (FindResource("mvm") as MainViewModel).setMW(this);
+
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
+
+            // Set the window title dynamically
+            Title = $"UWUVCI v{version.Major}.{version.Minor}.{version.Build}  ({buildDate:MMM dd, yyyy})";
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -242,7 +249,7 @@ namespace UWUVCI_AIO_WPF
                 5 => "UWUVCI AIO - TurboGrafX-16 VC INJECT",
                 6 => "UWUVCI AIO - MSX VC INJECT",
                 7 => "UWUVCI AIO - Wii VC INJECT",
-                8 => "UWUVCI AIO - GC VC INJECT",
+                8 => "UWUVCI AIO - GCN VC INJECT",
                 _ => tbTitleBar.Text
             };
 
@@ -367,7 +374,7 @@ namespace UWUVCI_AIO_WPF
                 var fileName = Application.ResourceAssembly.Location;
                 foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.exe"))
                 {
-                    if (Path.GetFileName(file).ToLower().Contains("vwii"))
+                    if (Path.GetFileName(file).ToLowerInvariant().Contains("vwii"))
                     {
                         fileName = file;
                         break;

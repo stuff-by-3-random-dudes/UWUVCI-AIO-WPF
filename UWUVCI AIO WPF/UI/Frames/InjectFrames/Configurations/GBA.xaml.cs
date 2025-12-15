@@ -3,7 +3,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
 
@@ -116,7 +115,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 FileInfo inf = new FileInfo(path);
                 if (inf.Extension.ToLower() != ".gb" && inf.Extension.ToLower() != ".gbc")
                 {
-                    mvm.getBootIMGGBA(mvm.RomPath);
+                    mvm.getBootIMGGBA(mvm);
                 }
                 
             }
@@ -588,6 +587,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             try
             {
                 mvm.GameConfiguration.GameName = gn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
             }
             catch (Exception)
             {

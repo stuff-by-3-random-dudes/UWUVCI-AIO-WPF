@@ -1,6 +1,5 @@
 ﻿using GameBaseClassLibrary;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +25,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
                 snesnes.Visibility = Visibility.Visible;
+            if (mvm.GameConfiguration.Console == GameConsoles.NES)
+                nesPalettePanel.Visibility = Visibility.Visible;
             else if (mvm.GameConfiguration.Console == GameConsoles.NDS)
             {
                 nds.Visibility = Visibility.Visible;
@@ -71,6 +72,8 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             if (mvm.GameConfiguration.Console == GameConsoles.NES || mvm.GameConfiguration.Console == GameConsoles.SNES)
                 snesnes.Visibility = Visibility.Visible;
+            if (mvm.GameConfiguration.Console == GameConsoles.NES)
+                nesPalettePanel.Visibility = Visibility.Visible;
             else if (mvm.GameConfiguration.Console == GameConsoles.NDS)
                 nds.Visibility = Visibility.Visible;
         }
@@ -92,13 +95,13 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                         mvm.CanInject = true;
 
                     if (mvm.GameConfiguration.Console == GameConsoles.NDS)
-                        mvm.getBootIMGNDS(mvm.RomPath);
+                        mvm.getBootIMGNDS(mvm);
                     else if (mvm.GameConfiguration.Console == GameConsoles.NES)
-                        mvm.getBootIMGNES(mvm.RomPath);
+                        mvm.getBootIMGNES(mvm);
                     else if (mvm.GameConfiguration.Console == GameConsoles.SNES)
-                        mvm.getBootIMGSNES(mvm.RomPath);
+                        mvm.getBootIMGSNES(mvm);
                     else if (mvm.GameConfiguration.Console == GameConsoles.MSX)
-                        mvm.getBootIMGMSX(mvm.RomPath);
+                        mvm.getBootIMGMSX(mvm);
                 }
             }
             catch(Exception ex)
@@ -416,7 +419,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 else
                     title = $"{mvm.GameConfiguration.Console} Inject Guide";
 
-                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLower(),title);
+                TitleKeys webbrowser = new TitleKeys(mvm.GameConfiguration.Console.ToString().ToLowerInvariant(),title);
                 try
                 {
                     webbrowser.Owner = mvm.mw;
@@ -459,6 +462,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
             
+        }
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         public void Dispose()

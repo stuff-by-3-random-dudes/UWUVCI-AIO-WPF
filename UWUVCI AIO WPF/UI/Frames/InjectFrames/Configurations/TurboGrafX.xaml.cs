@@ -104,7 +104,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                 mvm.RomSet = true;
                 if (!cd)
                 {
-                    mvm.getBootIMGTG(mvm.RomPath);
+                    mvm.getBootIMGTG(mvm);
                 }
                 if (mvm.BaseDownloaded)
                 {
@@ -550,6 +550,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             try
             {
                 mvm.GameConfiguration.GameName = gn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
             }
             catch (Exception)
             {

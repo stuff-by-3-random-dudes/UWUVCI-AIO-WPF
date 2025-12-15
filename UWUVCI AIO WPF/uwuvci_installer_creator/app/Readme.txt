@@ -1,180 +1,302 @@
-Thanks for downloading UWUVCI-3!
-If you didn't download it from the official source (https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases), then you might be using a custom version that someone else made.
+============================================================
+                   UWUVCI v3 ReadMe (By ZestyTS)
+============================================================
+
+Thank you for downloading UWUVCI-V3!
+If you didn’t download it from the official GitHub source, you might be using a modified version.
+
+Official source:
+  https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases
 
 If you're looking for the FAQ, keep scrolling.
+If you're curious about the Discord, the latest updates, or video guides, you’ll find everything below.
 
-If you're interested in the Discord:
-https://discord.gg/mPZpqJJVmZ
+============================================================
+ Community & Resources
+============================================================
+• Discord:
+  https://discord.gg/mPZpqJJVmZ
 
-If you're curious about the latest changes:
-https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
+• Latest changes:
+  https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
 
-If you want to check out the official UWUVCI 3 video series:
-https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
+• Official UWUVCI V3 Video Series:
+  https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
 
-By the time you're reading this, active development on UWUVCI-3 has ended.
-I, ZestyTS, have been the active developer on UWUVCI-3 since late 2020 and have been helping the original creator with UWUVCI-Prime (aka V4).
+============================================================
+ Project Overview
+============================================================
+By the time you're reading this, **active development on UWUVCI-V3 has concluded.** As in there are no planned updates remaining. (Although, there have been seven updates since developent ended.)
+Future development continues under UWUVCI-Prime (v4), which adds full Mac and Linux support.
 
-For history as to what I've done on the project, I fixed a lot of bugs and helped get UWUVCI-3 out of beta while introducing new features like:
-	Widescreen for N64
-	DarkFilter removal for N64 and GBA
-	C2W for Wii
-	Added support for Win7/8
-	GCT & Deflicker for Wii
-	Support for Unix (helper app), etc.
+I’m **ZestyTS**, and since late 2020 I’ve been the primary developer maintaining and improving UWUVCI-V3.
+My goal was to fix legacy bugs, modernize the code, and make the program stable, fast, and cross-platform friendly.
 
-If you'd like to donate to me:
-https://ko-fi.com/zestyts
+============================================================
+ Major Features Introduced in UWUVCI v3
+============================================================
+These are the major features and improvements I personally implemented:
 
-If you'd like to donate to the creator, NicoAICP:
-https://ko-fi.com/uwuvci
+• Widescreen support for N64
+• DarkFilte removal for N64 and GBA
+• C2W overclock patching for Wii injects
+• GCT patching and VFilter (deflicker) options for Wii
+• Full support for Windows 7 and 8
+• Support for Unix (Wine/macOS/Linux)
+• Automatic dependency detection and installation
+• Rewritten Installer with guided setup and OneDrive-safe paths
+• “First-Run Tutorial” wizard
+• A ReadMe/Patch Notes Viewer
+• Logging system (auto-clears after 7 days)
+• Async refactor, faster inject creation and UI responsiveness
+• CNUSPACKER and WiiUDownloader rewritten as DLLs
+• Added tooltips, better error handling, and smoother UI behavior
+* Compat/Images/Feedback updates from the app itself
+* NDS Configuration settings
+• Updated to .NET Framework 4.8 and C# 13
 
-If you have any questions, check out the FAQ below.
+In short, UWUVCI v3 became more self-contained, faster, and significantly more stable.
 
-If you have any questions about anything, checkout the FAQ below, and don't hestitate to check out the Discord server.
+============================================================
+ Support the Developers
+============================================================
+❤️ Donate to me (ZestyTS):  
+  https://ko-fi.com/zestyts
 
+💚 Donate to the original creator (NicoAICP):  
+  https://ko-fi.com/uwuvci
 
-##############################################################################################################################################################################
-									FAQ
-##############################################################################################################################################################################
-I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the update of V3.Z-B, a lot of things were overhauled or changed, so the FAQ needed to be completely redone.
+============================================================
+ Frequently Asked Questions (FAQ)
+============================================================
+Maintained by ZestyTS (2020–2025)  
+This FAQ was rewritten during v3.200 after major system updates.
+Please read carefully before assuming something is broken.
 
+============================================================
+ 🔰 Getting Started
+============================================================
 
-1) I don't know how to use UWUVCI, can you show me?
-	https://uwuvci-prime.github.io/UWUVCI-Resources/index
-	Select console and follow the guide
- 
-2) What games are compatible?
-	https://uwuvci.net/ → Click "Compatibility" (top right) → Select a console.
-	This guide is community-driven, so results may vary.
-	If it's not listed, that just means it's Untested
-	For GCN, Rhythm Heaven Fever works as a base for all games.
+Q1) I don’t know how to use UWUVCI.  
+A) Go here:  
+   https://uwuvci-prime.github.io/UWUVCI-Resources/index  
+   Select your console and follow the steps exactly.  
+   Don’t skip steps or use random YouTube guides (UWUVCI has it's own video guides).
 
-3) I don't understand what it means by "Base" in the drop down menu?
-	The base game is what UWUVCI uses to inject your selected game.
+------------------------------------------------------------
 
-4) What does it mean by "Base not downloaded"
-	It means the base game cannot be found.
-	Click "Enter TKey" and enter the Title Key to fix this.
+Q2) What games are compatible?  
+A) Visit: https://uwuvci.net → click “Compatibility” (top right).  
+   If a game isn’t listed, it’s **untested**, not unsupported.  
+   For GameCube: Rhythm Heaven Fever as a base works for all titles.
 
-5) How do I get the Title Key?
-	Buy the base from the eshop
-	Use Tik2SD to dump the title key
-	Note: Title Key sharing is considered piracy
+------------------------------------------------------------
 
-6) What does it mean by Common Key?
-	This is the Wii U system key needed for decryption.
-		If you have a NAND backup, use otp.bin.
-		If not, follow this guide: https://wiiu.hacks.guide/aroma/nand-backup.html
+Q3) What does “Base” mean in the dropdown?  
+A) The base game is the template UWUVCI uses to inject your selected title.
 
-7) The base is taking a while to download
-	If not injecting GCN/Wii, it should finish in <5 min.
-	Otherwise, Nintendo’s servers may be slow—try again later.
-	Some games (like Xenoblade Chronicles) are large (~8.2GB) and take longer.
+------------------------------------------------------------
 
-8) My anti virus said [insert anything]
-	There are no malicious files in this program.
+Q4) “Base not downloaded”?  
+A) The base game is missing.  
+   Fix: Click “Enter TKey” and input your Title Key for the purchased base.
 
-9) I can't find my game when I click the "Rom Path" button
-	Your game is in a format UWUVCI can't read.
-	Revert it to its original state.
+------------------------------------------------------------
 
-10) Wup install failing/Error 199-9999
-	Download SigpatchesModuleWiiU:
-		https://github.com/V10lator/SigpatchesModuleWiiU/releases/download/v1.0/01_sigpatches.rpx
-	Place it in:
-		sd:/wiiu/environments/aroma/modules/setup
+Q5) How do I get the Title Key?  
+A) Buy the base from the eShop → dump using Tik2SD.  
+   ⚠️ Title Key sharing = piracy. Don’t do that.
 
-11) GCN/Wii Injects not working
-	There are reports that SDUSB or ISFShax might be the reason why
+------------------------------------------------------------
 
-12) Inject is created, but the game is having issues
-	Rhythm Heaven US as a base works on nearly everything
-	Stick to using the correct base/game for your region
-	Make sure the base game is bigger or equal in size to the game you're trying to inject
-	N64 games are notorious for giving issues, they may require different bases
-	Check out the compatibility guide listed earlier
+Q6) What’s the Common Key?  
+A) The Wii U system decryption key.  
+   • Have a NAND backup? Use `otp.bin`.  
+   • Otherwise, follow: https://wiiu.hacks.guide/aroma/nand-backup.html
 
-13) UWUVCI is throwing an error that reads something like "Could not find file 'bin\temp\pre.iso'"
-	More than likely you have a bad dump of a game or UWUVCI doesn't like the trimmed dump
-	Example: 
-		if the dump is an "nkit" or a "wbfs" please try using the iso version instead
+------------------------------------------------------------
 
-14) If you're having issues and the fix isn't listed here, see about updating UWUVCI.
-	https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
- 
-15) Help with Rom Mods and Hacks
-	Don't expect that much help because mods or hacks add an extra level of complexity.
-	If the mods work with real hardware then there's a chance it will work on the Wii U
-	Ask the mod/hack's community, they'll be more helpful
-	It's possible that someone already tried it, check out the compatibility guide.
- 
-16) Having problems with GCN injects?
-	Usually has to do with Nintendont, you can check out their compatibility list here: https://wiki.gbatemp.net/wiki/Nintendont_Compatibility_List
-	Here's their main GBATemp thread: 
-		https://gbatemp.net/threads/nintendont.349258/
- 
-17) If you've tried everything in this list then there are a few more things
-	See if your antivirus is getting in the way.
-	Check to see if you installed to a OneDrive directory.
+Q7) Base download stuck or slow?  
+A) Nintendo’s servers can lag. Try again later.  
+   • Normal injects: under 5 minutes  
+   • Large games (e.g. Xenoblade): longer (~8 GB)
 
-18) GCN injects boot to the nintendont menu
-	You probably used TeconMoon injector before. 
-	Delete nincfg.bin from the root of your sd card and the apps/nintendont folder, then do the sd setup again in UWUVCI.
+============================================================
+ ⚙️ Setup & General Issues
+============================================================
 
-19) Can't find injects in SaveMii
-	You'll want to use a modified version called "SaveMii Inject MOD"
+Q8) Antivirus flagged UWUVCI?  
+A) False positive, whitelist it. Nothing malicious is inside.
 
-20) Path .../temp/temp missing
-	Same issue as with Pre.iso, please redump and try again.
+------------------------------------------------------------
 
-21) tmd.bin can't be found or parameter invalid or handle invalid
-	Same issue as with /temp/temp, please redump and try again
+Q9) “Could not find file 'bin\\temp\\pre.iso'”?  
+A) Bad game dump, redump.
 
-22) Official Video Guide?
-	https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
+------------------------------------------------------------
 
-23) UWUVCI is broken or acting funny
-	Check to see if you installed to OneDrive or if your Antivirus is blocking something
+Q10) “Path .../temp/temp missing” or “tmd.bin can’t be found”?  
+A) Same issue, invalid dump. Redump properly.
 
-24) GB/C games aren't saving when using VC's reset button
-	This is because it's using Goombacolor, please use the button reset combination instead
+------------------------------------------------------------
 
-25) boot.dol not found
-	UWUVCI mentioned after the GCN inject was done that your SD card must be setup with Nintendont
+Q11) UWUVCI doesn’t open.  
+A) Install .NET Framework 4.8:  
+   https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48
+   Still not opening? See Q29.
 
-26) Stuck on "Copying to SD"
-	Manually copy the folder yourself.
-	Go to where UWUVCI is installed, and then look for the folder "InjectedGames"
-	You'll find the folder you're looking for there, just copy it to the install folder on your sd card.
+------------------------------------------------------------
 
-27) UWUVCI says that my drive is full (12G)
-	The drive you installed UWUVCI does not have enough space, please install UWUVCI to a different drive that has enough space and try again.
+Q12) UWUVCI says “Drive is full (12 GB)”.  
+A) Move UWUVCI to a drive with more free space.
 
-28) Nkit error?
-	Sounds like you pirated your game, don't do that.
+------------------------------------------------------------
 
-29) UWUVCI doesn't open
-	You're missing .Net Framework 4.8.1 Runtime, download/install it from here:
-		https://dotnet.microsoft.com/en-us/download/dotnet-framework/net481
+Q13) UWUVCI crashes, UI disappears, or acts strange.  
+A) Check that:  
+   • You didn’t install or using a rom in OneDrive / cloud folder  
+   • Antivirus isn’t blocking background tools  
+   • Turkish locale has known to cause issues
 
-30) UWUVCI still won't open
-	If checking the log doesn't have anything in there, then you'll have to look in your Event Viewer to see what the problem is.
+============================================================
+ 💾 Injection & Compatibility
+============================================================
 
-31) UWUVCI's progress bar gets stuck (outside of Downloading base)
-	Try updating your tools (gear icon to the top right -> "Update Tools")
+Q14) Inject created but game doesn’t launch properly.  
+A) Check all of these:  
+   • Correct base game (region-matched)  
+   • Base ≥ target game size (GCN/Wii not applicable)
+   • Use unmodified ROMs  
 
-32) Mac/Linux version?
-	This program was built using WPF (Windows Platform Foundation) and that does not natively work on non-Windows platforms.
-	Using the exe, you can run it on Mac/Linux using Wine or some other tool like that. 
-	The program will know if you're running it not on a Windows platform, and will do it's best to help you.
-	UWUVCI V4 will have Mac & Linux support.
+------------------------------------------------------------
 
-33) Where can I find the Log file or the settings file?
-	It'll be in your local appdata folder called "UWUVCI-V3", you can find that by going to %localappdata%
-	As for my Unix friends, it depends on your tool like if you're using wine, you could do something like this "wine cmd /c echo %localappdata%"
-	That'll tell you if your folder is somewhere like ~/.wine/drive_c/users/$USER/Local Settings/Application Data/ or ~/.wine/drive_c/users/$USER/AppData/Local/
+Q15) My game doesn’t appear when I select “ROM Path.”  
+A) The file is in an unsupported format.
+   When a rom is being selected, the pop-up box will specify what file types are supported for the console.
 
-34) An error message popped up.
-	Read it, it'll explain the problem.
-	
+------------------------------------------------------------
+
+Q16) WUP install fails / Error 199-9999.  
+A) Missing sigpatches.  
+   Download:  
+   https://github.com/V10lator/SigpatchesModuleWiiU/releases/download/v1.0/01_sigpatches.rpx  
+   Place in:  
+   sd:/wiiu/environments/aroma/modules/setup
+
+------------------------------------------------------------
+
+Q17) GCN/Wii injects not working.  
+A) Usually SDUSB or ISFShax homebrew issues or plugin issues with WiiVC Launch.  
+   Also verify your Nintendont setup (see Q17/18).
+
+------------------------------------------------------------
+
+Q18) GCN inject boots to the Nintendont menu.  
+A) You used TeconMoon injector before.  
+   Fix:  
+   • Delete `nincfg.bin` from SD root  
+   • Delete `apps/nintendont` folder  
+   • Re-run “SD Setup” in UWUVCI
+
+------------------------------------------------------------
+
+Q19) “boot.dol not found”.  
+A) Nintendont not set up on SD. Run “SD Setup” again.
+
+------------------------------------------------------------
+
+Q20) SaveMii can’t find my injects.  
+A) Use **SaveMii Inject MOD**, not the vanilla version.
+
+------------------------------------------------------------
+
+Q21) GB/C games don’t save when using the VC reset button.  
+A) Normal behavior, GoombaColor doesn’t handle VC resets.  
+   Use the in-game reset button combo instead.
+
+------------------------------------------------------------
+
+Q22) “NKit error?”  
+A) You used a pirated or modified dump. Use a real ISO.  
+   UWUVCI does **not** support illegal or altered files.
+
+------------------------------------------------------------
+
+Q23) “Stuck on ‘Copying to SD’”.  
+A) Manually copy it yourself:  
+   Go to UWUVCI’s `InjectedGames` folder → move the inject to your SD card.
+
+------------------------------------------------------------
+
+Q24) Help with ROM hacks or mods?  
+A) Mods are unsupported.  
+   If it runs on real hardware, it might work here, but ask the mod’s community.  
+   UWUVCI can’t guarantee mod compatibility.
+
+============================================================
+ 🧰 Advanced Troubleshooting
+============================================================
+
+Q25) “UWUVCI still won’t open” after installing .NET.  
+A) Check Windows Event Viewer for crash details.  
+   If it references missing DLLs, rerun the installer.
+
+------------------------------------------------------------
+
+Q26) “Could not load CNUSPACKER.dll” or similar.  
+A) Required DLLs are missing, rerun the installer to restore them.
+
+------------------------------------------------------------
+
+Q27) UWUVCI’s progress bar gets stuck.  
+A) Check out the Logs, they write everything out.
+   ⚙️ → “App Settings” -> “Open Log Folder”
+   Click on the most recent file.
+
+------------------------------------------------------------
+
+Q28) Mac/Linux version?  
+A) UWUVCI-V3 uses WPF, a Windows-only framework.  
+   Use Wine or CrossOver, UWUVCI auto-detects non-Windows systems.  
+   UWUVCI-Prime (v4) will be natively cross-platform.
+
+------------------------------------------------------------
+
+Q29) Where are the Log and Settings files?  
+A) Windows:  
+      %localappdata%\UWUVCI-V3  
+   Mac/Linux (Wine):  
+      ~/.wine/drive_c/users/$USER/AppData/Local/UWUVCI-V3
+
+------------------------------------------------------------
+
+Q30) Image/Feedback/Compatibility Submission Failed  
+A) If the error is stating something about a **Token**
+      That means the credentials have expired.
+      Credentials will only be expired when a new version of UWUVCI V3 is released.
+   If the error is stating **Access Restricted*
+      You've been flagged as a bad actor from your submissions. 
+
+------------------------------------------------------------
+
+Q31) “An error message popped up.”  
+A) **Read it.**  
+   UWUVCI’s messages are written to tell you exactly what’s wrong.  
+   If it mentions a file, check that path.  
+   If it says “missing dependency,” rerun the installer.  
+   If it says “drive full,” free up space.  
+   It’s not random, it’s there to help you.
+
+============================================================
+ 📺 Extra Resources
+============================================================
+Official Video Guide:  
+  https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id  
+
+Discord Support:  
+  https://discord.gg/mPZpqJJVmZ
+
+============================================================
+ End of ReadMe
+============================================================
+Maintained by ZestyTS, UWUVCI V3

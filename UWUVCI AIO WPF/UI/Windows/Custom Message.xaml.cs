@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -42,8 +41,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
 
             dont.Visibility = Visibility.Hidden;
-            Title.Text = title;
-            Message.Content = message;
+            Title.Text = SanitizeForWine(title);
+            Message.Content = SanitizeForWine(message);
             Folder.Visibility = Visibility.Hidden;
            
             if (title.Contains("Resetting") || message.Contains("NUS format") || message.Contains("Folder contains Files or Subfolders, do you really want to use this") || message.Contains("If using Custom Bases") || title.Contains("Found additional Files"))
@@ -60,7 +59,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                     btnClose.Content = "No";
                 }
             }
-            if(title.Equals("Image Warning") || message.ToLower().Contains("dsi") ||message.ToLower().Contains("gcz") || message.ToLower().Contains("co-processor"))
+            if(title.Equals("Image Warning") || message.ToLowerInvariant().Contains("dsi") ||message.ToLower().Contains("gcz") || message.ToLower().Contains("co-processor"))
             {
                 dont.Visibility = Visibility.Visible;
             }
@@ -98,11 +97,38 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 nc.Visibility = Visibility.Visible;
             }
             dont.Visibility = Visibility.Hidden;
-            Title.Text = title;
-            Message.Content = message;
+            Title.Text = SanitizeForWine(title);
+            Message.Content = SanitizeForWine(message);
             path = Path;
             Folder.Visibility = Visibility.Visible;
             
+        }
+        private static string SanitizeForWine(string input)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(input)) return input ?? string.Empty;
+                var env = MacLinuxHelper.EnvDetect.Get();
+                bool underWine = env != null && env.UnderWineLike;
+                if (!underWine) return input;
+                string s = input;
+                s = s.Replace("❌", "[Error]")
+                     .Replace("⚠️", "[Warning]")
+                     .Replace("⚠", "[Warning]")
+                     .Replace("✅", "[OK]")
+                     .Replace("💡", "Hint:")
+                     .Replace("💿", "Disc")
+                     .Replace("🖼️", "Image")
+                     .Replace("🖼", "Image")
+                     .Replace("📘", "ReadMe")
+                     .Replace("📝", "Patch Notes")
+                     .Replace("✕", "X")
+                     .Replace("—", "-");
+                var sb = new System.Text.StringBuilder(s.Length);
+                foreach (var ch in s) { if (char.IsSurrogate(ch)) continue; sb.Append(ch); }
+                return sb.ToString();
+            }
+            catch { return input ?? string.Empty; }
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -115,7 +141,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             try
             {
                 if (File.Exists(path)) path = new FileInfo(path).DirectoryName;
-                Process.Start(path);
+                try { UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost(path); } catch { }
                 Close();
             }
             catch (Exception)
@@ -157,7 +183,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         private void nc_Click(object sender, RoutedEventArgs e)
         {
             Close();
-            var containNintendont = Message.Content.ToString().ToLower().Contains("nintendont");
+            var containNintendont = Message.Content.ToString().ToLowerInvariant().Contains("nintendont");
 
             SDSetup sd = new SDSetup(containNintendont ? true : false, path);
             try
@@ -202,7 +228,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             if (dont.IsChecked == true)
             {
-                var messageLower = Message.Content.ToString().ToLower();
+                var messageLower = Message.Content.ToString().ToLowerInvariant();
                 if (messageLower.Contains("gcz"))
                 {
                     JsonSettingsManager.Settings.gczw = true;

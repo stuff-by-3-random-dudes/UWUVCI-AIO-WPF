@@ -5,12 +5,13 @@ using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
+using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF.Classes
 {
     class ToolCheck
     {
-        static string FolderName = "bin\\Tools";
+        static string FolderName = PathResolver.GetToolsPath();
         public static string backupulr = @"https://github.com/Hotbrawl20/UWUVCI-Tools/raw/master/";
         public static string[] ToolNames =
         {
@@ -20,7 +21,6 @@ namespace UWUVCI_AIO_WPF.Classes
             "RetroInject.exe",
             "tga_verify.exe",
             "wiiurpxtool.exe",
-            "INICreator.exe",
             "blank.ini",
             "FreeImage.dll",
             "BuildPcePkg.exe",
@@ -31,11 +31,14 @@ namespace UWUVCI_AIO_WPF.Classes
             "nintendont_force.dol",
             "GetExtTypePatcher.exe",
             "wit.exe",
+            "wit-mac",
+            "wit-linux",
             "wstrt.exe",
+            "wstrt-mac",
+            "wstrt-linux",
             "cygwin1.dll",
             "cygz.dll",
             "cyggcc_s-1.dll",
-            "NintendontConfig.exe",
             "BASE.zip",
             "tga2png.exe",
             "iconTex.tga",
@@ -98,6 +101,38 @@ namespace UWUVCI_AIO_WPF.Classes
             File.Delete(name + ".md5");
 
             return ret;
+        }
+
+        /// <summary>
+        /// Verifies the MD5 of a tool at a specific path (thread-safe; no CWD changes).
+        /// </summary>
+        public static bool IsToolRightAtPath(string fullPath)
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(fullPath);
+                var name = Path.GetFileName(fullPath);
+                if (string.IsNullOrWhiteSpace(dir) || string.IsNullOrWhiteSpace(name)) return false;
+
+                string md5Path = Path.Combine(dir, name + ".md5");
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(backupulr + name + ".md5", md5Path);
+                }
+                string md5;
+                using (StreamReader sr = new StreamReader(md5Path))
+                {
+                    md5 = sr.ReadLine();
+                }
+                bool ok = CalculateMD5(fullPath) == md5;
+                try { File.Delete(md5Path); } catch { }
+                return ok;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error verifying MD5 for {fullPath}: {ex.Message}");
+                return false;
+            }
         }
 
 

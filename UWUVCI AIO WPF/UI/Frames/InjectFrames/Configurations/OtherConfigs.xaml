@@ -17,6 +17,22 @@
         <StackPanel Margin="10,20,244,436" Orientation="Horizontal" Name="snesnes" Visibility="Hidden">
             <CheckBox Content="Enable Pixel Perfect Mode" ToolTip="May not work with every Base" Margin="0,0,0,26"  IsTabStop="False" Click="CheckBox_Click" Name="pixp"/>
         </StackPanel>
+        <StackPanel Margin="10,5,300,406" Orientation="Horizontal" Name="nesPalettePanel" Visibility="Collapsed">
+            <TextBlock Text="NES Palette:" VerticalAlignment="Center" Margin="0,0,10,0" />
+            <ComboBox Width="260"
+                      ItemsSource="{Binding NesPaletteOptions}"
+                      SelectedValuePath="Name"
+                      DisplayMemberPath="Name"
+                      SelectedValue="{Binding SelectedNesPaletteName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      ToolTip="Choose a color palette for NES VC RPX. Default leaves the base palette untouched."
+                      IsTabStop="False">
+                <ComboBox.ItemContainerStyle>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="ToolTip" Value="{Binding Description}"/>
+                    </Style>
+                </ComboBox.ItemContainerStyle>
+            </ComboBox>
+        </StackPanel>
         <StackPanel Margin="10,20,81,444" Orientation="Horizontal" Name="nds" Visibility="Hidden">
             <!-- RenderingScale -->
             <StackPanel Orientation="Horizontal">
@@ -90,5 +106,6 @@
 
         <Label Content="Use | for 2 lines" HorizontalAlignment="Left" Margin="506,428,0,0" VerticalAlignment="Top" Width="127" HorizontalContentAlignment="Center" ToolTip="e.g. Wii|Sports"  IsTabStop="False"/>
         <Button Content="?" HorizontalAlignment="Left" Margin="600,19,0,0" Height="32" VerticalAlignment="Top" Width="33" Background="#FF2196F3" BorderBrush="#FF2196F3" Foreground="White" Click="Button_Click_1" FontSize="22" Padding="0"  IsTabStop="False"/>
+        <TextBox materialDesign:HintAssist.Hint="SHORT GAME NAME (OPTIONAL)" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="10,463,157,2" Background="{x:Null}" TextChanged="sgn_TextChanged" Foreground="Black" SelectionBrush="#FF00C3D7" CaretBrush="#FF21C3F3" FontSize="18" Text="{Binding GameConfiguration.GameShortName}" x:Name="sgn" MaxLength="250" IsTabStop="False"/>
     </Grid>
 </Page>

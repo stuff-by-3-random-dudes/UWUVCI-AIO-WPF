@@ -1,0 +1,270 @@
+====================================
+Version 3.200 - Dec 14, 2025
+====================================
+**New Features**
+- Short Game Name field added to inject creation.
+- Patch Notes Viewer
+  - Patch Notes were previously only on GitHub, now view them directly in-app.
+- In-App Documentation
+  - Read both Patch Notes and the ReadMe without leaving the program.
+- Compatibility List Submission
+  - The Discord bot has been retired (cost reasons), but you can now submit entries directly within the app.
+- Image Uploads for Missing Titles
+  - If a game doesn’t have cover images, you’ll now be prompted to upload them during injection (shown while waiting so it doesn’t interrupt the process).
+- Application Settings Menu
+  - Completely new settings interface, check this out for new configuration options.
+- Feedback & Bug Report Form
+  - Submit feedback, suggestions, or bug reports directly from the app. *(Please don’t use for personal support.)*
+- Official Version Check
+  - The app now detects and warns if you’re using a non-official or modified version.
+- New Nintendont Config Tool
+  - Fully integrated in-app configuration editor.
+  - Supports loading, exporting, and presets.
+- Download Progress Bar (Real this time!)
+  - Now properly tracks progress.
+- Download Cancel Button
+  - Cancel ongoing downloads anytime.
+- Update Checker on Startup
+  - Notifies you when a new version is available.
+- Custom Output & Base Paths
+  - Set and save custom paths for outputs and bases.
+- Log File Access
+  - View logs directly from within the app.
+- Unified Message Box System
+  - New `UWUVCI_MessageBox` system for consistent pop-ups and alerts.
+- Unit Testing Support (Developer Feature)
+  - Added MSTest coverage for major services.
+- Settings File Editor
+  - Added functionality to edit the settings file directly in the app, and even have a section for more advanced users.
+- macOS DMG build
+  - A psuedo native build for macOS using Kegworks as a wrapper.
+- NES Palette swap
+  - Ability to change the palettes on NES via a dropdown.
+
+**Improvements**
+- Unified Cross-Platform Build
+  - Removed the separate Helper App; now runs natively on Windows, macOS, and Linux.
+- Updated Toolchain
+  - Added macOS and Linux versions of WIT and WSTRT.
+- Smaller Installer
+  - Package size reduced by ~80%, bundled into a single `.exe` (no more scattered DLLs!).
+- Completely Redesigned Settings Page
+  - Cleaner layout and simplified options.
+- Trim Disable Works Again
+  - And now supports patching (previously incompatible).
+- Tutorial Overhaul
+  - Old tutorial screens replaced with a brand-new design.
+- Landing Page Updates
+  - Cleaner, includes version number and improved layout.
+- Rewritten ReadMe
+  - Updated for clarity and current features.
+- Improved WiiUDownloaderLibrary
+  - Now supports retries, parallel downloads, and live progress updates.
+- Improved Responsiveness
+  - Reduced UI lockups; some processes may appear slower but are actually more stable.
+- Rewritten SD Copy
+  - Now up to 8× faster when transferring WUP installables.
+- Faster Tool/Base Downloads
+  - Parallelized and optimized file fetching (tools improvement may be subtle).
+- Meaningful Error Messages
+  - More descriptive, user-friendly messages throughout.
+- Unix Compatibility
+  - Fixed pop-up rendering on macOS/Linux (no more blacked-out dialogs).
+- Improved Logging
+  - More context added for debugging and tracing issues.
+- Removed Helper App
+  - Eliminated dependency and related potential errors.
+- C# Version Upgrade
+  - Updated from C# 8 to C# 13 (internal dev improvement).
+- Simplified Settings
+  - Removed redundant or confusing options.
+- UI Polish
+  - Minor layout and visual touch-ups throughout.
+
+**Fixes**
+- Removed TXT GCT Patch Support
+  - Formatting too inconsistent; now only supports binary `.gct` files.
+- NDS Render Sizes Fixed
+  - Previously saved incorrect values (0/1 instead of 1/2).
+- N64 DarkFilter and Widescreen
+  - Both now work as intended.
+- Windows Detection Fix
+  - No longer falsely warns Windows users that they aren’t using Windows.
+- Resolution Warning Improvement
+  - Now shows a proper message when display scaling is too high.
+- Windows Security Compatibility
+  - Files within the app no longer get randomly blocked by Windows Defender (only the main EXE could be flagged, which is rare).
+- Files not being able to be deleted when Disabling Trim
+
+====================================
+Version 3.N - May 11, 2025
+====================================
+**Fixes**
+- Updated CNUSPACKER to version v1.0.5, which fixes the "???" Issue after Packing multiple Injects
+- Fixed the Issue that caused UWUVCIs UI to suddenly Dissapear.
+
+====================================
+Version 3.Z-B2 - March 21, 2025
+====================================
+**Improvements**
+- Updated wit to the latest version 3.05A
+- Added verification to txt files being passed to wstrt
+- Broke up logging across multiple files, will auto delete after 7 days
+
+**Fixes**
+- Fixes mismatch dll's between wit and wstrt
+
+====================================
+Version 3.Z-B1 - March 20, 2025
+====================================
+**Improvements**
+- GCN optimizations (including speed improvements)
+- Added better wording for the helper app
+
+**Fixes**
+- Fixed metadata "???" problem for Wii
+- Fixed metadata "???" problem for GCN
+- Fixed "no game.iso" error in Nintendont
+
+====================================
+Version 3.Z-B - March 13, 2025
+====================================
+**New Features**
+- VFilter Removal options for Wii (aka Deflicker)
+- GCT Patching added for Wii
+- NDS new screens
+- NDS Display settings
+- Tooltips added to everything
+- Logging to a file (useful for debugging issues)
+- Tutorial Screens (First run only)
+- Drag and Drop to textboxes
+- Installer will install dependencies
+- Hooks into a helper app for Unix folks
+- All of the DLLs and additional files added to the Installer
+- UWUVCI V3 Helper App added to Installer (https://github.com/ZestyTS/UWUVCI-V3-Helper)
+
+**Improvements**
+- Installer has additional screens
+- Installer's default directory no longer lets OneDrive push it around
+- Rewrote the entire ReadMe.txt (please read it!)
+- Replaced some of the exe tools with ones embedded in the program
+- Refactored (Optimized) a bunch of code (Creating Wii injects is now about 20% faster than before)
+- Removed the "???" screen
+- CMD.exe as a tool has been brought in-house (a bunch of tools still use a cli though)
+- Updated GBA to use JaGoombaColor
+- Updated Packages to latest (dev thing)
+- Updated to .Net Framework 4.8.1 and moved to C# 8 (dev thing)
+
+**Fixes**
+- Japanese identifier will properly identify Japanese text
+- Removed WiiUDownloader.exe and replaced with a DLL I wrote; now Antivirus won't get in the way for downloading
+- Removed CNUSPACKER.exe and replaced it with a DLL we wrote, now injects won't silently fail
+- Properly terminate some background tasks (made Downloading Base stay open far too long)
+- Fixed a bunch of reasons why the screens can be pulled up blank
+- UWUVCI should no longer silently crash when launching if dependencies are installed
+- Settings file moved so Unix can properly use it
+
+====================================
+Version 3.Z Again? - July 13, 2024
+====================================
+**Improvements**
+- Added in checks to determine if the software is being virtualized/emulated so the user doesn't need to manually swap out the base files by @ZestyTS
+- Added the scripts used to generate the Installer for UWUVCI by @ZestyTS
+- Added more systems the ability to enter in cKeys and tKeys by @ZestyTS
+- Updated Readme.txt by @ZestyTS
+- Added more error messages @ZestyTS
+- Add console name to folder and space after brackets by @CasuallyCalm in #65
+
+====================================
+Version 3.Z - October 5, 2023
+====================================
+**Improvements**
+- Installer will ask user where they want to install UWUVCI
+- Installer's default directory will be in the user's Documents folder
+- Downloading Base shows an ETA
+- Downloading Base's progress bar reflects the ETA
+- Better error handling, will explain more issues to user
+
+**Fixes**
+- WAD works again
+- Update works (only useful if someone takes over the project)
+- ImageCreator will properly swap to Japanese text if Japanese text is used
+- Fixed Guide URL
+
+====================================
+Version 3.F.F - April 30th, 2023
+====================================
+**Fixes**
+- Restores functionality to the guide and images.
+
+====================================
+Version 3.F - October 1st, 2022
+====================================
+**Other**
+- Dropped 3.99 version, and redid all of the enhancements and changes for 3.0.3.
+
+===================================
+Version 3.99.1 - August 29, 2022
+====================================
+**Fixes**
+- Removed speed optimizations to downloading, some people were getting failures when downloading because of it.
+- Readded CNUSPacker as a DLL
+- Readded x64
+- Readded partial Wine support
+
+====================================
+Version 3.99.0.1 - August 28, 2022
+====================================
+**Fixes**
+- Problems with OS Compatibility (????) for Injects using exe's have been fixed.
+- NDS will correctly name the rom that's being used which will fix the inject.
+- Fixed WUP Installable using an older version of the packing tool as a hotfix.
+- Ancast will be stored and used sometimes (limited functionality).
+- "Check for Update" button has been fixed.
+
+====================================
+Version 3.99.0 - August 27, 2022
+====================================
+**New Features**
+- C2W support added for Wii
+
+**Improvements**
+- Rewrote a few sections for better optimization and for partial WINE support
+- Rewrote most code to be async so the program doesn't act like it's frozen
+- When using the image creator with a name with Japanese text, the rest of the text will be in Japanese as well
+- Converted project to work in x64
+- Tons of Speed/Optimizations improvements
+- ReadMe has been redone and includes FAQ
+
+**Fixes**
+- TGA files will no longer automatically be pulled down from repo, instead user will be linked to where to download them.
+- Fixed zip bug that's been plaguing Win7/Win8 users
+
+====================================
+Version 3.0.3 - July 14, 2022
+====================================
+**Improvements**
+- Adds more error messages, and makes some useful
+
+**Fixes**
+- Clicking the update button will update the program
+
+====================================
+Version 3.0.1 - June 19, 2022
+====================================
+**Fixes**
+- TGA Images should work again.
+- GCN injects will use proper RomCode.
+
+====================================
+UWUVCI AIO v3 - March 2023, 2022
+====================================
+**Improvements**
+- N64 DarkFilter and Widescreen now works
+- Uploading some custom images will no longer hard crash the program
+- Images will be rendered in the highest quality
+- CNUSPACKER will now always work without replacement
+
+**Fixes**
+- Resolved compatibility issues with N64 and GBA injects.
+- Fixed dependency extraction and verification errors.

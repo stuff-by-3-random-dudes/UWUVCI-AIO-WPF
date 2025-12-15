@@ -4,7 +4,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using UWUVCI_AIO_WPF.Classes;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
 
@@ -24,6 +23,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             InitializeComponent();
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            UpdateIniBadge();
 
         }
         private void SoundImg_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -61,6 +61,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             InitializeComponent();
             mvm.setThing(this);
             Injection.ToolTip = "Changing the extension of a ROM may result in a faulty inject.\nWe will not give any support in such cases";
+            UpdateIniBadge();
 
         }
         public void imgpath(string icon, string tv)
@@ -81,7 +82,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     mvm.CanInject = true;
 
                 }
-                mvm.getBootIMGN64(mvm.RomPath);
+                mvm.getBootIMGN64(mvm);
             }
         }
 
@@ -305,7 +306,68 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             {
                 mvm.GameConfiguration.N64Stuff.INIPath = path;
                 ini.Text = path;
+                var meta = ReadIniHeaderMeta(path);
+                mvm.GameConfiguration.N64Stuff.CommunityIni = meta.isCommunity;
+                UpdateIniBadge();
             }
+        }
+
+        internal void UpdateIniBadge()
+        {
+            try
+            {
+                var path = mvm.GameConfiguration?.N64Stuff?.INIPath;
+                bool isCommunity = mvm.GameConfiguration?.N64Stuff?.CommunityIni == true;
+                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                {
+                    // If flag not yet set, detect from file header
+                    var meta = ReadIniHeaderMeta(path);
+                    if (!isCommunity) { isCommunity = meta.isCommunity; mvm.GameConfiguration.N64Stuff.CommunityIni = isCommunity; }
+                    IniCommunityBadge.Visibility = isCommunity ? Visibility.Visible : Visibility.Hidden;
+                    if (isCommunity)
+                    {
+                        string ver = string.IsNullOrWhiteSpace(meta.version) ? "unknown" : meta.version;
+                        string when = string.IsNullOrWhiteSpace(meta.submittedUtc) ? "unknown" : meta.submittedUtc;
+                        IniCommunityBadge.ToolTip = $"Community-submitted INI (may have issues).\nVersion: {ver}\nSubmitted: {when}";
+                    }
+                }
+                else
+                {
+                    IniCommunityBadge.Visibility = Visibility.Hidden;
+                }
+            }
+            catch { IniCommunityBadge.Visibility = Visibility.Hidden; }
+        }
+
+        private (bool isCommunity, string version, string submittedUtc) ReadIniHeaderMeta(string filePath)
+        {
+            try
+            {
+                bool isCommunity = false;
+                string version = null;
+                string submitted = null;
+                using var sr = new StreamReader(filePath);
+                for (int i = 0; i < 30; i++)
+                {
+                    var line = sr.ReadLine();
+                    if (line == null) break;
+                    var t = line.TrimStart(';', ' ', '\t');
+                    if (!isCommunity && t.StartsWith("COMMUNITY_SUBMITTED", StringComparison.OrdinalIgnoreCase) && t.IndexOf("= 1", StringComparison.OrdinalIgnoreCase) >= 0)
+                        isCommunity = true;
+                    if (string.IsNullOrEmpty(version) && t.StartsWith("UWUVCI_Version", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int eq = t.IndexOf('=');
+                        if (eq > 0) version = t.Substring(eq + 1).Trim();
+                    }
+                    if (string.IsNullOrEmpty(submitted) && t.StartsWith("Submitted_UTC", StringComparison.OrdinalIgnoreCase))
+                    {
+                        int eq = t.IndexOf('=');
+                        if (eq > 0) submitted = t.Substring(eq + 1).Trim();
+                    }
+                }
+                return (isCommunity, version, submitted);
+            }
+            catch { return (false, null, null); }
         }
 
         private void gn_KeyUp(object sender, KeyEventArgs e)
@@ -534,6 +596,17 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
             try
             {
                 mvm.GameConfiguration.GameName = gn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
             }
             catch (Exception)
             {

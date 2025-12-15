@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Costura.Fody.6.0.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.6.0.0\build\Costura.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -10,7 +10,7 @@
     <RootNamespace>UWUVCI_AIO_WPF</RootNamespace>
     <AssemblyName>UWUVCI AIO WPF</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -33,10 +33,11 @@
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -44,6 +45,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,9 +55,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>b.ico</ApplicationIcon>
@@ -66,12 +69,21 @@
   <PropertyGroup>
     <StartupObject>UWUVCI_AIO_WPF.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>8BB4B196638F15B7593D3597C5A8A3BE5313F8D7</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>UWUVCI AIO WPF_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoUpdater.NET, Version=1.9.2.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Autoupdater.NET.Official.1.9.2\lib\net462\AutoUpdater.NET.dll</HintPath>
     </Reference>
-    <Reference Include="CNUSPACKER, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CNUSPACKER.1.0.5\lib\netstandard2.0\CNUSPACKER.dll</HintPath>
+    <Reference Include="CNUSPACKER">
+      <HintPath>..\..\CNUS_Packer\CNUSPACKER\bin\Release\netstandard2.0\CNUSPACKER.dll</HintPath>
     </Reference>
     <Reference Include="Costura, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.6.0.0\lib\netstandard2.0\Costura.dll</HintPath>
@@ -127,6 +139,7 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=9.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.9.0.2\lib\net462\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.3065.39, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.WebView2.1.0.3065.39\lib\net462\Microsoft.Web.WebView2.Core.dll</HintPath>
     </Reference>
@@ -227,8 +240,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WiiUDownloaderLibrary">
-      <HintPath>.\WiiUDownloaderLibrary.dll</HintPath>
+    <Reference Include="WiiUDownloaderLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WiiUDownloaderLibrary.1.0.0\lib\netstandard2.0\WiiUDownloaderLibrary.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -247,20 +260,53 @@
     <Compile Include="Classes\DeflickerDitheringRemover.cs" />
     <Compile Include="Classes\Dol.cs" />
     <Compile Include="Classes\GameCubeISO.cs" />
+    <Compile Include="Classes\NesPalettePatcher.cs" />
+    <Compile Include="Helpers\BoolToVisibilityConverter.cs" />
     <Compile Include="Helpers\ConsoleLoggerWriter.cs" />
-    <Compile Include="Helpers\FileUtils.cs" />
+    <Compile Include="Helpers\FileHelpers.cs" />
+    <Compile Include="Helpers\PathResolver.cs" />
+    <Compile Include="Helpers\VCBTool.cs" />
+    <Compile Include="Models\NintendontConfig.cs" />
+    <Compile Include="Models\NintendontPresets.cs" />
+    <Compile Include="Services\DeviceFingerprint.cs" />
+    <Compile Include="Services\EnvironmentInfoService.cs" />
+    <Compile Include="Services\GitHubBaseService.cs" />
+    <Compile Include="Services\GitHubCompatService.cs" />
     <Compile Include="Helpers\JsonSettingsManager.cs" />
+    <Compile Include="Helpers\HashCompat.cs" />
     <Compile Include="Classes\KeyFile.cs" />
     <Compile Include="Classes\MenuIconImage - Kopieren.cs" />
     <Compile Include="Classes\MenuIconImage.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\MacLinuxHelper.cs" />
+    <Compile Include="Helpers\ToolRunner.cs" />
+    <Compile Include="Helpers\ImagePathResolver.cs" />
+    <Compile Include="Helpers\IOHelpers.cs" />
+    <Compile Include="Helpers\IToolRunnerFacade.cs" />
+    <Compile Include="Models\CompatModels.cs" />
     <Compile Include="Models\DolSection.cs" />
     <Compile Include="Models\GctCode.cs" />
     <Compile Include="Models\JsonAppSettings.cs" />
+    <Compile Include="Models\SettingsViewModel.cs" />
     <Compile Include="Models\ToolStep.cs" />
     <Compile Include="Models\TKeys.cs" />
     <Compile Include="Classes\ToolCheck.cs" />
+    <Compile Include="Services\GitHubFeedbackService.cs" />
+    <Compile Include="Services\GitHubImageService.cs" />
+    <Compile Include="Services\ParallelBatchRunner.cs" />
+    <Compile Include="Services\NKitService.cs" />
+    <Compile Include="Services\WitNfsService.cs" />
+    <Compile Include="Services\WitTicketExtractionService.cs" />
+    <Compile Include="Services\WiiInjectService.cs" />
+    <Compile Include="Services\GCNInjectService.cs" />
+    <Compile Include="Services\BaseExtractor.cs" />
+    <Compile Include="Services\InjectOptions.cs" />
+    <Compile Include="Services\GctPatcherService.cs" />
+    <Compile Include="Services\ContributionService.cs" />
+    <Compile Include="Services\WiiPatchService.cs" />
+    <Compile Include="Services\LocalInstallGuard.cs" />
+    <Compile Include="Services\NintendontConfigService.cs" />
+    <Compile Include="Services\ReadMeManager.cs" />
     <Compile Include="UI\Done.xaml.cs">
       <DependentUpon>Done.xaml</DependentUpon>
     </Compile>
@@ -285,11 +331,20 @@
     <Compile Include="UI\Frames\Path\Paths.xaml.cs">
       <DependentUpon>Paths.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Windows\CloseWindow.xaml.cs">
-      <DependentUpon>CloseWindow.xaml</DependentUpon>
+    <Compile Include="UI\Windows\ApplicationSettings.xaml.cs">
+      <DependentUpon>ApplicationSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Windows\MacLinuxWindow.xaml.cs">
-      <DependentUpon>MacLinuxWindow.xaml</DependentUpon>
+    <Compile Include="UI\Windows\JsonEditorWindow.xaml.cs">
+      <DependentUpon>JsonEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\CompatEntryWindow.xaml.cs">
+      <DependentUpon>CompatEntryWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\FeedBackWindow.xaml.cs">
+      <DependentUpon>FeedBackWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\HelpWindows.xaml.cs">
+      <DependentUpon>HelpWindows.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\Custom Message - Kopieren.xaml.cs">
       <DependentUpon>Custom Message - Kopieren.xaml</DependentUpon>
@@ -305,9 +360,6 @@
     </Compile>
     <Compile Include="UI\Windows\EnterKey.xaml.cs">
       <DependentUpon>EnterKey.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Windows\BaseGameWindow.xaml.cs">
-      <DependentUpon>BaseGameWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml.cs">
       <DependentUpon>ImageCreator - Kopieren - Kopieren %282%29.xaml</DependentUpon>
@@ -333,11 +385,14 @@
     <Compile Include="UI\Windows\IMG_Message.xaml.cs">
       <DependentUpon>IMG_Message.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Windows\GuideWindow.xaml.cs">
-      <DependentUpon>GuideWindow.xaml</DependentUpon>
+    <Compile Include="UI\Windows\NintendontConfigWindow.xaml.cs">
+      <DependentUpon>NintendontConfigWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Windows\IntroductionWindow.xaml.cs">
-      <DependentUpon>IntroductionWindow.xaml</DependentUpon>
+    <Compile Include="UI\Windows\TutorialWizard.xaml.cs">
+      <DependentUpon>TutorialWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\UWUVCI_MessageBox.xaml.cs">
+      <DependentUpon>UWUVCI_MessageBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Windows\TitleKeys - Kopieren.xaml.cs">
       <DependentUpon>TitleKeys - Kopieren.xaml</DependentUpon>
@@ -345,7 +400,27 @@
     <Compile Include="UI\Windows\TitleKeys.xaml.cs">
       <DependentUpon>TitleKeys.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Windows\N64ConfigWindow.xaml.cs">
+      <DependentUpon>N64ConfigWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Windows\ByteArrayEditor.xaml.cs">
+      <DependentUpon>ByteArrayEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modules\N64Config\BuiltinPresets.cs" />
+    <Compile Include="Modules\N64Config\IniDocument.cs" />
+    <Compile Include="Modules\N64Config\IniSerializer.cs" />
+    <Compile Include="Modules\N64Config\PresetsService.cs" />
+    <Compile Include="Modules\N64Config\Schema.cs" />
+    <Compile Include="Modules\N64Config\Tooltips.cs" />
     <Page Include="UI\Done.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\N64ConfigWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\ByteArrayEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -405,13 +480,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Windows\CloseWindow.xaml">
+    <Page Include="UI\Windows\ApplicationSettings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UI\Windows\MacLinuxWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="UI\Windows\CompatEntryWindow.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\FeedBackWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\HelpWindows.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Windows\Custom Message - Kopieren.xaml">
       <SubType>Designer</SubType>
@@ -429,13 +512,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Windows\EnterKey.xaml">
+    <Page Include="UI\Windows\JsonEditorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Windows\BaseGameWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="UI\Windows\EnterKey.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Windows\ImageCreator - Kopieren - Kopieren %282%29.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -466,14 +549,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Windows\IMG_Message.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Windows\GuideWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UI\Windows\IntroductionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -519,6 +594,18 @@
       <DependentUpon>MenuWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\Windows\NintendontConfigWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\TutorialWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\UWUVCI_MessageBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\TitleKeys - Kopieren.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -546,6 +633,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="UWUVCI AIO WPF_TemporaryKey.pfx" />
     <Resource Include="Font\font.otf" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
@@ -796,6 +884,19 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\N64Config\IniDocument.cs" />
+    <Compile Include="Modules\N64Config\IniSerializer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\N64Config\Schema.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\N64Config\PresetsService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\N64Config\Tooltips.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

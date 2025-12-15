@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Management;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -253,14 +254,14 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             setup.IsEnabled = false;
 
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 try
                 {
                     if (gc) 
-                        SetupNintendont();
+                        await SetupNintendont();
 
-                    CopyInject();
+                    await CopyInjectAsync();
                 }
                 catch (Exception ex)
                 {
@@ -289,7 +290,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             });
         }
 
-        private void SetupNintendont()
+        private async Task SetupNintendont()
         {
             try
             {
@@ -331,7 +332,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
                 }
 
                 Logger.Log("Copying Nintendont codes...");
-                CopyDirectory(Path.Combine(tempPath, "nintendont", "codes"), Path.Combine(driveletter, "codes"));
+                await CopyDirectoryAsync(Path.Combine(tempPath, "nintendont", "codes"), Path.Combine(driveletter, "codes"));
 
                 Directory.Delete(tempPath, true);
                 Logger.Log("SetupNintendont completed.");
@@ -342,7 +343,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             }
         }
 
-        private void CopyInject()
+        private async Task CopyInjectAsync()
         {
             var mvm = FindResource("mvm") as MainViewModel;
             string sourcePath = Path.Combine(path, mvm.foldername);
@@ -352,13 +353,45 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
             try
             {
-                Dispatcher.Invoke(() => mvm.msg = "Copying Injected Game...");
-                Logger.Log($"Copying from {sourcePath} to {destinationPath}");
+                Dispatcher.Invoke(() =>
+                {
+                    // Preparing stage
+                    CopyProgressIndeterminate.Visibility = Visibility.Visible;
+                    CopyProgress.Visibility = Visibility.Collapsed;
+                    CopyProgressText.Visibility = Visibility.Visible;
+                    CopyProgressText.Text = "Preparing files...";
+                    mvm.msg = "Preparing copy...";
+                });
 
-                CopyDirectory(sourcePath, destinationPath);
+                await Task.Delay(800); // small delay so the indeterminate bar actually animates
+
+                Logger.Log($"Copying from {sourcePath} to {destinationPath}");
 
                 Dispatcher.Invoke(() =>
                 {
+                    // Switch to determinate
+                    CopyProgressIndeterminate.Visibility = Visibility.Collapsed;
+                    CopyProgress.Visibility = Visibility.Visible;
+                    CopyProgress.Value = 0;
+                    CopyProgressText.Text = "0%";
+                    mvm.msg = "Copying Injected Game...";
+                });
+
+                await CopyDirectoryAsync(sourcePath, destinationPath, (percent, message) =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        CopyProgress.Value = percent;
+                        CopyProgressText.Text = $"{percent}%";
+                        mvm.msg = message;
+                    });
+                });
+
+                Dispatcher.Invoke(() =>
+                {
+                    CopyProgress.Visibility = Visibility.Collapsed;
+                    CopyProgressIndeterminate.Visibility = Visibility.Collapsed;
+                    CopyProgressText.Visibility = Visibility.Collapsed;
                     mvm.msg = "Done with Setup!";
                     mvm.foldername = "";
                 });
@@ -368,73 +401,69 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             catch (Exception ex)
             {
                 Logger.Log($"Error in CopyInject: {ex.Message}");
-                Dispatcher.Invoke(() => mvm.msg = "Setup Failed!");
+                Dispatcher.Invoke(() =>
+                {
+                    mvm.msg = "Setup Failed!";
+                    CopyProgress.Visibility = Visibility.Collapsed;
+                    CopyProgressIndeterminate.Visibility = Visibility.Collapsed;
+                    CopyProgressText.Visibility = Visibility.Collapsed;
+                });
             }
         }
 
-        public static void CopyDirectory(string sourceDir, string destDir)
+        private static async Task CopyDirectoryAsync(string sourceDir, string destDir, Action<int, string>? progressCallback = null, int maxParallel = 4)
         {
             if (!Directory.Exists(sourceDir))
                 throw new DirectoryNotFoundException($"Source directory not found: {sourceDir}");
 
-            Logger.Log($"Starting directory copy: {sourceDir} → {destDir}");
-
             Directory.CreateDirectory(destDir);
 
-            foreach (string file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
+            var allFiles = Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories);
+            int totalFiles = allFiles.Length;
+            int copied = 0;
+
+            using SemaphoreSlim concurrencyLimiter = new SemaphoreSlim(maxParallel);
+            var copyTasks = allFiles.Select(async file =>
             {
-                string relativePath = file.Substring(sourceDir.Length + 1); // Get relative path
-                string destFilePath = Path.Combine(destDir, relativePath);
-                string destDirPath = Path.GetDirectoryName(destFilePath);
-
-                if (!Directory.Exists(destDirPath)) Directory.CreateDirectory(destDirPath);
-
+                await concurrencyLimiter.WaitAsync();
                 try
                 {
-                    File.Copy(file, destFilePath, true);
-                    Logger.Log($"Copied: {file} → {destFilePath}");
+                    string relativePath = file.Substring(sourceDir.Length + 1);
+                    string destFilePath = Path.Combine(destDir, relativePath);
+                    string destDirPath = Path.GetDirectoryName(destFilePath)!;
+
+                    if (!Directory.Exists(destDirPath))
+                        Directory.CreateDirectory(destDirPath);
+
+                    await CopyFileBufferedAsync(file, destFilePath);
+
+                    int progressNow = Interlocked.Increment(ref copied);
+                    if (progressNow % 5 == 0 || progressNow == totalFiles)
+                    {
+                        int percent = (int)((double)progressNow / totalFiles * 100);
+                        progressCallback?.Invoke(percent, $"Copying file {progressNow}/{totalFiles}...");
+                    }
                 }
                 catch (Exception ex)
                 {
                     Logger.Log($"Failed to copy {file}: {ex.Message}");
                 }
-            }
+                finally
+                {
+                    concurrencyLimiter.Release();
+                }
+            }).ToArray();
 
-            Logger.Log($"Finished copying directory: {sourceDir} → {destDir}");
+            await Task.WhenAll(copyTasks);
         }
 
 
-        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        private static async Task CopyFileBufferedAsync(string sourceFile, string destinationFile)
         {
-            // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-
-            if (!dir.Exists)
-            {
-                Logger.Log($"Source directory does not exist or could not be found: {sourceDirName}");
-                throw new DirectoryNotFoundException($"Source directory does not exist or could not be found: {sourceDirName}");
-            }
-
-            // If the destination directory doesn't exist, create it.
-            if (!Directory.Exists(destDirName))
-            {
-                Directory.CreateDirectory(destDirName);
-            }
-
-            // Get the files in the directory and copy them to the new location.
-            foreach (FileInfo file in dir.EnumerateFiles())
-            {
-                file.CopyTo(Path.Combine(destDirName, file.Name), true);
-            }
-
-            // If copying subdirectories, copy them and their contents to new location.
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subdir in dir.EnumerateDirectories())
-                {
-                    DirectoryCopy(subdir.FullName, Path.Combine(destDirName, subdir.Name), copySubDirs);
-                }
-            }
+            const int bufferSize = 1024 * 1024; // 1MB
+            using var sourceStream = new FileStream(sourceFile, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, useAsync: true);
+            using var destStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, useAsync: true);
+            await sourceStream.CopyToAsync(destStream, bufferSize);
         }
 
         private void sd_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -454,7 +483,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
         public void Dispose()
         {
-           
+            throw new NotImplementedException();
         }
     }
 }

@@ -160,12 +160,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             {
                 e.Cancel = true;
 
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = e.Uri.ToString()
-                };
-
-                Process.Start(startInfo);
+                UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost(e.Uri.ToString());
             }
             
             // cancel navigation to the clicked link in the webBrowser control

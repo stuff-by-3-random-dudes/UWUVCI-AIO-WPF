@@ -12,16 +12,16 @@ namespace UWUVCI_AIO_WPF.UI.Frames
         public StartFrame()
         {
             InitializeComponent();
-            tb.Text += "\n\nIf any Issues happen during injection and you updated from the old version using the AutoUpdater, please go to settings and click Update Tools.";
+            tb.Text += "\n\n Want to go through the tutorial again? Click on the gear icon, and click 'Show Tutorial Screens'.";
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/nicoaicp");
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://ko-fi.com/nicoaicp");
         }
         private void Button_Click2(object sender, RoutedEventArgs e)
         {
-            Process.Start("https://ko-fi.com/zestyts");
+            UWUVCI_AIO_WPF.Helpers.ToolRunner.OpenOnHost("https://ko-fi.com/zestyts");
         }
     }
 }

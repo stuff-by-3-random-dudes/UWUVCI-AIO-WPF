@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using Path = System.IO.Path;
 
@@ -13,8 +15,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
     /// </summary>
     public partial class ICOSHOW : Window, IDisposable
     {
-        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = PathResolver.GetTempPath();
+        private static readonly string toolsPath = PathResolver.GetToolsPath();
         string copy = "";
         string pat = "";
         BitmapImage bitmap = new BitmapImage();

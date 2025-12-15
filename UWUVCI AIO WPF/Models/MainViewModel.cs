@@ -1,36 +1,48 @@
 ﻿using GameBaseClassLibrary;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using NAudio.Utils;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Helpers;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Bases;
 using UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations;
 using UWUVCI_AIO_WPF.UI.Windows;
-using System.Threading;
-using System.Windows.Threading;
-using System.Diagnostics;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using System.Text.RegularExpressions;
-using NAudio.Wave;
-using System.Timers;
-using NAudio.Utils;
-using System.Security.Cryptography;
-using UWUVCI_AIO_WPF.Helpers;
 
 namespace UWUVCI_AIO_WPF
 {
     public class MainViewModel : BaseModel
     {
+        private static readonly HttpClient SharedHttpClient = CreateSharedHttpClient();
+        private static HttpClient CreateSharedHttpClient()
+        {
+            var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+            try
+            {
+                client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
+            }
+            catch { }
+            return client;
+        }
         public bool saveworkaround = false;
 
         private bool Injected2 = false;
@@ -50,6 +62,7 @@ namespace UWUVCI_AIO_WPF
         private GameConfig gameConfiguration = new GameConfig();
 
         public bool addi = false;
+        public bool CanOfferIniContribution { get; set; } = false;
         public GameConfig GameConfiguration
         {
             get { return gameConfiguration; }
@@ -233,7 +246,7 @@ namespace UWUVCI_AIO_WPF
         public string ReadCkeyFromOtp()
         {
             string ret = "";
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            using (var dialog = new OpenFileDialog())
             {
                 dialog.Filter = "OTP.bin | otp.bin";
                 DialogResult res = dialog.ShowDialog();
@@ -290,7 +303,7 @@ namespace UWUVCI_AIO_WPF
             var s = ByteArrayToString(procode);
 
             fs.Close();
-            NKITFLAG = s.ToLower().Contains("nkit");
+            NKITFLAG = s.ToLowerInvariant().Contains("nkit");
         }
 
         public bool CheckTime(DateTime creationTime)
@@ -336,7 +349,55 @@ namespace UWUVCI_AIO_WPF
         private int pixelArtUpscaler = 0;
         private bool dsLayout = false;
         private bool stLayout = false;
+        public bool CanOfferImageContribution { get; set; } = false;
 
+        public class PaletteOption
+        {
+            public PaletteOption(string name, string description)
+            {
+                Name = name;
+                Description = description;
+            }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public override string ToString() => Name;
+        }
+
+        private string selectedNesPaletteName = "Default (Base RPX)";
+        public List<PaletteOption> NesPaletteOptions { get; } = new List<PaletteOption>
+        {
+            new("Default (Base RPX)", "Do not modify the RPX palette; keep the base game's default colors."),
+            new("2C03 Palette", "Replicates the Nintendo Vs. System PPU 2C03 palette."),
+            new("Fx3 NES Palette", "Fx3's take on balanced colors for NES."),
+            new("RGBSource NESCAP", "Palette created by RGBSource (NESCAP)."),
+            new("NES Palette", "Generic community NES palette."),
+            new("PAL NES Palette", "Palette tailored for PAL NES color timings."),
+            new("Wavebeam (Alt)", "Alternate Wavebeam palette from FireBrandX."),
+            new("Nestopia YUV", "Nestopia emulator YUV palette (softer tones)."),
+            new("Nestopia RGB", "Nestopia emulator RGB palette (brighter tones)."),
+            new("Original Wii VC", "Original dark Wii VC NES palette (SuperrSonic dump)."),
+            new("Restored Wii VC (SuperrSonic)", "Restored Wii VC palette without the dark filter (SuperrSonic)."),
+            new("FBX Composite Direct", "FireBrandX composite direct palette (authentic composite look)."),
+            new("FBX NES Classic Mini", "FireBrandX palette matching the NES Classic Mini."),
+            new("Wavebeam", "FireBrandX Wavebeam palette (bright, vivid)."),
+            new("3DS VC (No Dark Filter)", "3DS VC palette with dark filter removed."),
+            new("Animal Crossing Emulator", "Palette used by the Animal Crossing NES emulator."),
+            new("FCEUX Colorful", "FCEUX emulator colorful NES palette."),
+            new("NES Remix U", "NES Remix U (Wii U) palette by N-Mario."),
+            new("Original Mega Man", "Original Mega Man NES palette (N-Mario)."),
+            new("Rockman 9 Modern", "Rockman 9 Modern-inspired palette (N-Mario)."),
+            new("MM Legacy 3DS Modern", "Mega Man Legacy Collection (3DS) modern palette (N-Mario).")
+        };
+
+        public string SelectedNesPaletteName
+        {
+            get => selectedNesPaletteName;
+            set
+            {
+                selectedNesPaletteName = value;
+                OnPropertyChanged();
+            }
+        }
         public bool RendererScale
         {
             get { return rendererScale; }
@@ -438,6 +499,7 @@ namespace UWUVCI_AIO_WPF
         public bool toPal = false;
         public string GctPath = "";
         private string Msg;
+        public string repoId { get; set; } = "";
 
         private string Gc2rom = "";
 
@@ -498,90 +560,86 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
+        public static string AppRoot =>
+            Path.GetFullPath(AppContext.BaseDirectory); // stable even under Wine/macOS
+
+        public static string DefaultBasePath =>
+            Path.Combine(AppRoot, "bin", "BaseGames");
+
+        public static string DefaultOutPath =>
+            Path.Combine(AppRoot, "InjectedGames");
+
         public bool NKITFLAG { get; set; } = false;
 
         public MainWindow mw;
         private CustomBaseFrame cb = null;
         DispatcherTimer timer = new DispatcherTimer();
         public bool PokePatch = false;
-        public void Update(bool button)
+        private static readonly string toolsPath = PathResolver.GetToolsPath();
+        public void Update(bool userRequested)
         {
-            if (CheckForInternetConnection())
-            {
-                System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-                string version = fvi.FileVersion;
+            if (!CheckForInternetConnection())
+                return;
 
-                if (button)
-                {
-                    var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
-                    var releases = Task.Run(() => client.Repository.Release.GetAll("stuff-by-3-random-dudes", "UWUVCI-AIO-WPF")).GetAwaiter().GetResult();
-                    int comparison;
-                    try
-                    {
-                        var latestString = Regex.Replace(releases[0].TagName, "[^0-9.]", "");
-                        var latestLength = latestString.Split('.').Length;
-                        var localLength = version.Split('.').Length;
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            var localVersionString = fvi.FileVersion;
 
-                        for (var i = 0; i < localLength - latestLength; i++)
-                            latestString += ".0";
 
-                        var latestVersion = new Version(latestString);
-                        var localVersion = new Version(version);
-                        comparison = localVersion.CompareTo(latestVersion);
-                    }
-                    catch
-                    {
-                        //Someone messed up versioning, so eff it just don't even bother then
-                        return;
-                    }
-                    //You idiot, when tf did you flip this back?
-                    if (comparison < 0)
-                    {
-                        var cm = new Custom_Message("Update Available!", "You can get it from: https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
-                    }
-                    else
-                    {
-                        var cm = new Custom_Message("No Update Available", "This is currently the latest version.");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
-                    }
-                }
-            }
-        }
+            var client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("UWUVCI-AIO-WPF"));
 
-        private int GetNewVersion()
-        {
+            int comparison;
             try
             {
-                WebRequest request;
-                //get download link from uwuvciapi
+                // No need for Task.Run
+                var releases = client.Repository.Release
+                    .GetAll("ZestyTS", "UWUVCI-AIO-WPF")
+                    .GetAwaiter().GetResult();
 
-                request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetVersionNum");
+                if (releases == null || releases.Count == 0)
+                {
+                    // No releases available (rate limit or empty repo); skip quietly
+                    return;
+                }
 
-                var response = request.GetResponse();
-                using Stream dataStream = response.GetResponseStream();
-                // Open the stream using a StreamReader for easy access.  
-                StreamReader reader = new StreamReader(dataStream);
-                // Read the content.  
-                string responseFromServer = reader.ReadToEnd();
-                // Display the content.  
-                return Convert.ToInt32(responseFromServer);
+                // Clean tag like "v1.2.3" -> "1.2.3"
+                var latestString = new string(releases[0].TagName.Where(c => char.IsDigit(c) || c == '.').ToArray());
 
+                // Normalize lengths
+                while (latestString.Split('.').Length < localVersionString.Split('.').Length)
+                    latestString += ".0";
+                while (localVersionString.Split('.').Length < latestString.Split('.').Length)
+                    localVersionString += ".0";
+
+                var latestVersion = new Version(latestString);
+                var localVersion = new Version(localVersionString);
+                comparison = localVersion.CompareTo(latestVersion);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return 100000;
+                // Log issue but don’t crash
+                Console.WriteLine($"Update check failed: {ex.Message}");
+                return;
+            }
+
+            Custom_Message cm;
+            if (comparison < 0)
+            {
+                cm = new Custom_Message("Update Available!",
+                    "You can get it from: https://github.com/ZestyTS/UWUVCI-AIO-WPF/releases/latest");
+
+                try { cm.Owner = mw; } catch { }
+                cm.ShowDialog();
+            }
+            else
+            {
+                if (userRequested)
+                {
+                    cm = new Custom_Message("No Update Available", "This is currently the latest version.");
+
+                    try { cm.Owner = mw; } catch { }
+                    cm.ShowDialog();
+                }
             }
         }
 
@@ -608,6 +666,7 @@ namespace UWUVCI_AIO_WPF
         }
         public MainViewModel()
         {
+            JsonSettingsManager.Settings.PathsSet = true;
             if (!Environment.Is64BitOperatingSystem)
             {
                 List<string> Tools = ToolCheck.ToolNames.ToList();
@@ -632,7 +691,7 @@ namespace UWUVCI_AIO_WPF
             GameConfiguration = new GameConfig();
             if (!ValidatePathsStillExist() && JsonSettingsManager.Settings.SetBaseOnce && JsonSettingsManager.Settings.SetOutOnce)
             {
-                Custom_Message cm = new Custom_Message("Issue", " One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
+                Custom_Message cm = new Custom_Message("Issue", "One of your added Paths seems to not exist anymore. \n The Tool is now using it's default Paths \n Please check the paths in the Path menu! ");
                 try
                 {
                     cm.Owner = mw;
@@ -651,11 +710,13 @@ namespace UWUVCI_AIO_WPF
         private void CleanUpFolders()
         {
             if (Directory.Exists(@"bases")) Directory.Delete(@"bases", true);
-            if (Directory.Exists(@"temp")) Directory.Delete(@"temp", true);
+            if (Directory.Exists(PathResolver.GetTempPath())) Directory.Delete(PathResolver.GetTempPath(), true);
 
             if (Directory.Exists(@"keys"))
             {
-                if (Directory.Exists(@"bin\keys")) Directory.Delete(@"bin\keys", true);
+                if (Directory.Exists(@"bin\keys")) 
+                    Directory.Delete(@"bin\keys", true);
+
                 Injection.DirectoryCopy("keys", "bin/keys", true);
                 Directory.Delete("keys", true);
             }
@@ -673,12 +734,11 @@ namespace UWUVCI_AIO_WPF
         private void InitializePaths()
         {
             if (string.IsNullOrEmpty(JsonSettingsManager.Settings.OutPath))
-                JsonSettingsManager.Settings.OutPath = Path.Combine(Directory.GetCurrentDirectory(), "InjectedGames");
+                JsonSettingsManager.Settings.OutPath = AppPaths.DefaultOutPath;
 
             if (string.IsNullOrEmpty(JsonSettingsManager.Settings.BasePath))
-                JsonSettingsManager.Settings.BasePath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "BaseGames");
+                JsonSettingsManager.Settings.BasePath = AppPaths.DefaultBasePath;
         }
-
 
         public string turbocd()
         {
@@ -786,6 +846,7 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.TGAIco.ImgPath != null || GameConfiguration.TGAIco.ImgPath == "") iccp = string.Copy(GameConfiguration.TGAIco.ImgPath);
             if (GameConfiguration.TGALog.ImgPath != null || GameConfiguration.TGALog.ImgPath == "") lgcp = string.Copy(GameConfiguration.TGALog.ImgPath);
             GameConfiguration.pixelperfect = pixelperfect;
+            GameConfiguration.NesPalette = SelectedNesPaletteName;
             GameConfiguration.lr = LR;
             GameConfiguration.pokepatch = PokePatch;
             GameConfiguration.tgcd = cd;
@@ -821,6 +882,7 @@ namespace UWUVCI_AIO_WPF
             if (GameConfiguration.TGAIco.ImgBin != null && GameConfiguration.TGAIco.ImgBin.Length > 0) backup.TGAIco.ImgPath = "Added via Config";
             if (GameConfiguration.N64Stuff.INIBin != null && GameConfiguration.N64Stuff.INIBin.Length > 0) backup.N64Stuff.INIPath = "Added via Config";
             if (GameConfiguration.GameName == "" || GameConfiguration.GameName == null) backup.GameName = "NoName";
+            if (GameConfiguration.GameShortName == "" || GameConfiguration.GameShortName == null) backup.GameShortName = "NoShortName";
             GameConfiguration.Index = Index;
             CheckAndFixConfigFolder();
             var sanitizedGameName = backup.GameName;
@@ -913,6 +975,9 @@ namespace UWUVCI_AIO_WPF
                 regionfrii = GameConfiguration.rf;
                 regionfriijp = GameConfiguration.rfjp;
                 regionfriius = GameConfiguration.rfus;
+                if (string.IsNullOrWhiteSpace(GameConfiguration.NesPalette))
+                    GameConfiguration.NesPalette = NesPaletteOptions.FirstOrDefault()?.Name ?? "Default (Base RPX)";
+                SelectedNesPaletteName = GameConfiguration.NesPalette;
             }
             if (GameConfiguration.Console == GameConsoles.N64)
             {
@@ -1038,39 +1103,58 @@ namespace UWUVCI_AIO_WPF
         }
         public void Pack(bool loadiine)
         {
-            string consoleName =  GameConfiguration.Console.ToString();
-
-            if (GC)
+            string consoleName = GameConfiguration.Console.ToString();
+            if (GC) 
                 consoleName = GameConsoles.GCN.ToString();
 
             ValidatePathsStillExist();
+
             if (loadiine)
                 Injection.Loadiine(GameConfiguration.GameName, consoleName);
-
             else
             {
-                if (gameConfiguration.GameName != null)
+                if (!string.IsNullOrEmpty(gameConfiguration.GameName))
                 {
-                    Regex reg = new Regex("[^a-zA-Z0-9 é -]");
-                    gameConfiguration.GameName = gameConfiguration.GameName.Replace("|", " ");
-                    gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName, "");
+                    // Keep only letters, numbers, space, dash
+                    var reg = new Regex(@"[^A-Za-z0-9 \-]");
+                    gameConfiguration.GameName = reg.Replace(gameConfiguration.GameName.Replace("|", " "), "");
+
+                    if (!string.IsNullOrEmpty(gameConfiguration.GameShortName))
+                        gameConfiguration.GameShortName = reg.Replace(gameConfiguration.GameShortName.Replace("|", " "), "");
                 }
 
-                Task.Run(() => { Injection.Packing(GameConfiguration.GameName, consoleName, this); });
+                Exception packError = null;
+                var done = new ManualResetEventSlim(false);
 
-                DownloadWait dw = new DownloadWait("Packing Inject - Please Wait", "", this);
-                try
+                _ = Task.Run(async () =>
                 {
-                    dw.changeOwner(mw);
-                }
-                catch (Exception) { }
+                    try { await Injection.PackingAsync(GameConfiguration.GameName, consoleName, this); }
+                    catch (Exception ex) { packError = ex; }
+                    finally { done.Set(); }
+                });
+
+                var dw = new DownloadWait("Packing Inject - Please Wait", "", this);
+                try { dw.changeOwner(mw); } catch { }
                 dw.ShowDialog();
 
+                done.Wait(); // ensure background finished before continuing
+
+                if (packError != null)
+                {
+                    OpenDialog("Packing failed", packError.Message);
+                    return;
+                }
+
                 Progress = 0;
+
                 string extra = "";
                 string names = "Copy to SD";
-                if (GameConfiguration.Console == GameConsoles.WII) extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad. \n If Stuck in a BlackScreen, you need to unplug your WiiU.";
-                if (GameConfiguration.Console == GameConsoles.WII && romPath.ToLower().Contains(".wad")) extra += "\n Make sure that the chosen WAD is installed in your vWii!";
+                if (GameConfiguration.Console == GameConsoles.WII)
+                {
+                    extra = "\n Some games cannot reboot into the WiiU Menu. Shut down via the GamePad. \n If Stuck in a BlackScreen, you need to unplug your WiiU.";
+                    if (romPath?.ToLower().Contains(".wad") == true)
+                        extra += "\n Make sure that the chosen WAD is installed in your vWii!";
+                }
                 if (GC)
                 {
                     extra = "\n Make sure to have Nintendon't + config on your SD.\n You can add them by pressing the \"SD Setup\" button or using the \"Start Nintendont Config Tool\" button under Settings. ";
@@ -1078,11 +1162,11 @@ namespace UWUVCI_AIO_WPF
                 }
                 gc2rom = "";
 
-                Custom_Message cm = new Custom_Message("Injection Complete", $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ", JsonSettingsManager.Settings.OutPath); try
-                {
-                    cm.Owner = mw;
-                }
-                catch (Exception) { }
+                var cm = new Custom_Message(
+                    "Injection Complete",
+                    $" You need CFW (ex: haxchi, mocha, tiramisu, or aroma) to run and install this inject! \n It's recommended to install onto USB to avoid brick risks.{extra}\n To Open the Location of the Inject press Open Folder.\n If you want the inject to be put on your SD now, press {names}. ",
+                    JsonSettingsManager.Settings.OutPath);
+                try { cm.Owner = mw; } catch { /* ignore */ }
                 cm.ShowDialog();
             }
             LGameBasesString.Clear();
@@ -1100,6 +1184,7 @@ namespace UWUVCI_AIO_WPF
             foldername = "";
             mw.ListView_Click(mw.listCONS, null);
         }
+
 
         private void ClearImage()
         {
@@ -1206,6 +1291,30 @@ namespace UWUVCI_AIO_WPF
         public void Inject(bool force)
         {
             ValidatePathsStillExist();
+            // Pre-check disk space for Wii/GCN to surface errors early
+            try
+            {
+                if (!saveworkaround && (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN))
+                {
+                    string tempPath = PathResolver.GetTempPath();
+                    var drive = new DriveInfo(tempPath);
+                    long free = drive.AvailableFreeSpace;
+                    long needed = (GameConfiguration.Console == GameConsoles.GCN) ? 10_000_000_000L : 15_000_000_000L;
+                    if (free < needed)
+                    {
+                        UWUVCI_MessageBox.Show(
+                            "Insufficient Storage",
+                            "Not enough free disk space available for this inject.\n\n" +
+                            (GameConfiguration.Console == GameConsoles.GCN ? "At least 10 GB" : "At least 15 GB") + " of free space is recommended.",
+                            UWUVCI_MessageBoxType.Ok,
+                            UWUVCI_MessageBoxIcon.Warning,
+                            mw
+                        );
+                        return;
+                    }
+                }
+            }
+            catch { /* best-effort precheck */ }
             /* var task = new Task(() => runInjectThread(true));
               task.Start();*/
             Task.Run(() =>
@@ -1242,7 +1351,6 @@ namespace UWUVCI_AIO_WPF
             {
                 if (failed)
                 {
-                    MessageBox.Show("In here");
                     mw.allowBypass();
                     if (debug)
                     {
@@ -1251,8 +1359,6 @@ namespace UWUVCI_AIO_WPF
                     Inject(force);
                 }
             }
-
-
         }
         private void BaseCheck()
         {
@@ -1345,14 +1451,14 @@ namespace UWUVCI_AIO_WPF
             if (CheckForInternetConnection())
             {
                 string[] bases = ToolCheck.ToolNames;
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
                     Progress = 0;
                     double l = 100 / bases.Length;
                     foreach (string s in bases)
                     {
                         DeleteTool(s);
-                        DownloadTool(s, this);
+                        await DownloadToolAsync(s, this);
                         Progress += Convert.ToInt32(l);
                     }
                     Progress = 100;
@@ -1530,6 +1636,23 @@ namespace UWUVCI_AIO_WPF
                 return hash1 + (hash2 * 1566083941);
             }
         }
+
+        private static bool HashMatchesEither(string value, int legacyHash32, int deterministicHash)
+        {
+            // Accept either the runtime (architecture-dependent) hash or our deterministic fallback
+            // 'value' should already be normalized (e.g., ToLowerInvariant()) when appropriate
+            try
+            {
+                if (value.GetHashCode() == legacyHash32) return true;
+            }
+            catch { }
+            try
+            {
+                if (GetDeterministicHashCode(value) == deterministicHash) return true;
+            }
+            catch { }
+            return false;
+        }
         public bool checkSysKey(string key)
         {
             if (key.GetHashCode() == -589797700 || GetDeterministicHashCode(key) == -589797700)
@@ -1567,61 +1690,55 @@ namespace UWUVCI_AIO_WPF
                 GZipStream decompressedConfigStream = new GZipStream(inputConfigStream, CompressionMode.Decompress);
                 IFormatter formatter = new BinaryFormatter();
                 GameConfig check = (GameConfig)formatter.Deserialize(decompressedConfigStream);
-                if (check.Console == console) return true;
+
+                if (check.Console == console) 
+                    return true;
 
             }
             return false;
         }
         public void selectConfig(GameConsoles console)
         {
-            string ret = string.Empty;
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            using var dialog = new OpenFileDialog();
+
+            dialog.InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "configs");
+            dialog.Filter = "UWUVCI Config (*.uwuvci) | *.uwuvci";
+            DialogResult res = dialog.ShowDialog();
+            if (res == DialogResult.OK)
             {
-                dialog.InitialDirectory = Path.Combine(Directory.GetCurrentDirectory(), "configs");
-                dialog.Filter = "UWUVCI Config (*.uwuvci) | *.uwuvci";
-                DialogResult res = dialog.ShowDialog();
-                if (res == DialogResult.OK)
+                string ret = dialog.FileName;
+                if (GetConsoleOfConfig(ret, console))
                 {
-                    ret = dialog.FileName;
-                    if (GetConsoleOfConfig(ret, console))
+                    ImportConfig(ret);
+                    Custom_Message cm = new Custom_Message("Import Complete", " Importing of Config completed. \n Please reselect a Base!");
+                    try
                     {
-                        ImportConfig(ret);
-                        Custom_Message cm = new Custom_Message("Import Complete", " Importing of Config completed. \n Please reselect a Base!");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
+                        cm.Owner = mw;
                     }
-                    else
+                    catch (Exception) { }
+                    cm.ShowDialog();
+                }
+                else
+                {
+                    Custom_Message cm = new Custom_Message("Import Failed", $" The config you are trying to import is not made for {console.ToString()} Injections. \n Please choose a config made for these kind of Injections or choose a different kind of Injection");
+                    try
                     {
-                        Custom_Message cm = new Custom_Message("Import Failed", $" The config you are trying to import is not made for {console.ToString()} Injections. \n Please choose a config made for these kind of Injections or choose a different kind of Injection");
-                        try
-                        {
-                            cm.Owner = mw;
-                        }
-                        catch (Exception) { }
-                        cm.ShowDialog();
+                        cm.Owner = mw;
                     }
+                    catch (Exception) { }
+                    cm.ShowDialog();
                 }
             }
-
         }
-        private bool RemoteFileExists(string url)
+        private async Task<bool> RemoteFileExistsAsync(HttpClient client, string url)
         {
             try
             {
-                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-                request.Method = "HEAD";
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                response.Close();
-                return (response.StatusCode == HttpStatusCode.OK);
+                using var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Head, url),
+                    HttpCompletionOption.ResponseHeadersRead);
+                return response.IsSuccessStatusCode;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 
         public string GetFilePath(bool ROM, bool INI)
@@ -1662,7 +1779,7 @@ namespace UWUVCI_AIO_WPF
                 }
             }
 
-            using (var dialog = new System.Windows.Forms.OpenFileDialog())
+            using (var dialog = new OpenFileDialog())
             {
                 if (ROM)
                 {
@@ -1701,14 +1818,14 @@ namespace UWUVCI_AIO_WPF
                                 break;
                             case GameConsoles.WII:
                                 if (test == GameConsoles.GCN)
-                                    dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
+                                    dialog.Filter = "GCN ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 else
                                     dialog.Filter = "All Supported Types (*.*) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso; *.dol; *.wad|Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
                                     // dialog.Filter = "Wii ROM (*.iso; *.wbfs; *.nkit.gcz; *.nkit.iso) | *.iso; *.wbfs; *.nkit.gcz; *.nkit.iso|Wii Homebrew (*.dol) | *.dol|Wii Channel (*.wad) | *.wad";
 
                                 break;
                             case GameConsoles.GCN:
-                                dialog.Filter = "GC ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
+                                dialog.Filter = "GCN ROM (*.iso; *.gcm; *.nkit.iso; *.nkit.gcz) | *.iso; *.gcm; *.nkit.iso; *.nkit.gcz";
                                 break;
                         }
                     }
@@ -1801,116 +1918,99 @@ namespace UWUVCI_AIO_WPF
         }
         public static void DownloadBase(string name, MainViewModel mvm)
         {
-            string olddir = Directory.GetCurrentDirectory();
             try
             {
-                string basePath = $@"bin\bases\";
-                Directory.SetCurrentDirectory(basePath);
+                // Build explicit destination to avoid global CWD changes
+                string baseDir = Directory.GetCurrentDirectory();
+                string basesPath = Path.Combine(baseDir, "bin", "bases");
+                Directory.CreateDirectory(basesPath);
+
                 using var client = new WebClient();
                 var fixname = name.Split('\\');
+                string fileName = fixname[fixname.Length - 1];
 
-                if (MacLinuxHelper.IsRunningInVirtualMachine() || MacLinuxHelper.IsRunningUnderWineOrSimilar())
+                var env = MacLinuxHelper.EnvDetect.Get();
+                if (env.UnderWineLike)
                     name = "Net6/" + name;
 
-                client.DownloadFile(getDownloadLink(name, false), fixname[fixname.Length - 1]);
+                string destPath = Path.Combine(basesPath, fileName);
+                client.DownloadFile(getDownloadLink(name, false), destPath);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 Custom_Message cm = new Custom_Message("Error 005: \"Unable to Download VCB Base\"", " There was an Error downloading the VCB Base File. \n The Programm will now terminate.");
-                try
-                {
-                    cm.Owner = mvm.mw;
-                }
-                catch (Exception) { }
+                try { cm.Owner = mvm.mw; } catch (Exception) { }
                 cm.ShowDialog();
                 Environment.Exit(1);
             }
-            Directory.SetCurrentDirectory(olddir);
         }
-        public static void DownloadTool(string name, MainViewModel mvm)
+        public static async Task DownloadToolAsync(string name, MainViewModel mvm)
         {
-            string olddir = Directory.GetCurrentDirectory();
+            string baseDir = Directory.GetCurrentDirectory();
             try
             {
-                if (Directory.GetCurrentDirectory().Contains("bin") && Directory.GetCurrentDirectory().Contains("Tools"))
-                    olddir = Directory.GetCurrentDirectory().Replace("bin\\Tools", "");
-                else
-                {
-                    string basePath = $@"bin\Tools\";
-                    Directory.SetCurrentDirectory(basePath);
-                }
+                // Always compute explicit destination directory to avoid global CWD races
+                Directory.CreateDirectory(toolsPath);
+
                 do
                 {
-                    if (File.Exists(name))
-                        File.Delete(name);
+                    string destPath = Path.Combine(toolsPath, name);
+                    if (File.Exists(destPath))
+                        File.Delete(destPath);
 
                     using var client = new WebClient();
-                    client.DownloadFile(getDownloadLink(name, true), name);
-                } while (!ToolCheck.IsToolRight(name));
+                    try
+                    {
+                        await client.DownloadFileTaskAsync(
+                            new Uri(getDownloadLink(name, true)),
+                            destPath
+                        );
+                    }
+                    catch (WebException webEx)
+                    {
+                        if (webEx.Response is HttpWebResponse response)
+                        {
+                            Logger.Log($"Download failed for {name} - HTTP {(int)response.StatusCode} {response.StatusDescription}");
+                            throw new Exception($"Download failed: {(int)response.StatusCode} {response.StatusDescription}");
+                        }
+                        else
+                        {
+                            Logger.Log($"Download failed for {name}: {webEx.Message}");
+                            throw; // bubble up
+                        }
+                    }
+
+                } while (!ToolCheck.IsToolRightAtPath(Path.Combine(toolsPath, name)));
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Custom_Message cm = new Custom_Message("Error 006: \"Unable to Download Tool\"", " There was an Error downloading the Tool. \n The Programm will now terminate.");
+                Logger.Log($"Error downloading tool {name}: {e.Message}");
+                var cm = new Custom_Message(
+                    "Error 006: \"Unable to Download Tool\"",
+                    $"There was an error downloading the tool \"{name}\".\n\nDetails: {e.Message}"
+                );
                 try
                 {
                     cm.Owner = mvm.mw;
                 }
-                catch (Exception) { }
+                catch { }
                 cm.ShowDialog();
 
                 Environment.Exit(1);
             }
-            Directory.SetCurrentDirectory(olddir);
+            finally { }
         }
+
+
         private static string getDownloadLink(string toolname, bool tool)
         {
             try
             {
-                bool ok = false;
-                try
-                {
-                    using (WebClient client = new WebClient())
-                    {
-                        string result = client.DownloadString("https://uwuvciapi.azurewebsites.net/api/values");
-                    }
-
-                    ok = true;
-                }
-                catch (WebException)
-                {
-                }
-                if (ok)
-                {
-                    WebRequest request;
-                    //get download link from uwuvciapi
-                    request = WebRequest.Create("https://uwuvciapi.azurewebsites.net/GetToolLink?" + (tool ? "tool=" : "vcb=") + toolname);
-
-                    var response = request.GetResponse();
-                    using Stream dataStream = response.GetResponseStream();
-                    // Open the stream using a StreamReader for easy access.  
-                    StreamReader reader = new StreamReader(dataStream);
-                    // Read the content.  
-                    string responseFromServer = reader.ReadToEnd();
-                    // Display the content.  
-                    if (responseFromServer == "")
-                        if (tool)
-                            return $"{ToolCheck.backupulr}{toolname}";
-                        else
-                            return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname;
-
-                    return responseFromServer;
-                }
+                if (tool)
+                    return $"{ToolCheck.backupulr}{toolname}";
                 else
-                {
-                    if (tool)
-                        return $"{ToolCheck.backupulr}{toolname}";
-                    else
-                        return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
-                }
-
-
+                    return $@"https://github.com/Hotbrawl20/UWUVCI-VCB/raw/master/" + toolname.Replace("bin\\bases\\", "");
             }
             catch (Exception)
             {
@@ -1930,40 +2030,54 @@ namespace UWUVCI_AIO_WPF
                 if (missingTools.Count > 0)
                 {
                     foreach (MissingTool m in missingTools)
-                        DownloadTool(m.Name, this);
+                        DownloadToolAsync(m.Name, this).GetAwaiter().GetResult();
 
                     InjcttoolCheck();
                 }
             }
             else
             {
-                Directory.CreateDirectory($@"{Directory.GetCurrentDirectory()}bin\\Tools");
+                Directory.CreateDirectory(toolsPath);
                 InjcttoolCheck();
             }
         }
-        private void ThreadDownload(List<MissingTool> missingTools)
+        private async Task ThreadDownloadAsync(List<MissingTool> missingTools)
         {
-            var thread = new Thread(() =>
+            if (missingTools == null || missingTools.Count == 0)
             {
-                double l = 100 / missingTools.Count;
+                Progress = 100;
+                return;
+            }
 
-                foreach (MissingTool m in missingTools)
+            int total = missingTools.Count;
+            int completed = 0;
+
+            await Services.ParallelBatchRunner.RunAsync(
+                missingTools,
+                async (m) =>
                 {
                     if (m.Name == "blank.ini")
                     {
-                        StreamWriter sw = new StreamWriter(Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools", "blank.ini"));
-                        sw.Close();
+                        var path = Path.Combine(toolsPath, "blank.ini");
+                        using var sw = new StreamWriter(path);
+                        await sw.FlushAsync();
                     }
                     else
-                        DownloadTool(m.Name, this);
+                    {
+                        await DownloadToolAsync(m.Name, this);
+                    }
+                },
+                onItemCompleted: () =>
+                {
+                    int c = Interlocked.Increment(ref completed);
+                    Progress = (int)Math.Round(100.0 * c / total, MidpointRounding.AwayFromZero);
+                },
+                maxConcurrency: Math.Min(total, 6)
+            );
 
-                    Progress += Convert.ToInt32(l);
-                }
-                Progress = 100;
-            });
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
+            Progress = 100;
         }
+
         private void timer_Tick2(object sender, EventArgs e)
         {
             if (Progress == 100)
@@ -1985,7 +2099,7 @@ namespace UWUVCI_AIO_WPF
                     Logger.Log("Missing tools detected.");
                     if (CheckForInternetConnection())
                     {
-                        Task.Run(() => ThreadDownload(missingTools));
+                        Task.Run(async () => await ThreadDownloadAsync(missingTools));
                         ShowDownloadWaitDialog();
 
                         // Retry logic after downloading
@@ -2008,7 +2122,7 @@ namespace UWUVCI_AIO_WPF
             {
                 try
                 {
-                    Directory.CreateDirectory("bin/Tools");
+                    Directory.CreateDirectory(toolsPath);
                     Logger.Log("Created Tools folder.");
                     toolCheck();  // Retry once after creating the directory
                 }
@@ -2024,7 +2138,7 @@ namespace UWUVCI_AIO_WPF
         {
             DownloadWait dw = new DownloadWait("Downloading Tools - Please Wait", "", this);
             try
-            {
+             {
                 dw.changeOwner(mw);
             }
             catch (Exception) 
@@ -2059,34 +2173,72 @@ namespace UWUVCI_AIO_WPF
 
         public bool ValidatePathsStillExist()
         {
-            string basePath = JsonSettingsManager.Settings.BasePath;
-            string outPath = JsonSettingsManager.Settings.OutPath;
+            var basePath = JsonSettingsManager.Settings.BasePath;
+            var outPath = JsonSettingsManager.Settings.OutPath;
 
-            bool baseExists = EnsureDirectoryExists(ref basePath, "bin/BaseGames");
-            bool injectExists = EnsureDirectoryExists(ref outPath, "InjectedGames");
+            var baseRes = EnsureDirectoryExists(ref basePath, "Base");
+            var outRes = EnsureDirectoryExists(ref outPath, "Out");
 
-            if (baseExists && injectExists)
+            // If user had set a custom path but it doesn't exist, prompt instead of silently changing it.
+            if (baseRes == EnsureDirResult.InvalidKept || outRes == EnsureDirResult.InvalidKept)
+                return false;
+
+            JsonSettingsManager.Settings.BasePath = basePath!;
+            JsonSettingsManager.Settings.OutPath = outPath!;
+            JsonSettingsManager.Settings.PathsSet = true;
+            JsonSettingsManager.SaveSettings();
+            return true;
+        }
+
+
+        public static class AppPaths
+        {
+            public static string AppRoot
             {
-                JsonSettingsManager.Settings.BasePath = basePath;
-                JsonSettingsManager.Settings.OutPath = outPath;
-                JsonSettingsManager.Settings.PathsSet = true;
-                JsonSettingsManager.SaveSettings();
-                return true;
+                get
+                {
+                    var asm = System.Reflection.Assembly.GetEntryAssembly()
+                           ?? System.Reflection.Assembly.GetExecutingAssembly();
+                    var exePath = asm.Location;
+                    return Path.GetDirectoryName(exePath)
+                           ?? throw new InvalidOperationException("Unable to resolve app root.");
+                }
             }
 
-            return false;
+            public static string DefaultBasePath => Path.Combine(AppRoot, "bin", "BaseGames");
+            public static string DefaultOutPath => Path.Combine(AppRoot, "InjectedGames");
         }
 
-        private bool EnsureDirectoryExists(ref string path, string defaultSubDir)
+        public enum EnsureDirResult
         {
-            if (Directory.Exists(path))
-                return true;
-
-            string fullPath = Path.Combine(Directory.GetCurrentDirectory(), defaultSubDir);
-            Directory.CreateDirectory(fullPath);
-            path = fullPath;
-            return false;
+            Exists,     // path existed and is usable
+            Created,    // fallback was created and assigned
+            InvalidKept // caller-provided path was invalid; we did not mutate it
         }
+
+        private static EnsureDirResult EnsureDirectoryExists(ref string? path, string defaultKey)
+        {
+            // If caller already points to a real directory, keep it.
+            if (!string.IsNullOrWhiteSpace(path) && Directory.Exists(path))
+                return EnsureDirResult.Exists;
+
+            // For a non-empty custom path that doesn't exist, don't mutate it silently.
+            if (!string.IsNullOrWhiteSpace(path))
+                return EnsureDirResult.InvalidKept;
+
+            // Choose fallback based on key and create it.
+            string fallback = defaultKey switch
+            {
+                "Base" => AppPaths.DefaultBasePath,
+                "Out" => AppPaths.DefaultOutPath,
+                _ => Path.Combine(AppPaths.AppRoot, defaultKey) // generic safety
+            };
+
+            Directory.CreateDirectory(fallback);
+            path = fallback; // only time we mutate
+            return EnsureDirResult.Created;
+        }
+
 
         public void GetBases(GameConsoles console)
         {
@@ -2103,11 +2255,22 @@ namespace UWUVCI_AIO_WPF
 
         public GameBases getBasefromName(string name)
         {
-            string nameWithoutRegion = name.Substring(0, name.Length - 3);
-            string region = name.Substring(name.Length - 2);
+            if (string.IsNullOrWhiteSpace(name) || name == "Custom")
+                return new GameBases { Name = "Custom", Region = Regions.EU };
 
-            return LNDS.Concat(LN64).Concat(LNES).Concat(LSNES).Concat(LGBA).Concat(LTG16).Concat(LMSX).Concat(LWII)
-                       .FirstOrDefault(b => b.Name == nameWithoutRegion && b.Region.ToString() == region);
+            if (name.Length < 3) return null; // not enough room for " XX"
+
+            // Expect "...<space><2-letter region>"
+            // e.g., "Super Mario Sunshine US"
+            string regionStr = name.Substring(name.Length - 2);          // last 2
+            string baseName = name.Substring(0, name.Length - 3);       // drop " XX"
+
+            var all = LNDS.Concat(LN64).Concat(LNES).Concat(LSNES)
+                          .Concat(LGBA).Concat(LTG16).Concat(LMSX).Concat(LWII);
+
+            return all.FirstOrDefault(b =>
+                string.Equals(b.Name, baseName, StringComparison.Ordinal) &&
+                string.Equals(b.Region.ToString(), regionStr, StringComparison.OrdinalIgnoreCase));
         }
 
 
@@ -2211,10 +2374,9 @@ namespace UWUVCI_AIO_WPF
         }
         public bool checkcKey(string key)
         {
-            string lowerKey = key.ToLower();
-            int keyHash = lowerKey.GetHashCode();
-
-            if (keyHash == 1274359530 || GetDeterministicHashCode(lowerKey) == -485504051)
+            string lowerKey = key.ToLowerInvariant();
+            // 32-bit legacy = 1274359530, deterministic = -485504051
+            if (HashMatchesEither(lowerKey, 1274359530, -485504051))
             {
                 JsonSettingsManager.Settings.Ckey = lowerKey;
                 ckeys = true;
@@ -2227,17 +2389,33 @@ namespace UWUVCI_AIO_WPF
 
         public bool isCkeySet()
         {
-            string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLower();
-            ckeys = lowerCKey.GetHashCode() == 1274359530 || GetDeterministicHashCode(lowerCKey) == -485504051;
+            string lowerCKey = JsonSettingsManager.Settings.Ckey.ToLowerInvariant();
+            ckeys = HashMatchesEither(lowerCKey, 1274359530, -485504051);
             return ckeys;
         }
 
         public bool checkKey(string key)
         {
-            string lowerKey = key.ToLower();
-            if (GbTemp.KeyHash == lowerKey.GetHashCode() || GbTemp.KeyHash == GetDeterministicHashCode(lowerKey))
+            if (GbTemp == null || string.IsNullOrWhiteSpace(key))
+                return false;
+
+            string asIs = key.Trim();
+            string lowerKey = asIs.ToLowerInvariant();
+            string upperKey = asIs.ToUpperInvariant();
+            // Match against the base's stored 32-bit hash using deterministic and legacy variants
+            bool matchesDeterministic =
+                GetDeterministicHashCode(asIs)     == GbTemp.KeyHash ||
+                GetDeterministicHashCode(lowerKey) == GbTemp.KeyHash ||
+                GetDeterministicHashCode(upperKey) == GbTemp.KeyHash;
+
+            bool matchesLegacy =
+                HashCompat.MatchesAnyLegacyHash(asIs,     GbTemp.KeyHash) ||
+                HashCompat.MatchesAnyLegacyHash(lowerKey, GbTemp.KeyHash) ||
+                HashCompat.MatchesAnyLegacyHash(upperKey, GbTemp.KeyHash);
+
+            if (matchesDeterministic || matchesLegacy)
             {
-                string consoleName = GetConsoleOfBase(gbTemp).ToString().ToLower();
+                string consoleName = GetConsoleOfBase(gbTemp).ToString().ToLowerInvariant();
                 string keyFilePath = $@"bin\keys\{consoleName}.vck";
                 UpdateKeyInFile(lowerKey, keyFilePath, GbTemp, GetConsoleOfBase(gbTemp));
                 return true;
@@ -2303,35 +2481,64 @@ namespace UWUVCI_AIO_WPF
         public void Download()
         {
             ValidatePathsStillExist();
-            if (CheckForInternetConnection())
+
+            if (!CheckForInternetConnection())
+                return;
+
+            // spin up cancellation in case you want to hook a cancel button later
+            var cts = new CancellationTokenSource();
+            DownloadWait dw;
+
+            if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
             {
-                DownloadWait dw;
-                
-                if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
-                {
-                    double speed = TestDownloadSpeed();  // in MB/s
-                    TimeSpan estimatedTime = CalculateEstimatedTime(speed);
+                double speed = TestDownloadSpeed();  // in MB/s
+                TimeSpan estimatedTime = CalculateEstimatedTime(speed);
 
-                    // Start the actual download
-                    Task.Run(() => { Injection.Download(this); });
+                // Run the new async injection download in background
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Injection.DownloadAsync(this, cts.Token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Download failed: " + ex.Message);
+                    }
+                }, cts.Token);
 
-                    // Display the waiting dialog with the estimated time
-                    dw = new DownloadWait("Downloading Base - Please Wait", estimatedTime, this);
-                }
-                else
-                {
-                    Task.Run(() => { Injection.Download(this); });
-                    dw = new DownloadWait("Downloading Base - Please Wait", "", this);
-                }
-                try
-                {
-                    dw.changeOwner(mw);
-                }
-                catch (Exception) { }
-                dw.ShowDialog();
-                Progress = 0;
+                // Show waiting dialog with ETA and pass cts
+                dw = new DownloadWait("Downloading Base - Please Wait", this, cts, true);
             }
+            else
+            {
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        await Injection.DownloadAsync(this, cts.Token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Download failed: " + ex.Message);
+                    }
+                }, cts.Token);
+
+                dw = new DownloadWait("Downloading Base - Please Wait", this, cts, true);
+            }
+
+            try
+            {
+                dw.changeOwner(mw);
+            }
+            catch (Exception) { }
+
+            dw.ShowDialog();
+
+            Progress = 0;
         }
+
+
 
         private double TestDownloadSpeed()
         {
@@ -2484,8 +2691,9 @@ namespace UWUVCI_AIO_WPF
             return !Directory.EnumerateFileSystemEntries(path).Any();
         }
 
-        public void getBootIMGGBA(string rom)
+        public void getBootIMGGBA(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string repoid = "";
@@ -2514,7 +2722,7 @@ namespace UWUVCI_AIO_WPF
                     SystemType + repoid.Substring(0, 3) + "J"
                 };
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.GBA);
+                _ = Task.Run(async () =>{ await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.GBA, mvm); });
             }
             catch (Exception e)
             {
@@ -2527,8 +2735,9 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
         }
-        public void getBootIMGSNES(string rom)
+        public void getBootIMGSNES(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "snes/";
@@ -2537,7 +2746,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.SNES);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.SNES, mvm); });
             } 
             catch (Exception e)
             {
@@ -2551,8 +2760,9 @@ namespace UWUVCI_AIO_WPF
             }
 
         }
-        public void getBootIMGMSX(string rom)
+        public void getBootIMGMSX(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "msx/";
@@ -2561,7 +2771,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.MSX);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.MSX, mvm); });
             }
             catch (Exception e)
             {
@@ -2574,8 +2784,9 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
         }
-        public void getBootIMGTG(string rom)
+        public void getBootIMGTG(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "tg16/";
@@ -2584,7 +2795,7 @@ namespace UWUVCI_AIO_WPF
                 {
                     SystemType + repoid
                 };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.TG16);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.TG16, mvm); });
             }
             catch (Exception e)
             {
@@ -2733,23 +2944,32 @@ namespace UWUVCI_AIO_WPF
             return getCodeOfNumbers(Convert.ToInt32(first10));
         }
 
-        private void FetchAndProcessRepoImages(string systemType, string repoid, List<string> repoids, GameConsoles console)
+        private async Task FetchAndProcessRepoImagesAsync(
+            string systemType,
+            string repoid,
+            List<string> repoids,
+            GameConsoles console,
+            MainViewModel mvm)
         {
-            if (CheckForInternetConnectionWOWarning())
-            {
-                GetRepoImages(systemType, repoid, repoids);
-                checkForAdditionalFiles(console, repoids);
-            }
+            if (!await CheckForInternetConnectionWOWarningAsync())
+                return;
+
+            bool hasImages = await GetRepoImagesAsync(systemType, repoid, repoids);
+            await CheckForAdditionalFilesAsync(console, repoids);
+
+            mvm.CanOfferImageContribution = !hasImages;
+            mvm.repoId = repoid;
         }
 
-        public void getBootIMGNES(string rom)
+        public void getBootIMGNES(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string SystemType = "nes/";
                 string repoid = GetFakeNESProdcode(rom);
                 List<string> repoids = new List<string> { SystemType + repoid };
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NES);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.NES, mvm); });
             }
             catch (Exception e)
             {
@@ -2762,8 +2982,9 @@ namespace UWUVCI_AIO_WPF
                 cm.ShowDialog();
             }
         }
-        public void getBootIMGNDS(string rom)
+        public void getBootIMGNDS(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string repoid = "";
@@ -2792,7 +3013,7 @@ namespace UWUVCI_AIO_WPF
                     SystemType + repoid.Substring(0, 3) + "J"
                 };
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.NDS);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.NDS, mvm); });
             }
             catch (Exception e)
             {
@@ -2806,8 +3027,9 @@ namespace UWUVCI_AIO_WPF
             }
         }
 
-        public void getBootIMGN64(string rom)
+        public void getBootIMGN64(MainViewModel mvm)
         {
+            var rom = mvm.romPath;
             try
             {
                 string repoid = "";
@@ -2829,7 +3051,7 @@ namespace UWUVCI_AIO_WPF
 
                 repoids.Add(SystemType + repoid);
                 repoids.Add(SystemType + new string(new char[] { repoid[0], repoid[2], repoid[1], repoid[3] }));
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, GameConsoles.N64);
+                _ = Task.Run(async () => { await FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, GameConsoles.N64, mvm); });
             }
             catch (Exception e)
             {
@@ -2913,8 +3135,9 @@ namespace UWUVCI_AIO_WPF
             return new ASCIIEncoding().GetString(arr);
         }
 
-        public string getInternalWIIGCNName(string OpenGame, bool gc)
+        public string getInternalWIIGCNName(MainViewModel mvm, bool gc)
         {
+            var OpenGame = mvm.romPath;
             string ret = "";
             try
             {
@@ -2956,7 +3179,7 @@ namespace UWUVCI_AIO_WPF
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "P" + repoid.Substring(4, 2));
                 repoids.Add(SystemType + repoid.Substring(0, 3) + "J" + repoid.Substring(4, 2));
 
-                FetchAndProcessRepoImages(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII);
+                FetchAndProcessRepoImagesAsync(SystemType, repoid, repoids, gc ? GameConsoles.GCN : GameConsoles.WII, mvm);
             }
             catch (Exception)
             {
@@ -3014,15 +3237,15 @@ namespace UWUVCI_AIO_WPF
             cm.ShowDialog();
         }
 
-        public bool CheckForInternetConnectionWOWarning()
+        public async Task<bool> CheckForInternetConnectionWOWarningAsync()
         {
             try
             {
-                using var client = new WebClient();
-                client.Proxy = null;
-                client.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.BypassCache);
-                client.DownloadString("http://google.com/generate_204");
-                return true;
+                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+                client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
+
+                var response = await client.GetAsync("http://google.com/generate_204");
+                return response.IsSuccessStatusCode;
             }
             catch (WebException)
             {
@@ -3030,7 +3253,6 @@ namespace UWUVCI_AIO_WPF
             }
             catch (Exception ex)
             {
-                // Optionally log the unexpected exception
                 Console.WriteLine($"Unexpected error: {ex.Message}");
                 return false;
             }
@@ -3041,11 +3263,10 @@ namespace UWUVCI_AIO_WPF
         /// </summary>
         /// <param name="console">The game console type.</param>
         /// <param name="repoids">List of repository IDs to check for additional files.</param>
-        private void checkForAdditionalFiles(GameConsoles console, List<string> repoids)
+        private async Task CheckForAdditionalFilesAsync(GameConsoles console, List<string> repoids)
         {
             string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
-            if (!Directory.Exists(repoPath))
-                Directory.CreateDirectory(repoPath);
+            Directory.CreateDirectory(repoPath);
 
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             bool iniFound = false;
@@ -3054,31 +3275,37 @@ namespace UWUVCI_AIO_WPF
             string bootSoundUrl = "";
             string bootSoundExtension = "btsnd";
 
-            // Check for INI file
+            var client = SharedHttpClient;
+
             if (console == GameConsoles.N64)
-            {
-                iniFound = TryFindFileInRepo(repoids, linkbase, "/game.ini", out iniUrl);
-            }
+                iniFound = await TryFindFileInRepoAsync(client, repoids, linkbase, "/game.ini", result => iniUrl = result);
 
-            // Check for BootSound file
-            bootSoundFound = TryFindFileInRepo(repoids, linkbase, $"/BootSound.{bootSoundExtension}", out bootSoundUrl);
+            bootSoundFound = await TryFindFileInRepoAsync(client, repoids, linkbase, $"/BootSound.{bootSoundExtension}", result => bootSoundUrl = result);
 
-            // Prompt user and download additional files if found
+            // expose whether an official/community INI was found so we can offer contributions after inject
+            if (console == GameConsoles.N64)
+                CanOfferIniContribution = !iniFound;
+
             if (iniFound || bootSoundFound)
             {
                 string message = GetAdditionalFilesMessage(iniFound, bootSoundFound);
-                var customMessage = new Custom_Message("Found additional Files", message);
-                SetWindowOwner(customMessage);
 
-                customMessage.ShowDialog();
+                // Run the WPF window on the UI thread
+                await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    var customMessage = new Custom_Message("Found additional Files", message);
+                    SetWindowOwner(customMessage);
+                    customMessage.ShowDialog();
+                });
 
                 if (addi)
                 {
-                    DownloadAdditionalFiles(iniFound, iniUrl, bootSoundFound, bootSoundUrl, console, bootSoundExtension);
+                    await DownloadAdditionalFilesAsync(client, iniFound, iniUrl, bootSoundFound, bootSoundUrl, console, bootSoundExtension);
                     addi = false;
                 }
             }
         }
+
 
         /// <summary>
         /// Tries to find a specific file in the repository.
@@ -3088,15 +3315,17 @@ namespace UWUVCI_AIO_WPF
         /// <param name="filePath">Specific file path to look for.</param>
         /// <param name="fileUrl">The found file URL.</param>
         /// <returns>True if the file is found, otherwise false.</returns>
-        private bool TryFindFileInRepo(List<string> repoids, string linkbase, string filePath, out string fileUrl)
+        private async Task<bool> TryFindFileInRepoAsync(HttpClient client, List<string> repoids, string linkbase, string filePath, Action<string> resultSetter)
         {
-            foreach (var repoid in repoids)
+            foreach (string id in repoids)
             {
-                fileUrl = linkbase + repoid + filePath;
-                if (RemoteFileExists(fileUrl))
+                string url = $"{linkbase}{id}{filePath}";
+                if (await RemoteFileExistsAsync(client, url))
+                {
+                    resultSetter(url);
                     return true;
+                }
             }
-            fileUrl = string.Empty;
             return false;
         }
 
@@ -3143,49 +3372,80 @@ namespace UWUVCI_AIO_WPF
         /// <param name="bootSoundUrl">The URL of the BootSound file.</param>
         /// <param name="console">The game console type.</param>
         /// <param name="bootSoundExtension">The file extension for BootSound.</param>
-        private void DownloadAdditionalFiles(bool iniFound, string iniUrl, bool bootSoundFound, string bootSoundUrl, GameConsoles console, string bootSoundExtension)
+        private async Task DownloadAdditionalFilesAsync(HttpClient client, bool iniFound, string iniUrl, bool bootSoundFound, string bootSoundUrl, GameConsoles console, string bootSoundExtension)
         {
-            var client = new WebClient();
             string repoPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "repo");
+            Directory.CreateDirectory(repoPath);
 
-            if (iniFound)
+            var tasks = new List<Task>();
+            string dlIniPath = null;
+
+            if (iniFound && !string.IsNullOrEmpty(iniUrl))
             {
-                string iniFilePath = Path.Combine(repoPath, "game.ini");
-                client.DownloadFile(iniUrl, iniFilePath);
-                (Thing as N64Config).ini.Text = iniFilePath;
-                GameConfiguration.N64Stuff.INIPath = iniFilePath;
+                string iniDest = Path.Combine(repoPath, $"{console}_game.ini");
+                dlIniPath = iniDest;
+                tasks.Add(DownloadFileAsync(client, iniUrl, iniDest));
             }
 
-            if (bootSoundFound)
+            if (bootSoundFound && !string.IsNullOrEmpty(bootSoundUrl))
             {
-                string bootSoundFilePath = Path.Combine(repoPath, $"bootSound.{bootSoundExtension}");
-                client.DownloadFile(bootSoundUrl, bootSoundFilePath);
-                BootSound = bootSoundFilePath;
+                string soundDest = Path.Combine(repoPath, $"{console}_BootSound.{bootSoundExtension}");
+                tasks.Add(DownloadFileAsync(client, bootSoundUrl, soundDest));
+            }
 
-                switch (console)
+            await Task.WhenAll(tasks);
+
+            // If we downloaded an INI for N64, set it as current and warn if community-submitted
+            if (console == GameConsoles.N64 && !string.IsNullOrWhiteSpace(dlIniPath) && File.Exists(dlIniPath))
+            {
+                GameConfiguration.N64Stuff.INIPath = dlIniPath;
+                try
                 {
-                    case GameConsoles.NDS:
-                    case GameConsoles.NES:
-                    case GameConsoles.SNES:
-                    case GameConsoles.MSX:
-                        (Thing as OtherConfigs).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.GBA:
-                        (Thing as GBA).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.N64:
-                        (Thing as N64Config).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.WII:
-                        if (test == GameConsoles.GCN)
-                            (Thing as GCConfig).sound.Text = bootSoundFilePath;
-                        else
-                            (Thing as WiiConfig).sound.Text = bootSoundFilePath;
-                        break;
-                    case GameConsoles.TG16:
-                        (Thing as TurboGrafX).sound.Text = bootSoundFilePath;
-                        break;
+                    var head = File.ReadAllText(dlIniPath);
+                    bool isCommunity = head.IndexOf("COMMUNITY_SUBMITTED = 1", StringComparison.OrdinalIgnoreCase) >= 0;
+                    GameConfiguration.N64Stuff.CommunityIni = isCommunity;
+                    if (Thing is N64Config n64)
+                    {
+                        try
+                        {
+                            n64.Dispatcher.Invoke(() =>
+                            {
+                                // Push the path into the textbox and update the badge
+                                n64.ini.Text = dlIniPath;
+                                n64.UpdateIniBadge();
+                            });
+                        }
+                        catch { }
+                    }
+                    if (isCommunity)
+                    {
+                        await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+                        {
+                            UWUVCI_MessageBox.Show(
+                                "Community INI Downloaded",
+                                "This INI was submitted by the community, not Nintendo. It may have issues.\nProceed with caution.",
+                                UWUVCI_MessageBoxType.Ok,
+                                UWUVCI_MessageBoxIcon.Warning,
+                                mw,
+                                isModal: false
+                            );
+                        });
+                    }
                 }
+                catch { }
+            }
+        }
+
+        private async Task DownloadFileAsync(HttpClient client, string url, string destinationPath)
+        {
+            try
+            {
+                var data = await client.GetByteArrayAsync(url);
+                File.WriteAllBytes(destinationPath, data);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to download {url}: {ex.Message}");
             }
         }
 
@@ -3273,29 +3533,42 @@ namespace UWUVCI_AIO_WPF
         /// <param name="SystemType">The type of system (e.g., "Wii", "N64").</param>
         /// <param name="repoid">The repository ID for the image.</param>
         /// <param name="repoids">An optional list of repository IDs to check for images.</param>
-        private void GetRepoImages(string SystemType, string repoid, List<string> repoids = null)
+        private async Task<bool> GetRepoImagesAsync(string systemType, string repoid, List<string> repoids = null)
         {
             string linkbase = "https://raw.githubusercontent.com/UWUVCI-PRIME/UWUVCI-IMAGES/master/";
             string[] extensions = { "png", "jpg", "jpeg", "tga" };
 
-            // If no specific repoids are provided, generate possible repoids based on the given repoid
-            if (repoids == null || repoids?.Count == 0)
-                repoids = GenerateRepoIds(SystemType, repoid);
+            repoids ??= GenerateRepoIds(systemType, repoid);
 
-            // Iterate through all combinations of repoids and extensions to find an existing image
-            foreach (string extension in extensions)
-                foreach (string id in repoids)
-                {
-                    string imageUrl = $"{linkbase}{id}/iconTex.{extension}";
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
-                    if (RemoteFileExists(imageUrl))
-                    {
-                        HandleImageLoading(imageUrl, extension, id);
-                        return;
-                    }
-                }
+            // Build ordered list of candidate URLs
+            var orderedUrls = (
+                from ext in extensions
+                from id in repoids
+                select new { Url = $"{linkbase}{id}/iconTex.{ext}", Extension = ext, RepoId = id }
+            ).ToList();
 
+            // Launch all HEAD requests in parallel, but don’t lose ordering
+            var tasks = orderedUrls.Select(async item =>
+            {
+                bool exists = await RemoteFileExistsAsync(client, item.Url);
+                return (item, exists);
+            }).ToList();
+
+            // Wait for all to finish, then pick the *first* success in original order
+            var results = await Task.WhenAll(tasks);
+            var firstSuccess = results.FirstOrDefault(r => r.exists);
+
+            if (firstSuccess.item != null)
+            {
+                HandleImageLoading(firstSuccess.item.Url, firstSuccess.item.Extension, firstSuccess.item.RepoId);
+                return true;
+            }
+
+            return false;
         }
+
 
         /// <summary>
         /// Generates a list of possible repository IDs based on the system type and the provided repository ID.
@@ -3332,18 +3605,23 @@ namespace UWUVCI_AIO_WPF
             if (extension.Equals("tga", StringComparison.OrdinalIgnoreCase))
                 ShowTgaWarning();
 
-            var imgMessage = new IMG_Message(imageUrl, imageUrl.Replace("iconTex", "bootTvTex"), repoid);
-            try
+            void createAndShow()
             {
-                imgMessage.Owner = mw;
-            }
-            catch (Exception)
-            {
-                // Swallow exception to prevent crashing when setting the owner fails
+                var imgMessage = new IMG_Message(imageUrl, imageUrl.Replace("iconTex", "bootTvTex"), repoid);
+                try { imgMessage.Owner = mw; } catch { }
+                imgMessage.ShowDialog();
             }
 
-            imgMessage.ShowDialog();
+            if (System.Windows.Application.Current.Dispatcher.CheckAccess())
+            {
+                createAndShow();
+            }
+            else
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(createAndShow);
+            }
         }
+
 
         /// <summary>
         /// Displays a warning message when a TGA image is detected.

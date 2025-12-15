@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
 using UWUVCI_AIO_WPF.Models;
 using UWUVCI_AIO_WPF.UI.Windows;
 
@@ -225,7 +224,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
                     {
                         trimn.IsChecked = false;
                         trimn_Click(null, null);
-                        string rom = mvm.getInternalWIIGCNName(mvm.RomPath, true);
+                        string rom = mvm.getInternalWIIGCNName(mvm, true);
                         Regex reg = new Regex("[*'\",_&#^@:;?!<>|µ~#°²³´`éⓇ©™]");
                         gn.Text = reg.Replace(rom, string.Empty);
                         mvm.GameConfiguration.GameName = reg.Replace(rom, string.Empty);
@@ -767,6 +766,18 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
 
             }
         }
+
+        private void sgn_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                mvm.GameConfiguration.GameShortName = sgn.Text;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
         /*
         private void SelectGctFile(object sender, RoutedEventArgs e)
         {
@@ -793,7 +804,7 @@ namespace UWUVCI_AIO_WPF.UI.Frames.InjectFrames.Configurations
         {
             using var dialog = new System.Windows.Forms.OpenFileDialog();
             dialog.Multiselect = true;
-            dialog.Filter = "GCT or TXT Files (*.gct, *.txt)|*.gct;*.txt";
+            dialog.Filter = "GCT Files (*.gct)|*.gct";
 
             System.Windows.Forms.DialogResult res = dialog.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)

@@ -12,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using UWUVCI_AIO_WPF.Classes;
+using UWUVCI_AIO_WPF.Helpers;
 using Path = System.IO.Path;
 
 namespace UWUVCI_AIO_WPF.UI.Windows
@@ -22,8 +23,8 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
     public partial class ImageCreator : Window, IDisposable
     {
-        private static readonly string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "temp");
-        private static readonly string toolsPath = Path.Combine(Directory.GetCurrentDirectory(), "bin", "Tools");
+        private static readonly string tempPath = PathResolver.GetTempPath();
+        private static readonly string toolsPath = PathResolver.GetToolsPath();
         BootImage bi = new BootImage();
         Bitmap b;
         string console = "other";
