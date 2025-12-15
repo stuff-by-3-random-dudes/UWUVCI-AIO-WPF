@@ -1,0 +1,70 @@
+#!/bin/sh
+#
+# Wrapper script for using a Wineskin Engine like Winehq wine bundle
+#
+# Copyright (C) 2018-2024 Dean M Greer
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+#
+
+cd "$(dirname "$0")"
+
+# wine wrappers, winetricks, 7z, cabextract & unrar
+export WINESKIN_APP="${PWD}"
+
+# Wrappers wine PATH
+cd "../../../SharedSupport/wine"; export WINEPATH="${PWD}"
+
+# Wrappes wine/bin PATH
+export WINEBINPATH="${WINEPATH}/bin"
+
+# Set $PATH
+export PATH="${WINESKIN_APP}:${WINEBINPATH}:${PATH}"
+
+# Set Wineskin default WINEDEBUG options
+export WINEDEBUG="-plugplay"
+
+# Set required MoltenVK setting
+export MVK_ALLOW_METAL_FENCES=1
+export MVK_CONFIG_FULL_IMAGE_VIEW_SWIZZLE=1
+export MVK_CONFIG_RESUME_LOST_DEVICE=1
+export MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE=MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE_SINGLE_QUEUE
+
+# Default directory location "should" be $HOME
+cd "${HOME}"
+
+# This section was taken from Winehq and tweaked
+clear
+echo "################################################################################"
+echo "#                           Wine Is Not an Emulator                            #"
+echo "################################################################################"
+echo ""
+echo " Welcome to $(wine --version)"
+echo   ""
+echo   " In order to start a program:"
+printf "   .exe:\e[1;31m wine\e[0m\e[1;90m program.exe\e[0m\n"
+printf "   .msi:\e[1;31m wine msiexec /i\e[0m\e[1;90m program.msi\e[0m\n"
+echo   ""
+echo   " If you want to configure wine:"
+printf "  \e[1;31m winecfg\e[0m\n"
+echo   ""
+echo   " To get information about app compatibility:"
+printf "  \e[1;31m appdb\e[0m\e[1;90m Program Name\e[0m\n"
+echo   ""
+if [[ ${OSTYPE:6} -ge 19 ]]; then
+    exec /bin/zsh
+else
+    exec /bin/bash
+fi

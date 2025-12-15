@@ -1,0 +1,63 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+# Winetricks fontsmooth=rgb, improves look of fonts and helps fix UI problems
+"FontSmoothing"="2"
+"FontSmoothingGamma"=dword:00000578
+"FontSmoothingOrientation"=dword:00000001
+"FontSmoothingType"=dword:00000002
+
+[HKEY_CURRENT_USER\Software\Wine\Direct3D]
+
+# Global key
+[HKEY_CURRENT_USER\Software\Wine\DllOverrides]
+# Disable the Steam overlay by default
+#"gameoverlayrenderer"=""
+# Disables from Proton
+#"atiadlxx"=""
+#"nvcuda"="" < Doesn't apply for some reason.....
+
+# App-specific key
+#[Software\Wine\AppDefaults\app.exe\DllOverrides]
+
+# Global key
+[HKEY_CURRENT_USER\Software\Wine\Mac Driver]
+# Map Option key(s) as Alt, since wine-1.7.4
+"LeftOptionIsAlt"="Y"
+"RightOptionIsAlt"="Y"
+# Disable high-resoultion scrolling, since wine-1.7.19
+"UsePreciseScrolling"="N"
+# Disable macOS native scalling, since wine-1.9.10
+#"RetinaMode"="Y"
+# Map Command keys(s) as Control, since wine-3.17
+"LeftCommandIsCtrl"="Y"
+"RightCommandIsCtrl"="Y"
+# Resolves mouse lag?, since wine-6.0?
+#"AllowVerticalSync"="N"
+# Using Metal API only a single display will be captured, since wine-6.0?
+#"CaptureDisplaysForFullscreen"="N"
+# Use legacy mouse confinement, since wine-7.1
+#"UseConfinementCursorClipping"="N"
+
+# App-specific key
+#[HKCU\Software\Wine\AppDefaults\app.exe\Mac Driver]
+
+[HKEY_CLASSES_ROOT\htmlfile\shell\opennew\command]
+@="C:\\windows\\system32\\winebrowser.exe -nohome \"%1\""
+
+[HKEY_CLASSES_ROOT\http\shell\open\command]
+@="C:\\windows\\system32\\winebrowser.exe -nohome \"%1\""
+
+[HKEY_CLASSES_ROOT\https\shell\open\command]
+@="C:\\windows\\system32\\winebrowser.exe -nohome \"%1\""
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\AeDebug]
+"Auto"="1"
+"Debugger"="false"
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus]
+# Only detect & map controllers using SDL
+"DisableHidraw"=dword:00000001
+"DisableInput"=dword:00000001
+"Enable SDL"=dword:00000001
+"Map Controllers"=dword:00000001

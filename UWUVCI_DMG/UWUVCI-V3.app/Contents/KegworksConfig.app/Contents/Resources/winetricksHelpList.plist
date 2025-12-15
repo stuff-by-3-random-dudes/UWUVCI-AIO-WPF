@@ -1,0 +1,3322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>apps</key>
+	<dict>
+		<key>3m_library</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>3M Cloud Library</string>
+			<key>WS-Name</key>
+			<string>3m_library</string>
+		</dict>
+		<key>7zip</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>7-Zip 24.09</string>
+			<key>WS-Name</key>
+			<string>7zip</string>
+		</dict>
+		<key>adobe_diged</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Adobe Digital Editions 1.7</string>
+			<key>WS-Name</key>
+			<string>adobe_diged</string>
+		</dict>
+		<key>adobe_diged4</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Adobe Digital Editions 4.5</string>
+			<key>WS-Name</key>
+			<string>adobe_diged4</string>
+		</dict>
+		<key>autohotkey</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>AutoHotKey</string>
+			<key>WS-Name</key>
+			<string>autohotkey</string>
+		</dict>
+		<key>battle_net</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Battle.net</string>
+			<key>WS-Name</key>
+			<string>battle_net</string>
+		</dict>
+		<key>busybox</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>BusyBox FRP-5579-g5749feb35</string>
+			<key>WS-Name</key>
+			<string>busybox</string>
+		</dict>
+		<key>cmake</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>CMake 2.8</string>
+			<key>WS-Name</key>
+			<string>cmake</string>
+		</dict>
+		<key>cncnet_ra2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>CnCnet Red Alert / Yuri's Revenge Client v8.55</string>
+			<key>WS-Name</key>
+			<string>cncnet_ra2</string>
+		</dict>
+		<key>colorprofile</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Standard RGB color profile</string>
+			<key>WS-Name</key>
+			<string>colorprofile</string>
+		</dict>
+		<key>controlpad</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS ActiveX Control Pad</string>
+			<key>WS-Name</key>
+			<string>controlpad</string>
+		</dict>
+		<key>controlspy</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Control Spy 6</string>
+			<key>WS-Name</key>
+			<string>controlspy</string>
+		</dict>
+		<key>dbgview</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Debug monitor</string>
+			<key>WS-Name</key>
+			<string>dbgview</string>
+		</dict>
+		<key>depends</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Dependency Walker</string>
+			<key>WS-Name</key>
+			<string>depends</string>
+		</dict>
+		<key>dotnet20sdk</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 2.0 SDK</string>
+			<key>WS-Name</key>
+			<string>dotnet20sdk</string>
+		</dict>
+		<key>dxsdk_aug2006</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectX SDK, August 2006 (developers only)</string>
+			<key>WS-Name</key>
+			<string>dxsdk_aug2006</string>
+		</dict>
+		<key>dxsdk_jun2010</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectX SDK, June 2010 (developers only)</string>
+			<key>WS-Name</key>
+			<string>dxsdk_jun2010</string>
+		</dict>
+		<key>dxwnd</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Window hooker to run fullscreen programs in window and much more...</string>
+			<key>WS-Name</key>
+			<string>dxwnd</string>
+		</dict>
+		<key>eadesktop</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>EA Desktop app</string>
+			<key>WS-Name</key>
+			<string>eadesktop</string>
+		</dict>
+		<key>emu8086</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>emu8086</string>
+			<key>WS-Name</key>
+			<string>emu8086</string>
+		</dict>
+		<key>epicgames</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Epic Games Launcher</string>
+			<key>WS-Name</key>
+			<string>epicgames</string>
+		</dict>
+		<key>ev3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Lego Mindstorms EV3 Home Edition</string>
+			<key>WS-Name</key>
+			<string>ev3</string>
+		</dict>
+		<key>firefox</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Firefox 51.0</string>
+			<key>WS-Name</key>
+			<string>firefox</string>
+		</dict>
+		<key>fontxplorer</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Font Xplorer 1.2.2</string>
+			<key>WS-Name</key>
+			<string>fontxplorer</string>
+		</dict>
+		<key>foobar2000</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>foobar2000 v1.4</string>
+			<key>WS-Name</key>
+			<string>foobar2000</string>
+		</dict>
+		<key>galaxy</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>GOG Galaxy v2.0</string>
+			<key>WS-Name</key>
+			<string>galaxy</string>
+		</dict>
+		<key>galaxyupdater</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>GOG Galaxy v2.0 Updater</string>
+			<key>WS-Name</key>
+			<string>galaxyupdater</string>
+		</dict>
+		<key>gog_galaxy</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Stub</string>
+			<key>WS-Name</key>
+			<string>gog_galaxy</string>
+		</dict>
+		<key>hhw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>HTML Help Workshop</string>
+			<key>WS-Name</key>
+			<string>hhw</string>
+		</dict>
+		<key>hoyoplay</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>HoYoPlay</string>
+			<key>WS-Name</key>
+			<string>hoyoplay</string>
+		</dict>
+		<key>iceweasel</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>GNU Icecat 31.7.0</string>
+			<key>WS-Name</key>
+			<string>iceweasel</string>
+		</dict>
+		<key>irfanview</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Irfanview</string>
+			<key>WS-Name</key>
+			<string>irfanview</string>
+		</dict>
+		<key>kindle</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Amazon Kindle</string>
+			<key>WS-Name</key>
+			<string>kindle</string>
+		</dict>
+		<key>kobo</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Kobo e-book reader</string>
+			<key>WS-Name</key>
+			<string>kobo</string>
+		</dict>
+		<key>mingw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Minimalist GNU for Windows, including GCC for Windows</string>
+			<key>WS-Name</key>
+			<string>mingw</string>
+		</dict>
+		<key>mozillabuild</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Mozilla build environment</string>
+			<key>WS-Name</key>
+			<string>mozillabuild</string>
+		</dict>
+		<key>mpc</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Media Player Classic - Home Cinema</string>
+			<key>WS-Name</key>
+			<string>mpc</string>
+		</dict>
+		<key>mspaint</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Paint</string>
+			<key>WS-Name</key>
+			<string>mspaint</string>
+		</dict>
+		<key>mt4</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Meta Trader 4</string>
+			<key>WS-Name</key>
+			<string>mt4</string>
+		</dict>
+		<key>njcwp_trial</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>NJStar Chinese Word Processor trial</string>
+			<key>WS-Name</key>
+			<string>njcwp_trial</string>
+		</dict>
+		<key>njjwp_trial</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>NJStar Japanese Word Processor trial</string>
+			<key>WS-Name</key>
+			<string>njjwp_trial</string>
+		</dict>
+		<key>nook</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Nook for PC (e-book reader)</string>
+			<key>WS-Name</key>
+			<string>nook</string>
+		</dict>
+		<key>npp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Notepad++</string>
+			<key>WS-Name</key>
+			<string>npp</string>
+		</dict>
+		<key>ollydbg110</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>OllyDbg</string>
+			<key>WS-Name</key>
+			<string>ollydbg110</string>
+		</dict>
+		<key>ollydbg200</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>OllyDbg</string>
+			<key>WS-Name</key>
+			<string>ollydbg200</string>
+		</dict>
+		<key>ollydbg201</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>OllyDbg</string>
+			<key>WS-Name</key>
+			<string>ollydbg201</string>
+		</dict>
+		<key>openwatcom</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Open Watcom C/C++ compiler (can compile win16 code!)</string>
+			<key>WS-Name</key>
+			<string>openwatcom</string>
+		</dict>
+		<key>origin</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>EA Origin</string>
+			<key>WS-Name</key>
+			<string>origin</string>
+		</dict>
+		<key>paradox</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Paradox Launcher V.2</string>
+			<key>WS-Name</key>
+			<string>paradox</string>
+		</dict>
+		<key>procexp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Process Explorer</string>
+			<key>WS-Name</key>
+			<string>procexp</string>
+		</dict>
+		<key>protectionid</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Protection ID</string>
+			<key>WS-Name</key>
+			<string>protectionid</string>
+		</dict>
+		<key>psdk2003</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Platform SDK 2003</string>
+			<key>WS-Name</key>
+			<string>psdk2003</string>
+		</dict>
+		<key>psdkwin71</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows 7.1 SDK</string>
+			<key>WS-Name</key>
+			<string>psdkwin71</string>
+		</dict>
+		<key>rare</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Epic Games Launcher alternative</string>
+			<key>WS-Name</key>
+			<string>rare</string>
+		</dict>
+		<key>rockstar</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Rockstar Games Launcher</string>
+			<key>WS-Name</key>
+			<string>rockstar</string>
+		</dict>
+		<key>safari</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Safari</string>
+			<key>WS-Name</key>
+			<string>safari</string>
+		</dict>
+		<key>sketchup</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>SketchUp 8</string>
+			<key>WS-Name</key>
+			<string>sketchup</string>
+		</dict>
+		<key>steam</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Steam</string>
+			<key>WS-Name</key>
+			<string>steam</string>
+		</dict>
+		<key>steam_remove_steam_cfg</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Remove steam.cfg</string>
+			<key>WS-Name</key>
+			<string>steam_remove_steam_cfg</string>
+		</dict>
+		<key>ubisoftconnect</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Ubisoft Connect</string>
+			<key>WS-Name</key>
+			<string>ubisoftconnect</string>
+		</dict>
+		<key>utorrent</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>µTorrent 2.2.1</string>
+			<key>WS-Name</key>
+			<string>utorrent</string>
+		</dict>
+		<key>utorrent3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>µTorrent 3.4</string>
+			<key>WS-Name</key>
+			<string>utorrent3</string>
+		</dict>
+		<key>vc2005express</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual C++ 2005 Express</string>
+			<key>WS-Name</key>
+			<string>vc2005express</string>
+		</dict>
+		<key>vc2005expresssp1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual C++ 2005 Express SP1</string>
+			<key>WS-Name</key>
+			<string>vc2005expresssp1</string>
+		</dict>
+		<key>vc2005trial</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual C++ 2005 Trial</string>
+			<key>WS-Name</key>
+			<string>vc2005trial</string>
+		</dict>
+		<key>vc2008express</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual C++ 2008 Express</string>
+			<key>WS-Name</key>
+			<string>vc2008express</string>
+		</dict>
+		<key>vc2010express</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual C++ 2010 Express</string>
+			<key>WS-Name</key>
+			<string>vc2010express</string>
+		</dict>
+		<key>vlc</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>VLC media player 2.2.1</string>
+			<key>WS-Name</key>
+			<string>vlc</string>
+		</dict>
+		<key>vstools2019</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual Studio Build Tools 2019</string>
+			<key>WS-Name</key>
+			<string>vstools2019</string>
+		</dict>
+		<key>winamp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Winamp</string>
+			<key>WS-Name</key>
+			<string>winamp</string>
+		</dict>
+		<key>winrar</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>WinRAR 6.11</string>
+			<key>WS-Name</key>
+			<string>winrar</string>
+		</dict>
+		<key>wme9</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Media Encoder 9 (broken in Wine)</string>
+			<key>WS-Name</key>
+			<string>wme9</string>
+		</dict>
+	</dict>
+	<key>dlls</key>
+	<dict>
+		<key>allcodecs</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>All codecs (dirac, ffdshow, icodecs, cinepak, l3codecx, xvid) except wmp</string>
+			<key>WS-Name</key>
+			<string>allcodecs</string>
+		</dict>
+		<key>amstream</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS amstream.dll</string>
+			<key>WS-Name</key>
+			<string>amstream</string>
+		</dict>
+		<key>art2k7min</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Access 2007 runtime</string>
+			<key>WS-Name</key>
+			<string>art2k7min</string>
+		</dict>
+		<key>art2kmin</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Access 2000 runtime</string>
+			<key>WS-Name</key>
+			<string>art2kmin</string>
+		</dict>
+		<key>atmlib</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Adobe Type Manager</string>
+			<key>WS-Name</key>
+			<string>atmlib</string>
+		</dict>
+		<key>avifil32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS avifil32</string>
+			<key>WS-Name</key>
+			<string>avifil32</string>
+		</dict>
+		<key>binkw32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>RAD Game Tools binkw32.dll</string>
+			<key>WS-Name</key>
+			<string>binkw32</string>
+		</dict>
+		<key>cabinet</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft cabinet.dll</string>
+			<key>WS-Name</key>
+			<string>cabinet</string>
+		</dict>
+		<key>cinepak</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Cinepak Codec</string>
+			<key>WS-Name</key>
+			<string>cinepak</string>
+		</dict>
+		<key>cmd</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS cmd.exe</string>
+			<key>WS-Name</key>
+			<string>cmd</string>
+		</dict>
+		<key>cnc_ddraw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Reimplentation of ddraw for CnC games</string>
+			<key>WS-Name</key>
+			<string>cnc_ddraw</string>
+		</dict>
+		<key>comctl32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS common controls 5.80</string>
+			<key>WS-Name</key>
+			<string>comctl32</string>
+		</dict>
+		<key>comctl32ocx</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS comctl32.ocx and mscomctl.ocx, comctl32 wrappers for VB6</string>
+			<key>WS-Name</key>
+			<string>comctl32ocx</string>
+		</dict>
+		<key>comdlg32ocx</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Common Dialog ActiveX Control for VB6</string>
+			<key>WS-Name</key>
+			<string>comdlg32ocx</string>
+		</dict>
+		<key>crypt32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS crypt32</string>
+			<key>WS-Name</key>
+			<string>crypt32</string>
+		</dict>
+		<key>crypt32_winxp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS crypt32</string>
+			<key>WS-Name</key>
+			<string>crypt32_winxp</string>
+		</dict>
+		<key>d2gl</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Diablo 2 LoD Glide to OpenGL Wrapper</string>
+			<key>WS-Name</key>
+			<string>d2gl</string>
+		</dict>
+		<key>d3dcompiler_42</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dcompiler_42.dll</string>
+			<key>WS-Name</key>
+			<string>d3dcompiler_42</string>
+		</dict>
+		<key>d3dcompiler_43</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dcompiler_43.dll</string>
+			<key>WS-Name</key>
+			<string>d3dcompiler_43</string>
+		</dict>
+		<key>d3dcompiler_46</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dcompiler_46.dll</string>
+			<key>WS-Name</key>
+			<string>d3dcompiler_46</string>
+		</dict>
+		<key>d3dcompiler_47</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dcompiler_47.dll</string>
+			<key>WS-Name</key>
+			<string>d3dcompiler_47</string>
+		</dict>
+		<key>d3drm</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3drm.dll</string>
+			<key>WS-Name</key>
+			<string>d3drm</string>
+		</dict>
+		<key>d3dx10</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx10_??.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>d3dx10</string>
+		</dict>
+		<key>d3dx10_43</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx10_43.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx10_43</string>
+		</dict>
+		<key>d3dx11_42</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx11_42.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx11_42</string>
+		</dict>
+		<key>d3dx11_43</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx11_43.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx11_43</string>
+		</dict>
+		<key>d3dx9</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_??.dll from DirectX 9 redistributable</string>
+			<key>WS-Name</key>
+			<string>d3dx9</string>
+		</dict>
+		<key>d3dx9_24</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_24.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_24</string>
+		</dict>
+		<key>d3dx9_25</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_25.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_25</string>
+		</dict>
+		<key>d3dx9_26</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_26.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_26</string>
+		</dict>
+		<key>d3dx9_27</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_27.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_27</string>
+		</dict>
+		<key>d3dx9_28</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_28.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_28</string>
+		</dict>
+		<key>d3dx9_29</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_29.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_29</string>
+		</dict>
+		<key>d3dx9_30</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_30.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_30</string>
+		</dict>
+		<key>d3dx9_31</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_31.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_31</string>
+		</dict>
+		<key>d3dx9_32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_32.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_32</string>
+		</dict>
+		<key>d3dx9_33</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_33.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_33</string>
+		</dict>
+		<key>d3dx9_34</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_34.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_34</string>
+		</dict>
+		<key>d3dx9_35</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_35.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_35</string>
+		</dict>
+		<key>d3dx9_36</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_36.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_36</string>
+		</dict>
+		<key>d3dx9_37</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_37.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_37</string>
+		</dict>
+		<key>d3dx9_38</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_38.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_38</string>
+		</dict>
+		<key>d3dx9_39</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_39.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_39</string>
+		</dict>
+		<key>d3dx9_40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_40.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_40</string>
+		</dict>
+		<key>d3dx9_41</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_41.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_41</string>
+		</dict>
+		<key>d3dx9_42</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_42.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_42</string>
+		</dict>
+		<key>d3dx9_43</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dx9_43.dll</string>
+			<key>WS-Name</key>
+			<string>d3dx9_43</string>
+		</dict>
+		<key>d3dxof</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS d3dxof.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>d3dxof</string>
+		</dict>
+		<key>d9vk</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Vulkan-based D3D9 implementation for Wine</string>
+			<key>WS-Name</key>
+			<string>d9vk</string>
+		</dict>
+		<key>dbghelp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dbghelp</string>
+			<key>WS-Name</key>
+			<string>dbghelp</string>
+		</dict>
+		<key>devenum</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS devenum.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>devenum</string>
+		</dict>
+		<key>dinput</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dinput.dll; breaks mouse, use only on Rayman 2 etc.</string>
+			<key>WS-Name</key>
+			<string>dinput</string>
+		</dict>
+		<key>dinput8</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectInput 8 from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dinput8</string>
+		</dict>
+		<key>dirac</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>The Dirac directshow filter v1.0.2</string>
+			<key>WS-Name</key>
+			<string>dirac</string>
+		</dict>
+		<key>directmusic</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectMusic from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>directmusic</string>
+		</dict>
+		<key>directplay</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectPlay from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>directplay</string>
+		</dict>
+		<key>directshow</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>DirectShow runtime DLLs (amstream, qasf, qcap, qdvd, qedit, quartz)</string>
+			<key>WS-Name</key>
+			<string>directshow</string>
+		</dict>
+		<key>directx9</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectX 9 (Deprecated, no-op)</string>
+			<key>WS-Name</key>
+			<string>directx9</string>
+		</dict>
+		<key>dmband</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmband.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmband</string>
+		</dict>
+		<key>dmcompos</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmcompos.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmcompos</string>
+		</dict>
+		<key>dmime</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmime.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmime</string>
+		</dict>
+		<key>dmloader</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmloader.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmloader</string>
+		</dict>
+		<key>dmscript</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmscript.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmscript</string>
+		</dict>
+		<key>dmstyle</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmstyle.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmstyle</string>
+		</dict>
+		<key>dmsynth</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmsynth.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmsynth</string>
+		</dict>
+		<key>dmusic</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmusic.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmusic</string>
+		</dict>
+		<key>dmusic32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dmusic32.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dmusic32</string>
+		</dict>
+		<key>dotnet11</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 1.1</string>
+			<key>WS-Name</key>
+			<string>dotnet11</string>
+		</dict>
+		<key>dotnet11sp1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 1.1 SP1</string>
+			<key>WS-Name</key>
+			<string>dotnet11sp1</string>
+		</dict>
+		<key>dotnet20</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 2.0</string>
+			<key>WS-Name</key>
+			<string>dotnet20</string>
+		</dict>
+		<key>dotnet20sp1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 2.0 SP1</string>
+			<key>WS-Name</key>
+			<string>dotnet20sp1</string>
+		</dict>
+		<key>dotnet20sp2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 2.0 SP2</string>
+			<key>WS-Name</key>
+			<string>dotnet20sp2</string>
+		</dict>
+		<key>dotnet30</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 3.0</string>
+			<key>WS-Name</key>
+			<string>dotnet30</string>
+		</dict>
+		<key>dotnet30sp1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 3.0 SP1</string>
+			<key>WS-Name</key>
+			<string>dotnet30sp1</string>
+		</dict>
+		<key>dotnet35</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 3.5</string>
+			<key>WS-Name</key>
+			<string>dotnet35</string>
+		</dict>
+		<key>dotnet35sp1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 3.5 SP1</string>
+			<key>WS-Name</key>
+			<string>dotnet35sp1</string>
+		</dict>
+		<key>dotnet40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.0</string>
+			<key>WS-Name</key>
+			<string>dotnet40</string>
+		</dict>
+		<key>dotnet40_kb2468871</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.0 KB2468871</string>
+			<key>WS-Name</key>
+			<string>dotnet40_kb2468871</string>
+		</dict>
+		<key>dotnet45</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.5</string>
+			<key>WS-Name</key>
+			<string>dotnet45</string>
+		</dict>
+		<key>dotnet452</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.5.2</string>
+			<key>WS-Name</key>
+			<string>dotnet452</string>
+		</dict>
+		<key>dotnet46</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.6</string>
+			<key>WS-Name</key>
+			<string>dotnet46</string>
+		</dict>
+		<key>dotnet461</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.6.1</string>
+			<key>WS-Name</key>
+			<string>dotnet461</string>
+		</dict>
+		<key>dotnet462</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.6.2</string>
+			<key>WS-Name</key>
+			<string>dotnet462</string>
+		</dict>
+		<key>dotnet471</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.7.1</string>
+			<key>WS-Name</key>
+			<string>dotnet471</string>
+		</dict>
+		<key>dotnet472</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.7.2</string>
+			<key>WS-Name</key>
+			<string>dotnet472</string>
+		</dict>
+		<key>dotnet48</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.8</string>
+			<key>WS-Name</key>
+			<string>dotnet48</string>
+		</dict>
+		<key>dotnet481</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET 4.8.1</string>
+			<key>WS-Name</key>
+			<string>dotnet481</string>
+		</dict>
+		<key>dotnet6</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Runtime 6.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnet6</string>
+		</dict>
+		<key>dotnet7</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Runtime 7.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnet7</string>
+		</dict>
+		<key>dotnet8</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Runtime 8.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnet8</string>
+		</dict>
+		<key>dotnet9</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Runtime 9.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnet9</string>
+		</dict>
+		<key>dotnet_verifier</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Verifier</string>
+			<key>WS-Name</key>
+			<string>dotnet_verifier</string>
+		</dict>
+		<key>dotnetcore2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Core Runtime 2.1 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetcore2</string>
+		</dict>
+		<key>dotnetcore3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Core Runtime 3.1 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetcore3</string>
+		</dict>
+		<key>dotnetcoredesktop3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Core Desktop Runtime 3.1 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetcoredesktop3</string>
+		</dict>
+		<key>dotnetdesktop6</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Desktop Runtime 6.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetdesktop6</string>
+		</dict>
+		<key>dotnetdesktop7</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Desktop Runtime 7.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetdesktop7</string>
+		</dict>
+		<key>dotnetdesktop8</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Desktop Runtime 8.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetdesktop8</string>
+		</dict>
+		<key>dotnetdesktop9</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS .NET Desktop Runtime 9.0 LTS</string>
+			<key>WS-Name</key>
+			<string>dotnetdesktop9</string>
+		</dict>
+		<key>dpvoice</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft dpvoice dpvvox dpvacm Audio dlls</string>
+			<key>WS-Name</key>
+			<string>dpvoice</string>
+		</dict>
+		<key>dsdmo</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dsdmo.dll</string>
+			<key>WS-Name</key>
+			<string>dsdmo</string>
+		</dict>
+		<key>dsetup</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dsetup.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dsetup</string>
+		</dict>
+		<key>dsound</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS DirectSound from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dsound</string>
+		</dict>
+		<key>dswave</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dswave.dll from DirectX user redistributable</string>
+			<key>WS-Name</key>
+			<string>dswave</string>
+		</dict>
+		<key>dx8vb</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dx8vb.dll from DirectX 8.1 runtime</string>
+			<key>WS-Name</key>
+			<string>dx8vb</string>
+		</dict>
+		<key>dxdiag</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>DirectX Diagnostic Tool</string>
+			<key>WS-Name</key>
+			<string>dxdiag</string>
+		</dict>
+		<key>dxdiagn</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>DirectX Diagnostic Library</string>
+			<key>WS-Name</key>
+			<string>dxdiagn</string>
+		</dict>
+		<key>dxdiagn_feb2010</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>DirectX Diagnostic Library (February 2010)</string>
+			<key>WS-Name</key>
+			<string>dxdiagn_feb2010</string>
+		</dict>
+		<key>dxgl</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>DXGL DirectX-to-OpenGL Wrapper</string>
+			<key>WS-Name</key>
+			<string>dxgl</string>
+		</dict>
+		<key>dxtrans</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS dxtrans.dll</string>
+			<key>WS-Name</key>
+			<string>dxtrans</string>
+		</dict>
+		<key>ea_app</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>EA-App</string>
+			<key>WS-Name</key>
+			<string>ea_app</string>
+		</dict>
+		<key>esent</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Extensible Storage Engine</string>
+			<key>WS-Name</key>
+			<string>esent</string>
+		</dict>
+		<key>faudio</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (20.07)</string>
+			<key>WS-Name</key>
+			<string>faudio</string>
+		</dict>
+		<key>faudio1901</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.01)</string>
+			<key>WS-Name</key>
+			<string>faudio1901</string>
+		</dict>
+		<key>faudio1902</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.02)</string>
+			<key>WS-Name</key>
+			<string>faudio1902</string>
+		</dict>
+		<key>faudio1903</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.03)</string>
+			<key>WS-Name</key>
+			<string>faudio1903</string>
+		</dict>
+		<key>faudio1904</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.04)</string>
+			<key>WS-Name</key>
+			<string>faudio1904</string>
+		</dict>
+		<key>faudio1905</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.05)</string>
+			<key>WS-Name</key>
+			<string>faudio1905</string>
+		</dict>
+		<key>faudio1906</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.06)</string>
+			<key>WS-Name</key>
+			<string>faudio1906</string>
+		</dict>
+		<key>faudio190607</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>FAudio (xaudio reimplementation, with xna support) builds for win32 (19.06.07)</string>
+			<key>WS-Name</key>
+			<string>faudio190607</string>
+		</dict>
+		<key>ffdshow</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>ffdshow video codecs</string>
+			<key>WS-Name</key>
+			<string>ffdshow</string>
+		</dict>
+		<key>filever</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft's filever, for dumping file version info</string>
+			<key>WS-Name</key>
+			<string>filever</string>
+		</dict>
+		<key>gdiplus</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS GDI+</string>
+			<key>WS-Name</key>
+			<string>gdiplus</string>
+		</dict>
+		<key>gdiplus_winxp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS GDI+</string>
+			<key>WS-Name</key>
+			<string>gdiplus_winxp</string>
+		</dict>
+		<key>gfw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Games For Windows Live (xlive.dll)</string>
+			<key>WS-Name</key>
+			<string>gfw</string>
+		</dict>
+		<key>glidewrapper</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>GlideWrapper</string>
+			<key>WS-Name</key>
+			<string>glidewrapper</string>
+		</dict>
+		<key>glut</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>The glut utility library for OpenGL</string>
+			<key>WS-Name</key>
+			<string>glut</string>
+		</dict>
+		<key>gmdls</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>General MIDI DLS Collection</string>
+			<key>WS-Name</key>
+			<string>gmdls</string>
+		</dict>
+		<key>hid</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS hid</string>
+			<key>WS-Name</key>
+			<string>hid</string>
+		</dict>
+		<key>icodecs</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Indeo codecs</string>
+			<key>WS-Name</key>
+			<string>icodecs</string>
+		</dict>
+		<key>ie6</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Internet Explorer 6</string>
+			<key>WS-Name</key>
+			<string>ie6</string>
+		</dict>
+		<key>ie7</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Internet Explorer 7</string>
+			<key>WS-Name</key>
+			<string>ie7</string>
+		</dict>
+		<key>ie8</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Internet Explorer 8</string>
+			<key>WS-Name</key>
+			<string>ie8</string>
+		</dict>
+		<key>ie8_kb2936068</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Cumulative Security Update for Internet Explorer 8</string>
+			<key>WS-Name</key>
+			<string>ie8_kb2936068</string>
+		</dict>
+		<key>ie8_tls12</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>TLS 1.1 and 1.2 for Internet Explorer 8</string>
+			<key>WS-Name</key>
+			<string>ie8_tls12</string>
+		</dict>
+		<key>iertutil</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Runtime Utility</string>
+			<key>WS-Name</key>
+			<string>iertutil</string>
+		</dict>
+		<key>itircl</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS itircl.dll</string>
+			<key>WS-Name</key>
+			<string>itircl</string>
+		</dict>
+		<key>itss</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS itss.dll</string>
+			<key>WS-Name</key>
+			<string>itss</string>
+		</dict>
+		<key>jet40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Jet 4.0 Service Pack 8</string>
+			<key>WS-Name</key>
+			<string>jet40</string>
+		</dict>
+		<key>klite</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>K-Lite codecs</string>
+			<key>WS-Name</key>
+			<string>klite</string>
+		</dict>
+		<key>l3codecx</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MPEG Layer-3 Audio Codec for Microsoft DirectShow</string>
+			<key>WS-Name</key>
+			<string>l3codecx</string>
+		</dict>
+		<key>lavfilters</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>LAV Filters</string>
+			<key>WS-Name</key>
+			<string>lavfilters</string>
+		</dict>
+		<key>lavfilters702</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>LAV Filters 0.70.2</string>
+			<key>WS-Name</key>
+			<string>lavfilters702</string>
+		</dict>
+		<key>mdac27</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft Data Access Components 2.7 sp1</string>
+			<key>WS-Name</key>
+			<string>mdac27</string>
+		</dict>
+		<key>mdac28</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft Data Access Components 2.8 sp1</string>
+			<key>WS-Name</key>
+			<string>mdac28</string>
+		</dict>
+		<key>mdx</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Managed DirectX</string>
+			<key>WS-Name</key>
+			<string>mdx</string>
+		</dict>
+		<key>mf</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Media Foundation</string>
+			<key>WS-Name</key>
+			<string>mf</string>
+		</dict>
+		<key>mfc100</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2010 mfc100 library; part of vcrun2010</string>
+			<key>WS-Name</key>
+			<string>mfc100</string>
+		</dict>
+		<key>mfc110</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2012 mfc110 library; part of vcrun2012</string>
+			<key>WS-Name</key>
+			<string>mfc110</string>
+		</dict>
+		<key>mfc120</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2013 mfc120 library; part of vcrun2013</string>
+			<key>WS-Name</key>
+			<string>mfc120</string>
+		</dict>
+		<key>mfc140</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2015 mfc140 library; part of vcrun2015</string>
+			<key>WS-Name</key>
+			<string>mfc140</string>
+		</dict>
+		<key>mfc40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS mfc40 (Microsoft Foundation Classes from win7sp1)</string>
+			<key>WS-Name</key>
+			<string>mfc40</string>
+		</dict>
+		<key>mfc42</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 6 SP4 mfc42 library; part of vcrun6</string>
+			<key>WS-Name</key>
+			<string>mfc42</string>
+		</dict>
+		<key>mfc70</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual Studio (.NET) 2002 mfc70 library</string>
+			<key>WS-Name</key>
+			<string>mfc70</string>
+		</dict>
+		<key>mfc71</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2003 mfc71 library; part of vcrun2003</string>
+			<key>WS-Name</key>
+			<string>mfc71</string>
+		</dict>
+		<key>mfc80</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2005 mfc80 library; part of vcrun2005</string>
+			<key>WS-Name</key>
+			<string>mfc80</string>
+		</dict>
+		<key>mfc90</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2008 mfc90 library; part of vcrun2008</string>
+			<key>WS-Name</key>
+			<string>mfc90</string>
+		</dict>
+		<key>msaa</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Active Accessibility (oleacc.dll, oleaccrc.dll, msaatext.dll)</string>
+			<key>WS-Name</key>
+			<string>msaa</string>
+		</dict>
+		<key>msacm32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS ACM32</string>
+			<key>WS-Name</key>
+			<string>msacm32</string>
+		</dict>
+		<key>msasn1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS ASN1</string>
+			<key>WS-Name</key>
+			<string>msasn1</string>
+		</dict>
+		<key>msctf</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Text Service Module</string>
+			<key>WS-Name</key>
+			<string>msctf</string>
+		</dict>
+		<key>msdelta</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MSDelta differential compression library</string>
+			<key>WS-Name</key>
+			<string>msdelta</string>
+		</dict>
+		<key>msdxmocx</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Media Player 2 ActiveX control for VB6</string>
+			<key>WS-Name</key>
+			<string>msdxmocx</string>
+		</dict>
+		<key>msflxgrd</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS FlexGrid Control (msflxgrd.ocx)</string>
+			<key>WS-Name</key>
+			<string>msflxgrd</string>
+		</dict>
+		<key>msftedit</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft RichEdit Control</string>
+			<key>WS-Name</key>
+			<string>msftedit</string>
+		</dict>
+		<key>mshflxgd</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Hierarchical FlexGrid Control (mshflxgd.ocx)</string>
+			<key>WS-Name</key>
+			<string>mshflxgd</string>
+		</dict>
+		<key>msls31</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Line Services</string>
+			<key>WS-Name</key>
+			<string>msls31</string>
+		</dict>
+		<key>msmask</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Masked Edit Control</string>
+			<key>WS-Name</key>
+			<string>msmask</string>
+		</dict>
+		<key>mspatcha</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS mspatcha</string>
+			<key>WS-Name</key>
+			<string>mspatcha</string>
+		</dict>
+		<key>msscript</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Script Control</string>
+			<key>WS-Name</key>
+			<string>msscript</string>
+		</dict>
+		<key>msvcirt</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 6 SP4 msvcirt library; part of vcrun6</string>
+			<key>WS-Name</key>
+			<string>msvcirt</string>
+		</dict>
+		<key>msvcrt40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual C++ Runtime Library Version 4.0</string>
+			<key>WS-Name</key>
+			<string>msvcrt40</string>
+		</dict>
+		<key>msxml3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XML Core Services 3.0</string>
+			<key>WS-Name</key>
+			<string>msxml3</string>
+		</dict>
+		<key>msxml4</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XML Core Services 4.0</string>
+			<key>WS-Name</key>
+			<string>msxml4</string>
+		</dict>
+		<key>msxml6</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XML Core Services 6.0 sp2</string>
+			<key>WS-Name</key>
+			<string>msxml6</string>
+		</dict>
+		<key>nuget</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>NuGet Package manager</string>
+			<key>WS-Name</key>
+			<string>nuget</string>
+		</dict>
+		<key>ogg</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>OpenCodecs 0.85: FLAC, Speex, Theora, Vorbis, WebM</string>
+			<key>WS-Name</key>
+			<string>ogg</string>
+		</dict>
+		<key>ole32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS ole32 Module (ole32.dll)</string>
+			<key>WS-Name</key>
+			<string>ole32</string>
+		</dict>
+		<key>oleaut32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS oleaut32.dll</string>
+			<key>WS-Name</key>
+			<string>oleaut32</string>
+		</dict>
+		<key>openal</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>OpenAL Runtime</string>
+			<key>WS-Name</key>
+			<string>openal</string>
+		</dict>
+		<key>otvdm</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Otvdm - A modified version of winevdm as Win16 emulator</string>
+			<key>WS-Name</key>
+			<string>otvdm</string>
+		</dict>
+		<key>otvdm090</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Otvdm - A modified version of winevdm as Win16 emulator</string>
+			<key>WS-Name</key>
+			<string>otvdm090</string>
+		</dict>
+		<key>pdh</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS pdh.dll (Performance Data Helper)</string>
+			<key>WS-Name</key>
+			<string>pdh</string>
+		</dict>
+		<key>pdh_nt4</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS pdh.dll (Performance Data Helper); WinNT 4.0 Version</string>
+			<key>WS-Name</key>
+			<string>pdh_nt4</string>
+		</dict>
+		<key>peverify</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS peverify (from .NET 2.0 SDK)</string>
+			<key>WS-Name</key>
+			<string>peverify</string>
+		</dict>
+		<key>physx</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>PhysX</string>
+			<key>WS-Name</key>
+			<string>physx</string>
+		</dict>
+		<key>pngfilt</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>pngfilt.dll (from winxp)</string>
+			<key>WS-Name</key>
+			<string>pngfilt</string>
+		</dict>
+		<key>powershell</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>PowerShell Wrapper For Wine</string>
+			<key>WS-Name</key>
+			<string>powershell</string>
+		</dict>
+		<key>powershell_core</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>PowerShell Core</string>
+			<key>WS-Name</key>
+			<string>powershell_core</string>
+		</dict>
+		<key>prntvpt</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>prntvpt.dll</string>
+			<key>WS-Name</key>
+			<string>prntvpt</string>
+		</dict>
+		<key>python26</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Python interpreter 2.6.2</string>
+			<key>WS-Name</key>
+			<string>python26</string>
+		</dict>
+		<key>python27</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Python interpreter 2.7.16</string>
+			<key>WS-Name</key>
+			<string>python27</string>
+		</dict>
+		<key>qasf</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>qasf.dll</string>
+			<key>WS-Name</key>
+			<string>qasf</string>
+		</dict>
+		<key>qcap</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>qcap.dll</string>
+			<key>WS-Name</key>
+			<string>qcap</string>
+		</dict>
+		<key>qdvd</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>qdvd.dll</string>
+			<key>WS-Name</key>
+			<string>qdvd</string>
+		</dict>
+		<key>qedit</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>qedit.dll</string>
+			<key>WS-Name</key>
+			<string>qedit</string>
+		</dict>
+		<key>quartz</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>quartz.dll</string>
+			<key>WS-Name</key>
+			<string>quartz</string>
+		</dict>
+		<key>quartz_feb2010</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>quartz.dll (February 2010)</string>
+			<key>WS-Name</key>
+			<string>quartz_feb2010</string>
+		</dict>
+		<key>quicktime72</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Apple QuickTime 7.2</string>
+			<key>WS-Name</key>
+			<string>quicktime72</string>
+		</dict>
+		<key>quicktime76</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Apple QuickTime 7.6</string>
+			<key>WS-Name</key>
+			<string>quicktime76</string>
+		</dict>
+		<key>riched20</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS RichEdit Control 2.0 (riched20.dll)</string>
+			<key>WS-Name</key>
+			<string>riched20</string>
+		</dict>
+		<key>riched30</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS RichEdit Control 3.0 (riched20.dll, msls31.dll)</string>
+			<key>WS-Name</key>
+			<string>riched30</string>
+		</dict>
+		<key>richtx32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Rich TextBox Control 6.0</string>
+			<key>WS-Name</key>
+			<string>richtx32</string>
+		</dict>
+		<key>sapi</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Speech API</string>
+			<key>WS-Name</key>
+			<string>sapi</string>
+		</dict>
+		<key>sdl</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Simple DirectMedia Layer</string>
+			<key>WS-Name</key>
+			<string>sdl</string>
+		</dict>
+		<key>secur32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Security Support Provider Interface</string>
+			<key>WS-Name</key>
+			<string>secur32</string>
+		</dict>
+		<key>setupapi</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Setup API</string>
+			<key>WS-Name</key>
+			<string>setupapi</string>
+		</dict>
+		<key>shockwave</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Shockwave</string>
+			<key>WS-Name</key>
+			<string>shockwave</string>
+		</dict>
+		<key>speechsdk</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Speech SDK 5.1</string>
+			<key>WS-Name</key>
+			<string>speechsdk</string>
+		</dict>
+		<key>tabctl32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft Tabbed Dialog Control 6.0 (tabctl32.ocx)</string>
+			<key>WS-Name</key>
+			<string>tabctl32</string>
+		</dict>
+		<key>ucrtbase2019</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2019 library (ucrtbase.dll)</string>
+			<key>WS-Name</key>
+			<string>ucrtbase2019</string>
+		</dict>
+		<key>uiribbon</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Windows UIRibbon</string>
+			<key>WS-Name</key>
+			<string>uiribbon</string>
+		</dict>
+		<key>updspapi</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Windows Update Service API</string>
+			<key>WS-Name</key>
+			<string>updspapi</string>
+		</dict>
+		<key>uplay</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Uplay</string>
+			<key>WS-Name</key>
+			<string>uplay</string>
+		</dict>
+		<key>urlmon</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS urlmon</string>
+			<key>WS-Name</key>
+			<string>urlmon</string>
+		</dict>
+		<key>usp10</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Uniscribe</string>
+			<key>WS-Name</key>
+			<string>usp10</string>
+		</dict>
+		<key>vb2run</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual Basic 2 runtime</string>
+			<key>WS-Name</key>
+			<string>vb2run</string>
+		</dict>
+		<key>vb3run</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual Basic 3 runtime</string>
+			<key>WS-Name</key>
+			<string>vb3run</string>
+		</dict>
+		<key>vb4run</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual Basic 4 runtime</string>
+			<key>WS-Name</key>
+			<string>vb4run</string>
+		</dict>
+		<key>vb5run</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual Basic 5 runtime</string>
+			<key>WS-Name</key>
+			<string>vb5run</string>
+		</dict>
+		<key>vb6run</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual Basic 6 runtime sp6</string>
+			<key>WS-Name</key>
+			<string>vb6run</string>
+		</dict>
+		<key>vcrun2003</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2003 libraries (mfc71,msvcp71,msvcr71)</string>
+			<key>WS-Name</key>
+			<string>vcrun2003</string>
+		</dict>
+		<key>vcrun2005</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2005 libraries (mfc80,msvcp80,msvcr80)</string>
+			<key>WS-Name</key>
+			<string>vcrun2005</string>
+		</dict>
+		<key>vcrun2008</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2008 libraries (mfc90,msvcp90,msvcr90)</string>
+			<key>WS-Name</key>
+			<string>vcrun2008</string>
+		</dict>
+		<key>vcrun2010</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2010 libraries (mfc100,msvcp100,msvcr100)</string>
+			<key>WS-Name</key>
+			<string>vcrun2010</string>
+		</dict>
+		<key>vcrun2012</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2012 libraries (atl110,mfc110,mfc110u,msvcp110,msvcr110,vcomp110)</string>
+			<key>WS-Name</key>
+			<string>vcrun2012</string>
+		</dict>
+		<key>vcrun2013</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2013 libraries (mfc120,mfc120u,msvcp120,msvcr120,vcomp120)</string>
+			<key>WS-Name</key>
+			<string>vcrun2013</string>
+		</dict>
+		<key>vcrun2015</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2015 libraries (concrt140.dll,mfc140.dll,mfc140u.dll,mfcm140.dll,mfcm140u.dll,msvcp140.dll,msvcp140_1.dll,msvcp140_atomic_wait.dll,vcamp140.dll,vccorlib140.dll,vcomp140.dll,vcruntime140.dll,vcruntime140_1.dll)</string>
+			<key>WS-Name</key>
+			<string>vcrun2015</string>
+		</dict>
+		<key>vcrun2017</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2017 libraries (concrt140.dll,mfc140.dll,mfc140u.dll,mfcm140.dll,mfcm140u.dll,msvcp140.dll,msvcp140_1.dll,msvcp140_2.dll,msvcp140_atomic_wait.dll,vcamp140.dll,vccorlib140.dll,vcomp140.dll,vcruntime140.dll,vcruntime140_1.dll)</string>
+			<key>WS-Name</key>
+			<string>vcrun2017</string>
+		</dict>
+		<key>vcrun2019</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2015-2019 libraries (concrt140.dll,mfc140.dll,mfc140u.dll,mfcm140.dll,mfcm140u.dll,msvcp140.dll,msvcp140_1.dll,msvcp140_2.dll,msvcp140_atomic_wait.dll,msvcp140_codecvt_ids.dll,vcamp140.dll,vccorlib140.dll,vcomp140.dll,vcruntime140.dll,vcruntime140_1.dll</string>
+			<key>WS-Name</key>
+			<string>vcrun2019</string>
+		</dict>
+		<key>vcrun2022</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 2015-2022 libraries (concrt140.dll,mfc140.dll,mfc140chs.dll,mfc140cht.dll,mfc140deu.dll,mfc140enu.dll,mfc140esn.dll,mfc140fra.dll,mfc140ita.dll,mfc140jpn.dll,mfc140kor.dll,mfc140rus.dll,mfc140u.dll,mfcm140.dll,mfcm140u.dll,msvcp140.dll,msvcp140_1.dll,msvcp140_2.dll,msvcp140_atomic_wait.dll,msvcp140_codecvt_ids.dll,vcamp140.dll,vccorlib140.dll,vcomp140.dll,vcruntime140.dll,vcruntime140_1.dll)</string>
+			<key>WS-Name</key>
+			<string>vcrun2022</string>
+		</dict>
+		<key>vcrun6</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 6 SP4 libraries (mfc42, msvcp60, msvcirt)</string>
+			<key>WS-Name</key>
+			<string>vcrun6</string>
+		</dict>
+		<key>vcrun6sp6</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Visual C++ 6 SP6 libraries (with fixes in ATL and MFC)</string>
+			<key>WS-Name</key>
+			<string>vcrun6sp6</string>
+		</dict>
+		<key>vjrun20</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Visual J# 2.0 SE libraries (requires dotnet20)</string>
+			<key>WS-Name</key>
+			<string>vjrun20</string>
+		</dict>
+		<key>webio</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Web I/O</string>
+			<key>WS-Name</key>
+			<string>webio</string>
+		</dict>
+		<key>windowscodecs</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Imaging Component</string>
+			<key>WS-Name</key>
+			<string>windowscodecs</string>
+		</dict>
+		<key>winevdm</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>16-bit Windows on 64-bit Windows</string>
+			<key>WS-Name</key>
+			<string>winevdm</string>
+		</dict>
+		<key>winhttp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows HTTP Services</string>
+			<key>WS-Name</key>
+			<string>winhttp</string>
+		</dict>
+		<key>wininet</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Internet API</string>
+			<key>WS-Name</key>
+			<string>wininet</string>
+		</dict>
+		<key>wininet_win2k</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Internet API</string>
+			<key>WS-Name</key>
+			<string>wininet_win2k</string>
+		</dict>
+		<key>wmi</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Windows Management Instrumentation (aka WBEM) Core 1.5</string>
+			<key>WS-Name</key>
+			<string>wmi</string>
+		</dict>
+		<key>wmp10</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Windows Media Player 10</string>
+			<key>WS-Name</key>
+			<string>wmp10</string>
+		</dict>
+		<key>wmp11</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Windows Media Player 11</string>
+			<key>WS-Name</key>
+			<string>wmp11</string>
+		</dict>
+		<key>wmp9</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Windows Media Player 9</string>
+			<key>WS-Name</key>
+			<string>wmp9</string>
+		</dict>
+		<key>wmv9vcm</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Media Video 9 Video Compression Manager</string>
+			<key>WS-Name</key>
+			<string>wmv9vcm</string>
+		</dict>
+		<key>wsh57</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Windows Script Host 5.7</string>
+			<key>WS-Name</key>
+			<string>wsh57</string>
+		</dict>
+		<key>xact</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XACT Engine</string>
+			<key>WS-Name</key>
+			<string>xact</string>
+		</dict>
+		<key>xact_x32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XACT Engine (32-bit only)</string>
+			<key>WS-Name</key>
+			<string>xact_x32</string>
+		</dict>
+		<key>xact_x64</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XACT Engine (64-bit only)</string>
+			<key>WS-Name</key>
+			<string>xact_x64</string>
+		</dict>
+		<key>xactengine3_7</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XACT Engine (32-bit only)</string>
+			<key>WS-Name</key>
+			<string>xactengine3_7</string>
+		</dict>
+		<key>xaudio29</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XAudio Redistributable 2.9</string>
+			<key>WS-Name</key>
+			<string>xaudio29</string>
+		</dict>
+		<key>xinput</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Microsoft XInput (Xbox controller support)</string>
+			<key>WS-Name</key>
+			<string>xinput</string>
+		</dict>
+		<key>xliveless</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Games for Windows Live (gfw / gfwl) - xlive.dll mock, single player only</string>
+			<key>WS-Name</key>
+			<string>xliveless</string>
+		</dict>
+		<key>xmllite</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS xmllite dll</string>
+			<key>WS-Name</key>
+			<string>xmllite</string>
+		</dict>
+		<key>xna31</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XNA Framework Redistributable 3.1</string>
+			<key>WS-Name</key>
+			<string>xna31</string>
+		</dict>
+		<key>xna40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS XNA Framework Redistributable 4.0</string>
+			<key>WS-Name</key>
+			<string>xna40</string>
+		</dict>
+		<key>xvid</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Xvid Video Codec</string>
+			<key>WS-Name</key>
+			<string>xvid</string>
+		</dict>
+	</dict>
+	<key>fonts</key>
+	<dict>
+		<key>allfonts</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>All fonts</string>
+			<key>WS-Name</key>
+			<string>allfonts</string>
+		</dict>
+		<key>andale</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Andale Mono font</string>
+			<key>WS-Name</key>
+			<string>andale</string>
+		</dict>
+		<key>arial</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Arial / Arial Black fonts</string>
+			<key>WS-Name</key>
+			<string>arial</string>
+		</dict>
+		<key>baekmuk</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Baekmuk Korean fonts</string>
+			<key>WS-Name</key>
+			<string>baekmuk</string>
+		</dict>
+		<key>calibri</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Calibri font</string>
+			<key>WS-Name</key>
+			<string>calibri</string>
+		</dict>
+		<key>cambria</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Cambria font</string>
+			<key>WS-Name</key>
+			<string>cambria</string>
+		</dict>
+		<key>candara</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Candara font</string>
+			<key>WS-Name</key>
+			<string>candara</string>
+		</dict>
+		<key>cjkfonts</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>All Chinese, Japanese, Korean fonts and aliases</string>
+			<key>WS-Name</key>
+			<string>cjkfonts</string>
+		</dict>
+		<key>comicsans</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Comic Sans fonts</string>
+			<key>WS-Name</key>
+			<string>comicsans</string>
+		</dict>
+		<key>consolas</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Consolas console font</string>
+			<key>WS-Name</key>
+			<string>consolas</string>
+		</dict>
+		<key>constantia</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Constantia font</string>
+			<key>WS-Name</key>
+			<string>constantia</string>
+		</dict>
+		<key>corbel</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Corbel font</string>
+			<key>WS-Name</key>
+			<string>corbel</string>
+		</dict>
+		<key>corefonts</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Arial, Courier, Times fonts</string>
+			<key>WS-Name</key>
+			<string>corefonts</string>
+		</dict>
+		<key>courier</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Courier fonts</string>
+			<key>WS-Name</key>
+			<string>courier</string>
+		</dict>
+		<key>droid</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Droid fonts</string>
+			<key>WS-Name</key>
+			<string>droid</string>
+		</dict>
+		<key>eufonts</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Updated fonts for Romanian and Bulgarian</string>
+			<key>WS-Name</key>
+			<string>eufonts</string>
+		</dict>
+		<key>fakechinese</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Creates aliases for Chinese fonts using Source Han Sans fonts</string>
+			<key>WS-Name</key>
+			<string>fakechinese</string>
+		</dict>
+		<key>fakejapanese</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Creates aliases for Japanese fonts using Source Han Sans fonts</string>
+			<key>WS-Name</key>
+			<string>fakejapanese</string>
+		</dict>
+		<key>fakejapanese_ipamona</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Creates aliases for Japanese fonts using IPAMona fonts</string>
+			<key>WS-Name</key>
+			<string>fakejapanese_ipamona</string>
+		</dict>
+		<key>fakejapanese_vlgothic</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Creates aliases for Japanese Meiryo fonts using VLGothic fonts</string>
+			<key>WS-Name</key>
+			<string>fakejapanese_vlgothic</string>
+		</dict>
+		<key>fakekorean</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Creates aliases for Korean fonts using Source Han Sans fonts</string>
+			<key>WS-Name</key>
+			<string>fakekorean</string>
+		</dict>
+		<key>georgia</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Georgia fonts</string>
+			<key>WS-Name</key>
+			<string>georgia</string>
+		</dict>
+		<key>impact</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Impact fonts</string>
+			<key>WS-Name</key>
+			<string>impact</string>
+		</dict>
+		<key>ipamona</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>IPAMona Japanese fonts</string>
+			<key>WS-Name</key>
+			<string>ipamona</string>
+		</dict>
+		<key>liberation</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Red Hat Liberation fonts (Mono, Sans, SansNarrow, Serif)</string>
+			<key>WS-Name</key>
+			<string>liberation</string>
+		</dict>
+		<key>lucida</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Lucida Console font</string>
+			<key>WS-Name</key>
+			<string>lucida</string>
+		</dict>
+		<key>meiryo</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Meiryo font</string>
+			<key>WS-Name</key>
+			<string>meiryo</string>
+		</dict>
+		<key>micross</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Sans Serif font</string>
+			<key>WS-Name</key>
+			<string>micross</string>
+		</dict>
+		<key>opensymbol</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>OpenSymbol fonts (replacement for Wingdings)</string>
+			<key>WS-Name</key>
+			<string>opensymbol</string>
+		</dict>
+		<key>pptfonts</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>All MS PowerPoint Viewer fonts</string>
+			<key>WS-Name</key>
+			<string>pptfonts</string>
+		</dict>
+		<key>sourcehansans</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Source Han Sans fonts</string>
+			<key>WS-Name</key>
+			<string>sourcehansans</string>
+		</dict>
+		<key>tahoma</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Tahoma font (not part of corefonts)</string>
+			<key>WS-Name</key>
+			<string>tahoma</string>
+		</dict>
+		<key>takao</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Takao Japanese fonts</string>
+			<key>WS-Name</key>
+			<string>takao</string>
+		</dict>
+		<key>times</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Times fonts</string>
+			<key>WS-Name</key>
+			<string>times</string>
+		</dict>
+		<key>trebuchet</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Trebuchet fonts</string>
+			<key>WS-Name</key>
+			<string>trebuchet</string>
+		</dict>
+		<key>uff</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Ubuntu Font Family</string>
+			<key>WS-Name</key>
+			<string>uff</string>
+		</dict>
+		<key>unifont</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Unifont alternative to Arial Unicode MS</string>
+			<key>WS-Name</key>
+			<string>unifont</string>
+		</dict>
+		<key>verdana</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Verdana fonts</string>
+			<key>WS-Name</key>
+			<string>verdana</string>
+		</dict>
+		<key>vlgothic</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>VLGothic Japanese fonts</string>
+			<key>WS-Name</key>
+			<string>vlgothic</string>
+		</dict>
+		<key>webdings</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>MS Webdings fonts</string>
+			<key>WS-Name</key>
+			<string>webdings</string>
+		</dict>
+		<key>wenquanyi</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>WenQuanYi CJK font</string>
+			<key>WS-Name</key>
+			<string>wenquanyi</string>
+		</dict>
+		<key>wenquanyizenhei</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>WenQuanYi ZenHei font</string>
+			<key>WS-Name</key>
+			<string>wenquanyizenhei</string>
+		</dict>
+	</dict>
+	<key>settings</key>
+	<dict>
+		<key>alldlls=builtin</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Override most common DLLs to builtin</string>
+			<key>WS-Name</key>
+			<string>alldlls=builtin</string>
+		</dict>
+		<key>alldlls=default</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Remove all DLL overrides</string>
+			<key>WS-Name</key>
+			<string>alldlls=default</string>
+		</dict>
+		<key>atiadlxx=default</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable builtin atidlxx (default)</string>
+			<key>WS-Name</key>
+			<string>atiadlxx=default</string>
+		</dict>
+		<key>atiadlxx=disabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable builtin atidlxx</string>
+			<key>WS-Name</key>
+			<string>atiadlxx=disabled</string>
+		</dict>
+		<key>autostart_winedbg=disabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Prevent winedbg from launching when an unhandled exception occurs</string>
+			<key>WS-Name</key>
+			<string>autostart_winedbg=disabled</string>
+		</dict>
+		<key>autostart_winedbg=enabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Automatically launch winedbg when an unhandled exception occurs (default)</string>
+			<key>WS-Name</key>
+			<string>autostart_winedbg=enabled</string>
+		</dict>
+		<key>bad</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Fake verb that always returns false</string>
+			<key>WS-Name</key>
+			<string>bad</string>
+		</dict>
+		<key>cfc=disabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable CheckFloatConstants (default)</string>
+			<key>WS-Name</key>
+			<string>cfc=disabled</string>
+		</dict>
+		<key>cfc=enabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable CheckFloatConstants</string>
+			<key>WS-Name</key>
+			<string>cfc=enabled</string>
+		</dict>
+		<key>csmt=force</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable and force serialisation of OpenGL or Vulkan commands between multiple command streams in the same application</string>
+			<key>WS-Name</key>
+			<string>csmt=force</string>
+		</dict>
+		<key>csmt=off</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable Command Stream Multithreading</string>
+			<key>WS-Name</key>
+			<string>csmt=off</string>
+		</dict>
+		<key>csmt=on</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable Command Stream Multithreading (default)</string>
+			<key>WS-Name</key>
+			<string>csmt=on</string>
+		</dict>
+		<key>fontfix</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Check for broken fonts</string>
+			<key>WS-Name</key>
+			<string>fontfix</string>
+		</dict>
+		<key>fontsmooth=bgr</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable subpixel font smoothing for BGR LCDs</string>
+			<key>WS-Name</key>
+			<string>fontsmooth=bgr</string>
+		</dict>
+		<key>fontsmooth=disable</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable font smoothing</string>
+			<key>WS-Name</key>
+			<string>fontsmooth=disable</string>
+		</dict>
+		<key>fontsmooth=gray</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable subpixel font smoothing</string>
+			<key>WS-Name</key>
+			<string>fontsmooth=gray</string>
+		</dict>
+		<key>fontsmooth=rgb</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable subpixel font smoothing for RGB LCDs</string>
+			<key>WS-Name</key>
+			<string>fontsmooth=rgb</string>
+		</dict>
+		<key>force_gpu=amd</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Fake an AMD RADEON RX 480 card</string>
+			<key>WS-Name</key>
+			<string>force_gpu=amd</string>
+		</dict>
+		<key>force_gpu=no</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Use WINE defaults for GPU</string>
+			<key>WS-Name</key>
+			<string>force_gpu=no</string>
+		</dict>
+		<key>force_gpu=nvidia</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Fake an Nvidia GeForce GTX 970 card</string>
+			<key>WS-Name</key>
+			<string>force_gpu=nvidia</string>
+		</dict>
+		<key>forcemono</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Force using Mono instead of .NET (for debugging)</string>
+			<key>WS-Name</key>
+			<string>forcemono</string>
+		</dict>
+		<key>good</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Fake verb that always returns true</string>
+			<key>WS-Name</key>
+			<string>good</string>
+		</dict>
+		<key>gsm=0</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelGS to 0</string>
+			<key>WS-Name</key>
+			<string>gsm=0</string>
+		</dict>
+		<key>gsm=1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelGS to 1</string>
+			<key>WS-Name</key>
+			<string>gsm=1</string>
+		</dict>
+		<key>gsm=2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelGS to 2</string>
+			<key>WS-Name</key>
+			<string>gsm=2</string>
+		</dict>
+		<key>gsm=3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelGS to 3</string>
+			<key>WS-Name</key>
+			<string>gsm=3</string>
+		</dict>
+		<key>heapcheck</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable heap checking with GlobalFlag</string>
+			<key>WS-Name</key>
+			<string>heapcheck</string>
+		</dict>
+		<key>hidewineexports=disable</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable hiding Wine exports from applications (wine-staging)</string>
+			<key>WS-Name</key>
+			<string>hidewineexports=disable</string>
+		</dict>
+		<key>hidewineexports=enable</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable hiding Wine exports from applications (wine-staging)</string>
+			<key>WS-Name</key>
+			<string>hidewineexports=enable</string>
+		</dict>
+		<key>hosts</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Add empty C:windowssystem32driversetc{hosts,services} files</string>
+			<key>WS-Name</key>
+			<string>hosts</string>
+		</dict>
+		<key>isolate_home</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Remove wineprefix links to $HOME</string>
+			<key>WS-Name</key>
+			<string>isolate_home</string>
+		</dict>
+		<key>mackeyremap=both</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable mapping opt-&gt;alt and cmd-&gt;ctrl keys for the Mac native driver</string>
+			<key>WS-Name</key>
+			<string>mackeyremap=both</string>
+		</dict>
+		<key>mackeyremap=left</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable mapping of left opt-&gt;alt and cmd-&gt;ctrl keys for the Mac native driver</string>
+			<key>WS-Name</key>
+			<string>mackeyremap=left</string>
+		</dict>
+		<key>mackeyremap=none</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Do not remap keys for the Mac native driver (default)</string>
+			<key>WS-Name</key>
+			<string>mackeyremap=none</string>
+		</dict>
+		<key>mimeassoc=off</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable exporting MIME-type file associations to the native desktop</string>
+			<key>WS-Name</key>
+			<string>mimeassoc=off</string>
+		</dict>
+		<key>mimeassoc=on</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable exporting MIME-type file associations to the native desktop (default)</string>
+			<key>WS-Name</key>
+			<string>mimeassoc=on</string>
+		</dict>
+		<key>mwo=disable</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set DirectInput MouseWarpOverride to disable</string>
+			<key>WS-Name</key>
+			<string>mwo=disable</string>
+		</dict>
+		<key>mwo=enabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set DirectInput MouseWarpOverride to enabled (default)</string>
+			<key>WS-Name</key>
+			<string>mwo=enabled</string>
+		</dict>
+		<key>mwo=force</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set DirectInput MouseWarpOverride to force (needed by some games)</string>
+			<key>WS-Name</key>
+			<string>mwo=force</string>
+		</dict>
+		<key>native_mdac</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Override odbc32, odbccp32 and oledb32</string>
+			<key>WS-Name</key>
+			<string>native_mdac</string>
+		</dict>
+		<key>native_oleaut32</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Override oleaut32</string>
+			<key>WS-Name</key>
+			<string>native_oleaut32</string>
+		</dict>
+		<key>nocrashdialog</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable crash dialog</string>
+			<key>WS-Name</key>
+			<string>nocrashdialog</string>
+		</dict>
+		<key>npm=repack</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set NonPower2Mode to repack</string>
+			<key>WS-Name</key>
+			<string>npm=repack</string>
+		</dict>
+		<key>nt351</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows NT 3.51</string>
+			<key>WS-Name</key>
+			<string>nt351</string>
+		</dict>
+		<key>nt40</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows NT 4.0</string>
+			<key>WS-Name</key>
+			<string>nt40</string>
+		</dict>
+		<key>orm=backbuffer</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set OffscreenRenderingMode=backbuffer</string>
+			<key>WS-Name</key>
+			<string>orm=backbuffer</string>
+		</dict>
+		<key>orm=fbo</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set OffscreenRenderingMode=fbo (default)</string>
+			<key>WS-Name</key>
+			<string>orm=fbo</string>
+		</dict>
+		<key>psm=0</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelPS to 0</string>
+			<key>WS-Name</key>
+			<string>psm=0</string>
+		</dict>
+		<key>psm=1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelPS to 1</string>
+			<key>WS-Name</key>
+			<string>psm=1</string>
+		</dict>
+		<key>psm=2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelPS to 2</string>
+			<key>WS-Name</key>
+			<string>psm=2</string>
+		</dict>
+		<key>psm=3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelPS to 3</string>
+			<key>WS-Name</key>
+			<string>psm=3</string>
+		</dict>
+		<key>remove_mono</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Remove builtin wine-mono</string>
+			<key>WS-Name</key>
+			<string>remove_mono</string>
+		</dict>
+		<key>renderer=gdi</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set renderer to gdi</string>
+			<key>WS-Name</key>
+			<string>renderer=gdi</string>
+		</dict>
+		<key>renderer=gl</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set renderer to gl</string>
+			<key>WS-Name</key>
+			<string>renderer=gl</string>
+		</dict>
+		<key>renderer=no3d</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set renderer to no3d</string>
+			<key>WS-Name</key>
+			<string>renderer=no3d</string>
+		</dict>
+		<key>renderer=vulkan</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set renderer to vulkan</string>
+			<key>WS-Name</key>
+			<string>renderer=vulkan</string>
+		</dict>
+		<key>rtlm=auto</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set RenderTargetLockMode to auto (default)</string>
+			<key>WS-Name</key>
+			<string>rtlm=auto</string>
+		</dict>
+		<key>rtlm=disabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set RenderTargetLockMode to disabled</string>
+			<key>WS-Name</key>
+			<string>rtlm=disabled</string>
+		</dict>
+		<key>rtlm=readdraw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set RenderTargetLockMode to readdraw</string>
+			<key>WS-Name</key>
+			<string>rtlm=readdraw</string>
+		</dict>
+		<key>rtlm=readtex</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set RenderTargetLockMode to readtex</string>
+			<key>WS-Name</key>
+			<string>rtlm=readtex</string>
+		</dict>
+		<key>rtlm=texdraw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set RenderTargetLockMode to texdraw</string>
+			<key>WS-Name</key>
+			<string>rtlm=texdraw</string>
+		</dict>
+		<key>rtlm=textex</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set RenderTargetLockMode to textex</string>
+			<key>WS-Name</key>
+			<string>rtlm=textex</string>
+		</dict>
+		<key>sandbox</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Sandbox the wineprefix - remove links to $HOME</string>
+			<key>WS-Name</key>
+			<string>sandbox</string>
+		</dict>
+		<key>sdl_mapping_disable</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable SDL Controller Mapping</string>
+			<key>WS-Name</key>
+			<string>sdl_mapping_disable</string>
+		</dict>
+		<key>sdl_mapping_enable</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable SDL Controller Mapping (makes all controlles Xinput)</string>
+			<key>WS-Name</key>
+			<string>sdl_mapping_enable</string>
+		</dict>
+		<key>set_mididevice</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MIDImap device to the value specified in the MIDI_DEVICE environment variable</string>
+			<key>WS-Name</key>
+			<string>set_mididevice</string>
+		</dict>
+		<key>set_userpath</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>set user PATH variable in wine prefix specified by native and/or wine paths in WINEPATH environment variable with ';' as path separator</string>
+			<key>WS-Name</key>
+			<string>set_userpath</string>
+		</dict>
+		<key>shader_backend=arb</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set shader_backend to arb</string>
+			<key>WS-Name</key>
+			<string>shader_backend=arb</string>
+		</dict>
+		<key>shader_backend=glsl</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set shader_backend to glsl</string>
+			<key>WS-Name</key>
+			<string>shader_backend=glsl</string>
+		</dict>
+		<key>shader_backend=none</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set shader_backend to none</string>
+			<key>WS-Name</key>
+			<string>shader_backend=none</string>
+		</dict>
+		<key>ssm=disabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Disable Struct Shader Math (default)</string>
+			<key>WS-Name</key>
+			<string>ssm=disabled</string>
+		</dict>
+		<key>ssm=enabled</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Enable Struct Shader Math</string>
+			<key>WS-Name</key>
+			<string>ssm=enabled</string>
+		</dict>
+		<key>videomemorysize=1024</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Tell Wine your video card has 1024MB RAM</string>
+			<key>WS-Name</key>
+			<string>videomemorysize=1024</string>
+		</dict>
+		<key>videomemorysize=2048</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Tell Wine your video card has 2048MB RAM</string>
+			<key>WS-Name</key>
+			<string>videomemorysize=2048</string>
+		</dict>
+		<key>videomemorysize=4096</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Tell Wine your video card has 4096MB RAM</string>
+			<key>WS-Name</key>
+			<string>videomemorysize=4096</string>
+		</dict>
+		<key>videomemorysize=512</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Tell Wine your video card has 512MB RAM</string>
+			<key>WS-Name</key>
+			<string>videomemorysize=512</string>
+		</dict>
+		<key>videomemorysize=default</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Let Wine detect amount of video card memory</string>
+			<key>WS-Name</key>
+			<string>videomemorysize=default</string>
+		</dict>
+		<key>vista</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows Vista</string>
+			<key>WS-Name</key>
+			<string>vista</string>
+		</dict>
+		<key>vsm=0</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelVS to 0</string>
+			<key>WS-Name</key>
+			<string>vsm=0</string>
+		</dict>
+		<key>vsm=1</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelVS to 1</string>
+			<key>WS-Name</key>
+			<string>vsm=1</string>
+		</dict>
+		<key>vsm=2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelVS to 2</string>
+			<key>WS-Name</key>
+			<string>vsm=2</string>
+		</dict>
+		<key>vsm=3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set MaxShaderModelVS to 3</string>
+			<key>WS-Name</key>
+			<string>vsm=3</string>
+		</dict>
+		<key>win10</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 10</string>
+			<key>WS-Name</key>
+			<string>win10</string>
+		</dict>
+		<key>win11</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 11</string>
+			<key>WS-Name</key>
+			<string>win11</string>
+		</dict>
+		<key>win20</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 2.0</string>
+			<key>WS-Name</key>
+			<string>win20</string>
+		</dict>
+		<key>win2k</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 2000</string>
+			<key>WS-Name</key>
+			<string>win2k</string>
+		</dict>
+		<key>win2k3</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 2003</string>
+			<key>WS-Name</key>
+			<string>win2k3</string>
+		</dict>
+		<key>win2k8</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 2008</string>
+			<key>WS-Name</key>
+			<string>win2k8</string>
+		</dict>
+		<key>win2k8r2</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 2008 R2</string>
+			<key>WS-Name</key>
+			<string>win2k8r2</string>
+		</dict>
+		<key>win30</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 3.0</string>
+			<key>WS-Name</key>
+			<string>win30</string>
+		</dict>
+		<key>win31</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 3.1</string>
+			<key>WS-Name</key>
+			<string>win31</string>
+		</dict>
+		<key>win7</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 7</string>
+			<key>WS-Name</key>
+			<string>win7</string>
+		</dict>
+		<key>win8</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 8</string>
+			<key>WS-Name</key>
+			<string>win8</string>
+		</dict>
+		<key>win81</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 8.1</string>
+			<key>WS-Name</key>
+			<string>win81</string>
+		</dict>
+		<key>win95</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 95</string>
+			<key>WS-Name</key>
+			<string>win95</string>
+		</dict>
+		<key>win98</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows 98</string>
+			<key>WS-Name</key>
+			<string>win98</string>
+		</dict>
+		<key>winebus_disablehidraw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>winebus DisableHidraw (makes all controllers Xinput)</string>
+			<key>WS-Name</key>
+			<string>winebus_disablehidraw</string>
+		</dict>
+		<key>winebus_enablehidraw</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>winebus EnableHidraw (DualSense controllers show normally)</string>
+			<key>WS-Name</key>
+			<string>winebus_enablehidraw</string>
+		</dict>
+		<key>winme</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows ME</string>
+			<key>WS-Name</key>
+			<string>winme</string>
+		</dict>
+		<key>winver=</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to default (win7)</string>
+			<key>WS-Name</key>
+			<string>winver=</string>
+		</dict>
+		<key>winxp</key>
+		<dict>
+			<key>WS-Description</key>
+			<string>Set Windows version to Windows XP</string>
+			<key>WS-Name</key>
+			<string>winxp</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

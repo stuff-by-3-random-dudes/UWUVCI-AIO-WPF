@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# Open appdb in browser
+#
+# Copyright (C) 2015-2016 Michael Müller
+# Copyright (C) 2016 Sebastian Lackner
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+#
+
+# Encode special characters in an URL
+function _urlencode()
+{
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case "$c" in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            " ") printf "+" ;;
+            *) printf '%s' "$c" | xxd -p -c1 |
+                while read c; do printf '%%%s' "$c"; done ;;
+        esac
+    done
+}
+
+# Use "xdg-open" instead of "open" on Linux
+if command -v xdg-open >/dev/null 2>&1; then
+    function open()
+    {
+        xdg-open "$1"
+    }
+fi
+
+# Search AppDB for a specific program
+if [ "$#" -lt 1 ]; then
+    open "https://appdb.winehq.org/index.php" &> /dev/null
+else
+    query=$(_urlencode "$*")
+    args="sClass=application&sTitle=Browse%20Applications&iappFamily-appNameOp0=2&sappFamily-appNameData0=$query"
+    open "https://appdb.winehq.org/objectManager.php?$args" &> /dev/null
+fi

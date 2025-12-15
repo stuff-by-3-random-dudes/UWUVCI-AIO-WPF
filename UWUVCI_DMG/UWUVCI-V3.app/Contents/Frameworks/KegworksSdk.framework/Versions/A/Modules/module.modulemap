@@ -1,0 +1,11 @@
+framework module KegworksSdk {
+  umbrella header "KegworksSdk.h"
+  export *
+
+  module * { export * }
+}
+
+module KegworksSdk.Swift {
+  header "KegworksSdk-Swift.h"
+  requires objc
+}
