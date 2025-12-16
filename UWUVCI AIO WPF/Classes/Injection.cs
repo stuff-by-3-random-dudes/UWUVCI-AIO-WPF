@@ -1,4 +1,3 @@
-using CNUSPACKER.Models;
 using GameBaseClassLibrary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1178,7 +1177,7 @@ namespace UWUVCI_AIO_WPF
             {
                 // non-fatal
             }
-
+            /*
             // --- step 3: ensure dirs + pin CWD to outRoot (avoids stray Downloads/Release) ---
             var oldCwd = Environment.CurrentDirectory;
             try
@@ -1217,6 +1216,16 @@ namespace UWUVCI_AIO_WPF
             {
                 Environment.CurrentDirectory = oldCwd;
             }
+            */
+
+            var cmdLine = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
+            var regex = new Regex(@"(\"".+?\"")|(\S+)", RegexOptions.Compiled);
+            var args = new List<string>();
+
+            foreach (Match match in regex.Matches(cmdLine))
+                args.Add(match.Value.Trim('\"'));
+
+            CNUSPACKER.Program.Main(args.ToArray());
 
             // --- step 4: wrap-up/cleanup ---
             mvm.Progress = 90;
