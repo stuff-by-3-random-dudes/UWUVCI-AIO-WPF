@@ -22,7 +22,28 @@ namespace UWUVCI_AIO_WPF.Helpers
             Environment.OSVersion.Platform == PlatformID.Win32NT ||
             Environment.OSVersion.Platform == PlatformID.Win32Windows;
 
-        public static bool UnderWine() => File.Exists(@"C:\windows\command\start.exe");
+        /// <summary>
+        /// Detect Wine as accurately as possible. The old check (presence of C:\windows\command\start.exe)
+        /// is true on native Windows and caused false positives, pushing us into POSIX host paths that
+        /// don't exist and making the app appear to hang. We now require Wine-specific env markers.
+        /// </summary>
+        public static bool UnderWine()
+        {
+            // Never treat real Windows as Wine
+            if (IsNativeWindows)
+                return false;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINELOADERNOEXEC")))
+                    return true;
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINEPREFIX")))
+                    return true;
+            }
+            catch { }
+
+            return false;
+        }
 
         // Host OS detection – via Z: mapping inside Wine
         public static bool HostIsMac() => File.Exists(@"Z:\System\Library\CoreServices\SystemVersion.plist");
