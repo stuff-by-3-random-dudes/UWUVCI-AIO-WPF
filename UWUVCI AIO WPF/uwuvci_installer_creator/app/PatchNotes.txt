@@ -4,7 +4,7 @@ Version 3.200.2 - Dec 17, 2025
 **New Features**
 - Manual override to set if running on a Windows device (defaults to auto detect).
 
-**Improvement**
+**Improvements**
 - When WIT crashes, it will inform the user about possibly changing the option of what their OS looks like to the program.
 - Improved Unix detection
 
