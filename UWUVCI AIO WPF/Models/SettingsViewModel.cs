@@ -20,6 +20,8 @@ namespace UWUVCI_AIO_WPF.Models
         private string _ancast;
         private bool _setBaseOnce;
         private bool _setOutOnce;
+        private string _nativeWindowsMode;
+        private int _fileCopyParallelism;
 
         public string BasePath { get => _basePath; set { _basePath = value; OnPropertyChanged(); } }
         public string OutPath { get => _outPath; set { _outPath = value; OnPropertyChanged(); } }
@@ -27,6 +29,20 @@ namespace UWUVCI_AIO_WPF.Models
         public string Ancast { get => _ancast; set { _ancast = value; OnPropertyChanged(); } }
         public bool SetBaseOnce { get => _setBaseOnce; set { _setBaseOnce = value; OnPropertyChanged(); } }
         public bool SetOutOnce { get => _setOutOnce; set { _setOutOnce = value; OnPropertyChanged(); } }
+        /// <summary>
+        /// Combo choice: "Auto", "Native", "Wine"
+        /// </summary>
+        public string NativeWindowsMode { get => _nativeWindowsMode; set { _nativeWindowsMode = value; OnPropertyChanged(); } }
+        public int FileCopyParallelism
+        {
+            get => _fileCopyParallelism;
+            set
+            {
+                var clamped = Math.Max(1, Math.Min(32, value));
+                _fileCopyParallelism = clamped;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand BrowseBasePathCommand { get; }
         public ICommand BrowseOutPathCommand { get; }
@@ -49,6 +65,13 @@ namespace UWUVCI_AIO_WPF.Models
             _ancast = s.Ancast;
             _setBaseOnce = s.SetBaseOnce;
             _setOutOnce = s.SetOutOnce;
+            _nativeWindowsMode = s.NativeWindows switch
+            {
+                true => "Native",
+                false => "Wine",
+                _ => "Auto"
+            };
+            _fileCopyParallelism = Math.Max(1, Math.Min(32, s.FileCopyParallelism <= 0 ? 6 : s.FileCopyParallelism));
 
             BrowseBasePathCommand = new RelayCommand(_ => PickFolder(p => BasePath = p, initial: BasePath));
             BrowseOutPathCommand = new RelayCommand(_ => PickFolder(p => OutPath = p, initial: OutPath));
@@ -169,6 +192,13 @@ namespace UWUVCI_AIO_WPF.Models
             s.SetBaseOnce = SetBaseOnce;
             s.SetOutOnce = SetOutOnce;
             s.PathsSet = true;
+            s.NativeWindows = NativeWindowsMode switch
+            {
+                "Native" => true,
+                "Wine" => false,
+                _ => (bool?)null
+            };
+            s.FileCopyParallelism = Math.Max(1, Math.Min(32, FileCopyParallelism <= 0 ? s.FileCopyParallelism : FileCopyParallelism));
 
             JsonSettingsManager.SaveSettings();
 

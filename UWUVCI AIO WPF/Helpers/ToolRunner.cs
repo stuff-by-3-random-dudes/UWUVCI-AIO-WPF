@@ -2,11 +2,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Globalization;
+using System.Linq;
 using UWUVCI_AIO_WPF.Models;
+using Microsoft.Win32;
+using System.Threading;
+using System.Text;
 
 namespace UWUVCI_AIO_WPF.Helpers
 {
@@ -18,9 +19,22 @@ namespace UWUVCI_AIO_WPF.Helpers
 
         public static string Q(string s) => "\"" + (s ?? "").Replace("\"", "\\\"") + "\"";
 
-        public static bool IsNativeWindows =>
+        private static bool IsWindowsPlatform =>
             Environment.OSVersion.Platform == PlatformID.Win32NT ||
             Environment.OSVersion.Platform == PlatformID.Win32Windows;
+
+        public static bool IsNativeWindows
+        {
+            get
+            {
+                bool? overrideNative = null;
+                try { overrideNative = JsonSettingsManager.Settings?.NativeWindows; } catch { /* ignore */ }
+                if (overrideNative.HasValue)
+                    return overrideNative.Value;
+
+                return IsWindowsPlatform && !IsWineDetected();
+            }
+        }
 
         /// <summary>
         /// Detect Wine as accurately as possible. The old check (presence of C:\windows\command\start.exe)
@@ -29,18 +43,70 @@ namespace UWUVCI_AIO_WPF.Helpers
         /// </summary>
         public static bool UnderWine()
         {
-            // Never treat real Windows as Wine
-            if (IsNativeWindows)
-                return false;
+            // Manual override via settings.json: NativeWindows=true/false, null = auto
+            try
+            {
+                bool? overrideNative = JsonSettingsManager.Settings?.NativeWindows;
+                if (overrideNative.HasValue)
+                    return !overrideNative.Value;
+            }
+            catch { /* ignore */ }
+
+            return IsWineDetected();
+        }
+
+        private static bool HasEnv(string name)
+        {
+            try { return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)); }
+            catch { return false; }
+        }
+
+        private static bool IsWineDetected()
+        {
+            try
+            {
+                // Strong env markers first
+                if (HasEnv("WINELOADERNOEXEC") || HasEnv("WINEPREFIX") || HasEnv("WINEDLLPATH") ||
+                    HasEnv("WINELOADER") || HasEnv("WINEESYNC") || HasEnv("WINEFSYNC"))
+                    return true;
+
+                // Common platform-specific envs (Proton/Lutris/CrossOver)
+                if (HasEnv("STEAM_COMPAT_DATA_PATH") || HasEnv("LUTRIS_GAME_UUID") ||
+                    HasEnv("CX_BOTTLE_PATH") || HasEnv("CROSSOVER_PREFIX"))
+                    return true;
+            }
+            catch { /* ignore */ }
+
+            // Registry keys Wine exposes inside the prefix
+            try
+            {
+                using var hklm = Registry.LocalMachine.OpenSubKey(@"Software\Wine");
+                if (hklm != null) return true;
+            }
+            catch { /* ignore */ }
 
             try
             {
-                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINELOADERNOEXEC")))
-                    return true;
-                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WINEPREFIX")))
+                using var hkcu = Registry.CurrentUser.OpenSubKey(@"Software\Wine");
+                if (hkcu != null) return true;
+            }
+            catch { /* ignore */ }
+
+            // Host fingerprints via Z: mapping
+            try
+            {
+                if (HostIsMac() || HostIsLinux())
                     return true;
             }
-            catch { }
+            catch { /* ignore */ }
+
+            // wineserver running is a strong signal
+            try
+            {
+                if (Process.GetProcessesByName("wineserver").Length > 0)
+                    return true;
+            }
+            catch { /* ignore */ }
 
             return false;
         }
@@ -61,6 +127,8 @@ namespace UWUVCI_AIO_WPF.Helpers
 
         private static readonly ConcurrentDictionary<string, bool> _execFixed =
             new ConcurrentDictionary<string, bool>(StringComparer.Ordinal);
+        private static readonly ConcurrentDictionary<string, string> _toolModePreference =
+            new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public static void Log(string s)
         {
@@ -468,10 +536,21 @@ namespace UWUVCI_AIO_WPF.Helpers
             bool showWindow,
             string workDirWin = null)
         {
+            toolBaseName ??= string.Empty;
+            string toolKey = toolBaseName.ToLowerInvariant();
+
             bool underWine = UnderWine();
             bool hostMac = IsHostMacUnderWine();
             bool hostLinux = IsHostLinuxUnderWine();
             bool nativeWindows = IsNativeWindows && !underWine;
+            bool nativeAvailable = underWine && (hostMac || hostLinux) && IsHostNativeTool(toolBaseName);
+
+            // Figure out a starting preference (cached when we already learned what works).
+            string preferredMode = null;
+            if (_toolModePreference.TryGetValue(toolKey, out var cached))
+                preferredMode = cached;
+            else
+                preferredMode = nativeWindows ? "winexe" : (nativeAvailable ? "native" : "winexe");
 
             // Choose base tools path
             if (string.IsNullOrWhiteSpace(toolsPathWin))
@@ -483,47 +562,119 @@ namespace UWUVCI_AIO_WPF.Helpers
 
             Log($"RunTool: tool={toolBaseName}, toolsPath={toolsPathWin}, workDir={workDirWin}");
 
-            // Case 1: Pure Windows → always exe
-            if (nativeWindows)
+            // Local runner that tries one flavor and reports errors without throwing (so we can fall back).
+            bool TryMode(string mode, out string error, string probeArgs = null)
             {
-                string exeWin = Path.Combine(toolsPathWin, toolBaseName + ".exe");
-                Directory.CreateDirectory(workDirWin);
-                string finalArgs = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
-                int rc = RunWinExe(exeWin, finalArgs, workDirWin, showWindow, out _, out var se);
-                if (rc != 0)
-                    throw new Exception($"{toolBaseName}.exe failed (exit {rc}).\n{se}");
-                return;
+                error = null;
+                try
+                {
+                    // Choose which args to run (probe uses light command like --version).
+                    string argsForMode = probeArgs ?? argsWindowsPaths;
+
+                    if (mode == "native")
+                    {
+                        if (!nativeAvailable)
+                        {
+                            error = "Native flavor not available on this host.";
+                            return false;
+                        }
+
+                        string toolsPosix = WindowsToHostPosix(toolsPathWin).TrimEnd('/');
+                        string exePosix = toolsPosix + "/" + toolBaseName + (hostMac ? "-mac" : "-linux");
+                        string argsPosix = ConvertArgsToPosix(argsForMode);
+
+                        exePosix = NormalizeDosDevicesPosix(exePosix);
+
+                        if (!HostFileExistsPosix(exePosix))
+                        {
+                            error = $"Native {toolBaseName} not found at: {exePosix}";
+                            return false;
+                        }
+
+                        int rc = RunNative(exePosix, argsPosix, hostMac, out var so, out var se);
+                        Log($"{toolBaseName} (native) exit={rc}");
+                        if (rc != 0)
+                        {
+                            error = $"{toolBaseName} (native) failed (exit {rc}).\n{se}";
+                            return false;
+                        }
+
+                        return true;
+                    }
+                    else // "winexe"
+                    {
+                        string exeWin = Path.Combine(toolsPathWin, toolBaseName + ".exe");
+                        Directory.CreateDirectory(workDirWin);
+                        string finalArgs = ReplaceArgsWithWindowsFlavor(argsForMode);
+                        int rc = RunWinExe(exeWin, finalArgs, workDirWin, showWindow, out var so, out var se);
+                        Log($"{toolBaseName}.exe exit={rc}");
+                        if (rc != 0)
+                        {
+                            error = $"{toolBaseName}.exe failed (exit {rc}).\n{se}";
+                            return false;
+                        }
+
+                        return true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                    return false;
+                }
             }
 
-            // Case 2: mac/Linux under Wine → native wit/wstrt, else exe
-            if (underWine && (hostMac || hostLinux) && IsHostNativeTool(toolBaseName))
+            // Build attempt order: preferred first, optional fallback second.
+            var attempts = new[] { preferredMode, preferredMode == "native" ? "winexe" : "native" }
+                .Where(mode => mode == "winexe" || mode == "native")
+                .Distinct()
+                .ToArray();
+
+            // Optional: quick preflight on wit/wstrt to discover a working flavor before the heavy call.
+            if (!_toolModePreference.ContainsKey(toolKey) && IsHostNativeTool(toolBaseName) && attempts.Length > 1)
             {
-                string toolsPosix = WindowsToHostPosix(toolsPathWin).TrimEnd('/');
-                string exePosix = toolsPosix + "/" + toolBaseName + (hostMac ? "-mac" : "-linux");
-                string argsPosix = ConvertArgsToPosix(argsWindowsPaths);
+                foreach (var mode in attempts)
+                {
+                    if (mode == "native" && !nativeAvailable)
+                        continue;
 
-                exePosix = NormalizeDosDevicesPosix(exePosix);
-
-                if (!HostFileExistsPosix(exePosix))
-                    throw new Exception($"Native {toolBaseName} not found at: {exePosix}");
-
-                int rc = RunNative(exePosix, argsPosix, hostMac, out var so, out var se);
-                Log($"{toolBaseName} (native) exit={rc}");
-                if (rc != 0)
-                    throw new Exception($"{toolBaseName} (native) failed (exit {rc}).\n{se}");
-                return;
+                    if (TryMode(mode, out var err, probeArgs: "--version"))
+                    {
+                        _toolModePreference[toolKey] = mode;
+                        preferredMode = mode;
+                        break;
+                    }
+                }
+                // If neither worked during probe, continue to main attempts to surface the error with real args.
             }
 
-            // Case 3: Everything else → Windows exe
+            // Rebuild attempts after probe in case preference changed.
+            attempts = new[] { preferredMode, preferredMode == "native" ? "winexe" : "native" }
+                .Where(mode => mode == "winexe" || mode == "native")
+                .Distinct()
+                .ToArray();
+
+            var errors = new StringBuilder();
+            foreach (var mode in attempts)
             {
-                string exeWinPath = Path.Combine(toolsPathWin, toolBaseName + ".exe");
-                Directory.CreateDirectory(workDirWin);
-                string finalArgs2 = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
-                int rc2 = RunWinExe(exeWinPath, finalArgs2, workDirWin, showWindow, out var so2, out var se2);
-                Log($"{toolBaseName} exit={rc2}");
-                if (rc2 != 0)
-                    throw new Exception($"{toolBaseName}.exe failed (exit {rc2}).\n{se2}");
+                // Only try native if it is actually available
+                if (mode == "native" && !nativeAvailable)
+                    continue;
+
+                Log($"RunTool trying mode={mode} for {toolBaseName}");
+                if (TryMode(mode, out var err))
+                {
+                    _toolModePreference[toolKey] = mode;
+                    return;
+                }
+
+                Log($"RunTool mode={mode} failed for {toolBaseName}, trying alternate. Error: {err}");
+                errors.AppendLine(err ?? $"Unknown failure running {toolBaseName} in mode {mode}.");
+
+                // If we just tried the default and failed, fall through to the alternate mode.
             }
+
+            throw new Exception(errors.Length > 0 ? errors.ToString() : $"Failed to run {toolBaseName}.");
         }
 
         /// <summary>

@@ -58,6 +58,10 @@ namespace UWUVCI_AIO_WPF.Helpers
                 if (string.IsNullOrWhiteSpace(Settings.TempPath))
                     Settings.TempPath = defaultTemp;
 
+                // Backfill defaults for newly added settings
+                if (Settings.FileCopyParallelism <= 0)
+                    Settings.FileCopyParallelism = 6;
+
                 // Save fixes
                 SaveSettings();
 
