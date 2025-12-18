@@ -57,7 +57,7 @@ namespace UWUVCI_AIO_WPF
         private static readonly string toolsPath = PathResolver.GetToolsPath();
         static string code = null;
         static MainViewModel mvvm;
-        private static bool IsNativeWindows = !MacLinuxHelper.EnvDetect.Get().UnderWineLike;
+        private static bool IsNativeWindows => ToolRunner.IsNativeWindows;
 
         /*
          * GameConsole: Can either be NDS, N64, GBA, NES, SNES or TG16
@@ -2705,4 +2705,3 @@ namespace UWUVCI_AIO_WPF
         }
     }
 }
-
