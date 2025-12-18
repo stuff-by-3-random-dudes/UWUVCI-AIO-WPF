@@ -563,11 +563,14 @@ namespace UWUVCI_AIO_WPF.Helpers
             Log($"RunTool: tool={toolBaseName}, toolsPath={toolsPathWin}, workDir={workDirWin}");
 
             // Local runner that tries one flavor and reports errors without throwing (so we can fall back).
-            bool TryMode(string mode, out string error)
+            bool TryMode(string mode, out string error, string probeArgs = null)
             {
                 error = null;
                 try
                 {
+                    // Choose which args to run (probe uses light command like --version).
+                    string argsForMode = probeArgs ?? argsWindowsPaths;
+
                     if (mode == "native")
                     {
                         if (!nativeAvailable)
@@ -578,7 +581,7 @@ namespace UWUVCI_AIO_WPF.Helpers
 
                         string toolsPosix = WindowsToHostPosix(toolsPathWin).TrimEnd('/');
                         string exePosix = toolsPosix + "/" + toolBaseName + (hostMac ? "-mac" : "-linux");
-                        string argsPosix = ConvertArgsToPosix(argsWindowsPaths);
+                        string argsPosix = ConvertArgsToPosix(argsForMode);
 
                         exePosix = NormalizeDosDevicesPosix(exePosix);
 
@@ -602,7 +605,7 @@ namespace UWUVCI_AIO_WPF.Helpers
                     {
                         string exeWin = Path.Combine(toolsPathWin, toolBaseName + ".exe");
                         Directory.CreateDirectory(workDirWin);
-                        string finalArgs = ReplaceArgsWithWindowsFlavor(argsWindowsPaths);
+                        string finalArgs = ReplaceArgsWithWindowsFlavor(argsForMode);
                         int rc = RunWinExe(exeWin, finalArgs, workDirWin, showWindow, out var so, out var se);
                         Log($"{toolBaseName}.exe exit={rc}");
                         if (rc != 0)
@@ -627,6 +630,30 @@ namespace UWUVCI_AIO_WPF.Helpers
                 .Distinct()
                 .ToArray();
 
+            // Optional: quick preflight on wit/wstrt to discover a working flavor before the heavy call.
+            if (!_toolModePreference.ContainsKey(toolKey) && IsHostNativeTool(toolBaseName) && attempts.Length > 1)
+            {
+                foreach (var mode in attempts)
+                {
+                    if (mode == "native" && !nativeAvailable)
+                        continue;
+
+                    if (TryMode(mode, out var err, probeArgs: "--version"))
+                    {
+                        _toolModePreference[toolKey] = mode;
+                        preferredMode = mode;
+                        break;
+                    }
+                }
+                // If neither worked during probe, continue to main attempts to surface the error with real args.
+            }
+
+            // Rebuild attempts after probe in case preference changed.
+            attempts = new[] { preferredMode, preferredMode == "native" ? "winexe" : "native" }
+                .Where(mode => mode == "winexe" || mode == "native")
+                .Distinct()
+                .ToArray();
+
             var errors = new StringBuilder();
             foreach (var mode in attempts)
             {
@@ -641,6 +668,7 @@ namespace UWUVCI_AIO_WPF.Helpers
                     return;
                 }
 
+                Log($"RunTool mode={mode} failed for {toolBaseName}, trying alternate. Error: {err}");
                 errors.AppendLine(err ?? $"Unknown failure running {toolBaseName} in mode {mode}.");
 
                 // If we just tried the default and failed, fall through to the alternate mode.

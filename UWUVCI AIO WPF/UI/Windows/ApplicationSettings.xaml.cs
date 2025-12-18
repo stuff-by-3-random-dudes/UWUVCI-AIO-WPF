@@ -24,8 +24,7 @@ namespace UWUVCI_AIO_WPF.UI.Windows
             // initialize performance slider
             try
             {
-                int deg = JsonSettingsManager.Settings.FileCopyParallelism;
-                if (deg < 1) deg = 1; if (deg > 32) deg = 32;
+                int deg = _vm.FileCopyParallelism;
                 if (CopyParallelSlider != null) CopyParallelSlider.Value = deg;
                 if (CopyParallelValue != null) CopyParallelValue.Text = deg.ToString();
             }
@@ -133,11 +132,15 @@ namespace UWUVCI_AIO_WPF.UI.Windows
         {
             try
             {
+                if (_vm == null || JsonSettingsManager.Settings == null)
+                    return;
+
                 int deg = (int)CopyParallelSlider.Value;
-                if (deg < 1) deg = 1; if (deg > 32) deg = 32;
-                if (CopyParallelValue != null) CopyParallelValue.Text = deg.ToString();
-                JsonSettingsManager.Settings.FileCopyParallelism = deg;
+                _vm.FileCopyParallelism = deg;
+                if (CopyParallelValue != null) CopyParallelValue.Text = _vm.FileCopyParallelism.ToString();
+                JsonSettingsManager.Settings.FileCopyParallelism = _vm.FileCopyParallelism;
                 JsonSettingsManager.SaveSettings();
+                ToolRunner.Log($"FileCopyParallelism updated via UI to {deg}");
             }
             catch { }
         }
@@ -168,4 +171,3 @@ namespace UWUVCI_AIO_WPF.UI.Windows
 
     }
 }
-

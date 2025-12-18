@@ -423,6 +423,34 @@ namespace UWUVCI_AIO_WPF
                 mvm.Progress = 100;
                 code = null;
 
+                // Compute a platform hint for WIT-related failures (add later, after main message selection)
+                string platformHint = null;
+                try
+                {
+                    if (e.Message?.IndexOf("wit", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        string platformMode = "Auto (detect)";
+                        try
+                        {
+                            bool? nativeSetting = JsonSettingsManager.Settings?.NativeWindows;
+                            platformMode = nativeSetting switch
+                            {
+                                true => "Force Native Windows",
+                                false => "Force Wine / Compatibility",
+                                _ => "Auto (detect)"
+                            };
+                        }
+                        catch { /* best-effort */ }
+
+                        string detected = IsNativeWindows ? "Native Windows" : "Not Native Windows (compat/Wine detected)";
+
+                        platformHint =
+                            $"⚙️ Platform detection:\nDetected: {detected}\nCurrent Platform Mode: {platformMode}\n" +
+                            "If this looks wrong for your OS, open Application Settings (⚙️) → Platform Mode and switch to the appropriate option, then retry.";
+                    }
+                }
+                catch { /* best-effort */ }
+
                 // Handle known internal cleanup triggers
                 if (e.Message == "Failed this shit")
                 {
@@ -505,6 +533,12 @@ namespace UWUVCI_AIO_WPF
                     errorMessage =
                         "🖼️ An image-related issue occurred during processing.\n" +
                         "Try using different images or re-exporting them in a standard format.";
+                }
+
+                // Attach platform hint for WIT failures without overriding the main message
+                if (!string.IsNullOrWhiteSpace(platformHint))
+                {
+                    errorMessage += "\n\n" + platformHint;
                 }
 
                 // --- Emulation warning ---
@@ -751,7 +785,7 @@ namespace UWUVCI_AIO_WPF
 
             var opt = new WiiInjectOptions
             {
-                Debug = true,
+                Debug = mvm.debug,
                 DontTrim = mvm.donttrim,
                 PatchVideo = mvm.Patch,
                 ToPal = mvm.toPal,
@@ -2701,6 +2735,7 @@ namespace UWUVCI_AIO_WPF
             // Full recursive copy with bounded parallelism (from settings)
             int deg = 6;
             try { deg = Math.Max(1, Math.Min(32, JsonSettingsManager.Settings.FileCopyParallelism)); } catch { }
+            try { ToolRunner.Log($"FileCopyParallelism effective value: {deg}"); } catch { }
             IOHelpers.CopyDirectorySync(sourceDirName, destDirName, maxParallel: deg);
         }
     }

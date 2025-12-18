@@ -144,7 +144,9 @@
                     <ComboBox Width="240"
                               SelectedValue="{Binding NativeWindowsMode, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Tag"
-                              ToolTip="How UWUVCI decides between native Windows vs. Wine/CrossOver/Proton.\nAuto: detect automatically.\nForce Native: always run Windows toolchain (no Wine paths).\nForce Wine/Compatibility: always treat as Wine and use native wit/wstrt if present, with POSIX path conversion.">
+                              ToolTip="How UWUVCI decides between native Windows vs. Wine/CrossOver/Proton.
+                              Auto: detect automatically.\nForce Native: always run Windows toolchain (no Wine paths).
+                              Force Wine/Compatibility: always treat as Wine and use native wit/wstrt if present, with POSIX path conversion.">
                         <ComboBoxItem Content="Auto (detect)" Tag="Auto"/>
                         <ComboBoxItem Content="Force Native Windows" Tag="Native"/>
                         <ComboBoxItem Content="Force Wine / Compatibility" Tag="Wine"/>
@@ -170,9 +172,10 @@
                                 Width="280"
                                 Minimum="1" Maximum="32"
                                 TickFrequency="1" IsSnapToTickEnabled="True"
-                                ValueChanged="CopyParallelSlider_OnValueChanged"/>
+                                ValueChanged="CopyParallelSlider_OnValueChanged"
+                                Value="{Binding FileCopyParallelism, UpdateSourceTrigger=PropertyChanged}"/>
                         <TextBlock x:Name="CopyParallelValue" Width="60" Margin="8,0,0,0"
-                                   VerticalAlignment="Center" Text="6"/>
+                                     VerticalAlignment="Center" Text="{Binding FileCopyParallelism}"/>
                         <TextBlock Text="threads" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
