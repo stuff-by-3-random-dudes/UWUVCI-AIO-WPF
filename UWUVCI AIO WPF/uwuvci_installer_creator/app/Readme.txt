@@ -21,7 +21,7 @@ If you're curious about the Discord, the latest updates, or video guides, you’
   https://github.com/stuff-by-3-random-dudes/UWUVCI-AIO-WPF/releases/latest
 
 • Official UWUVCI V3 Video Series:
-  https://www.youtube.com/watch?v=I5UdYcVSRSA&list=PLbQMtrmXFIxQ1hpvu9m1th41vsaqnZ2Id
+  https://www.youtube.com/watch?v=ADde8cZ6-y8
 
 ============================================================
  Project Overview
