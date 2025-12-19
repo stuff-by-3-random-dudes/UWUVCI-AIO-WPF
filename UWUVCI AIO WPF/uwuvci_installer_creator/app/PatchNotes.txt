@@ -1,4 +1,14 @@
 ====================================
+Version 3.200.5 - Dec 19, 2025
+====================================
+**Fixes**
+- Installed WUP installables will no longer show ???
+
+**Bugs**
+- This reintroduces the FST bug with CNUSPACKER
+  - This cannot be solved until the CNUSPacker package code (https://www.nuget.org/packages/CNUSPACKER/) becomes public.
+
+====================================
 Version 3.200.4 - Dec 18, 2025
 ====================================
 **Improvements**
@@ -8,10 +18,6 @@ Version 3.200.4 - Dec 18, 2025
 - Removed the ability of a hard crash on creating wup installable
   - Instead it will bring up an error message screen
 - Fixed CNUSPacker tool from crashing on it's FST step
-
-**Notes**
-- Until CNUSPacker gets officially updated, UWUVCI V3 is stuck in my specific fork.
-  -I accidentally deleted the folder that had my CNUSPacker changes, so I don't even have the code anymore.
 
 ====================================
 Version 3.200.3 - Dec 17, 2025
