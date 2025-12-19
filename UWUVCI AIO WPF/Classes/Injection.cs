@@ -1211,8 +1211,9 @@ namespace UWUVCI_AIO_WPF
             {
                 // non-fatal
             }
-            /*
+            
             // --- step 3: ensure dirs + pin CWD to outRoot (avoids stray Downloads/Release) ---
+            /*
             var oldCwd = Environment.CurrentDirectory;
             try
             {
@@ -1251,16 +1252,26 @@ namespace UWUVCI_AIO_WPF
                 Environment.CurrentDirectory = oldCwd;
             }
             */
+            
+            try
+            {
+                var cmdLine = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
+                var regex = new Regex(@"(\"".+?\"")|(\S+)", RegexOptions.Compiled);
+                var args = new List<string>();
 
-            var cmdLine = $"-in \"{baseRomPath}\" -out \"{outputPath}\" -encryptKeyWith {JsonSettingsManager.Settings.Ckey}";
-            var regex = new Regex(@"(\"".+?\"")|(\S+)", RegexOptions.Compiled);
-            var args = new List<string>();
+                foreach (Match match in regex.Matches(cmdLine))
+                    args.Add(match.Value.Trim('\"'));
 
-            foreach (Match match in regex.Matches(cmdLine))
-                args.Add(match.Value.Trim('\"'));
-
-            CNUSPACKER.Program.Main(args.ToArray());
-
+                Logger.Log($"[CNUSPACKER] Starting packaging process for {basePath}");
+                CNUSPACKER.Program.Main(args.ToArray());
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"[CNUSPACKER] ERROR: Packaging failed for {basePath}");
+                Logger.Log($"[CNUSPACKER] Exception: {ex}");
+                throw new Exception("CNUSPACKER failed. See logs for details.", ex);
+            }
+            
             // --- step 4: wrap-up/cleanup ---
             mvm.Progress = 90;
             mvm.msg = "Cleaning...";
