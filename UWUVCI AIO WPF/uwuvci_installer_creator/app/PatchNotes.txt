@@ -1,10 +1,31 @@
 ====================================
-Version 3.200.2 - Dec 17, 2025
+Version 3.200.5 - Dec 19, 2025
+====================================
+**Fixes**
+- Installed WUP installables will no longer show ???
+
+**Bugs**
+- This reintroduces the FST bug with CNUSPACKER
+  - This cannot be solved until the CNUSPacker package code (https://www.nuget.org/packages/CNUSPACKER/) becomes public.
+
+====================================
+Version 3.200.4 - Dec 18, 2025
+====================================
+**Improvements**
+- Downloading bases will start up faster
+
+**Fixes**
+- Removed the ability of a hard crash on creating wup installable
+  - Instead it will bring up an error message screen
+- Fixed CNUSPacker tool from crashing on it's FST step
+
+====================================
+Version 3.200.3 - Dec 17, 2025
 ====================================
 **New Features**
 - Manual override to set if running on a Windows device (defaults to auto detect).
 
-**Improvement**
+**Improvements**
 - When WIT crashes, it will inform the user about possibly changing the option of what their OS looks like to the program.
 - Improved Unix detection
 

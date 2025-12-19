@@ -208,10 +208,10 @@ namespace UWUVCI_AIO_WPF.Services
         private static byte[] BuildAesKey()
         {
             // Short split parts (rotated per release by build script or manually)
-            string p1 = "qtM";
-            string p2 = "jLW";
-            string p3 = "9ZD";
-            string p4 = "ohT";
+            string p1 = "NFZ";
+            string p2 = "lHn";
+            string p3 = "FQn";
+            string p4 = "2Qv";
             var combined = p1 + p2 + p3 + p4;
             var key = Encoding.UTF8.GetBytes(combined);
 
@@ -232,6 +232,9 @@ namespace UWUVCI_AIO_WPF.Services
         }
     }
 }
+
+
+
 
 
 
