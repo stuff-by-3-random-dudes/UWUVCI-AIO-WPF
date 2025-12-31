@@ -2491,6 +2491,9 @@ namespace UWUVCI_AIO_WPF
 
             if (GameConfiguration.Console == GameConsoles.WII || GameConfiguration.Console == GameConsoles.GCN)
             {
+                double speed = TestDownloadSpeed();  // in MB/s
+                TimeSpan estimatedTime = CalculateEstimatedTime(speed);
+
                 // Run the new async injection download in background
                 Task.Run(async () =>
                 {
