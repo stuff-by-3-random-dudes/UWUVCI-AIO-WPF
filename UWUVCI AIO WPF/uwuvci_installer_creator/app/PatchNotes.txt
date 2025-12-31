@@ -1,11 +1,4 @@
 ====================================
-Version 3.200.6 - Dec 20, 2025
-====================================
-**Fixes**
-- Compatibility submissions point to the new SNES and TG16 files
-- Uses updated CNUSPacker that removes FST bug
-
-====================================
 Version 3.200.5 - Dec 19, 2025
 ====================================
 **Fixes**
