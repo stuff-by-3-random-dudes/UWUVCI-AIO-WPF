@@ -253,7 +253,7 @@ namespace UWUVCI_AIO_WPF.Services
                     toolBaseName: "nfs2iso2nfs",
                     toolsPathWin: toolsPath,
                     argsWindowsPaths: $"-enc -homebrew {extra}{pass}-iso game.iso",
-                    showWindow: debug,
+                    showWindow: true,
                     workDirWin: contentWinView
                 );
 

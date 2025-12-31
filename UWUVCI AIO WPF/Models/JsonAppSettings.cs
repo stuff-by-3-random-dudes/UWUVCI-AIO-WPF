@@ -25,8 +25,6 @@
         public string ToolsPath { get; set; } = string.Empty;
         public string TempPath { get; set; } = string.Empty;
         public int UnixWaitDelayMs { get; set; } = 2000;
-        // Optional override: true = force native Windows mode, false = force Wine mode, null = auto-detect
-        public bool? NativeWindows { get; set; } = null;
     }
 
 }
