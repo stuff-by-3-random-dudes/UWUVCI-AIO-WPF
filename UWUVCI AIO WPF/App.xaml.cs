@@ -65,6 +65,18 @@ namespace UWUVCI_AIO_WPF
                     new IntroductionWindow().ShowDialog();
                 }
             }
+
+            if (JsonSettingsManager.Settings.ShowZestyFork)
+            {
+                var result = MessageBox.Show("There is a more updated fork that is recommended to use going forward. Press 'Yes' to check it out now. If not, you can always find it under the Settings (gear icon).", "ZestyTS's UWUVCI V3", MessageBoxButton.YesNo,MessageBoxImage.Exclamation);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    Process.Start("https://zestyts.itch.io/uwuvci-v3");
+                }
+                JsonSettingsManager.Settings.ShowZestyFork = false;
+                JsonSettingsManager.SaveSettings();
+            }
         }
 
         private static void GlobalTextBox_PreviewDragOver(object sender, DragEventArgs e)
