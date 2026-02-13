@@ -177,4 +177,34 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 
 34) An error message popped up.
 	Read it, it'll explain the problem.
-	
+
+35) On Windows, but the program thinks you're running on Linux/Mac (Unix)?
+	You probably have some weird software that's flagging one of the checks.
+	Open regedit and go to here
+	    HKEY_CURRENT_USER\Software\Wine
+	Is there something there?
+
+	If the answer is yes, then that's the problem, so right click the folder and click delete.
+	If the answer is no, then I'm sorry but you're going to have to check every single one of these because SOMETHING on your machine is the problem.
+		Proton
+		Crossover
+		BoxedWine
+		Lutris
+		PlayOnLinux
+		DXVK
+		ReactOS
+		Winetricks
+		Cedega (WineX)
+		VMWare	
+		Parallels
+		QEMU
+		Xen
+		Bhyve
+		Bochs
+		Openstack
+		ProxMox
+		Virtuozzo
+
+36)	Error when making N64 injects?
+	If the error says something like "Destination array is not long enough to copy all the items in the collection. Check array index and length."
+	It's because Removing Dark Filter and Enabling Widescreen is broken
