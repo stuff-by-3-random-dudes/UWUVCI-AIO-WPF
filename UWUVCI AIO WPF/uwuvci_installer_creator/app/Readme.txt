@@ -205,6 +205,6 @@ I, ZestyTS, have been maintaining this FAQ since I took over UWUVCI-3. With the 
 		ProxMox
 		Virtuozzo
 
-36)	Error when making N64 injects?
+36) Error when making N64 injects?
 	If the error says something like "Destination array is not long enough to copy all the items in the collection. Check array index and length."
 	It's because Removing Dark Filter and Enabling Widescreen is broken
